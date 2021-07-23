@@ -57,7 +57,7 @@ public class ApiKeyAuthFilter extends OncePerRequestFilter {
         objectMapper.writeValue(response.getWriter(), errorDetails);
         return;
       }
-      
+
       UsernamePasswordAuthenticationToken authentication =
           new UsernamePasswordAuthenticationToken(null, null, null);
 
