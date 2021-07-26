@@ -29,6 +29,15 @@ public class Constant {
   public static final String REFRESH_TOKEN_EXPIRED = "Refresh Token Expired";
   public static final String BAD_REQUEST = "Bad Request";
   public static final String CONTENT_TYPE_JSON = "application/json";
+  
+  /* Languages */
+  public static final String ENGLISH = "English";
+  public static final String SPANISH = "Español";
+  public static final String PORTUGUESE = "Português";
+  
+  /* Roles */
+  public static final String PARTNER = "partner";
+  public static final String CANDIDATE = "candidate";
 
   public static final String CLIENT_SUITE_PROD_SERVER_URL = "https://clients.kingsleygate.com";
   public static final String PARSING_ERROR = "Exception while parsing";
