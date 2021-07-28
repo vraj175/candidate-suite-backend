@@ -1,2 +1,2 @@
 #!/bin/bash
-rm -rf /opt/projectone/tomcat/webapps/ROOT*
+rm -rf /opt/candidatesuite/tomcat/webapps/ROOT*
