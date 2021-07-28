@@ -20,6 +20,7 @@
 		<kdgcommons.version>1.0.14</kdgcommons.version>
 		<aws-sdk.version>1.11.871</aws-sdk.version>
 		<jacoco.version>0.8.3</jacoco.version>
+		<sonar.projectKey>candidatesuite-backend</sonar.projectKey>
 		<sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
 		<sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
 		<sonar.jacoco.reportPath>${project.basedir}/../target/jacoco.exec</sonar.jacoco.reportPath>
