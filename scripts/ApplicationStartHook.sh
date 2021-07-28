@@ -1,3 +1,3 @@
 #!/bin/bash
-sudo chown projectone:devops -R /opt/projectone/
-sudo chmod 755 -R /opt/projectone/
+sudo chown candidatesuite:devops -R /opt/candidatesuite/
+sudo chmod 755 -R /opt/candidatesuite/
