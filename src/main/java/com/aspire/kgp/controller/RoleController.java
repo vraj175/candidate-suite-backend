@@ -25,13 +25,13 @@ public class RoleController {
   @Autowired
   RoleService service;
   
-  @ApiOperation(value = "Initialize Data")
+  @ApiOperation(value = "Initialize Roles")
   @PostMapping(value = "/roles/initialize")
   public String initializeLanguages() {
     return service.initializeData();
   }
 
-  @ApiOperation(value = "Get list of languages")
+  @ApiOperation(value = "Get list of Roles")
   @GetMapping(value = "/roles")
   public List<Role> getRoles() {
     return service.findAll();
