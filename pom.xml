@@ -23,10 +23,6 @@
 		<sonar.projectKey>candidatesuite-backend</sonar.projectKey>
 		<sonar.host.url>https://sonar.aspiresoftware.in</sonar.host.url>
 		<sonar.login>f52cfa0ec6ed401ba80cb93c17472cca7b5786f6</sonar.login>
-		<sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
-		<sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
-		<sonar.jacoco.reportPath>${project.basedir}/../target/jacoco.exec</sonar.jacoco.reportPath>
-		<sonar.language>java</sonar.language>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -141,11 +137,6 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
-			</plugin>
-			<plugin>	
-				<groupId>org.sonarsource.scanner.maven</groupId>
-  				<artifactId>sonar-maven-plugin</artifactId>
-  				<version>3.2</version>
 			</plugin>
 			<plugin>
 				<groupId>org.jacoco</groupId>
