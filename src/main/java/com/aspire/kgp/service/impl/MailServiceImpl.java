@@ -64,6 +64,10 @@ public class MailServiceImpl implements MailService {
     StringWriter stringWriter = new StringWriter();
     Map<String, Object> model = new HashMap<>();
     model.put("serverUrl", CommonUtil.getServerUrl(request) + request.getContextPath());
+    model.put("homeUrl", "");
+    model.put("name", "Vivek Tanna");
+    model.put("token", "token");
+    model.put("userEmail", "userEmail");
     configuration.getTemplate("invitation_en.ftlh").process(model, stringWriter);
     return stringWriter.getBuffer().toString();
   }
