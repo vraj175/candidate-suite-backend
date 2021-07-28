@@ -6,8 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 
 import com.aspire.kgp.model.User;
 import com.aspire.kgp.service.UserService;
@@ -28,12 +26,11 @@ public class UserController {
 
   @ApiOperation(value = "Invite User as Candidates")
   @PostMapping(value = "/user/invite")
-  public User inviteUser(String contactId, String language,String email, String[] BCC, boolean removeDuplicate) {
-    HttpServletRequest request =
-        ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
+  public User inviteUser(String contactId, String language, String email, String[] BCC,
+      boolean removeDuplicate, HttpServletRequest request) {
     User user = (User) request.getAttribute("user");
     user = service.findById(user.getId());
-    
+
     return service.InviteUser(contactId, language, email, BCC, user, request);
   }
 

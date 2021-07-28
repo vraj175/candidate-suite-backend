@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.aspire.kgp.constant.Constant;
+import com.aspire.kgp.dto.UserDTO;
 import com.aspire.kgp.exception.APIException;
 import com.aspire.kgp.model.User;
 import com.aspire.kgp.repository.UserRepository;
@@ -15,6 +16,9 @@ import com.aspire.kgp.service.MailService;
 import com.aspire.kgp.service.RoleService;
 import com.aspire.kgp.service.UserService;
 import com.aspire.kgp.util.CommonUtil;
+import com.aspire.kgp.util.RestUtil;
+import com.google.common.reflect.TypeToken;
+import com.google.gson.Gson;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -30,6 +34,9 @@ public class UserServiceImpl implements UserService {
 
   @Autowired
   MailService mailService;
+  
+  @Autowired
+  RestUtil restUtil;
 
   @Override
   public User findById(Long id) {
@@ -63,6 +70,17 @@ public class UserServiceImpl implements UserService {
       User invitedBy, HttpServletRequest request) {
     User response;
     try {
+      String apiResponse = restUtil.newGetMethod(Constant.CONTACT_URL, request);
+      UserDTO userDTO = new Gson().fromJson(apiResponse, new TypeToken<UserDTO>() {
+
+        /**
+         * 
+         */
+        private static final long serialVersionUID = 1L;
+      }.getType());
+      userDTO.setToken("");
+      userDTO.setPrivateEmail(email);
+      
       User user = new User();
       // user.setRole(roleService.findByName(Constant.CANDIDATE));
       // user.setEmail(email);
@@ -72,9 +90,11 @@ public class UserServiceImpl implements UserService {
       // user.setInvitedBy(invitedBy);
 
       response = user;
+      
+      
 
       mailService.sendEmail(email, BCC, Constant.INVITE_SUBJECT,
-          mailService.getInviteEmailContent(request), null);
+          mailService.getInviteEmailContent(request, userDTO), null);
     } catch (Exception e) {
       throw new APIException("Error in send invite");
     }

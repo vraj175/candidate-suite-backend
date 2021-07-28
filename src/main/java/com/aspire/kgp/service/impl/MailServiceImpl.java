@@ -18,6 +18,7 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
 import com.aspire.kgp.constant.Constant;
+import com.aspire.kgp.dto.UserDTO;
 import com.aspire.kgp.service.MailService;
 import com.aspire.kgp.util.CommonUtil;
 
@@ -60,14 +61,14 @@ public class MailServiceImpl implements MailService {
   }
 
   @Override
-  public String getInviteEmailContent(HttpServletRequest request) throws IOException, TemplateException {
+  public String getInviteEmailContent(HttpServletRequest request, UserDTO user) throws IOException, TemplateException {
     StringWriter stringWriter = new StringWriter();
     Map<String, Object> model = new HashMap<>();
     model.put("serverUrl", CommonUtil.getServerUrl(request) + request.getContextPath());
     model.put("homeUrl", "");
-    model.put("name", "Vivek Tanna");
-    model.put("token", "token");
-    model.put("userEmail", "userEmail");
+    model.put("name", user.getFirstName()+" "+user.getLastName());
+    model.put("token", user.getToken());
+    model.put("userEmail", user.getPrivateEmail());
     configuration.getTemplate("invitation_en.ftlh").process(model, stringWriter);
     return stringWriter.getBuffer().toString();
   }
