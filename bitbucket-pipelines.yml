@@ -1,0 +1,22 @@
+image: maven:3.3.9
+
+clone:
+  depth: full
+  
+pipelines:
+  branches:
+    '1.0.0':
+      - step:
+          name: SonarQube analysis
+          caches:
+            - maven
+            - sonar
+          script:
+            - mvn clean sonar:sonar -DskipTests
+            
+definitions:
+  caches:
+    sonar: ~/.sonar
+  services:
+    docker:
+      memory: 3072
