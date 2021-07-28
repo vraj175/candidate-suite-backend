@@ -15,12 +15,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.aspire.kgp.constant.Constant;
+import com.aspire.kgp.util.CommonUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Component
@@ -48,8 +48,8 @@ public class ApiKeyAuthFilter extends OncePerRequestFilter {
         objectMapper.writeValue(response.getWriter(), errorDetails);
         return;
       }
-      log.info("api key is :: " + verifyHash(apiSecretKey, apiKey));
-      if (!verifyHash(apiSecretKey, apiKey)) {
+      log.info("api key is :: " + CommonUtil.verifyHash(apiSecretKey, apiKey));
+      if (!CommonUtil.verifyHash(apiSecretKey, apiKey)) {
         log.info("message :: " + Constant.INVALID_API_KEY);
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
@@ -66,13 +66,5 @@ public class ApiKeyAuthFilter extends OncePerRequestFilter {
       log.debug("filter end");
     }
     filterChain.doFilter(request, response);
-  }
-
-  public String hash(String password) {
-    return BCrypt.hashpw(password, BCrypt.gensalt(10));
-  }
-
-  public boolean verifyHash(String password, String hash) {
-    return BCrypt.checkpw(password, hash);
   }
 }

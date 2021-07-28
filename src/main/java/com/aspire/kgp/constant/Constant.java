@@ -38,6 +38,11 @@ public class Constant {
   /* Roles */
   public static final String PARTNER = "partner";
   public static final String CANDIDATE = "candidate";
+  
+  /* Emails */
+  public static final String FROM_MAIL="candidatesuite@kingsleygate.com";
+  public static final String SENDER_NAME="Candidate Suite";
+  public static final String INVITE_SUBJECT = "Welcome to Kingsley Gate Partners Portal!";
 
   public static final String CLIENT_SUITE_PROD_SERVER_URL = "https://clients.kingsleygate.com";
   public static final String PARSING_ERROR = "Exception while parsing";
@@ -58,6 +63,7 @@ public class Constant {
   public static final String STRING_HTTPS = "https";
   public static final String STRING_HTTP = "http";
 
+  public static final String GALAXY_API_USER_DETAILS = "/users/profile";
   public static final String USER_AUTHENTICATE_API_URL = "/api/v1.0/user/authenticate";
   public static final String USER_AUTHENTICATE_GROUP_NAME = "user-authenticate";
   public static final String HEADER = "header";

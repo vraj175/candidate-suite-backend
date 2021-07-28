@@ -37,6 +37,7 @@ public class User extends SuperBase {
       updatable = true)
   private Language language;
 
+  @Column(columnDefinition = "boolean default false")
   private boolean isDeleted;
 
   public Role getRole() {

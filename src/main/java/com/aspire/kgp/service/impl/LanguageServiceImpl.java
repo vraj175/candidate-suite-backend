@@ -33,6 +33,11 @@ public class LanguageServiceImpl implements LanguageService {
   }
 
   @Override
+  public Language findByName(String Name) {
+    return repository.findByName(Name);
+  }
+
+  @Override
   public String initializeData() {
     if (findAll().isEmpty()) {
       List<Language> languages = new ArrayList<>();

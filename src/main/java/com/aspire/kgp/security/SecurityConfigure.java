@@ -12,12 +12,16 @@ public class SecurityConfigure extends WebSecurityConfigurerAdapter {
 
   @Autowired
   private ApiKeyAuthFilter apiKeyAuthFilter;
+  
+  @Autowired
+  private JwtRequestFilter jwtRequestFilter;
 
   @Override
   protected void configure(HttpSecurity http) throws Exception {
     http.csrf().disable().authorizeRequests()
         .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll().and()
-        .addFilterBefore(apiKeyAuthFilter, UsernamePasswordAuthenticationFilter.class);
+        .addFilterBefore(apiKeyAuthFilter, UsernamePasswordAuthenticationFilter.class)
+        .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
 
   }
 }

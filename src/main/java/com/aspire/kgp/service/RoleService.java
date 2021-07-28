@@ -11,6 +11,8 @@ public interface RoleService {
   List<Role> saveAll(List<Role> roles);
 
   List<Role> findAll();
+  
+  Role findByName(String Name);
 
   String initializeData();
 }
