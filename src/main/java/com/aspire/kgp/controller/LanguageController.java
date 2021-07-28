@@ -25,13 +25,13 @@ public class LanguageController {
   @Autowired
   LanguageService service;
   
-  @ApiOperation(value = "Initialize Data")
+  @ApiOperation(value = "Initialize languages")
   @PostMapping(value = "/languages/initialize")
   public String initializeLanguages() {
     return service.initializeData();
   }
 
-  @ApiOperation(value = "Get list of languages")
+  @ApiOperation(value = "Get list of Languages")
   @GetMapping(value = "/languages")
   public List<Language> getLanguages() {
     return service.findAll();
