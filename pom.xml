@@ -21,6 +21,8 @@
 		<aws-sdk.version>1.11.871</aws-sdk.version>
 		<jacoco.version>0.8.3</jacoco.version>
 		<sonar.projectKey>candidatesuite-backend</sonar.projectKey>
+		<sonar.host.url>https://sonar.aspiresoftware.in</sonar.host.url>
+		<sonar.login>f52cfa0ec6ed401ba80cb93c17472cca7b5786f6</sonar.login>
 		<sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
 		<sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
 		<sonar.jacoco.reportPath>${project.basedir}/../target/jacoco.exec</sonar.jacoco.reportPath>
