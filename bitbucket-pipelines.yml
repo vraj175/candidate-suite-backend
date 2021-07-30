@@ -12,7 +12,7 @@ pipelines:
             - maven
             - sonar
           script:
-            - mvn -X sonar:sonar -DskipTests
+            - mvn clean install -X sonar:sonar -DskipTests
             
 definitions:
   caches:
