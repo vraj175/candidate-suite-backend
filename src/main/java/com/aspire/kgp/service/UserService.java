@@ -13,7 +13,7 @@ public interface UserService {
 
   User savePartner(String galaxyId, String email);
 
-  User InviteUser(String contactId, String language, String email, String[] BCC, User invitedBy,
+  User InviteUser(String candidateId, String language, String email, String[] BCC, User invitedBy,
       HttpServletRequest request);
 
 }

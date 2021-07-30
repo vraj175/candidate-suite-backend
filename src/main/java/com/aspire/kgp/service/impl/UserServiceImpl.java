@@ -34,7 +34,7 @@ public class UserServiceImpl implements UserService {
 
   @Autowired
   MailService mailService;
-  
+
   @Autowired
   RestUtil restUtil;
 
@@ -66,11 +66,11 @@ public class UserServiceImpl implements UserService {
 
   @Override
   @Transactional
-  public User InviteUser(String contactId, String language, String email, String[] BCC,
+  public User InviteUser(String candidateId, String language, String email, String[] BCC,
       User invitedBy, HttpServletRequest request) {
     User response;
     try {
-      String apiResponse = restUtil.newGetMethod(Constant.CONTACT_URL, request);
+      String apiResponse = restUtil.newGetMethod(Constant.CONTACT_URL.replace("{contactId}", candidateId), request);
       UserDTO userDTO = new Gson().fromJson(apiResponse, new TypeToken<UserDTO>() {
 
         /**
@@ -78,9 +78,11 @@ public class UserServiceImpl implements UserService {
          */
         private static final long serialVersionUID = 1L;
       }.getType());
+
+      System.out.println("userDTO::" + userDTO);
       userDTO.setToken("");
       userDTO.setPrivateEmail(email);
-      
+
       User user = new User();
       // user.setRole(roleService.findByName(Constant.CANDIDATE));
       // user.setEmail(email);
@@ -90,8 +92,8 @@ public class UserServiceImpl implements UserService {
       // user.setInvitedBy(invitedBy);
 
       response = user;
-      
-      
+
+
 
       mailService.sendEmail(email, BCC, Constant.INVITE_SUBJECT,
           mailService.getInviteEmailContent(request, userDTO), null);

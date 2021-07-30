@@ -43,7 +43,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
       FilterChain filterChain) throws ServletException, IOException {
     log.info("filter start");
     StringBuffer currentUrl = request.getRequestURL();
-    if (currentUrl.indexOf("/user/authenticate") > 0 || currentUrl.indexOf("/api/") < 0) {
+    if (currentUrl.indexOf("/user/authenticate") > 0 || currentUrl.indexOf("/api/") < 0 || currentUrl.indexOf("/initialize") > 0) {
       log.info("not need to authorize ");
     } else {
       log.info("authorize token " + currentUrl);

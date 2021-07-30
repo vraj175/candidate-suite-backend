@@ -25,17 +25,15 @@ public class User extends SuperBase {
   @Column(name = "password", nullable = false)
   private String password;
 
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "invitedBy", referencedColumnName = "id", insertable = true, nullable = true,
-      updatable = true)
-  private User invitedBy;
-
   private Timestamp lastLogin;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "language", referencedColumnName = "id", insertable = true, nullable = false,
       updatable = true)
   private Language language;
+  
+  @Column(columnDefinition = "boolean default true")
+  private boolean passwordReset;
 
   @Column(columnDefinition = "boolean default false")
   private boolean isDeleted;
@@ -72,14 +70,6 @@ public class User extends SuperBase {
     this.password = password;
   }
 
-  public User getInvitedBy() {
-    return invitedBy;
-  }
-
-  public void setInvitedBy(User invitedBy) {
-    this.invitedBy = invitedBy;
-  }
-
   public Timestamp getLastLogin() {
     return lastLogin;
   }
@@ -94,6 +84,14 @@ public class User extends SuperBase {
 
   public void setLanguage(Language language) {
     this.language = language;
+  }
+
+  public boolean isPasswordReset() {
+    return passwordReset;
+  }
+
+  public void setPasswordReset(boolean passwordReset) {
+    this.passwordReset = passwordReset;
   }
 
   public boolean isDeleted() {
