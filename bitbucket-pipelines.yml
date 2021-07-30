@@ -12,6 +12,7 @@ pipelines:
             - maven
             - sonar
           script:
+            - java -version
             - mvn clean sonar:sonar -DskipTests
             
 definitions:
