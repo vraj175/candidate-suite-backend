@@ -33,7 +33,7 @@ public class UserController {
     user = service.findById(user.getId());
 
     return service.InviteUser(invite.getCandidateId(), invite.getLanguage(), invite.getEmail(),
-        invite.getBCC(), user, request);
+        invite.getBcc(), user, request);
   }
 
 }
