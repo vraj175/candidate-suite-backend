@@ -4,7 +4,7 @@ public class InviteDTO {
   String candidateId;
   String language;
   String email;
-  String[] BCC;
+  String[] bcc;
   boolean removeDuplicate;
 
   public String getCandidateId() {
@@ -31,12 +31,12 @@ public class InviteDTO {
     this.email = email;
   }
 
-  public String[] getBCC() {
-    return BCC;
+  public String[] getBcc() {
+    return bcc;
   }
 
-  public void setBCC(String[] bCC) {
-    BCC = bCC;
+  public void setBcc(String[] bcc) {
+    this.bcc = bcc;
   }
 
   public boolean isRemoveDuplicate() {
