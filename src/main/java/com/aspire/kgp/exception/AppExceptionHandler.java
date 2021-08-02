@@ -74,4 +74,23 @@ public class AppExceptionHandler extends ResponseEntityExceptionHandler {
     body.put(Constant.PATH, request.getDescription(false));
     return new ResponseEntity<>(body, HttpStatus.UNAUTHORIZED);
   }
+  
+  /***
+   * 
+   * @param ex
+   * @param request
+   * @return
+   */
+  @ExceptionHandler(ValidateException.class)
+  public ResponseEntity<Object> handleValidateException(ValidateException ex,
+      WebRequest request) {
+    String errorMessgeDescription = ex.getMessage();
+    Map<String, Object> body = new LinkedHashMap<>();
+    body.put(Constant.TIMESTAMP, LocalDateTime.now());
+    body.put(Constant.STATUS, HttpStatus.OK.value());
+    body.put(Constant.ERROR, HttpStatus.OK);
+    body.put(Constant.MESSAGE, errorMessgeDescription);
+    body.put(Constant.PATH, request.getDescription(false));
+    return new ResponseEntity<>(body, HttpStatus.OK);
+  }
 }

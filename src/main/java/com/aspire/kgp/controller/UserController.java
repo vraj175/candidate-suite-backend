@@ -1,6 +1,7 @@
 package com.aspire.kgp.controller;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -28,12 +29,10 @@ public class UserController {
 
   @ApiOperation(value = "Invite User as Candidates")
   @PostMapping(value = "/user/invite")
-  public User inviteUser(@RequestBody InviteDTO invite, HttpServletRequest request) {
+  public User inviteUser(@Valid @RequestBody InviteDTO invite, HttpServletRequest request) {
     User user = (User) request.getAttribute("user");
-    user = service.findById(user.getId());
-
     return service.InviteUser(invite.getCandidateId(), invite.getLanguage(), invite.getEmail(),
-        invite.getBcc(), user, request);
+        invite.getBcc(), user, invite.isRemoveDuplicate(), request);
   }
 
 }
