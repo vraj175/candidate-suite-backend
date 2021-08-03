@@ -1,5 +1,7 @@
 package com.aspire.kgp.service.impl;
 
+import java.sql.Timestamp;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,6 +23,7 @@ public class UserSearchServiceImpl implements UserSearchService {
 
   @Override
   public UserSearch deleteUserSearch(UserSearch userSearch) {
+    userSearch.setModifyDate(new Timestamp(System.currentTimeMillis()));
     userSearch.setDeleted(Boolean.TRUE);
     return saveorUpdate(userSearch);
   }

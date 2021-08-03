@@ -1,5 +1,7 @@
 package com.aspire.kgp.service.impl;
 
+import java.sql.Timestamp;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
 import javax.transaction.Transactional.TxType;
@@ -79,9 +81,9 @@ public class UserServiceImpl implements UserService {
 
   @Override
   @Transactional(value = TxType.REQUIRES_NEW)
-  public User InviteUser(String candidateId, String language, String email, String[] BCC,
+  public boolean InviteUser(String candidateId, String language, String email, String[] BCC,
       User invitedBy, boolean removeDuplicate, HttpServletRequest request) {
-
+    boolean response = false;
     String apiResponse = restUtil
         .newGetMethod(Constant.CONDIDATE_URL.replace("{candidateId}", candidateId), request);
     JsonObject json = (JsonObject) JsonParser.parseString(apiResponse);
@@ -99,8 +101,10 @@ public class UserServiceImpl implements UserService {
 
     User user = findByGalaxyId(candidateDTO.getContact().getId());
     if (user != null) {
+      log.info("removing duplicate invite...");
       checkDuplicateInvite(user, candidateId, removeDuplicate);
     } else {
+      log.info("insering new user...");
       user = new User();
       user.setRole(roleService.findByName(Constant.CANDIDATE));
       user.setEmail(email);
@@ -108,12 +112,12 @@ public class UserServiceImpl implements UserService {
       user.setGalaxyId(candidateDTO.getContact().getId());
       user.setPasswordReset(Boolean.TRUE);
     }
+    user.setModifyDate(new Timestamp(System.currentTimeMillis()));
     user.setLanguage(languageService.findByName(language));
     user = saveorUpdate(user);
 
-
-    User response;
     try {
+      log.info("insering new user search...");
       UserSearch userSearch = new UserSearch();
       userSearch.setSearchId(candidateDTO.getSearch().getId());
       userSearch.setCandidateId(candidateId);
@@ -125,6 +129,7 @@ public class UserServiceImpl implements UserService {
       userDTO.setToken("");
       userDTO.setPrivateEmail(email);
       
+      log.info("staring email sending...");
       if(user.isPasswordReset()) {
         //mail for add user or mail for invite
         mailService.sendEmail(email, BCC, Constant.INVITE_SUBJECT,
@@ -132,9 +137,9 @@ public class UserServiceImpl implements UserService {
       }else {
         //mail for add search
       }
-      
-      response = user;
+      response = true;
     } catch (Exception e) {
+      e.printStackTrace();
       throw new APIException("Error in send invite");
     }
     return response;
