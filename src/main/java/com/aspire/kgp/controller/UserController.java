@@ -45,14 +45,12 @@ public class UserController {
     if(result) {
       body.put("status", HttpStatus.OK);
       body.put("message", "User invited successfully");
-
       return new ResponseEntity<>(body, HttpStatus.OK);
     }
-    
     body.put("status", HttpStatus.INTERNAL_SERVER_ERROR);
     body.put("message", "Error in send invite");
-
     return new ResponseEntity<>(body, HttpStatus.INTERNAL_SERVER_ERROR);
   }
 
+  
 }
