@@ -8,4 +8,6 @@ import com.aspire.kgp.model.User;
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
   User findByGalaxyId(String galaxyId);
+
+  User findByEmailAndIsDeletedFalse(String email);
 }

@@ -128,14 +128,14 @@ public class UserServiceImpl implements UserService {
       UserDTO userDTO = candidateDTO.getContact();
       userDTO.setToken("");
       userDTO.setPrivateEmail(email);
-      
+
       log.info("staring email sending...");
-      if(user.isPasswordReset()) {
-        //mail for add user or mail for invite
+      if (user.isPasswordReset()) {
+        // mail for add user or mail for invite
         mailService.sendEmail(email, BCC, Constant.INVITE_SUBJECT,
             mailService.getInviteEmailContent(request, userDTO), null);
-      }else {
-        //mail for add search
+      } else {
+        // mail for add search
       }
       response = true;
     } catch (Exception e) {
@@ -158,6 +158,11 @@ public class UserServiceImpl implements UserService {
       }
     }
     return false;
+  }
+
+  @Override
+  public User findByEmail(String email) {
+    return repository.findByEmailAndIsDeletedFalse(email);
   }
 
 }

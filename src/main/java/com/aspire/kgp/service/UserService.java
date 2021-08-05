@@ -13,7 +13,9 @@ public interface UserService {
 
   User savePartner(String galaxyId, String email);
 
-  boolean InviteUser(String candidateId, String language, String email, String[] BCC, User invitedBy,
-      boolean removeDuplicate, HttpServletRequest request);
+  User findByEmail(String email);
+
+  boolean InviteUser(String candidateId, String language, String email, String[] BCC,
+      User invitedBy, boolean removeDuplicate, HttpServletRequest request);
 
 }

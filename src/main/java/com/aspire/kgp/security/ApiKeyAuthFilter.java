@@ -35,9 +35,8 @@ public class ApiKeyAuthFilter extends OncePerRequestFilter {
       FilterChain filterChain) throws IOException, ServletException {
     Map<String, Object> errorDetails = new HashMap<>();
     ObjectMapper objectMapper = new ObjectMapper();
-    if (request.getRequestURI().indexOf("/api/") < 0) {
-      log.info("not need to authorize with api key ");
-    } else {
+    StringBuffer currentUrl = request.getRequestURL();
+    if (request.getRequestURI().indexOf("/api/") > 0 || currentUrl.indexOf("/oauth/token") >0) {
       log.debug("filter called");
       String apiKey = request.getHeader(Constant.API_KEY);
       if (apiKey == null) {
