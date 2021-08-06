@@ -15,7 +15,7 @@ public interface UserService {
 
   User findByEmail(String email);
 
-  boolean InviteUser(String candidateId, String language, String email, String[] BCC,
+  boolean inviteUser(String candidateId, String language, String email, String[] bcc,
       User invitedBy, boolean removeDuplicate, HttpServletRequest request);
 
 }

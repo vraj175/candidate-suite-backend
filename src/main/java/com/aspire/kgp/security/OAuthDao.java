@@ -26,7 +26,7 @@ public class OAuthDao {
     user.setUsername(users.getEmail());
     user.setPassword(users.getPassword());
     List<UserEntity> list = Arrays.asList(user);
-    if (list.size() > 0) {
+    if (!list.isEmpty()) {
       GrantedAuthority grantedAuthority = new SimpleGrantedAuthority("ROLE_SYSTEMADMIN");
       grantedAuthoritiesList.add(grantedAuthority);
       list.get(0).setGrantedAuthoritiesList(grantedAuthoritiesList);

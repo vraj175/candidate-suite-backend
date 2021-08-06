@@ -19,6 +19,10 @@ import com.aspire.kgp.constant.Constant;
 
 public class CommonUtil {
   private static final Log log = LogFactory.getLog(CommonUtil.class);
+  
+  private CommonUtil() {
+    throw new IllegalStateException("Utility class");
+  }
 
   /**
    * Method for replace ' with \' for sales-force query Note: In Query use replace instead of

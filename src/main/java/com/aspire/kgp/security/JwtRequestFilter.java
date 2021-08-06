@@ -117,7 +117,6 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     }
     request.setAttribute("user", user);
     request.setAttribute("userJson", userjson);
-    log.info("session details : " + (User) request.getAttribute("user"));
     UserAuthenticationDTO userAuthenticationDTO = new UserAuthenticationDTO(
         userjson.get("id").getAsString(), userjson.get("name").getAsString(), accessToken, null);
 

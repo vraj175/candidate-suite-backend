@@ -37,7 +37,7 @@ public class UserController {
   @PostMapping(value = "/user/invite")
   public ResponseEntity<Object> inviteUser(@Valid @RequestBody InviteDTO invite, HttpServletRequest request) {
     User user = (User) request.getAttribute("user");
-    boolean result = service.InviteUser(invite.getCandidateId(), invite.getLanguage(), invite.getEmail(),
+    boolean result = service.inviteUser(invite.getCandidateId(), invite.getLanguage(), invite.getEmail(),
         invite.getBcc(), user, invite.isRemoveDuplicate(), request);
     Map<String, Object> body = new LinkedHashMap<>();
     body.put("timestamp", new Date());

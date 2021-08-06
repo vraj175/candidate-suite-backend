@@ -67,6 +67,7 @@ public class OAuth2Config extends AuthorizationServerConfigurerAdapter {
         .allowFormAuthenticationForClients();
   }
 
+  @Override
   public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
     clients.inMemory().withClient(clientID).secret(passwordEncoder.encode(clientSecret))
         .authorizedGrantTypes("password", "authorization_code", "refresh_token").scopes("user_info")

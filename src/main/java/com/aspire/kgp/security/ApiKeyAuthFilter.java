@@ -36,7 +36,7 @@ public class ApiKeyAuthFilter extends OncePerRequestFilter {
     Map<String, Object> errorDetails = new HashMap<>();
     ObjectMapper objectMapper = new ObjectMapper();
     StringBuffer currentUrl = request.getRequestURL();
-    if (request.getRequestURI().indexOf("/api/") > 0 || currentUrl.indexOf("/oauth/token") >0) {
+    if (request.getRequestURI().indexOf("/api/") > -1 || currentUrl.indexOf("/oauth/token") > -1) {
       log.debug("filter called");
       String apiKey = request.getHeader(Constant.API_KEY);
       if (apiKey == null) {

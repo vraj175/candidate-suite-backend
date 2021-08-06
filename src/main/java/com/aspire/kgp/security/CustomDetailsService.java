@@ -15,8 +15,7 @@ public class CustomDetailsService implements UserDetailsService {
      UserEntity userEntity = null;
      try {
         userEntity = oauthDao.getUserDetails(username);
-        CustomUser customUser = new CustomUser(userEntity);
-        return customUser;
+        return new CustomUser(userEntity);
      } catch (Exception e) {
         e.printStackTrace();
         throw new UsernameNotFoundException("User " + username + " was not found in the database");

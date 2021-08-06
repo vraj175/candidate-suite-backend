@@ -81,7 +81,7 @@ public class UserServiceImpl implements UserService {
 
   @Override
   @Transactional(value = TxType.REQUIRES_NEW)
-  public boolean InviteUser(String candidateId, String language, String email, String[] BCC,
+  public boolean inviteUser(String candidateId, String language, String email, String[] bcc,
       User invitedBy, boolean removeDuplicate, HttpServletRequest request) {
     boolean response = false;
     String apiResponse = restUtil
@@ -123,7 +123,7 @@ public class UserServiceImpl implements UserService {
       userSearch.setCandidateId(candidateId);
       userSearch.setUser(user);
       userSearch.setInvitedBy(invitedBy);
-      userSearch = searchService.saveorUpdate(userSearch);
+      searchService.saveorUpdate(userSearch);
 
       UserDTO userDTO = candidateDTO.getContact();
       userDTO.setToken("");
@@ -132,7 +132,7 @@ public class UserServiceImpl implements UserService {
       log.info("staring email sending...");
       if (user.isPasswordReset()) {
         // mail for add user or mail for invite
-        mailService.sendEmail(email, BCC, Constant.INVITE_SUBJECT,
+        mailService.sendEmail(email, bcc, Constant.INVITE_SUBJECT,
             mailService.getInviteEmailContent(request, userDTO), null);
       } else {
         // mail for add search
