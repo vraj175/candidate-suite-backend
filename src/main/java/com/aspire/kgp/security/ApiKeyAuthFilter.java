@@ -35,9 +35,10 @@ public class ApiKeyAuthFilter extends OncePerRequestFilter {
       FilterChain filterChain) throws IOException, ServletException {
     Map<String, Object> errorDetails = new HashMap<>();
     ObjectMapper objectMapper = new ObjectMapper();
-    StringBuffer currentUrl = request.getRequestURL();
-    if (request.getRequestURI().indexOf("/api/") > -1 || currentUrl.indexOf("/oauth/token") > -1) {
-      log.debug("filter called");
+    // StringBuffer currentUrl = request.getRequestURL();
+    // || currentUrl.indexOf("/oauth/token") > -1
+    if (request.getRequestURI().indexOf("/api/") > -1) {
+      log.info("filter called");
       String apiKey = request.getHeader(Constant.API_KEY);
       if (apiKey == null) {
         SecurityContextHolder.clearContext();
@@ -62,7 +63,7 @@ public class ApiKeyAuthFilter extends OncePerRequestFilter {
 
       authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
       SecurityContextHolder.getContext().setAuthentication(authentication);
-      log.debug("filter end");
+      log.info("filter end");
     }
     filterChain.doFilter(request, response);
   }

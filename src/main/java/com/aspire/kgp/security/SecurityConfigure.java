@@ -13,7 +13,6 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
@@ -22,12 +21,6 @@ public class SecurityConfigure extends WebSecurityConfigurerAdapter {
 
   @Autowired
   private CustomDetailsService customDetailsService;
-
-  @Autowired
-  private ApiKeyAuthFilter apiKeyAuthFilter;
-
-  @Autowired
-  private JwtRequestFilter jwtRequestFilter;
 
   @Bean
   public PasswordEncoder encoder() {
@@ -54,17 +47,6 @@ public class SecurityConfigure extends WebSecurityConfigurerAdapter {
   @Override
   protected void configure(HttpSecurity http) throws Exception {
     http.csrf().disable().authorizeRequests()
-        .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll().and()
-        .addFilterBefore(apiKeyAuthFilter, UsernamePasswordAuthenticationFilter.class)
-        .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
+        .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll();
   }
-
-  // @Override
-  // protected void configure(HttpSecurity http) throws Exception {
-  // http.csrf().disable().authorizeRequests()
-  // .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll().and()
-  // .addFilterBefore(apiKeyAuthFilter, UsernamePasswordAuthenticationFilter.class)
-  // .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
-  //
-  // }
 }

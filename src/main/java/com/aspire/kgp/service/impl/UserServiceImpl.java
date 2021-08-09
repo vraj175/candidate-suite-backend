@@ -69,13 +69,19 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
-  public User savePartner(String galaxyId, String email) {
-    User user = new User();
+  public User saveOrUpdatePartner(String galaxyId, String email, String password, boolean isLastLogin) {
+    User user = findByEmail(email);
+    if(user==null) {
+      user = new User();
+    }
     user.setRole(roleService.findByName(Constant.PARTNER));
     user.setEmail(email);
-    user.setPassword(CommonUtil.hash(email));
+    user.setPassword(CommonUtil.hash(password));
     user.setGalaxyId(galaxyId);
     user.setLanguage(languageService.findByName(Constant.ENGLISH));
+    if(isLastLogin) {
+      user.setLastLogin(new Timestamp(System.currentTimeMillis()));
+    }
     return saveorUpdate(user);
   }
 
@@ -85,7 +91,7 @@ public class UserServiceImpl implements UserService {
       User invitedBy, boolean removeDuplicate, HttpServletRequest request) {
     boolean response = false;
     String apiResponse = restUtil
-        .newGetMethod(Constant.CONDIDATE_URL.replace("{candidateId}", candidateId), request);
+        .newGetMethod(Constant.CONDIDATE_URL.replace("{candidateId}", candidateId));
     JsonObject json = (JsonObject) JsonParser.parseString(apiResponse);
     CandidateDTO candidateDTO =
         new Gson().fromJson(json.get("candidate"), new TypeToken<CandidateDTO>() {
@@ -163,6 +169,25 @@ public class UserServiceImpl implements UserService {
   @Override
   public User findByEmail(String email) {
     return repository.findByEmailAndIsDeletedFalse(email);
+  }
+
+  @Override
+  public UserDTO getContactDetails(String contactId) {
+    String apiResponse = restUtil
+        .newGetMethod(Constant.CONTACT_URL.replace("{contactId}", contactId));
+    JsonObject json = (JsonObject) JsonParser.parseString(apiResponse);
+    UserDTO userDTO =
+        new Gson().fromJson(json, new TypeToken<UserDTO>() {
+
+          /**
+           * 
+           */
+          private static final long serialVersionUID = 1L;
+        }.getType());
+    if (userDTO == null) {
+      throw new APIException("Invalid contactId");
+    }
+    return userDTO;
   }
 
 }

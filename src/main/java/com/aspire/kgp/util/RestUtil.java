@@ -11,8 +11,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.methods.GetMethod;
@@ -52,19 +50,21 @@ public class RestUtil {
   private String baseApiUrl;
   @Value("${galaxy.api.key}")
   private String apiKey;
+  @Value("${galaxy.default.auth}")
+  private String defaultAuth;
   @Value("${cognito.client.id}")
   private String clientId;
   @Value("${cognito.user.pool.id}")
   private String userPullId;
 
-  public String newGetMethod(String apiUrl, HttpServletRequest request) {
+  public String newGetMethod(String apiUrl) {
     log.info(baseApiUrl + apiUrl.replaceAll(Constant.SPACE_STRING, "%20"));
     GetMethod get = new GetMethod(baseApiUrl + apiUrl.replaceAll(Constant.SPACE_STRING, "%20"));
     /* set the token in the header */
     get.setRequestHeader(Constant.X_API_KEY, apiKey);
     /* set the token in the header */
     get.setRequestHeader("Authorization",
-        request.getAttribute(Constant.ACCESS_TOKEN_X_TOKEN).toString());
+        validateCognitoWithAuthenticationToken(defaultAuth).getAccessToken());
     String response = "";
     try {
       log.info("Request time: " + new Date());

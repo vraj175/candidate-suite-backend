@@ -70,7 +70,7 @@ public class OAuth2Config extends AuthorizationServerConfigurerAdapter {
   @Override
   public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
     clients.inMemory().withClient(clientID).secret(passwordEncoder.encode(clientSecret))
-        .authorizedGrantTypes("password", "authorization_code", "refresh_token").scopes("user_info")
+        .authorizedGrantTypes("password", "refresh_token").scopes("user_info")
         .authorities("READ_ONLY_CLIENT").accessTokenValiditySeconds(accessTokenValidity)
         .refreshTokenValiditySeconds(refreshTokenValidity);
   }

@@ -12,6 +12,7 @@ import org.springframework.stereotype.Repository;
 
 import com.aspire.kgp.model.User;
 import com.aspire.kgp.service.UserService;
+import com.aspire.kgp.util.RestUtil;
 
 @Repository
 public class OAuthDao {
@@ -19,19 +20,25 @@ public class OAuthDao {
   @Autowired
   UserService service;
   
+  @Autowired 
+  RestUtil restUtil;
+  
   public UserEntity getUserDetails(String username) {
     Collection<GrantedAuthority> grantedAuthoritiesList = new ArrayList<>();
     User users = service.findByEmail(username);
-    UserEntity user = new UserEntity();
-    user.setUsername(users.getEmail());
-    user.setPassword(users.getPassword());
-    List<UserEntity> list = Arrays.asList(user);
-    if (!list.isEmpty()) {
-      GrantedAuthority grantedAuthority = new SimpleGrantedAuthority("ROLE_SYSTEMADMIN");
-      grantedAuthoritiesList.add(grantedAuthority);
-      list.get(0).setGrantedAuthoritiesList(grantedAuthoritiesList);
-      return list.get(0);
-   }
+    
+    if(users!=null) {
+      UserEntity user = new UserEntity();
+      user.setUsername(users.getEmail());
+      user.setPassword(users.getPassword());
+      List<UserEntity> list = Arrays.asList(user);
+      if (!list.isEmpty()) {
+        GrantedAuthority grantedAuthority = new SimpleGrantedAuthority("ROLE_SYSTEMADMIN");
+        grantedAuthoritiesList.add(grantedAuthority);
+        list.get(0).setGrantedAuthoritiesList(grantedAuthoritiesList);
+        return list.get(0);
+     }
+    }
    return null;
   } 
 }
