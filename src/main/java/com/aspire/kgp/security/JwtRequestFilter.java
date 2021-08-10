@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -27,6 +28,7 @@ import com.aspire.kgp.dto.UserDTO;
 import com.aspire.kgp.exception.UnauthorizedAccessException;
 import com.aspire.kgp.model.User;
 import com.aspire.kgp.service.UserService;
+import com.aspire.kgp.util.CommonUtil;
 import com.aspire.kgp.util.RestUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -42,28 +44,22 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
   @Autowired
   UserService service;
+  
+  @Value("${spring.api.secret.key}")
+  private String apiSecretKey;
 
   @Override
   protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
       FilterChain filterChain) throws ServletException, IOException {
     log.info("filter start");
     StringBuffer currentUrl = request.getRequestURL();
+    ObjectMapper objectMapper = new ObjectMapper();
+    Map<String, Object> errorDetails = new HashMap<>();
     if (currentUrl.indexOf("/oauth/token") > 0) {
       log.info("start add or update partner");
-      String username = request.getParameter("username");
-      String password = request.getParameter("password");
-      service.saveOrUpdatePartner(username, password);
-      log.info("end add or update partner");
-    } else if (currentUrl.indexOf("/api/") < 0 || currentUrl.indexOf("/initialize") > 0
-        || currentUrl.indexOf("/user/invite") > 0) {
-      log.info("not need to authorize ");
-    } else {
-      log.info("authorize token " + currentUrl);
-      String accessToken = request.getHeader(Constant.AUTHORIZATION);
-      ObjectMapper objectMapper = new ObjectMapper();
-      log.info("accessToken:" + accessToken);
-      Map<String, Object> errorDetails = new HashMap<>();
-      if (accessToken == null) {
+      
+      String apiKey = request.getHeader(Constant.API_KEY);
+      if (apiKey == null) {
         SecurityContextHolder.clearContext();
         response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
@@ -71,17 +67,69 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         objectMapper.writeValue(response.getWriter(), errorDetails);
         return;
       }
-      try {
-        jwtTokenCheck(accessToken, request);
-      } catch (Exception e) {
-        SecurityContextHolder.clearContext();
+      log.info("api key is :: " + CommonUtil.verifyHash(apiSecretKey, apiKey));
+      if (!CommonUtil.verifyHash(apiSecretKey, apiKey)) {
+        log.info("message :: " + Constant.INVALID_API_KEY);
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-        errorDetails.put(Constant.MESSAGE, e.getMessage());
+        errorDetails.put(Constant.MESSAGE, Constant.INVALID_API_KEY);
         objectMapper.writeValue(response.getWriter(), errorDetails);
         return;
       }
-
+      
+      String username = request.getParameter("username");
+      String password = request.getParameter("password");
+      service.saveOrUpdatePartner(username, password);
+      log.info("end add or update partner");
+    } else if (currentUrl.indexOf("/api/") < 0) {
+      log.info("not need to authorize ");
+    } else {
+      String apiKey = request.getHeader(Constant.API_KEY);
+      if (apiKey == null) {
+        SecurityContextHolder.clearContext();
+        response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+        errorDetails.put(Constant.MESSAGE, Constant.BAD_REQUEST);
+        objectMapper.writeValue(response.getWriter(), errorDetails);
+        return;
+      }
+      log.info("api key is :: " + CommonUtil.verifyHash(apiSecretKey, apiKey));
+      if (!CommonUtil.verifyHash(apiSecretKey, apiKey)) {
+        log.info("message :: " + Constant.INVALID_API_KEY);
+        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+        errorDetails.put(Constant.MESSAGE, Constant.INVALID_API_KEY);
+        objectMapper.writeValue(response.getWriter(), errorDetails);
+        return;
+      }
+      
+      if(currentUrl.indexOf("/initialize") > 0
+          || currentUrl.indexOf("/user/invite") > 0) {
+        log.info("no need to verify JWT token ");
+      }else {
+        log.info("authorize token " + currentUrl);
+        String accessToken = request.getHeader(Constant.AUTHORIZATION);
+        log.info("accessToken:" + accessToken);
+        if (accessToken == null) {
+          SecurityContextHolder.clearContext();
+          response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+          response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+          errorDetails.put(Constant.MESSAGE, Constant.BAD_REQUEST);
+          objectMapper.writeValue(response.getWriter(), errorDetails);
+          return;
+        }
+        try {
+          jwtTokenCheck(accessToken, request);
+        } catch (Exception e) {
+          SecurityContextHolder.clearContext();
+          response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+          response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+          errorDetails.put(Constant.MESSAGE, e.getMessage());
+          objectMapper.writeValue(response.getWriter(), errorDetails);
+          return;
+        }
+      }
+      
     }
     filterChain.doFilter(request, response);
     log.info("filter end");
