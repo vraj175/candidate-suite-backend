@@ -33,8 +33,8 @@ public class LanguageServiceImpl implements LanguageService {
   }
 
   @Override
-  public Language findByName(String Name) {
-    return repository.findByName(Name);
+  public Language findByName(String name) {
+    return repository.findByName(name);
   }
 
   @Override

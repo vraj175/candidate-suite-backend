@@ -2,6 +2,7 @@ package com.aspire.kgp.service;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.aspire.kgp.dto.UserDTO;
 import com.aspire.kgp.model.User;
 
 public interface UserService {
@@ -11,9 +12,17 @@ public interface UserService {
 
   User findByGalaxyId(String galaxyId);
 
-  User savePartner(String galaxyId, String email);
+  User saveOrUpdatePartner(String galaxyId, String email, String password, boolean isLastLogin);
 
-  User InviteUser(String contactId, String language, String email, String[] BCC, User invitedBy,
-      HttpServletRequest request);
+  User findByEmail(String email);
+
+  boolean inviteUser(String candidateId, String language, String email, String[] bcc,
+      User invitedBy, boolean removeDuplicate, HttpServletRequest request);
+  
+  UserDTO getContactDetails(String contactId);
+  
+  UserDTO getGalaxyUserDetails(String userId);
+  
+  User saveOrUpdatePartner(String userName, String password);
 
 }

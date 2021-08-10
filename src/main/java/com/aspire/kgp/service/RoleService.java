@@ -12,7 +12,7 @@ public interface RoleService {
 
   List<Role> findAll();
   
-  Role findByName(String Name);
+  Role findByName(String name);
 
   String initializeData();
 }

@@ -32,7 +32,7 @@
 			          <p style="text-align:left; color:#231f20; font-size:15px; font-weight:400; letter-spacing:0.3px; margin:0px; line-height:20px;padding: 0 20px;">
 			          	Please click on
 			          	<a href="${serverUrl}${homeUrl}?token=${token}" target="_blank" style="color:#5443d5; font-weight: bold; text-decoration:none;">
-			          		$serverUrl
+			          		${serverUrl}
 			          	</a> 
 			          	to enter your CandidateSuite site.
 			          </p>

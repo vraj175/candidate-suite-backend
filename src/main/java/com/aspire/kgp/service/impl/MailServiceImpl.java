@@ -12,12 +12,15 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
 import com.aspire.kgp.constant.Constant;
+import com.aspire.kgp.dto.UserDTO;
 import com.aspire.kgp.service.MailService;
 import com.aspire.kgp.util.CommonUtil;
 
@@ -26,6 +29,7 @@ import freemarker.template.TemplateException;
 
 @Service
 public class MailServiceImpl implements MailService {
+  private static final Log log = LogFactory.getLog(MailServiceImpl.class);
 
   @Autowired
   JavaMailSender mailSender;
@@ -53,22 +57,26 @@ public class MailServiceImpl implements MailService {
       mailSender.send(mimeMessageHelper.getMimeMessage());
 
     } catch (MessagingException e) {
+      log.info("MessagingException::");
       e.printStackTrace();
     } catch (UnsupportedEncodingException e) {
+      log.info("UnsupportedEncodingException::");
       e.printStackTrace();
     }
   }
 
   @Override
-  public String getInviteEmailContent(HttpServletRequest request) throws IOException, TemplateException {
+  public String getInviteEmailContent(HttpServletRequest request, UserDTO user) throws IOException, TemplateException {
+    log.info("starting getInviteEmailContent");
     StringWriter stringWriter = new StringWriter();
     Map<String, Object> model = new HashMap<>();
     model.put("serverUrl", CommonUtil.getServerUrl(request) + request.getContextPath());
     model.put("homeUrl", "");
-    model.put("name", "Vivek Tanna");
-    model.put("token", "token");
-    model.put("userEmail", "userEmail");
+    model.put("name", user.getFirstName()+" "+user.getLastName());
+    model.put("token", user.getToken());
+    model.put("userEmail", user.getPrivateEmail());
     configuration.getTemplate("invitation_en.ftlh").process(model, stringWriter);
+    log.info("ending getInviteEmailContent");
     return stringWriter.getBuffer().toString();
   }
 

@@ -7,5 +7,5 @@ import com.aspire.kgp.model.Language;
 
 @Repository
 public interface LanguageRepository extends JpaRepository<Language, Long> {
-  Language findByName(String Name);
+  Language findByName(String name);
 }
