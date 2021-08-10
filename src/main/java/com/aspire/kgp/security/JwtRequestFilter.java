@@ -67,22 +67,11 @@ public class JwtRequestFilter extends OncePerRequestFilter {
           AuthenticationResultType authenticationResult =
               restUtil.validateCognitoWithAuthenticationToken(token);
 
-          JsonObject userjson = null;
-          String accessToken;
-          if (authenticationResult != null) {
-            try {
-              accessToken = authenticationResult.getAccessToken();
-
-              String authentication = restUtil.getUserDetails(accessToken);
-              userjson = new Gson().fromJson(authentication, JsonObject.class);
-              log.info(userjson);
-            } catch (Exception e) {
-            }
-          }
-          if (userjson != null && userjson.has("id")) {
-            log.info("add or update password");
-            service.saveOrUpdatePartner(userjson.get("id").getAsString(), username, password, true);
-          }
+          String accessToken = authenticationResult.getAccessToken();
+          String authentication = restUtil.getUserDetails(accessToken);
+          JsonObject userjson = new Gson().fromJson(authentication, JsonObject.class);
+          log.info("add or update password");
+          service.saveOrUpdatePartner(userjson.get("id").getAsString(), username, password, true);
         } catch (Exception e) {
           log.info("wrong partner craditionals or it was candidate");
         }
