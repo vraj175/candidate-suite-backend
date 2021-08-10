@@ -69,7 +69,6 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         objectMapper.writeValue(response.getWriter(), errorDetails);
         return;
       } catch (UnauthorizedAccessException e) {
-        log.info("message :: " + Constant.INVALID_API_KEY);
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         errorDetails.put(Constant.MESSAGE, Constant.INVALID_API_KEY);
@@ -95,7 +94,6 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         objectMapper.writeValue(response.getWriter(), errorDetails);
         return;
       } catch (UnauthorizedAccessException e) {
-        log.info("message :: " + Constant.INVALID_API_KEY);
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         errorDetails.put(Constant.MESSAGE, Constant.INVALID_API_KEY);
@@ -139,9 +137,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     if (apiKey == null) {
       throw new MissingAuthTokenException(Constant.BAD_REQUEST);
     }
-    log.info("api key is :: " + CommonUtil.verifyHash(apiSecretKey, apiKey));
     if (!CommonUtil.verifyHash(apiSecretKey, apiKey)) {
-      log.info("message :: " + Constant.INVALID_API_KEY);
       throw new UnauthorizedAccessException(Constant.INVALID_API_KEY);
     }
   }
