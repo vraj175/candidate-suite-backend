@@ -25,6 +25,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import com.aspire.kgp.constant.Constant;
 import com.aspire.kgp.dto.UserAuthenticationDTO;
 import com.aspire.kgp.dto.UserDTO;
+import com.aspire.kgp.exception.MissingAuthTokenException;
 import com.aspire.kgp.exception.UnauthorizedAccessException;
 import com.aspire.kgp.model.User;
 import com.aspire.kgp.service.UserService;
@@ -44,7 +45,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
   @Autowired
   UserService service;
-  
+
   @Value("${spring.api.secret.key}")
   private String apiSecretKey;
 
@@ -55,20 +56,19 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     StringBuffer currentUrl = request.getRequestURL();
     ObjectMapper objectMapper = new ObjectMapper();
     Map<String, Object> errorDetails = new HashMap<>();
+    String apiKey = request.getHeader(Constant.API_KEY);
     if (currentUrl.indexOf("/oauth/token") > 0) {
       log.info("start add or update partner");
-      
-      String apiKey = request.getHeader(Constant.API_KEY);
-      if (apiKey == null) {
+      try {
+        apiKeyCheck(apiKey);
+      } catch (MissingAuthTokenException e) {
         SecurityContextHolder.clearContext();
         response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         errorDetails.put(Constant.MESSAGE, Constant.BAD_REQUEST);
         objectMapper.writeValue(response.getWriter(), errorDetails);
         return;
-      }
-      log.info("api key is :: " + CommonUtil.verifyHash(apiSecretKey, apiKey));
-      if (!CommonUtil.verifyHash(apiSecretKey, apiKey)) {
+      } catch (UnauthorizedAccessException e) {
         log.info("message :: " + Constant.INVALID_API_KEY);
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
@@ -76,7 +76,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         objectMapper.writeValue(response.getWriter(), errorDetails);
         return;
       }
-      
+
       String username = request.getParameter("username");
       String password = request.getParameter("password");
       service.saveOrUpdatePartner(username, password);
@@ -84,17 +84,17 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     } else if (currentUrl.indexOf("/api/") < 0) {
       log.info("not need to authorize ");
     } else {
-      String apiKey = request.getHeader(Constant.API_KEY);
-      if (apiKey == null) {
+
+      try {
+        apiKeyCheck(apiKey);
+      } catch (MissingAuthTokenException e) {
         SecurityContextHolder.clearContext();
         response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         errorDetails.put(Constant.MESSAGE, Constant.BAD_REQUEST);
         objectMapper.writeValue(response.getWriter(), errorDetails);
         return;
-      }
-      log.info("api key is :: " + CommonUtil.verifyHash(apiSecretKey, apiKey));
-      if (!CommonUtil.verifyHash(apiSecretKey, apiKey)) {
+      } catch (UnauthorizedAccessException e) {
         log.info("message :: " + Constant.INVALID_API_KEY);
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
@@ -102,25 +102,24 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         objectMapper.writeValue(response.getWriter(), errorDetails);
         return;
       }
-      
-      if(currentUrl.indexOf("/initialize") > 0
-          || currentUrl.indexOf("/user/invite") > 0) {
+
+      if (currentUrl.indexOf("/initialize") > 0 || currentUrl.indexOf("/user/invite") > 0) {
         log.info("no need to verify JWT token ");
-      }else {
+      } else {
         log.info("authorize token " + currentUrl);
         String accessToken = request.getHeader(Constant.AUTHORIZATION);
         log.info("accessToken:" + accessToken);
-        if (accessToken == null) {
+
+        try {
+          jwtTokenCheck(accessToken, request);
+        } catch (MissingAuthTokenException e) {
           SecurityContextHolder.clearContext();
           response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
           response.setContentType(MediaType.APPLICATION_JSON_VALUE);
           errorDetails.put(Constant.MESSAGE, Constant.BAD_REQUEST);
           objectMapper.writeValue(response.getWriter(), errorDetails);
           return;
-        }
-        try {
-          jwtTokenCheck(accessToken, request);
-        } catch (Exception e) {
+        } catch (UnauthorizedAccessException e) {
           SecurityContextHolder.clearContext();
           response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
           response.setContentType(MediaType.APPLICATION_JSON_VALUE);
@@ -129,15 +128,31 @@ public class JwtRequestFilter extends OncePerRequestFilter {
           return;
         }
       }
-      
+
     }
     filterChain.doFilter(request, response);
     log.info("filter end");
   }
-  
-  private void jwtTokenCheck(String accessToken, HttpServletRequest request) throws Exception {
+
+  private void apiKeyCheck(String apiKey)
+      throws UnauthorizedAccessException, MissingAuthTokenException {
+    if (apiKey == null) {
+      throw new MissingAuthTokenException(Constant.BAD_REQUEST);
+    }
+    log.info("api key is :: " + CommonUtil.verifyHash(apiSecretKey, apiKey));
+    if (!CommonUtil.verifyHash(apiSecretKey, apiKey)) {
+      log.info("message :: " + Constant.INVALID_API_KEY);
+      throw new UnauthorizedAccessException(Constant.INVALID_API_KEY);
+    }
+  }
+
+  private void jwtTokenCheck(String accessToken, HttpServletRequest request)
+      throws UnauthorizedAccessException, MissingAuthTokenException {
+    if (accessToken == null) {
+      throw new MissingAuthTokenException(Constant.BAD_REQUEST);
+    }
     if (!accessToken.startsWith("Bearer ")) {
-      throw new Exception(Constant.INVALID_AUTHENTICATION);
+      throw new UnauthorizedAccessException(Constant.INVALID_AUTHENTICATION);
     }
     accessToken = accessToken.split(" ")[1].trim();
     log.info("accessToken:" + accessToken);
@@ -145,7 +160,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
       OAuth2Authentication authentication = jwtTokenStore.readAuthentication(accessToken);
       if (authentication.getUserAuthentication() == null) {
         throw new UnauthorizedAccessException("Malformed Token");
-      }else {
+      } else {
         if (jwtTokenStore.readAccessToken(accessToken).getExpiresIn() <= 0) {
           throw new UnauthorizedAccessException("Token Expired");
         }
