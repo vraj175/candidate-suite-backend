@@ -63,7 +63,7 @@ public class RestUtil {
     /* set the token in the header */
     get.setRequestHeader(Constant.X_API_KEY, apiKey);
     /* set the token in the header */
-    get.setRequestHeader("Authorization",
+    get.setRequestHeader(Constant.AUTHORIZATION,
         validateCognitoWithAuthenticationToken(defaultAuth).getAccessToken());
     String response = "";
     try {

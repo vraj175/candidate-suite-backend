@@ -109,23 +109,18 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         request.setAttribute(Constant.ACCESS_TOKEN_X_TOKEN, accessToken);
         OAuth2Authentication authentication = jwtTokenStore.readAuthentication(accessToken);
         log.info(jwtTokenStore.readAccessToken(accessToken).getExpiresIn());
-        if (authentication.getUserAuthentication() != null) {
-          if (jwtTokenStore.readAccessToken(accessToken).getExpiresIn() <= 0) {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-            errorDetails.put(Constant.MESSAGE, "Token Expired");
-            objectMapper.writeValue(response.getWriter(), errorDetails);
-            return;
-          }
-          String userId = authentication.getUserAuthentication().getName();
-          addContactDetails(userId, request, accessToken);
-        } else {
-          throw new UnauthorizedAccessException();
+        if (authentication.getUserAuthentication() == null) {
+          throw new UnauthorizedAccessException("Malformed Token");
         }
+        if (jwtTokenStore.readAccessToken(accessToken).getExpiresIn() <= 0) {
+          throw new UnauthorizedAccessException("Token Expired");
+        }
+        String userId = authentication.getUserAuthentication().getName();
+        addContactDetails(userId, request, accessToken);
       } catch (Exception e) {
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-        errorDetails.put(Constant.MESSAGE, "Malformed Token");
+        errorDetails.put(Constant.MESSAGE, e.getMessage());
         objectMapper.writeValue(response.getWriter(), errorDetails);
         return;
       }
@@ -137,9 +132,14 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
   private void addContactDetails(String email, HttpServletRequest request, String accessToken) {
     User user = service.findByEmail(email);
-    UserDTO userDTO = service.getContactDetails(user.getGalaxyId());
-    if (userDTO == null) {
-      throw new APIException("Invalid Contact or Contact Delete from Galaxy");
+    UserDTO userDTO = null;
+    if(user.getRole().getName().equalsIgnoreCase(Constant.PARTNER)) {
+      userDTO = service.getGalaxyUserDetails(user.getGalaxyId());
+    }else {
+      userDTO = service.getContactDetails(user.getGalaxyId());
+    }
+    if (userDTO.getFirstName() == null) {
+      throw new UnauthorizedAccessException("Invalid User or Contact Delete from Galaxy");
     }
     request.setAttribute("user", user);
     UserAuthenticationDTO userAuthenticationDTO =

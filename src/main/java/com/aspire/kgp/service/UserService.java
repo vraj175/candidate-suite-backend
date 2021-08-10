@@ -20,5 +20,7 @@ public interface UserService {
       User invitedBy, boolean removeDuplicate, HttpServletRequest request);
   
   UserDTO getContactDetails(String contactId);
+  
+  UserDTO getGalaxyUserDetails(String userId);
 
 }

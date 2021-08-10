@@ -184,9 +184,22 @@ public class UserServiceImpl implements UserService {
            */
           private static final long serialVersionUID = 1L;
         }.getType());
-    if (userDTO == null) {
-      throw new APIException("Invalid contactId");
-    }
+    return userDTO;
+  }
+  
+  @Override
+  public UserDTO getGalaxyUserDetails(String userId) {
+    String apiResponse = restUtil
+        .newGetMethod(Constant.USER_URL.replace("{userId}", userId));
+    JsonObject json = (JsonObject) JsonParser.parseString(apiResponse);
+    UserDTO userDTO =
+        new Gson().fromJson(json, new TypeToken<UserDTO>() {
+
+          /**
+           * 
+           */
+          private static final long serialVersionUID = 1L;
+        }.getType());
     return userDTO;
   }
 

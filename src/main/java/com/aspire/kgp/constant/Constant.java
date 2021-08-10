@@ -56,6 +56,7 @@ public class Constant {
   public static final String USER_PROFILE_URL = "/users/profile";
   public static final String CONDIDATE_URL = "/candidates/{candidateId}";
   public static final String CONTACT_URL = "/contacts/{contactId}";
+  public static final String USER_URL = "/users/{userId}";
   // Queries parameter
   public static final String INVALID_JSON_ERROR = "oops ! invalid json";
   public static final String SPACE_STRING = "[\\s]";
