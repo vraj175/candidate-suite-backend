@@ -58,7 +58,7 @@ public class OAuth2Config extends AuthorizationServerConfigurerAdapter {
   @Override
   public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
     endpoints.authenticationManager(authenticationManager).tokenStore(tokenStore())
-        .accessTokenConverter(tokenEnhancer());
+        .accessTokenConverter(tokenEnhancer()).pathMapping("/oauth/token", "/api/v1.0/oauth/token");
   }
 
   @Override
