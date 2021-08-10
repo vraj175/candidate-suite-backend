@@ -57,25 +57,8 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     if (currentUrl.indexOf("/oauth/token") > 0) {
       log.info("start add or update partner");
       String username = request.getParameter("username");
-      User user = service.findByEmail(username);
-      if (user == null || user.getRole().getName().equalsIgnoreCase(Constant.PARTNER)) {
-        String password = request.getParameter("password");
-        String auth = username + ":" + password;
-        try {
-          byte[] encodedAuth = Base64.getEncoder().encode(auth.getBytes(StandardCharsets.UTF_8));
-          String token = "Basic " + new String(encodedAuth, StandardCharsets.UTF_8);
-          AuthenticationResultType authenticationResult =
-              restUtil.validateCognitoWithAuthenticationToken(token);
-
-          String accessToken = authenticationResult.getAccessToken();
-          String authentication = restUtil.getUserDetails(accessToken);
-          JsonObject userjson = new Gson().fromJson(authentication, JsonObject.class);
-          log.info("add or update password");
-          service.saveOrUpdatePartner(userjson.get("id").getAsString(), username, password, true);
-        } catch (Exception e) {
-          log.info("wrong partner craditionals or it was candidate");
-        }
-      }
+      String password = request.getParameter("password");
+      service.saveOrUpdatePartner(username, password);
       log.info("end add or update partner");
     } else if (currentUrl.indexOf("/api/") < 0 || currentUrl.indexOf("/initialize") > 0
         || currentUrl.indexOf("/user/invite") > 0) {
@@ -139,7 +122,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
       userDTO = service.getContactDetails(user.getGalaxyId());
     }
     if (userDTO.getFirstName() == null) {
-      throw new UnauthorizedAccessException("Invalid User or Contact Delete from Galaxy");
+      throw new UnauthorizedAccessException("Invalid User or User Delete from Galaxy");
     }
     request.setAttribute("user", user);
     UserAuthenticationDTO userAuthenticationDTO =

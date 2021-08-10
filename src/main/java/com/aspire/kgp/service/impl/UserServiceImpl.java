@@ -1,6 +1,8 @@
 package com.aspire.kgp.service.impl;
 
+import java.nio.charset.StandardCharsets;
 import java.sql.Timestamp;
+import java.util.Base64;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
@@ -11,6 +13,7 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.amazonaws.services.cognitoidp.model.AuthenticationResultType;
 import com.aspire.kgp.constant.Constant;
 import com.aspire.kgp.dto.CandidateDTO;
 import com.aspire.kgp.dto.UserDTO;
@@ -184,6 +187,9 @@ public class UserServiceImpl implements UserService {
            */
           private static final long serialVersionUID = 1L;
         }.getType());
+    if (userDTO == null) {
+      throw new APIException("Invalid contactId");
+    }
     return userDTO;
   }
   
@@ -200,7 +206,33 @@ public class UserServiceImpl implements UserService {
            */
           private static final long serialVersionUID = 1L;
         }.getType());
+    if (userDTO == null) {
+      throw new APIException("Invalid userId");
+    }
     return userDTO;
+  }
+
+  @Override
+  public User saveOrUpdatePartner(String userName, String password) {
+    User user = findByEmail(userName);
+    if (user == null || user.getRole().getName().equalsIgnoreCase(Constant.PARTNER)) {
+      String auth = userName + ":" + password;
+      try {
+        byte[] encodedAuth = Base64.getEncoder().encode(auth.getBytes(StandardCharsets.UTF_8));
+        String token = "Basic " + new String(encodedAuth, StandardCharsets.UTF_8);
+        AuthenticationResultType authenticationResult =
+            restUtil.validateCognitoWithAuthenticationToken(token);
+
+        String accessToken = authenticationResult.getAccessToken();
+        String authentication = restUtil.getUserDetails(accessToken);
+        JsonObject userjson = new Gson().fromJson(authentication, JsonObject.class);
+        log.info("add or update password");
+        return saveOrUpdatePartner(userjson.get("id").getAsString(), userName, password, true);
+      } catch (Exception e) {
+        log.info("wrong partner craditionals or it was candidate");
+      }
+    }
+    return null;
   }
 
 }

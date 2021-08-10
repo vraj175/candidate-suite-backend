@@ -22,5 +22,7 @@ public interface UserService {
   UserDTO getContactDetails(String contactId);
   
   UserDTO getGalaxyUserDetails(String userId);
+  
+  User saveOrUpdatePartner(String userName, String password);
 
 }
