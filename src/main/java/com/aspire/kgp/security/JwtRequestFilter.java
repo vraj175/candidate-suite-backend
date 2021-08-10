@@ -71,30 +71,10 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         objectMapper.writeValue(response.getWriter(), errorDetails);
         return;
       }
-      if (!accessToken.startsWith("Bearer ")) {
-        SecurityContextHolder.clearContext();
-        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-        errorDetails.put(Constant.MESSAGE, Constant.INVALID_AUTHENTICATION);
-        objectMapper.writeValue(response.getWriter(), errorDetails);
-        return;
-      }
-
-      accessToken = accessToken.split(" ")[1].trim();
-      // check candidate login
       try {
-        request.setAttribute(Constant.ACCESS_TOKEN_X_TOKEN, accessToken);
-        OAuth2Authentication authentication = jwtTokenStore.readAuthentication(accessToken);
-        log.info(jwtTokenStore.readAccessToken(accessToken).getExpiresIn());
-        if (authentication.getUserAuthentication() == null) {
-          throw new UnauthorizedAccessException("Malformed Token");
-        }
-        if (jwtTokenStore.readAccessToken(accessToken).getExpiresIn() <= 0) {
-          throw new UnauthorizedAccessException("Token Expired");
-        }
-        String userId = authentication.getUserAuthentication().getName();
-        addContactDetails(userId, request, accessToken);
+        jwtTokenCheck(accessToken, request);
       } catch (Exception e) {
+        SecurityContextHolder.clearContext();
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         errorDetails.put(Constant.MESSAGE, e.getMessage());
@@ -105,6 +85,30 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     }
     filterChain.doFilter(request, response);
     log.info("filter end");
+  }
+  
+  private void jwtTokenCheck(String accessToken, HttpServletRequest request) throws Exception {
+    if (!accessToken.startsWith("Bearer ")) {
+      throw new Exception(Constant.INVALID_AUTHENTICATION);
+    }
+    accessToken = accessToken.split(" ")[1].trim();
+    log.info("accessToken:" + accessToken);
+    try {
+      OAuth2Authentication authentication = jwtTokenStore.readAuthentication(accessToken);
+      if (authentication.getUserAuthentication() == null) {
+        throw new UnauthorizedAccessException("Malformed Token");
+      }else {
+        if (jwtTokenStore.readAccessToken(accessToken).getExpiresIn() <= 0) {
+          throw new UnauthorizedAccessException("Token Expired");
+        }
+      }
+      String userId = authentication.getUserAuthentication().getName();
+      addContactDetails(userId, request, accessToken);
+    } catch (UnauthorizedAccessException e) {
+      throw new UnauthorizedAccessException(e.getMessage());
+    } catch (Exception e) {
+      throw new UnauthorizedAccessException("Malformed Token");
+    }
   }
 
   private void addContactDetails(String email, HttpServletRequest request, String accessToken) {
