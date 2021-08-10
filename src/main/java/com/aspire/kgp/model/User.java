@@ -11,7 +11,7 @@ import javax.persistence.ManyToOne;
 @Entity
 public class User extends SuperBase {
 
-  @ManyToOne(fetch = FetchType.LAZY)
+  @ManyToOne
   @JoinColumn(name = "role", referencedColumnName = "id", insertable = true, nullable = false,
       updatable = true)
   private Role role;
@@ -31,7 +31,7 @@ public class User extends SuperBase {
   @JoinColumn(name = "language", referencedColumnName = "id", insertable = true, nullable = false,
       updatable = true)
   private Language language;
-  
+
   @Column(columnDefinition = "boolean default true")
   private boolean passwordReset;
 

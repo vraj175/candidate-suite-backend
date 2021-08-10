@@ -28,9 +28,9 @@ import com.aspire.kgp.constant.Constant;
 import com.aspire.kgp.dto.UserAuthenticationDTO;
 import com.aspire.kgp.dto.UserDTO;
 import com.aspire.kgp.exception.APIException;
+import com.aspire.kgp.exception.UnauthorizedAccessException;
 import com.aspire.kgp.model.User;
 import com.aspire.kgp.service.UserService;
-import com.aspire.kgp.util.CommonUtil;
 import com.aspire.kgp.util.RestUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
@@ -57,37 +57,39 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     if (currentUrl.indexOf("/oauth/token") > 0) {
       log.info("start add or update partner");
       String username = request.getParameter("username");
-      String password = request.getParameter("password");
-      String auth = username + ":" + password;
-      try {
-        byte[] encodedAuth = Base64.getEncoder().encode(auth.getBytes(StandardCharsets.UTF_8));
-        String token = "Basic " + new String(encodedAuth, StandardCharsets.UTF_8);
-        AuthenticationResultType authenticationResult =
-            restUtil.validateCognitoWithAuthenticationToken(token);
+      User user = service.findByEmail(username);
+      if (user == null || user.getRole().getName().equalsIgnoreCase(Constant.PARTNER)) {
+        String password = request.getParameter("password");
+        String auth = username + ":" + password;
+        try {
+          byte[] encodedAuth = Base64.getEncoder().encode(auth.getBytes(StandardCharsets.UTF_8));
+          String token = "Basic " + new String(encodedAuth, StandardCharsets.UTF_8);
+          AuthenticationResultType authenticationResult =
+              restUtil.validateCognitoWithAuthenticationToken(token);
 
-        JsonObject userjson = null;
-        String accessToken;
-        if (authenticationResult != null) {
-          try {
-            accessToken = authenticationResult.getAccessToken();
+          JsonObject userjson = null;
+          String accessToken;
+          if (authenticationResult != null) {
+            try {
+              accessToken = authenticationResult.getAccessToken();
 
-            String authentication = restUtil.getUserDetails(accessToken);
-            userjson = new Gson().fromJson(authentication, JsonObject.class);
-            log.info(userjson);
-          } catch (Exception e) {
-            // throw new UnauthorizedAccessException(Constant.INVALID_AUTHENTICATION);
+              String authentication = restUtil.getUserDetails(accessToken);
+              userjson = new Gson().fromJson(authentication, JsonObject.class);
+              log.info(userjson);
+            } catch (Exception e) {
+            }
           }
+          if (userjson != null && userjson.has("id")) {
+            log.info("add or update password");
+            service.saveOrUpdatePartner(userjson.get("id").getAsString(), username, password, true);
+          }
+        } catch (Exception e) {
+          log.info("wrong partner craditionals or it was candidate");
         }
-        if (userjson != null && userjson.has("id")) {
-          log.info("add or update password");
-          service.saveOrUpdatePartner(userjson.get("id").getAsString(), username, password, true);
-        }
-      } catch (Exception e) {
-        log.info("wrong partmer craditionals or it was candidate");
-        // exception to save partner
       }
       log.info("end add or update partner");
-    } else if (currentUrl.indexOf("/api/") < 0 || currentUrl.indexOf("/initialize") > 0) {
+    } else if (currentUrl.indexOf("/api/") < 0 || currentUrl.indexOf("/initialize") > 0
+        || currentUrl.indexOf("/user/invite") > 0) {
       log.info("not need to authorize ");
     } else {
       log.info("authorize token " + currentUrl);
@@ -113,98 +115,42 @@ public class JwtRequestFilter extends OncePerRequestFilter {
       }
 
       accessToken = accessToken.split(" ")[1].trim();
-
-      JsonObject userjson = new JsonObject();
+      // check candidate login
       try {
-        log.info("AccessToken : " + accessToken);
         request.setAttribute(Constant.ACCESS_TOKEN_X_TOKEN, accessToken);
-        String userDetails = restUtil.getUserDetails(accessToken);
-        userjson = new Gson().fromJson(userDetails, JsonObject.class);
-        log.info(userjson);
-      } catch (Exception e) {
-        SecurityContextHolder.clearContext();
-        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-        errorDetails.put(Constant.MESSAGE, Constant.INVALID_AUTHENTICATION);
-        objectMapper.writeValue(response.getWriter(), errorDetails);
-        return;
-      }
-      if (userjson.has(Constant.MESSAGE)) {
-        log.info("message ::" + userjson.get(Constant.MESSAGE).getAsString());
-
-        // check candidate login
-        try {
-          OAuth2Authentication authentication = jwtTokenStore.readAuthentication(accessToken);
-          log.info(jwtTokenStore.readAccessToken(accessToken).getExpiresIn());
-          if (authentication.getUserAuthentication() != null) {
-            if (jwtTokenStore.readAccessToken(accessToken).getExpiresIn() <= 0) {
-              response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-              response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-              errorDetails.put(Constant.MESSAGE, "Token Expired");
-              objectMapper.writeValue(response.getWriter(), errorDetails);
-              return;
-            }
-            String userId = authentication.getUserAuthentication().getName();
-            addContactDetails(userId, request, accessToken);
-            userjson = null;
-          } else {
+        OAuth2Authentication authentication = jwtTokenStore.readAuthentication(accessToken);
+        log.info(jwtTokenStore.readAccessToken(accessToken).getExpiresIn());
+        if (authentication.getUserAuthentication() != null) {
+          if (jwtTokenStore.readAccessToken(accessToken).getExpiresIn() <= 0) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-            errorDetails.put(Constant.MESSAGE, userjson.get(Constant.MESSAGE).getAsString());
+            errorDetails.put(Constant.MESSAGE, "Token Expired");
             objectMapper.writeValue(response.getWriter(), errorDetails);
             return;
           }
-        } catch (Exception e) {
-          response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-          response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-          errorDetails.put(Constant.MESSAGE, "Malformed Token");
-          objectMapper.writeValue(response.getWriter(), errorDetails);
-          return;
-        }
-        // end candidate login
-      }
-      if (userjson != null) {
-        if (userjson.has("id")) {
-          User user = service.findByGalaxyId(userjson.get("id").getAsString());
-          addPartnerDetails(user, request, userjson, accessToken);
+          String userId = authentication.getUserAuthentication().getName();
+          addContactDetails(userId, request, accessToken);
         } else {
-          SecurityContextHolder.clearContext();
-          response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-          response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-          errorDetails.put(Constant.MESSAGE, Constant.INVALID_AUTHENTICATION);
-          objectMapper.writeValue(response.getWriter(), errorDetails);
-          return;
+          throw new UnauthorizedAccessException();
         }
+      } catch (Exception e) {
+        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+        errorDetails.put(Constant.MESSAGE, "Malformed Token");
+        objectMapper.writeValue(response.getWriter(), errorDetails);
+        return;
       }
+
     }
     filterChain.doFilter(request, response);
     log.info("filter end");
-  }
-
-  private void addPartnerDetails(User user, HttpServletRequest request, JsonObject userjson,
-      String accessToken) {
-    if (user == null) {
-      String email = userjson.get("email").getAsString();
-      user = service.saveOrUpdatePartner(userjson.get("id").getAsString(), email,
-          CommonUtil.hash(email), false);
-    }
-    request.setAttribute("user", user);
-    UserAuthenticationDTO userAuthenticationDTO = new UserAuthenticationDTO(
-        userjson.get("id").getAsString(), userjson.get("name").getAsString(), accessToken, null);
-
-    UsernamePasswordAuthenticationToken authentication =
-        new UsernamePasswordAuthenticationToken(userAuthenticationDTO, null, null);
-
-    authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-
-    SecurityContextHolder.getContext().setAuthentication(authentication);
   }
 
   private void addContactDetails(String email, HttpServletRequest request, String accessToken) {
     User user = service.findByEmail(email);
     UserDTO userDTO = service.getContactDetails(user.getGalaxyId());
     if (userDTO == null) {
-      throw new APIException("Invalid Contact");
+      throw new APIException("Invalid Contact or Contact Delete from Galaxy");
     }
     request.setAttribute("user", user);
     UserAuthenticationDTO userAuthenticationDTO =

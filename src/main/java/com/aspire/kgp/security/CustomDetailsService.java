@@ -20,7 +20,7 @@ public class CustomDetailsService implements UserDetailsService {
       userEntity = oauthDao.getUserDetails(username);
       if (userEntity != null)
         return new CustomUser(userEntity);
-      throw new Exception();
+      throw new UnauthorizedAccessException();
     } catch (Exception e) {
       throw new UnauthorizedAccessException(Constant.INVALID_AUTHENTICATION);
     }
