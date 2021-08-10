@@ -1,8 +1,6 @@
 package com.aspire.kgp.security;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -23,18 +21,14 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import com.amazonaws.services.cognitoidp.model.AuthenticationResultType;
 import com.aspire.kgp.constant.Constant;
 import com.aspire.kgp.dto.UserAuthenticationDTO;
 import com.aspire.kgp.dto.UserDTO;
-import com.aspire.kgp.exception.APIException;
 import com.aspire.kgp.exception.UnauthorizedAccessException;
 import com.aspire.kgp.model.User;
 import com.aspire.kgp.service.UserService;
 import com.aspire.kgp.util.RestUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
 
 @Component
 public class JwtRequestFilter extends OncePerRequestFilter {
@@ -116,9 +110,9 @@ public class JwtRequestFilter extends OncePerRequestFilter {
   private void addContactDetails(String email, HttpServletRequest request, String accessToken) {
     User user = service.findByEmail(email);
     UserDTO userDTO = null;
-    if(user.getRole().getName().equalsIgnoreCase(Constant.PARTNER)) {
+    if (user.getRole().getName().equalsIgnoreCase(Constant.PARTNER)) {
       userDTO = service.getGalaxyUserDetails(user.getGalaxyId());
-    }else {
+    } else {
       userDTO = service.getContactDetails(user.getGalaxyId());
     }
     if (userDTO.getFirstName() == null) {
