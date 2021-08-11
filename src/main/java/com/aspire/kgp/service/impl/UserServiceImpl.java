@@ -136,7 +136,7 @@ public class UserServiceImpl implements UserService {
 
       UserDTO userDTO = candidateDTO.getContact();
       userDTO.setToken("");
-      userDTO.setPrivateEmail(email);
+      userDTO.setEmail(email);
 
       log.info("staring email sending...");
       if (user.isPasswordReset()) {

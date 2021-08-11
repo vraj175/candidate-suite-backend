@@ -72,7 +72,7 @@ public class MailServiceImpl implements MailService {
     model.put("homeUrl", "");
     model.put("name", user.getFirstName()+" "+user.getLastName());
     model.put("token", user.getToken());
-    model.put("userEmail", user.getPrivateEmail());
+    model.put("userEmail", user.getEmail());
     configuration.getTemplate("invitation_en.ftlh").process(model, stringWriter);
     log.info("ending getInviteEmailContent");
     return stringWriter.getBuffer().toString();

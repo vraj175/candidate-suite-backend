@@ -15,6 +15,8 @@ import org.springframework.security.oauth2.config.annotation.web.configurers.Aut
 import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
 import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
 
+import com.aspire.kgp.constant.Constant;
+
 @Configuration
 @EnableAuthorizationServer
 public class OAuth2Config extends AuthorizationServerConfigurerAdapter {
@@ -69,9 +71,9 @@ public class OAuth2Config extends AuthorizationServerConfigurerAdapter {
 
   @Override
   public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
-    clients.inMemory().withClient(clientID).secret(passwordEncoder.encode(clientSecret))
-        .authorizedGrantTypes("password", "refresh_token").scopes("user_info")
-        .authorities("READ_ONLY_CLIENT").accessTokenValiditySeconds(accessTokenValidity)
-        .refreshTokenValiditySeconds(refreshTokenValidity);
+    clients.inMemory().withClient(clientID).secret(passwordEncoder.encode(clientSecret)).scopes("read", "write")
+    .authorizedGrantTypes(Constant.PASSWORD, "client_credentials", Constant.REFRESH_TOKEN)
+    .accessTokenValiditySeconds(accessTokenValidity)
+    .refreshTokenValiditySeconds(refreshTokenValidity);
   }
 }
