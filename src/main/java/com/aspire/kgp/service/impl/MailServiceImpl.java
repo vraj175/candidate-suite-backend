@@ -60,10 +60,8 @@ public class MailServiceImpl implements MailService {
 
     } catch (MessagingException e) {
       log.info("MessagingException::");
-      e.printStackTrace();
     } catch (UnsupportedEncodingException e) {
       log.info("UnsupportedEncodingException::");
-      e.printStackTrace();
     }
   }
 
@@ -77,11 +75,12 @@ public class MailServiceImpl implements MailService {
     model.put("homeUrl", "");
     model.put("name", user.getFirstName() + " " + user.getLastName());
     model.put("token", user.getToken());
-    model.put("userEmail", user.getPrivateEmail());
+    model.put("userEmail", user.getEmail());
     String languageCode = CommonUtil.getLanguageCode(language);
-    model.put("staticContentsMap",
-        StaticContentsMultiLanguageUtil.getStaticContentsMap(languageCode, Constant.EMAILS_CONTENT_MAP));
-    configuration.getTemplate(Constant.CANDIDATE_INVITE_EMAIL_TEMPLATE).process(model, stringWriter);
+    model.put("staticContentsMap", StaticContentsMultiLanguageUtil
+        .getStaticContentsMap(languageCode, Constant.EMAILS_CONTENT_MAP));
+    configuration.getTemplate(Constant.CANDIDATE_INVITE_EMAIL_TEMPLATE).process(model,
+        stringWriter);
     log.info("ending getInviteEmailContent");
     return stringWriter.getBuffer().toString();
   }

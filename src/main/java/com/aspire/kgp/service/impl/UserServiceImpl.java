@@ -136,7 +136,7 @@ public class UserServiceImpl implements UserService {
 
       UserDTO userDTO = candidateDTO.getContact();
       userDTO.setToken("");
-      userDTO.setPrivateEmail(email);
+      userDTO.setEmail(email);
 
       log.info("staring email sending...");
       if (user.isPasswordReset()) {
@@ -148,7 +148,7 @@ public class UserServiceImpl implements UserService {
       }
       response = true;
     } catch (Exception e) {
-      e.printStackTrace();
+      log.debug(e);
       throw new APIException("Error in send invite");
     }
     return response;

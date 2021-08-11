@@ -11,6 +11,7 @@ public class Constant {
   public static final String ERROR = "error";
   public static final String MESSAGE = "message";
   public static final String SQL_EXCEPTION = "SQL Exception :";
+  public static final String MISSING_API_KEY = "Missing API key.";
   public static final String MISSING_REQUEST_HEADER = "Missing request header.";
   public static final String PATH = "path";
   public static final String DEFAULT = "Default";
@@ -22,6 +23,7 @@ public class Constant {
   public static final String INVALID_GRANT_TYPE = "Invalid Grant_type";
   public static final String PASSWORD = "password";
   public static final String TOKEN = "token";
+  public static final String REFRESH_TOKEN = "refresh_token";
   public static final String SUCCESS = "success";
   public static final String INVALID_AUTHENTICATION = "Invalid Authentication";
   public static final String INVALID_REPORT_ID = "Invalid Report Id";
