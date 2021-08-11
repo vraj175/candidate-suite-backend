@@ -1,5 +1,6 @@
 package com.aspire.kgp.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.gson.annotations.SerializedName;
 
 public class UserDTO {
@@ -8,10 +9,12 @@ public class UserDTO {
   private String firstName;
   @SerializedName("last_name")
   private String lastName;
+  @JsonIgnore
   @SerializedName("work_email")
   private String workEmail;
-  @SerializedName("private_email")
-  private String privateEmail;
+  @SerializedName(value = "private_email", alternate = {"email"})
+  private String email;
+  @JsonIgnore
   private String token;
 
   public String getId() {
@@ -46,12 +49,12 @@ public class UserDTO {
     this.workEmail = workEmail;
   }
 
-  public String getPrivateEmail() {
-    return privateEmail;
+  public String getEmail() {
+    return email;
   }
 
-  public void setPrivateEmail(String privateEmail) {
-    this.privateEmail = privateEmail;
+  public void setEmail(String email) {
+    this.email = email;
   }
 
   public String getToken() {

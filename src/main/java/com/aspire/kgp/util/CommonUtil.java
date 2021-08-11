@@ -19,7 +19,7 @@ import com.aspire.kgp.constant.Constant;
 
 public class CommonUtil {
   private static final Log log = LogFactory.getLog(CommonUtil.class);
-  
+
   private CommonUtil() {
     throw new IllegalStateException("Utility class");
   }
@@ -46,6 +46,16 @@ public class CommonUtil {
    */
   public static boolean checkNullString(String response) {
     return (response == null) || (response).equals("");
+  }
+
+  /**
+   * Method will return true if response is not null or not empty
+   * 
+   * @param response
+   * @return
+   */
+  public static boolean checkNotNullString(String response) {
+    return response != null && !response.trim().isEmpty();
   }
 
   /**
@@ -188,7 +198,7 @@ public class CommonUtil {
     formatter.parse(str, pos);
     return str.length() == pos.getIndex();
   }
-  
+
   /***
    * 
    * @param reportParams
@@ -217,6 +227,19 @@ public class CommonUtil {
 
   public static boolean verifyHash(String password, String hash) {
     return BCrypt.checkpw(password, hash);
+  }
+
+  public static String getLanguageCode(String language) {
+    switch (language) {
+      case Constant.ENGLISH:
+        return Constant.ENGLISH_CODE;
+      case Constant.SPANISH:
+        return Constant.SPANISH_CODE;
+      case Constant.PORTUGUESE:
+        return Constant.PORTUGUESE_CODE;
+      default:
+        return Constant.ENGLISH_CODE;
+    }
   }
 
 }

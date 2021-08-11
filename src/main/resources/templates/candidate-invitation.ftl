@@ -15,38 +15,38 @@
       			<div style="background:#fcfcfc; width:100%;  padding-bottom: 0px; float: left;">
 			        <div style="text-align:left; padding:0px;">
 			        	<p style="margin:0; padding:0; height:15px;">&nbsp;</p>
-			          	<p style="color:#231f20; font-size:13px; font-weight:700; letter-spacing:0.3px; margin:0px; line-height:45px;">Dear ${name},</p>
+			          	<p style="color:#231f20; font-size:13px; font-weight:700; letter-spacing:0.3px; margin:0px; line-height:45px;">${staticContentsMap['candidate.suite.invitation.email.dear']} ${name},</p>
 			          	<p style="font-size:13px; color:#231f20;margin:0; padding:0; line-height:20px;letter-spacing:0.3px; font-weight:400; text-align:justify;">
-			          		Welcome to a portal designed especially for you - the 
-				          	<b>zAspire Software Solutions</b> CandidateSuite! Here you will have access to up-to-the-minute information you need for the  
-				          	Aspire Liferay Developer Search Search we are conducting for you.
+			          		${staticContentsMap['candidate.suite.invitation.email.content1']} 
+				          	<b>zAspire Software Solutions</b> ${staticContentsMap['candidate.suite.invitation.email.content2']}  
+				          	Aspire Liferay Developer ${staticContentsMap['candidate.suite.invitation.email.search']} ${staticContentsMap['candidate.suite.invitation.email.content3']}
 			          	</p>
 			          	<p style="margin:0; padding:0; height:15px;">&nbsp;</p>
 				        <p style="font-size:13px; color:#231f20;margin:0; padding:0; line-height:20px;letter-spacing:0.3px; font-weight:400; text-align:justify;">
-				          	Velocity and Transparency are the two foundational facets of Kingsley Gate Partners, and CandidateSuite reflects both by ensuring that you have 24X7 access to all search related data along with up-to-the-minute status of each candidate. It is also a two-way communication tool which enables you to align your assessment to ours through our Synchronous Fit process.
+				          	${staticContentsMap['candidate.suite.invitation.email.content4']}
 				        </p>
 				        <p style="margin:0; padding:0; height:30px;">&nbsp;</p>
 			        </div>
 			        <div style="text-align: left; padding:0px 0px; background:#f2f2f2; margin:0px;">
 			          <p style="margin:0px; padding:0; height:25px;">&nbsp;</p>
 			          <p style="text-align:left; color:#231f20; font-size:15px; font-weight:400; letter-spacing:0.3px; margin:0px; line-height:20px;padding: 0 20px;">
-			          	Please click on
+			          	${staticContentsMap['candidate.suite.invitation.email.content5']}
 			          	<a href="${serverUrl}${homeUrl}?token=${token}" target="_blank" style="color:#5443d5; font-weight: bold; text-decoration:none;">
 			          		${serverUrl}
 			          	</a> 
-			          	to enter your CandidateSuite site.
+			          	${staticContentsMap['candidate.suite.invitation.email.content6']}
 			          </p>
 			          <p style="text-align:left; color:#231f20; font-size:13px; font-weight:400;letter-spacing:0.3px; margin:0px; line-height:20px; padding: 0 20px;">
-			          	<span style="color:#343031; font-weight: 700;">Your User ID: </span> 
+			          	<span style="color:#343031; font-weight: 700;">${staticContentsMap['candidate.suite.invitation.email.content7']} </span> 
 			          	<a href="mailto:${userEmail}" style="color:#5443d5; text-decoration:none;">${userEmail}</a>
 			          </p>
 			          <p style="margin:0; padding:0; height:25px;">&nbsp;</p>
 			        </div>
 			        <p style="letter-spacing:0.3px; font-size:13px; font-weight:400; text-align:left; color:#231f20; line-height:19px;margin:15px 0px 15px 0px;">
-						We look forward to a successful completion of this important search.
+						${staticContentsMap['candidate.suite.invitation.email.content9']}
 			        </p>
 			        <p style="letter-spacing:0.3px; font-size:12px; font-weight:400; text-align:left; color:#231f20; line-height:19px;margin: 0px ;">
-			        	<span style="font-size:13;">Sincerely,</span><br>
+			        	<span style="font-size:13;">${staticContentsMap['candidate.suite.invitation.email.sincerely']}</span><br>
 			        </p>
 			        <div style="clear: both;"></div>
 			        <p style="margin:0px; padding:0; height:25px;">&nbsp;</p>

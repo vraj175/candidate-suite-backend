@@ -10,14 +10,19 @@ import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.aspire.kgp.constant.Constant;
 import com.aspire.kgp.dto.InviteDTO;
+import com.aspire.kgp.dto.UserDTO;
+import com.aspire.kgp.exception.APIException;
 import com.aspire.kgp.model.User;
 import com.aspire.kgp.service.UserService;
+import com.aspire.kgp.util.CommonUtil;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -35,22 +40,50 @@ public class UserController {
 
   @ApiOperation(value = "Invite User as Candidates")
   @PostMapping(value = "/user/invite")
-  public ResponseEntity<Object> inviteUser(@Valid @RequestBody InviteDTO invite, HttpServletRequest request) {
-    User user = (User) request.getAttribute("user");
-    boolean result = service.inviteUser(invite.getCandidateId(), invite.getLanguage(), invite.getEmail(),
-        invite.getBcc(), user, invite.isRemoveDuplicate(), request);
-    Map<String, Object> body = new LinkedHashMap<>();
-    body.put("timestamp", new Date());
-    
-    if(result) {
-      body.put("status", HttpStatus.OK);
-      body.put("message", "User invited successfully");
-      return new ResponseEntity<>(body, HttpStatus.OK);
+  public ResponseEntity<Object> inviteUser(@Valid @RequestBody InviteDTO invite,
+      HttpServletRequest request) {
+    User user = service.findByGalaxyId(invite.getPartnerId());
+    if (user == null) {
+      UserDTO userDTO = service.getGalaxyUserDetails(invite.getPartnerId());
+      if (CommonUtil.checkNotNullString(userDTO.getId()))
+        user = service.saveOrUpdatePartner(userDTO.getId(), userDTO.getEmail(), userDTO.getEmail(),
+            false);
     }
-    body.put("status", HttpStatus.INTERNAL_SERVER_ERROR);
-    body.put("message", "Error in send invite");
-    return new ResponseEntity<>(body, HttpStatus.INTERNAL_SERVER_ERROR);
+    Map<String, Object> body = new LinkedHashMap<>();
+    if (user != null) {
+      boolean result = service.inviteUser(invite.getCandidateId(), invite.getLanguage(),
+          invite.getEmail(), invite.getBcc(), user, invite.isRemoveDuplicate(), request);
+      body.put("timestamp", new Date());
+
+      if (result) {
+        body.put("status", HttpStatus.OK);
+        body.put("message", "User invited successfully");
+        return new ResponseEntity<>(body, HttpStatus.OK);
+      }
+      body.put("status", HttpStatus.INTERNAL_SERVER_ERROR);
+      body.put("message", "Error in send invite");
+      return new ResponseEntity<>(body, HttpStatus.INTERNAL_SERVER_ERROR);
+    } else {
+      body.put("timestamp", new Date());
+      body.put("status", HttpStatus.NOT_FOUND);
+      body.put("message", "Invalid Partner Id");
+      return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
+    }
   }
 
-  
+  @ApiOperation(value = "get user profile details ")
+  @GetMapping(value = "/user/profile")
+  public UserDTO getUserProfile(HttpServletRequest request) {
+    User user = (User) request.getAttribute("user");
+    UserDTO userDTO = null;
+    if (user.getRole().getName().equalsIgnoreCase(Constant.PARTNER)) {
+      userDTO = service.getGalaxyUserDetails(user.getGalaxyId());
+    } else {
+      userDTO = service.getContactDetails(user.getGalaxyId());
+    }
+    if (userDTO.getFirstName() == null) {
+      throw new APIException("Something went wrong to fetch the user data");
+    }
+    return userDTO;
+  }
 }

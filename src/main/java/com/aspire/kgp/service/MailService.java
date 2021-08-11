@@ -13,7 +13,7 @@ public interface MailService {
   public void sendEmail(String mailTo, String[] mailBcc, String mailSubject, String mailContent,
       List<Object> attachments);
 
-  public String getInviteEmailContent(HttpServletRequest request, UserDTO userDTO)
+  public String getInviteEmailContent(HttpServletRequest request, UserDTO userDTO, String language)
       throws IOException, TemplateException;
 
 }
