@@ -20,6 +20,7 @@ import com.aspire.kgp.constant.Constant;
 import com.aspire.kgp.dto.InviteDTO;
 import com.aspire.kgp.dto.UserDTO;
 import com.aspire.kgp.exception.APIException;
+import com.aspire.kgp.exception.NotFoundException;
 import com.aspire.kgp.model.User;
 import com.aspire.kgp.service.UserService;
 import com.aspire.kgp.util.CommonUtil;
@@ -60,14 +61,9 @@ public class UserController {
         body.put("message", "User invited successfully");
         return new ResponseEntity<>(body, HttpStatus.OK);
       }
-      body.put("status", HttpStatus.INTERNAL_SERVER_ERROR);
-      body.put("message", "Error in send invite");
-      return new ResponseEntity<>(body, HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new APIException("Error in send invite");
     } else {
-      body.put("timestamp", new Date());
-      body.put("status", HttpStatus.NOT_FOUND);
-      body.put("message", "Invalid Partner Id");
-      return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
+      throw new NotFoundException("Invalid Partner Id");
     }
   }
 
