@@ -84,6 +84,7 @@ public class UserController {
     if (userDTO.getFirstName() == null) {
       throw new APIException("Something went wrong to fetch the user data");
     }
+    userDTO.setEmail(user.getEmail());
     return userDTO;
   }
 }
