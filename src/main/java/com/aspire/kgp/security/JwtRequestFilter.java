@@ -65,12 +65,8 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     } else if (currentUrl.indexOf("/api/") < 0) {
       log.info("not need to authorize ");
       apiKeyValidate = false;
-    } else {
-      if (currentUrl.indexOf("/initialize") > 0 || currentUrl.indexOf("/user/invite") > 0) {
-        log.info("no need to verify JWT token ");
-      } else {
-        jwtTokenValidate = true;
-      }
+    } else if (!(currentUrl.indexOf("/initialize") > 0 || currentUrl.indexOf("/user/invite") > 0)) {
+      jwtTokenValidate = true;
     }
     
     ObjectMapper objectMapper = new ObjectMapper();
