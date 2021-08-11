@@ -148,7 +148,7 @@ public class UserServiceImpl implements UserService {
       }
       response = true;
     } catch (Exception e) {
-      e.printStackTrace();
+      log.debug(e);
       throw new APIException("Error in send invite");
     }
     return response;
