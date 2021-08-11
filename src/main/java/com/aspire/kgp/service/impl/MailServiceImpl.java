@@ -58,10 +58,8 @@ public class MailServiceImpl implements MailService {
 
     } catch (MessagingException e) {
       log.info("MessagingException::");
-      e.printStackTrace();
     } catch (UnsupportedEncodingException e) {
       log.info("UnsupportedEncodingException::");
-      e.printStackTrace();
     }
   }
 
