@@ -35,6 +35,10 @@ public class Constant {
   public static final String SPANISH = "Español";
   public static final String PORTUGUESE = "Português";
   
+  public static final String ENGLISH_CODE = "en_US";
+  public static final String SPANISH_CODE = "es_ES";
+  public static final String PORTUGUESE_CODE = "pt_BR";
+  
   /* Roles */
   public static final String PARTNER = "partner";
   public static final String CANDIDATE = "candidate";
@@ -82,5 +86,7 @@ public class Constant {
   public static final String NOT_NUMBER_PATTERN = "[^(" + NUMBER_PATTERN + ")]";
   public static final String UNIT_PATTERN = "(" + NUMBER_PATTERN + ")[kKmMbB]";
   public static final String TEST_HTML_DATA = "<!DOCTYPE html><html></html>";
-
+  
+  public static final String EMAILS_CONTENT_MAP = "emailsStaticContents";
+  public static final String CANDIDATE_INVITE_EMAIL_TEMPLATE = "candidate-invitation.ftl";
 }

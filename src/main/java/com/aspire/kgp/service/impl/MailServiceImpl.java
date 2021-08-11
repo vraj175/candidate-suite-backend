@@ -23,6 +23,7 @@ import com.aspire.kgp.constant.Constant;
 import com.aspire.kgp.dto.UserDTO;
 import com.aspire.kgp.service.MailService;
 import com.aspire.kgp.util.CommonUtil;
+import com.aspire.kgp.util.StaticContentsMultiLanguageUtil;
 
 import freemarker.template.Configuration;
 import freemarker.template.TemplateException;
@@ -33,12 +34,13 @@ public class MailServiceImpl implements MailService {
 
   @Autowired
   JavaMailSender mailSender;
-  
+
   @Autowired
   Configuration configuration;
 
   @Override
-  public void sendEmail(String mailTo, String[] mailBcc, String mailSubject, String mailContent, List<Object> attachments) {
+  public void sendEmail(String mailTo, String[] mailBcc, String mailSubject, String mailContent,
+      List<Object> attachments) {
     MimeMessage mimeMessage = mailSender.createMimeMessage();
     try {
       MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, true);
@@ -46,12 +48,12 @@ public class MailServiceImpl implements MailService {
       mimeMessageHelper.setSubject(mailSubject);
       mimeMessageHelper.setFrom(new InternetAddress(Constant.FROM_MAIL, Constant.SENDER_NAME));
       mimeMessageHelper.setTo(mailTo);
-      if(mailBcc!=null && mailBcc.length>0) {
+      if (mailBcc != null && mailBcc.length > 0) {
         mimeMessageHelper.setBcc(mailBcc);
       }
       mimeMessageHelper.setText(mailContent, Boolean.TRUE);
-      if(attachments!=null && !attachments.isEmpty()) {
-        //mimeMessageHelper.set
+      if (attachments != null && !attachments.isEmpty()) {
+        // mimeMessageHelper.set
       }
 
       mailSender.send(mimeMessageHelper.getMimeMessage());
@@ -66,16 +68,20 @@ public class MailServiceImpl implements MailService {
   }
 
   @Override
-  public String getInviteEmailContent(HttpServletRequest request, UserDTO user) throws IOException, TemplateException {
+  public String getInviteEmailContent(HttpServletRequest request, UserDTO user, String language)
+      throws IOException, TemplateException {
     log.info("starting getInviteEmailContent");
     StringWriter stringWriter = new StringWriter();
     Map<String, Object> model = new HashMap<>();
     model.put("serverUrl", CommonUtil.getServerUrl(request) + request.getContextPath());
     model.put("homeUrl", "");
-    model.put("name", user.getFirstName()+" "+user.getLastName());
+    model.put("name", user.getFirstName() + " " + user.getLastName());
     model.put("token", user.getToken());
     model.put("userEmail", user.getPrivateEmail());
-    configuration.getTemplate("invitation_en.ftlh").process(model, stringWriter);
+    String languageCode = CommonUtil.getLanguageCode(language);
+    model.put("staticContentsMap",
+        StaticContentsMultiLanguageUtil.getStaticContentsMap(languageCode, Constant.EMAILS_CONTENT_MAP));
+    configuration.getTemplate(Constant.CANDIDATE_INVITE_EMAIL_TEMPLATE).process(model, stringWriter);
     log.info("ending getInviteEmailContent");
     return stringWriter.getBuffer().toString();
   }

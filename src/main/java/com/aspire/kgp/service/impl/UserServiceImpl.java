@@ -142,7 +142,7 @@ public class UserServiceImpl implements UserService {
       if (user.isPasswordReset()) {
         // mail for add user or mail for invite
         mailService.sendEmail(email, bcc, Constant.INVITE_SUBJECT,
-            mailService.getInviteEmailContent(request, userDTO), null);
+            mailService.getInviteEmailContent(request, userDTO, language), null);
       } else {
         // mail for add search
       }
