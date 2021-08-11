@@ -10,13 +10,16 @@ import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.aspire.kgp.constant.Constant;
 import com.aspire.kgp.dto.InviteDTO;
 import com.aspire.kgp.dto.UserDTO;
+import com.aspire.kgp.exception.APIException;
 import com.aspire.kgp.model.User;
 import com.aspire.kgp.service.UserService;
 import com.aspire.kgp.util.CommonUtil;
@@ -68,5 +71,19 @@ public class UserController {
     }
   }
 
-
+  @ApiOperation(value = "get user profile details ")
+  @GetMapping(value = "/user/profile")
+  public UserDTO getUserProfile(HttpServletRequest request) {
+    User user = (User) request.getAttribute("user");
+    UserDTO userDTO = null;
+    if (user.getRole().getName().equalsIgnoreCase(Constant.PARTNER)) {
+      userDTO = service.getGalaxyUserDetails(user.getGalaxyId());
+    } else {
+      userDTO = service.getContactDetails(user.getGalaxyId());
+    }
+    if (userDTO.getFirstName() == null) {
+      throw new APIException("Something went wrong to fetch the user data");
+    }
+    return userDTO;
+  }
 }
