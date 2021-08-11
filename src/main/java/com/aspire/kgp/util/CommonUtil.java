@@ -49,6 +49,16 @@ public class CommonUtil {
   }
 
   /**
+   * Method will return true if response is not null or not empty
+   * 
+   * @param response
+   * @return
+   */
+  public static boolean checkNotNullString(String response) {
+    return response != null && !response.trim().isEmpty();
+  }
+
+  /**
    * Method to convert date to report format
    * 
    * @param date
