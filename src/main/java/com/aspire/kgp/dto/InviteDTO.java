@@ -27,6 +27,18 @@ public class InviteDTO {
   @JsonProperty("remove Duplicate")
   boolean removeDuplicate;
 
+  @JsonProperty(value="Partner Id" ,required = true)
+  @NotEmpty(message = "partner id cannot be missing or empty")
+  String partnerId;
+  
+  public String getPartnerId() {
+	return partnerId;
+}
+
+  public void setPartnerId(String partnerId) {
+	this.partnerId = partnerId;
+  }
+
   public String getCandidateId() {
     return candidateId;
   }
