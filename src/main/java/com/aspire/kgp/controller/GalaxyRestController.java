@@ -50,7 +50,6 @@ public class GalaxyRestController {
     if (user == null) {
       throw new NotFoundException("Partner Not Found");
     }
-    log.info("test test :: " + user.getRole().getName());
     List<CompanyDTO> companyList = new ArrayList<CompanyDTO>();
     if (user.getRole() != null && user.getRole().getName().equalsIgnoreCase(Constant.PARTNER)) {
       companyList = galaxyUtil.getCompanyList(request, stage);
