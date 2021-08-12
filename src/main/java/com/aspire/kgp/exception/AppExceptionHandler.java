@@ -74,7 +74,7 @@ public class AppExceptionHandler extends ResponseEntityExceptionHandler {
     body.put(Constant.PATH, request.getDescription(false));
     return new ResponseEntity<>(body, HttpStatus.UNAUTHORIZED);
   }
-  
+
   /***
    * 
    * @param ex
@@ -82,8 +82,7 @@ public class AppExceptionHandler extends ResponseEntityExceptionHandler {
    * @return
    */
   @ExceptionHandler(ValidateException.class)
-  public ResponseEntity<Object> handleValidateException(ValidateException ex,
-      WebRequest request) {
+  public ResponseEntity<Object> handleValidateException(ValidateException ex, WebRequest request) {
     String errorMessgeDescription = ex.getMessage();
     Map<String, Object> body = new LinkedHashMap<>();
     body.put(Constant.TIMESTAMP, LocalDateTime.now());
@@ -92,5 +91,23 @@ public class AppExceptionHandler extends ResponseEntityExceptionHandler {
     body.put(Constant.MESSAGE, errorMessgeDescription);
     body.put(Constant.PATH, request.getDescription(false));
     return new ResponseEntity<>(body, HttpStatus.OK);
+  }
+
+  /***
+   * 
+   * @param ex
+   * @param request
+   * @return
+   */
+  @ExceptionHandler(NotFoundException.class)
+  public ResponseEntity<Object> handleNotFoundException(NotFoundException ex, WebRequest request) {
+    String errorMessgeDescription = ex.getMessage();
+    Map<String, Object> body = new LinkedHashMap<>();
+    body.put(Constant.TIMESTAMP, LocalDateTime.now());
+    body.put(Constant.STATUS, HttpStatus.NOT_FOUND.value());
+    body.put(Constant.ERROR, HttpStatus.NOT_FOUND);
+    body.put(Constant.MESSAGE, errorMessgeDescription);
+    body.put(Constant.PATH, request.getDescription(false));
+    return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
   }
 }

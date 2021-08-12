@@ -20,6 +20,7 @@ import com.aspire.kgp.constant.Constant;
 import com.aspire.kgp.dto.InviteDTO;
 import com.aspire.kgp.dto.UserDTO;
 import com.aspire.kgp.exception.APIException;
+import com.aspire.kgp.exception.NotFoundException;
 import com.aspire.kgp.model.User;
 import com.aspire.kgp.service.UserService;
 import com.aspire.kgp.util.CommonUtil;
@@ -49,26 +50,21 @@ public class UserController {
         user = service.saveOrUpdatePartner(userDTO.getId(), userDTO.getEmail(), userDTO.getEmail(),
             false);
     }
-    Map<String, Object> body = new LinkedHashMap<>();
-    if (user != null) {
-      boolean result = service.inviteUser(invite.getCandidateId(), invite.getLanguage(),
-          invite.getEmail(), invite.getBcc(), user, invite.isRemoveDuplicate(), request);
-      body.put("timestamp", new Date());
 
-      if (result) {
-        body.put("status", HttpStatus.OK);
-        body.put("message", "User invited successfully");
-        return new ResponseEntity<>(body, HttpStatus.OK);
-      }
-      body.put("status", HttpStatus.INTERNAL_SERVER_ERROR);
-      body.put("message", "Error in send invite");
-      return new ResponseEntity<>(body, HttpStatus.INTERNAL_SERVER_ERROR);
-    } else {
-      body.put("timestamp", new Date());
-      body.put("status", HttpStatus.NOT_FOUND);
-      body.put("message", "Invalid Partner Id");
-      return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
+    if (user == null) {
+      throw new NotFoundException("Invalid Partner Id");
     }
+    
+    boolean result = service.inviteUser(invite.getCandidateId(), invite.getLanguage(),
+        invite.getEmail(), invite.getBcc(), user, invite.isRemoveDuplicate(), request);
+    if (result) {
+      Map<String, Object> body = new LinkedHashMap<>();
+      body.put(Constant.TIMESTAMP, new Date());
+      body.put(Constant.STATUS, HttpStatus.OK);
+      body.put(Constant.MESSAGE, "User invited successfully");
+      return new ResponseEntity<>(body, HttpStatus.OK);
+    }
+    throw new APIException("Error in send invite");
   }
 
   @ApiOperation(value = "get user profile details ")
