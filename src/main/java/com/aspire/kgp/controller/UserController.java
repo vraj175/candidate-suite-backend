@@ -51,21 +51,20 @@ public class UserController {
             false);
     }
 
-    if (user != null) {
-      boolean result = service.inviteUser(invite.getCandidateId(), invite.getLanguage(),
-          invite.getEmail(), invite.getBcc(), user, invite.isRemoveDuplicate(), request);
-
-      if (result) {
-        Map<String, Object> body = new LinkedHashMap<>();
-        body.put(Constant.TIMESTAMP, new Date());
-        body.put(Constant.STATUS, HttpStatus.OK);
-        body.put(Constant.MESSAGE, "User invited successfully");
-        return new ResponseEntity<>(body, HttpStatus.OK);
-      }
-      throw new APIException("Error in send invite");
-    } else {
+    if (user == null) {
       throw new NotFoundException("Invalid Partner Id");
     }
+    
+    boolean result = service.inviteUser(invite.getCandidateId(), invite.getLanguage(),
+        invite.getEmail(), invite.getBcc(), user, invite.isRemoveDuplicate(), request);
+    if (result) {
+      Map<String, Object> body = new LinkedHashMap<>();
+      body.put(Constant.TIMESTAMP, new Date());
+      body.put(Constant.STATUS, HttpStatus.OK);
+      body.put(Constant.MESSAGE, "User invited successfully");
+      return new ResponseEntity<>(body, HttpStatus.OK);
+    }
+    throw new APIException("Error in send invite");
   }
 
   @ApiOperation(value = "get user profile details ")
