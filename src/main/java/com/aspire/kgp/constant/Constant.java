@@ -91,4 +91,6 @@ public class Constant {
   
   public static final String EMAILS_CONTENT_MAP = "emailsStaticContents";
   public static final String CANDIDATE_INVITE_EMAIL_TEMPLATE = "candidate-invitation.ftl";
+  
+  public static final String COMPANY_LIST = "/clientsuite/partner/companies?stage={STAGE}";
 }
