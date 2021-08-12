@@ -50,15 +50,16 @@ public class UserController {
         user = service.saveOrUpdatePartner(userDTO.getId(), userDTO.getEmail(), userDTO.getEmail(),
             false);
     }
-    Map<String, Object> body = new LinkedHashMap<>();
+
     if (user != null) {
       boolean result = service.inviteUser(invite.getCandidateId(), invite.getLanguage(),
           invite.getEmail(), invite.getBcc(), user, invite.isRemoveDuplicate(), request);
-      body.put("timestamp", new Date());
 
       if (result) {
-        body.put("status", HttpStatus.OK);
-        body.put("message", "User invited successfully");
+        Map<String, Object> body = new LinkedHashMap<>();
+        body.put(Constant.TIMESTAMP, new Date());
+        body.put(Constant.STATUS, HttpStatus.OK);
+        body.put(Constant.MESSAGE, "User invited successfully");
         return new ResponseEntity<>(body, HttpStatus.OK);
       }
       throw new APIException("Error in send invite");
