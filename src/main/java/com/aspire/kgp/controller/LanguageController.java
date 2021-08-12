@@ -26,7 +26,7 @@ public class LanguageController {
   LanguageService service;
   
   @ApiOperation(value = "Initialize languages")
-  @PostMapping(value = "/languages/initialize")
+  @PostMapping(value = "/public/languages/initialize")
   public String initializeLanguages() {
     return service.initializeData();
   }

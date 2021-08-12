@@ -73,8 +73,9 @@ public class Constant {
   public static final String STRING_HTTP = "http";
 
   public static final String GALAXY_API_USER_DETAILS = "/users/profile";
-  public static final String USER_AUTHENTICATE_API_URL = "/api/v1.0/user/authenticate";
+  public static final String USER_AUTHENTICATE_API_URL = "/api/v1.0/oauth/token";
   public static final String USER_AUTHENTICATE_GROUP_NAME = "user-authenticate";
+  public static final String PUBLIC_GROUP_NAME = "public";
   public static final String HEADER = "header";
   public static final String GLOBAL_AUTHORIZATION_SCOPE = "global";
   public static final String ACCESS_EVERYTHING_AUTHORZATION_SCOPE = "accessEverything";
