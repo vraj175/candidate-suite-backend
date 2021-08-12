@@ -1,6 +1,5 @@
 package com.aspire.kgp.controller;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -34,9 +33,6 @@ public class GalaxyRestController {
   static Log log = LogFactory.getLog(GalaxyRestController.class.getName());
 
   @Autowired
-  UserController UserController;
-
-  @Autowired
   UserService userService;
 
   @Autowired
@@ -50,9 +46,9 @@ public class GalaxyRestController {
     if (user == null) {
       throw new NotFoundException("Partner Not Found");
     }
-    List<CompanyDTO> companyList = new ArrayList<CompanyDTO>();
+    List<CompanyDTO> companyList;
     if (user.getRole() != null && user.getRole().getName().equalsIgnoreCase(Constant.PARTNER)) {
-      companyList = galaxyUtil.getCompanyList(request, stage);
+      companyList = galaxyUtil.getCompanyList(stage);
     } else {
       throw new NotFoundException("Partner Not Found");
     }

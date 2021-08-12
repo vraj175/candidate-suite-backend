@@ -2,8 +2,8 @@ package com.aspire.kgp.dto;
 
 public class CompanyDTO {
 
-  public String id;
-  public String name;
+  private String id;
+  private String name;
 
   public String getId() {
     return id;
