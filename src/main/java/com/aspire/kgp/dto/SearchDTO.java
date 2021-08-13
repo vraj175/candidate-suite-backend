@@ -1,7 +1,5 @@
 package com.aspire.kgp.dto;
 
-import java.util.List;
-
 import com.google.gson.annotations.SerializedName;
 
 public class SearchDTO {
@@ -12,26 +10,6 @@ public class SearchDTO {
   private String jobNumber;
   private String stage;
   private CompanyDTO company;
-  @SerializedName("partners")
-  private List<PartnerDTO> partners;
-  @SerializedName("recruiters")
-  private List<RecruiterDTO> recruiters;
-
-  public List<PartnerDTO> getPartners() {
-    return partners;
-  }
-
-  public void setPartners(List<PartnerDTO> partners) {
-    this.partners = partners;
-  }
-
-  public List<RecruiterDTO> getRecruiters() {
-    return recruiters;
-  }
-
-  public void setRecruiters(List<RecruiterDTO> recruiters) {
-    this.recruiters = recruiters;
-  }
 
   public String getId() {
     return id;
