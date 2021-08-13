@@ -15,8 +15,8 @@ import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 
 @Component
-public class GalaxyUtil {
-  static Log log = LogFactory.getLog(GalaxyUtil.class.getName());
+public class CompanyUtil {
+  static Log log = LogFactory.getLog(CompanyUtil.class.getName());
   @Autowired
   RestUtil restUtil;
 
