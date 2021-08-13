@@ -6,6 +6,7 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.aspire.kgp.constant.Constant;
@@ -92,6 +93,9 @@ public class CandidateUtil {
     PartnerDTO partner = new PartnerDTO();
     try {
       partner.setPartnerName(user.getName());
+      // partner.setUrl(synclinkUrl
+      // + Constant.PARTNER_IMAGE_URL.replace("{partnerName}", user.getName().replace(" ", "_"))
+      // .replace("{partnerId}", user.getId()));
       partner.setUrl(
           "https://synclink.kingsleygate.com/documents/46500/94803/Michael_Seeley/fc9e8e62-799f-4a03-a58b-154c905735c5");
       partner
