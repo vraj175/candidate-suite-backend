@@ -4,8 +4,6 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -16,7 +14,6 @@ import com.aspire.kgp.constant.Constant;
 import com.aspire.kgp.dto.CompanyDTO;
 import com.aspire.kgp.exception.NotFoundException;
 import com.aspire.kgp.model.User;
-import com.aspire.kgp.service.UserService;
 import com.aspire.kgp.util.CompanyUtil;
 
 import io.swagger.annotations.Api;
@@ -29,11 +26,6 @@ import io.swagger.annotations.Tag;
 @Api(tags = {"Company"})
 @SwaggerDefinition(tags = {@Tag(name = "Company", description = "Rest API For Company")})
 public class CompanyController {
-
-  static Log log = LogFactory.getLog(CompanyController.class.getName());
-
-  @Autowired
-  UserService userService;
 
   @Autowired
   CompanyUtil companyUtil;

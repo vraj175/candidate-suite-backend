@@ -64,6 +64,7 @@ public class Constant {
   public static final String CONTACT_URL = "/contacts/{contactId}";
   public static final String USER_URL = "/users/{userId}";
   public static final String COMPANY_LIST = "/clientsuite/partner/companies?stage={STAGE}";
+  public static final String SEARCHES_LIST_BY_COMAPNY = "/clientsuite/partner/companies/{companyId}/searches";
   // Queries parameter
   public static final String INVALID_JSON_ERROR = "oops ! invalid json";
   public static final String SPACE_STRING = "[\\s]";
