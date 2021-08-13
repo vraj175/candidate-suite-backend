@@ -72,7 +72,8 @@ public class UserController {
   public UserDTO getUserProfile(HttpServletRequest request) {
     User user = (User) request.getAttribute("user");
     UserDTO userDTO = null;
-    if (user.getRole().getName().equalsIgnoreCase(Constant.PARTNER)) {
+    String role = user.getRole().getName();
+    if (role.equalsIgnoreCase(Constant.PARTNER)) {
       userDTO = service.getGalaxyUserDetails(user.getGalaxyId());
     } else {
       userDTO = service.getContactDetails(user.getGalaxyId());
@@ -81,6 +82,7 @@ public class UserController {
       throw new APIException("Something went wrong to fetch the user data");
     }
     userDTO.setEmail(user.getEmail());
+    userDTO.setRole(role);
     return userDTO;
   }
 }

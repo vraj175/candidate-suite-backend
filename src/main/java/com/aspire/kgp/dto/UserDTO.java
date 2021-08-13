@@ -14,6 +14,7 @@ public class UserDTO {
   private String workEmail;
   @SerializedName(value = "private_email", alternate = {"email"})
   private String email;
+  private String role;
   @JsonIgnore
   private String token;
 
@@ -55,6 +56,14 @@ public class UserDTO {
 
   public void setEmail(String email) {
     this.email = email;
+  }
+
+  public String getRole() {
+    return role;
+  }
+
+  public void setRole(String role) {
+    this.role = role;
   }
 
   public String getToken() {
