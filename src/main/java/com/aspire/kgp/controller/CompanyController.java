@@ -28,9 +28,9 @@ import io.swagger.annotations.Tag;
 @RequestMapping("/api/v1.0")
 @Api(tags = {"Company"})
 @SwaggerDefinition(tags = {@Tag(name = "Company", description = "Rest API For Company")})
-public class CompanyRestController {
+public class CompanyController {
 
-  static Log log = LogFactory.getLog(CompanyRestController.class.getName());
+  static Log log = LogFactory.getLog(CompanyController.class.getName());
 
   @Autowired
   UserService userService;
@@ -38,16 +38,13 @@ public class CompanyRestController {
   @Autowired
   CompanyUtil companyUtil;
 
-  @ApiOperation(value = "get client list")
+  @ApiOperation(value = "Get Client list")
   @GetMapping("/companies/{stage}")
   public List<CompanyDTO> getCompanyList(HttpServletRequest request,
       @PathVariable("stage") String stage) {
     User user = (User) request.getAttribute("user");
-    if (user == null) {
-      throw new NotFoundException("Partner Not Found");
-    }
     List<CompanyDTO> companyList;
-    if (user.getRole() != null && user.getRole().getName().equalsIgnoreCase(Constant.PARTNER)) {
+    if (Constant.PARTNER.equalsIgnoreCase(user.getRole().getName())) {
       companyList = companyUtil.getCompanyList(stage);
     } else {
       throw new NotFoundException("Partner Not Found");
