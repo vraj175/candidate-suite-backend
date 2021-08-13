@@ -26,7 +26,7 @@ public class RoleController {
   RoleService service;
   
   @ApiOperation(value = "Initialize Roles")
-  @PostMapping(value = "/roles/initialize")
+  @PostMapping(value = "/public/roles/initialize")
   public String initializeLanguages() {
     return service.initializeData();
   }

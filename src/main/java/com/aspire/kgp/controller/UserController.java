@@ -40,7 +40,7 @@ public class UserController {
   UserService service;
 
   @ApiOperation(value = "Invite User as Candidates")
-  @PostMapping(value = "/user/invite")
+  @PostMapping(value = "/public/user/invite")
   public ResponseEntity<Object> inviteUser(@Valid @RequestBody InviteDTO invite,
       HttpServletRequest request) {
     User user = service.findByGalaxyId(invite.getPartnerId());
