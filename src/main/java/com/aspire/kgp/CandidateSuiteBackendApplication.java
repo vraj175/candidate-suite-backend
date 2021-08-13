@@ -38,8 +38,8 @@ public class CandidateSuiteBackendApplication {
   public Docket swaggerConfiguration() {
     return new Docket(DocumentationType.SWAGGER_2).select()
         .paths(Predicates.not(PathSelectors.ant(Constant.USER_AUTHENTICATE_API_URL)))
-        .paths(Predicates.not(PathSelectors.ant("/api/v1.0/public/*")))
-        .paths(PathSelectors.ant("/api/**")).build()
+        .paths(PathSelectors.ant("/api/**"))
+        .paths(Predicates.not(PathSelectors.ant("/api/v1.0/public/**"))).build()
         .securitySchemes(Arrays.asList(accessToken(), apiKey()))
         .securityContexts(Arrays.asList(securityContext()));
   }
@@ -55,7 +55,7 @@ public class CandidateSuiteBackendApplication {
   @Bean
   public Docket publicAuthentication() {
     return new Docket(DocumentationType.SWAGGER_2).groupName(Constant.PUBLIC_GROUP_NAME)
-        .select().paths(PathSelectors.ant("/api/v1.0/public/*")).build()
+        .select().paths(PathSelectors.ant("/api/v1.0/public/**")).build()
         .securitySchemes(Arrays.asList(apiKey()))
         .securityContexts(Arrays.asList(publicSecurityContext()));
   }
