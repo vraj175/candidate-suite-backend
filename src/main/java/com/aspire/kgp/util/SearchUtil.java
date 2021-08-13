@@ -1,29 +1,32 @@
 package com.aspire.kgp.util;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.aspire.kgp.constant.Constant;
-import com.aspire.kgp.dto.CompanyDTO;
+import com.aspire.kgp.dto.SearchDTO;
 import com.aspire.kgp.exception.APIException;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 
 @Component
-public class CompanyUtil {
+public class SearchUtil {
 
   @Autowired
   RestUtil restUtil;
 
-  public final List<CompanyDTO> getCompanyList(String stage) {
+  public final List<SearchDTO> getSearchList(String companyId, String stage) {
 
-    String companyListResponse =
-        restUtil.newGetMethod(Constant.COMPANY_LIST.replace("{STAGE}", stage));
+    String searchListResponse =
+        restUtil.newGetMethod(Constant.SEARCHES_LIST_BY_COMAPNY.replace("{companyId}", companyId));
+
+    List<SearchDTO> searchList;
     try {
-      return new Gson().fromJson(companyListResponse, new TypeToken<List<CompanyDTO>>() {
+      searchList = new Gson().fromJson(searchListResponse, new TypeToken<List<SearchDTO>>() {
 
         /**
          * 
@@ -33,5 +36,7 @@ public class CompanyUtil {
     } catch (JsonSyntaxException e) {
       throw new APIException("Error in coverting json to object");
     }
+    return searchList.stream().filter(s -> stage.equalsIgnoreCase(s.getStage()))
+        .collect(Collectors.toList());
   }
 }

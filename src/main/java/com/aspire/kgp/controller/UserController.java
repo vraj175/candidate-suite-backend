@@ -73,7 +73,7 @@ public class UserController {
     User user = (User) request.getAttribute("user");
     UserDTO userDTO = null;
     String role = user.getRole().getName();
-    if (role.equalsIgnoreCase(Constant.PARTNER)) {
+    if (Constant.PARTNER.equalsIgnoreCase(role)) {
       userDTO = service.getGalaxyUserDetails(user.getGalaxyId());
     } else {
       userDTO = service.getContactDetails(user.getGalaxyId());
