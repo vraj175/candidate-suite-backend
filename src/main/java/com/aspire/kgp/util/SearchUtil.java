@@ -4,8 +4,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -38,8 +36,7 @@ public class SearchUtil {
     return getSearchListFromJsonResponse(searchListResponse, stage);
   }
 
-  public final List<SearchDTO> getSearchListForUser(HttpServletRequest request, String stage) {
-    User user = (User) request.getAttribute("user");
+  public final List<SearchDTO> getSearchListForUser(User user, String stage) {
     List<UserSearch> searches = searchService.findByUser(user);
 
     if (searches.isEmpty()) {
@@ -67,13 +64,12 @@ public class SearchUtil {
     query.add(company);
 
     JsonObject paramJSON = new JsonObject();
-    paramJSON = new JsonObject();
     paramJSON.add("ids", jsonArray);
     paramJSON.add("attributes", attributes);
     paramJSON.add("query", query);
 
     String searchListResponse =
-        restUtil.postMethod(Constant.SEARCHES_LIST_BY_IDS, paramJSON.toString(), request);
+        restUtil.postMethod(Constant.SEARCHES_LIST_BY_IDS, paramJSON.toString());
     return getSearchListFromJsonResponse(searchListResponse, stage);
   }
 

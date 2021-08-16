@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.aspire.kgp.dto.SearchDTO;
+import com.aspire.kgp.model.User;
 import com.aspire.kgp.util.SearchUtil;
 
 import io.swagger.annotations.Api;
@@ -31,7 +32,8 @@ public class SearchController {
   @GetMapping("/searches/stage/{stage}")
   public List<SearchDTO> getCompanyList(HttpServletRequest request,
       @PathVariable("stage") String stage) {
-    return searchUtil.getSearchListForUser(request, stage);
+    User user = (User) request.getAttribute("user");
+    return searchUtil.getSearchListForUser(user, stage);
   }
 
   @ApiOperation(value = "Get Search list for company")
