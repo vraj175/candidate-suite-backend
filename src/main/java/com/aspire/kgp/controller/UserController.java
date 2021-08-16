@@ -10,6 +10,7 @@ import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.json.MappingJacksonValue;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -24,6 +25,9 @@ import com.aspire.kgp.exception.NotFoundException;
 import com.aspire.kgp.model.User;
 import com.aspire.kgp.service.UserService;
 import com.aspire.kgp.util.CommonUtil;
+import com.fasterxml.jackson.databind.ser.FilterProvider;
+import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
+import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -69,7 +73,7 @@ public class UserController {
 
   @ApiOperation(value = "get user profile details ")
   @GetMapping(value = "/user/profile")
-  public UserDTO getUserProfile(HttpServletRequest request) {
+  public MappingJacksonValue getUserProfile(HttpServletRequest request) {
     User user = (User) request.getAttribute("user");
     UserDTO userDTO = null;
     String role = user.getRole().getName();
@@ -83,6 +87,13 @@ public class UserController {
     }
     userDTO.setEmail(user.getEmail());
     userDTO.setRole(role);
-    return userDTO;
+    
+    SimpleBeanPropertyFilter filter = SimpleBeanPropertyFilter.filterOutAllExcept("id", "firstName",
+        "lastName", "email", "role");
+
+    FilterProvider filters = new SimpleFilterProvider().addFilter("userFilter", filter);
+    MappingJacksonValue mapping = new MappingJacksonValue(userDTO);
+    mapping.setFilters(filters);
+    return mapping;
   }
 }

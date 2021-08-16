@@ -1,15 +1,16 @@
 package com.aspire.kgp.dto;
 
+import com.fasterxml.jackson.annotation.JsonFilter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.gson.annotations.SerializedName;
 
+@JsonFilter("userFilter")
 public class UserDTO {
   private String id;
   @SerializedName("first_name")
   private String firstName;
   @SerializedName("last_name")
   private String lastName;
-  @JsonIgnore
   @SerializedName("work_email")
   private String workEmail;
   @SerializedName(value = "private_email", alternate = {"email"})
