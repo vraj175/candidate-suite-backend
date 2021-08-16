@@ -30,13 +30,19 @@ public class CandidateController {
   @ApiOperation(value = "Get Candidate Details")
   @GetMapping("/candidates/{candidateId}")
   public MappingJacksonValue getCandidateDetails(@PathVariable("candidateId") String candidateId) {
-    CandidateDTO candidateDTO= candidateUtil.getCandidateDetails(candidateId);
-    SimpleBeanPropertyFilter filter = SimpleBeanPropertyFilter.filterOutAllExcept("id", "firstName",
-        "lastName");
-    FilterProvider filters = new SimpleFilterProvider().addFilter("userFilter", filter);
+    CandidateDTO candidateDTO = candidateUtil.getCandidateDetails(candidateId);
+    SimpleBeanPropertyFilter userFilter =
+        SimpleBeanPropertyFilter.filterOutAllExcept("id", "firstName", "lastName");
+
+    SimpleBeanPropertyFilter searchFilter =
+        SimpleBeanPropertyFilter.filterOutAllExcept("id", "jobTitle", "jobNumber", "company");
+
+    FilterProvider filters = new SimpleFilterProvider().addFilter("userFilter", userFilter)
+        .addFilter("searchFilter", searchFilter);
+
     MappingJacksonValue mapping = new MappingJacksonValue(candidateDTO);
     mapping.setFilters(filters);
-    
+
     return mapping;
   }
 

@@ -1,7 +1,9 @@
 package com.aspire.kgp.dto;
 
+import com.fasterxml.jackson.annotation.JsonFilter;
 import com.google.gson.annotations.SerializedName;
 
+@JsonFilter("searchFilter")
 public class SearchDTO {
   private String id;
   @SerializedName("job_title")

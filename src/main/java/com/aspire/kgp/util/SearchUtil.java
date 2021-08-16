@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.converter.json.MappingJacksonValue;
 import org.springframework.stereotype.Component;
 
 import com.aspire.kgp.constant.Constant;
@@ -13,6 +14,9 @@ import com.aspire.kgp.exception.APIException;
 import com.aspire.kgp.model.User;
 import com.aspire.kgp.model.UserSearch;
 import com.aspire.kgp.service.UserSearchService;
+import com.fasterxml.jackson.databind.ser.FilterProvider;
+import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
+import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
@@ -88,5 +92,15 @@ public class SearchUtil {
     }
     return searchList.stream().filter(s -> stage.equalsIgnoreCase(s.getStage()))
         .collect(Collectors.toList());
+  }
+  
+  public MappingJacksonValue applySearchFilter(List<SearchDTO> searchDTOs) {
+    SimpleBeanPropertyFilter filter = SimpleBeanPropertyFilter.filterOutAllExcept("id", "jobTitle",
+        "jobNumber", "stage", "company");
+
+    FilterProvider filters = new SimpleFilterProvider().addFilter("searchFilter", filter);
+    MappingJacksonValue mapping = new MappingJacksonValue(searchDTOs);
+    mapping.setFilters(filters);
+    return mapping;
   }
 }
