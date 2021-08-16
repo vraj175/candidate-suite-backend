@@ -1,6 +1,7 @@
 package com.aspire.kgp.service.impl;
 
 import java.sql.Timestamp;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -31,6 +32,11 @@ public class UserSearchServiceImpl implements UserSearchService {
   @Override
   public UserSearch saveorUpdate(UserSearch userSearch) {
     return repository.save(userSearch);
+  }
+
+  @Override
+  public List<UserSearch> findByUser(User user) {
+    return repository.findByUserAndIsDeletedFalse(user);
   }
 
 }
