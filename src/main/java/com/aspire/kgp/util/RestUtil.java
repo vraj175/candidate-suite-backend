@@ -85,7 +85,7 @@ public class RestUtil {
   /*
    * Post Method
    */
-  public String postMethod(String apiUrl, String paramJSON, HttpServletRequest request) {
+  public String postMethod(String apiUrl, String paramJSON) {
     log.debug("In postMethod method");
     /* Configure post method */
     PostMethod post = new PostMethod(baseApiUrl + apiUrl.replaceAll(Constant.SPACE_STRING, "%20"));
