@@ -1,5 +1,7 @@
 package com.aspire.kgp.service;
 
+import java.util.List;
+
 import com.aspire.kgp.model.User;
 import com.aspire.kgp.model.UserSearch;
 
@@ -9,4 +11,6 @@ public interface UserSearchService {
   UserSearch saveorUpdate(UserSearch userSearch);
   
   UserSearch deleteUserSearch(UserSearch userSearch);
+  
+  List<UserSearch> findByUser(User user);
 }

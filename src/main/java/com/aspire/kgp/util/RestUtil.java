@@ -1,9 +1,6 @@
 package com.aspire.kgp.util;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.sql.Timestamp;
 import java.util.Base64;
@@ -11,11 +8,12 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
-import org.apache.commons.httpclient.methods.PutMethod;
 import org.apache.commons.httpclient.methods.StringRequestEntity;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -35,6 +33,7 @@ import com.amazonaws.services.cognitoidp.model.TooManyRequestsException;
 import com.aspire.kgp.constant.Constant;
 import com.aspire.kgp.dto.ResponseObject;
 import com.aspire.kgp.dto.UserAuthenticationDTO;
+import com.aspire.kgp.exception.APIException;
 import com.aspire.kgp.exception.UnauthorizedAccessException;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
@@ -86,138 +85,34 @@ public class RestUtil {
   /*
    * Post Method
    */
-  public static String postMethod(String instanceUrl, String serviceUrl, String query) {
+  public String postMethod(String apiUrl, String paramJSON, HttpServletRequest request) {
     log.debug("In postMethod method");
     /* Configure post method */
-    PostMethod postMethod = new PostMethod(instanceUrl + serviceUrl);
-    /* Set Data */
-    postMethod.setQueryString(query);
+    PostMethod post = new PostMethod(baseApiUrl + apiUrl.replaceAll(Constant.SPACE_STRING, "%20"));
+    /* set the token in the header */
+    post.setRequestHeader(Constant.X_API_KEY, apiKey);
+    /* set the token in the header */
+    post.setRequestHeader(Constant.AUTHORIZATION,
+        validateCognitoWithAuthenticationToken(defaultAuth).getAccessToken());
+
+    return returnPostString(post, paramJSON);
+  }
+
+  private String returnPostString(PostMethod post, String paramJSON) {
     String responseString = null;
     try {
-      new HttpClient().executeMethod(postMethod);
-      if (postMethod.getStatusCode() == HttpStatus.SC_OK) {
-        responseString = postMethod.getResponseBodyAsString();
-      }
-    } catch (IOException e) {
-      log.error("error while getting data ", e);
-    }
-    log.debug("End of postMethod method");
-    return responseString;
-  }
+      StringRequestEntity body = new StringRequestEntity(paramJSON, "application/json", "UTF-8");
+      post.setRequestEntity(body);
 
-  /**
-   * Get method used for any REST API
-   * 
-   * @param url
-   * @param accessToken
-   * @param paramMap
-   * @return
-   */
-  public void getMethod(String url, OutputStream outputStream) {
-    log.debug("In getMethod method");
-    log.info("REST URL : " + url);
-    /* Configure get method */
-    GetMethod get = new GetMethod(baseApiUrl + url.replaceAll(Constant.SPACE_STRING, "%20"));
-    /* set the token in the header */
-    get.setRequestHeader(Constant.X_API_KEY, apiKey);
-
-    /* Get Data */
-    InputStream fileInputStream = null;
-    try {
-      new HttpClient().executeMethod(get);
-      log.info("Status code :: " + get.getStatusCode());
-      // Check for unauthorized and if it is 401 it will take new token,
-      // save it and call method again.
-      if (get.getStatusCode() == HttpStatus.SC_UNAUTHORIZED) {
-        // executing rest call
-        new HttpClient().executeMethod(get);
-        log.info("Next Status code :: " + get.getStatusCode());
-      }
-      if (get.getStatusCode() == HttpStatus.SC_OK) {
-        fileInputStream = get.getResponseBodyAsStream();
-        readInputStream(fileInputStream, outputStream);
-      }
-    } catch (IOException e) {
-      log.error("error while getting data ", e);
-    } finally {
-      get.releaseConnection();
-    }
-    log.debug("End of getMethod method");
-  }
-
-  private static void readInputStream(InputStream inputStream, OutputStream outputStream)
-      throws IOException {
-    byte[] buffer = new byte[1];
-    try {
-      while (inputStream.read(buffer) > 0) {
-        outputStream.write(buffer);
+      new HttpClient().executeMethod(post);
+      if (post.getStatusCode() == HttpStatus.SC_OK) {
+        responseString = post.getResponseBodyAsString();
       }
     } catch (Exception e) {
-      log.error("Error while getting read input stream", e);
+      log.error("error while getting data ", e);
+      throw new APIException(e.getMessage());
     }
-  }
-
-  public byte[] newGetImage(String apiUrl) {
-    log.info(baseApiUrl + apiUrl.replaceAll(Constant.SPACE_STRING, "%20"));
-    log.debug("API Key : " + apiKey);
-
-    GetMethod get = new GetMethod(baseApiUrl + apiUrl.replaceAll(Constant.SPACE_STRING, "%20"));
-    /* set the token in the header */
-    get.setRequestHeader(Constant.X_API_KEY, apiKey);
-    byte[] response = null;
-    try {
-      new HttpClient().executeMethod(get);
-      log.info("Request Code : " + get.getStatusCode());
-      response = get.getResponseBody();
-      log.debug("Response : " + response);
-    } catch (IOException e) {
-      log.error("error while executing query ", e);
-      return response;
-    } finally {
-      get.releaseConnection();
-    }
-    return response;
-  }
-
-  /**
-   * Method use for put data
-   * 
-   * @param url
-   * @param sfConfiguration
-   * @param paramJSON
-   * @return
-   * @throws UnsupportedEncodingException
-   */
-  public String clientLoginDetails(String url, String paramJSON)
-      throws UnsupportedEncodingException {
-    log.info(baseApiUrl + url);
-    log.info("paramJSON:: " + paramJSON);
-    HttpClient httpClient = new HttpClient();
-    PutMethod httpPut = new PutMethod(baseApiUrl + url);
-    httpPut.setRequestHeader(Constant.X_API_KEY, apiKey);
-    httpPut.setRequestHeader("Accept", Constant.CONTENT_TYPE_JSON);
-    httpPut.setRequestHeader("Content-type", Constant.CONTENT_TYPE_JSON);
-
-    StringRequestEntity body =
-        new StringRequestEntity(paramJSON, Constant.CONTENT_TYPE_JSON, "UTF-8");
-    httpPut.setRequestEntity(body);
-
-    String responseString = "";
-    int statusCode = 0;
-    try {
-      statusCode = httpClient.executeMethod(httpPut);
-    } catch (IOException e1) {
-      log.info("IOException : " + e1);
-    }
-
-    log.info("-----------Query response time " + new Date());
-    try {
-      responseString = httpPut.getResponseBodyAsString();
-    } catch (IOException e) {
-      log.error(e);
-    }
-    log.info("Status code :: " + statusCode);
-    log.info("RESPONSE : " + responseString);
+    log.debug("End of postMethod method");
     return responseString;
   }
 
@@ -352,18 +247,5 @@ public class RestUtil {
       errorMessage = Constant.REFRESH_TOKEN_EXPIRED;
     }
     throw new UnauthorizedAccessException(errorMessage);
-  }
-
-  public boolean isContactProfileImageExists(String contactId, Map<String, String> imageMap) {
-    if (CommonUtil.checkNullString(contactId))
-      return false;
-    byte[] decodeImg = newGetImage("/clientsuite/contacts/" + contactId + "/profile-image");
-    if (decodeImg != null && decodeImg.length > 200) {
-      imageMap.put(contactId, "data:image/jpg;base64,"
-          + org.apache.commons.codec.binary.Base64.encodeBase64String(decodeImg));
-      log.info("image exists");
-      return true;
-    }
-    return false;
   }
 }
