@@ -1,5 +1,7 @@
 package com.aspire.kgp.controller;
 
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +11,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.aspire.kgp.dto.ContactDTO;
 import com.aspire.kgp.model.User;
 import com.aspire.kgp.util.SearchUtil;
 
@@ -39,5 +42,11 @@ public class SearchController {
   public MappingJacksonValue getCompanyList(@PathVariable("companyId") String companyId,
       @PathVariable("stage") String stage) {
     return searchUtil.applySearchFilter(searchUtil.getSearchList(companyId, stage));
+  }
+
+  @ApiOperation(value = "Get Candidate list")
+  @GetMapping(value = {"/searches/{searchId}/candidates"})
+  public List<ContactDTO> getCandidateList(@PathVariable("searchId") String searchId) {
+    return searchUtil.getCandidateList(searchId);
   }
 }
