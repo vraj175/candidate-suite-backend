@@ -1,16 +1,21 @@
 package com.aspire.kgp.util;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.converter.json.MappingJacksonValue;
 import org.springframework.stereotype.Component;
 
 import com.aspire.kgp.constant.Constant;
+import com.aspire.kgp.dto.ContactDTO;
 import com.aspire.kgp.dto.SearchDTO;
 import com.aspire.kgp.exception.APIException;
+import com.aspire.kgp.exception.NotFoundException;
 import com.aspire.kgp.model.User;
 import com.aspire.kgp.model.UserSearch;
 import com.aspire.kgp.service.UserSearchService;
@@ -20,11 +25,14 @@ import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 
 @Component
 public class SearchUtil {
+  private static final Log log = LogFactory.getLog(SearchUtil.class);
 
   @Autowired
   RestUtil restUtil;
@@ -93,7 +101,7 @@ public class SearchUtil {
     return searchList.stream().filter(s -> stage.equalsIgnoreCase(s.getStage()))
         .collect(Collectors.toList());
   }
-  
+
   public MappingJacksonValue applySearchFilter(List<SearchDTO> searchDTOs) {
     SimpleBeanPropertyFilter filter = SimpleBeanPropertyFilter.filterOutAllExcept("id", "jobTitle",
         "jobNumber", "stage", "company");
@@ -102,5 +110,37 @@ public class SearchUtil {
     MappingJacksonValue mapping = new MappingJacksonValue(searchDTOs);
     mapping.setFilters(filters);
     return mapping;
+  }
+
+  public List<ContactDTO> getCandidateList(String searchId) {
+
+    ContactDTO contactDTO = null;
+    List<ContactDTO> listContactDTO = new ArrayList<>();
+
+    String apiResponse =
+        restUtil.newGetMethod(Constant.CANDIDATE_LIST_URL.replace("{searchId}", searchId));
+    if (CommonUtil.checkNullString(apiResponse)) {
+      log.error("Error while fetching candidate list from Galaxy.");
+      return listContactDTO;
+    }
+
+    JsonObject jsonObjects = (JsonObject) JsonParser.parseString(apiResponse);
+    JsonArray jsonArray = jsonObjects.getAsJsonArray("data");
+
+    if (jsonArray == null) {
+      throw new NotFoundException("Invalid Search Id");
+    }
+    Gson gson = new Gson();
+    for (JsonElement jsonElement : jsonArray) {
+      contactDTO =
+          gson.fromJson(jsonElement.getAsJsonObject().get("contact"), new TypeToken<ContactDTO>() {
+            /**
+            *
+            */
+            private static final long serialVersionUID = 1L;
+          }.getType());
+      listContactDTO.add(contactDTO);
+    }
+    return listContactDTO;
   }
 }
