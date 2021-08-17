@@ -1,7 +1,9 @@
 package com.aspire.kgp.dto;
 
+import com.fasterxml.jackson.annotation.JsonFilter;
 import com.google.gson.annotations.SerializedName;
 
+@JsonFilter("contactFilter")
 public class ContactDTO extends UserDTO {
   @SerializedName("current_job_title")
   private String currentJobTitle;
