@@ -12,8 +12,9 @@ import org.springframework.http.converter.json.MappingJacksonValue;
 import org.springframework.stereotype.Component;
 
 import com.aspire.kgp.constant.Constant;
-import com.aspire.kgp.dto.ContactDTO;
+import com.aspire.kgp.dto.CandidateDTO;
 import com.aspire.kgp.dto.SearchDTO;
+import com.aspire.kgp.dto.UserDTO;
 import com.aspire.kgp.exception.APIException;
 import com.aspire.kgp.exception.NotFoundException;
 import com.aspire.kgp.model.User;
@@ -112,16 +113,17 @@ public class SearchUtil {
     return mapping;
   }
 
-  public List<ContactDTO> getCandidateList(String searchId) {
+  public List<CandidateDTO> getCandidateList(String searchId) {
 
-    ContactDTO contactDTO = null;
-    List<ContactDTO> listContactDTO = new ArrayList<>();
+    UserDTO contact = null;
+    CandidateDTO candidate;
+    List<CandidateDTO> listCandidate = new ArrayList<>();
 
     String apiResponse =
         restUtil.newGetMethod(Constant.CANDIDATE_LIST_URL.replace("{searchId}", searchId));
     if (CommonUtil.checkNullString(apiResponse)) {
       log.error("Error while fetching candidate list from Galaxy.");
-      return listContactDTO;
+      return listCandidate;
     }
 
     JsonObject jsonObjects = (JsonObject) JsonParser.parseString(apiResponse);
@@ -132,15 +134,18 @@ public class SearchUtil {
     }
     Gson gson = new Gson();
     for (JsonElement jsonElement : jsonArray) {
-      contactDTO =
-          gson.fromJson(jsonElement.getAsJsonObject().get("contact"), new TypeToken<ContactDTO>() {
+      contact =
+          gson.fromJson(jsonElement.getAsJsonObject().get("contact"), new TypeToken<UserDTO>() {
             /**
             *
             */
             private static final long serialVersionUID = 1L;
           }.getType());
-      listContactDTO.add(contactDTO);
+      candidate = new CandidateDTO();
+      candidate.setId(jsonElement.getAsJsonObject().get("id").getAsString());
+      candidate.setContact(contact);
+      listCandidate.add(candidate);
     }
-    return listContactDTO;
+    return listCandidate;
   }
 }
