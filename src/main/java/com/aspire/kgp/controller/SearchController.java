@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.aspire.kgp.dto.ContactDTO;
+import com.aspire.kgp.dto.CandidateDTO;
 import com.aspire.kgp.model.User;
 import com.aspire.kgp.util.SearchUtil;
 import com.fasterxml.jackson.databind.ser.FilterProvider;
@@ -50,14 +50,18 @@ public class SearchController {
   @ApiOperation(value = "Get Candidate list")
   @GetMapping(value = {"/searches/{searchId}/candidates"})
   public MappingJacksonValue getCandidateList(@PathVariable("searchId") String searchId) {
-    List<ContactDTO> listContact = searchUtil.getCandidateList(searchId);
+    List<CandidateDTO> listCandidate = searchUtil.getCandidateList(searchId);
 
-    SimpleBeanPropertyFilter contactFilter = SimpleBeanPropertyFilter.filterOutAllExcept("id",
+    SimpleBeanPropertyFilter userFilter = SimpleBeanPropertyFilter.filterOutAllExcept("id",
         "firstName", "lastName", "workEmail", "currentJobTitle", "company");
 
-    FilterProvider filters = new SimpleFilterProvider().addFilter("contactFilter", contactFilter);
+    SimpleBeanPropertyFilter candidateFilter =
+        SimpleBeanPropertyFilter.filterOutAllExcept("id", "contact");
 
-    MappingJacksonValue mapping = new MappingJacksonValue(listContact);
+    FilterProvider filters = new SimpleFilterProvider().addFilter("userFilter", userFilter)
+        .addFilter("candidateFilter", candidateFilter);
+
+    MappingJacksonValue mapping = new MappingJacksonValue(listCandidate);
     mapping.setFilters(filters);
     return mapping;
   }
