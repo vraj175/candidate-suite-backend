@@ -31,14 +31,18 @@ public class CandidateController {
   @GetMapping("/candidates/{candidateId}")
   public MappingJacksonValue getCandidateDetails(@PathVariable("candidateId") String candidateId) {
     CandidateDTO candidateDTO = candidateUtil.getCandidateDetails(candidateId);
+
+    SimpleBeanPropertyFilter candidateFilter =
+        SimpleBeanPropertyFilter.filterOutAllExcept("contact", "search");
+
     SimpleBeanPropertyFilter userFilter =
         SimpleBeanPropertyFilter.filterOutAllExcept("id", "firstName", "lastName");
 
-    SimpleBeanPropertyFilter searchFilter =
-        SimpleBeanPropertyFilter.filterOutAllExcept("id", "jobTitle", "jobNumber", "company", "partners", "recruiters", "researchers", "eas");
+    SimpleBeanPropertyFilter searchFilter = SimpleBeanPropertyFilter.filterOutAllExcept("id",
+        "jobTitle", "jobNumber", "company", "partners", "recruiters", "researchers", "eas");
 
     FilterProvider filters = new SimpleFilterProvider().addFilter("userFilter", userFilter)
-        .addFilter("searchFilter", searchFilter);
+        .addFilter("searchFilter", searchFilter).addFilter("candidateFilter", candidateFilter);
 
     MappingJacksonValue mapping = new MappingJacksonValue(candidateDTO);
     mapping.setFilters(filters);
