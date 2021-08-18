@@ -143,8 +143,7 @@ public class SearchUtil {
           }.getType());
       candidate = new CandidateDTO();
       candidate.setId(jsonElement.getAsJsonObject().get("id").getAsString());
-      if (contact != null)
-        candidate.setContact(contact);
+      candidate.setContact(contact);
       listCandidate.add(candidate);
     }
     return listCandidate;
