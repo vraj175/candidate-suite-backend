@@ -14,9 +14,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.aspire.kgp.constant.Constant;
 import com.aspire.kgp.dto.CandidateDTO;
 import com.aspire.kgp.dto.CompanyDTO;
-import com.aspire.kgp.dto.CompanyInfoDTO;
-import com.aspire.kgp.dto.CompanySearchDTO;
-import com.aspire.kgp.dto.ContactDTO;
 import com.aspire.kgp.dto.UserDTO;
 import com.aspire.kgp.exception.NotFoundException;
 import com.aspire.kgp.model.User;
@@ -57,7 +54,7 @@ public class CompanyController {
 	public MappingJacksonValue getCompanyDetails(@PathVariable("candidateId") String candidateId) {
 		UserDTO userDTO = companyUtil.getCompanyDetails(candidateId);
 		SimpleBeanPropertyFilter userFilter = SimpleBeanPropertyFilter.filterOutAllExcept("id", "currentJobTitle",
-				"company", "location");
+				"company", "country");
 		FilterProvider filters = new SimpleFilterProvider().addFilter("userFilter", userFilter);
 		MappingJacksonValue mapping = new MappingJacksonValue(userDTO);
 		mapping.setFilters(filters);
@@ -68,11 +65,11 @@ public class CompanyController {
 	@ApiOperation(value = "Get Company Info Details")
 	@GetMapping("/companyInfo/{candidateId}")
 	public MappingJacksonValue getCompanyInfoDetails(@PathVariable("candidateId") String candidateId) {
-		CompanyInfoDTO companyInfoDTO = companyUtil.getCompanyInfoDetails(candidateId);
-		SimpleBeanPropertyFilter companyInfoFilter = SimpleBeanPropertyFilter.filterOutAllExcept("id",
+		CandidateDTO candidateDTO = companyUtil.getCompanyInfoDetails(candidateId);
+		SimpleBeanPropertyFilter candidateFilter = SimpleBeanPropertyFilter.filterOutAllExcept("id",
 				"kgpInterviewDate1", "kgpInterviewDate2", "kgpInterviewDate3", "interviews");
-		FilterProvider filters = new SimpleFilterProvider().addFilter("companyInfoFilter", companyInfoFilter);
-		MappingJacksonValue mapping = new MappingJacksonValue(companyInfoDTO);
+		FilterProvider filters = new SimpleFilterProvider().addFilter("candidateFilter", candidateFilter);
+		MappingJacksonValue mapping = new MappingJacksonValue(candidateDTO);
 		mapping.setFilters(filters);
 
 		return mapping;

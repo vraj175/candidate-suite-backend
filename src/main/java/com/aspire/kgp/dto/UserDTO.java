@@ -21,15 +21,14 @@ public class UserDTO {
 	@SerializedName("current_job_title")
 	private String currentJobTitle;
 	private CompanyDTO company;
-	@SerializedName("country")
-	private String location;
+	private String country;
 
-	public String getLocation() {
-		return location;
+	public String getCountry() {
+		return country;
 	}
 
-	public void setLocation(String location) {
-		this.location = location;
+	public void setCountry(String country) {
+		this.country = country;
 	}
 
 	public String getCurrentJobTitle() {
