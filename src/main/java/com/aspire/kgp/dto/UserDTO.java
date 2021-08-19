@@ -18,25 +18,11 @@ public class UserDTO {
   private String role;
   @JsonIgnore
   private String token;
-  @SerializedName("current_job_title")
-  private String currentJobTitle;
-  private CompanyDTO company;
-
-  public String getCurrentJobTitle() {
-    return currentJobTitle;
-  }
-
-  public void setCurrentJobTitle(String currentJobTitle) {
-    this.currentJobTitle = currentJobTitle;
-  }
-
-  public CompanyDTO getCompany() {
-    return company;
-  }
-
-  public void setCompany(CompanyDTO company) {
-    this.company = company;
-  }
+  private String title;
+  private String country;
+  @SerializedName("linkedin_url")
+  private String linkedinUrl;
+  private String bio;
 
   public String getId() {
     return id;
@@ -94,4 +80,35 @@ public class UserDTO {
     this.token = token;
   }
 
+  public String getTitle() {
+    return title;
+  }
+
+  public void setTitle(String title) {
+    this.title = title;
+  }
+
+  public String getCountry() {
+    return country;
+  }
+
+  public void setCountry(String country) {
+    this.country = country;
+  }
+
+  public String getLinkedinUrl() {
+    return linkedinUrl;
+  }
+
+  public void setLinkedinUrl(String linkedinUrl) {
+    this.linkedinUrl = linkedinUrl;
+  }
+
+  public String getBio() {
+    return bio;
+  }
+
+  public void setBio(String bio) {
+    this.bio = bio;
+  }
 }
