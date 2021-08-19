@@ -38,12 +38,15 @@ public class CandidateController {
     SimpleBeanPropertyFilter userFilter =
         SimpleBeanPropertyFilter.filterOutAllExcept("id", "firstName", "lastName");
 
+    SimpleBeanPropertyFilter contactFilter =
+        SimpleBeanPropertyFilter.filterOutAllExcept("id", "firstName", "lastName");
+
     SimpleBeanPropertyFilter searchFilter = SimpleBeanPropertyFilter.filterOutAllExcept("id",
         "jobTitle", "jobNumber", "company", "partners", "recruiters", "researchers", "eas");
 
-    FilterProvider filters =
-        new SimpleFilterProvider().addFilter("candidateFilter", candidateFilter)
-            .addFilter("userFilter", userFilter).addFilter("searchFilter", searchFilter);
+    FilterProvider filters = new SimpleFilterProvider()
+        .addFilter("candidateFilter", candidateFilter).addFilter("userFilter", userFilter)
+        .addFilter("searchFilter", searchFilter).addFilter("contactFilter", contactFilter);
 
     MappingJacksonValue mapping = new MappingJacksonValue(candidateDTO);
     mapping.setFilters(filters);
