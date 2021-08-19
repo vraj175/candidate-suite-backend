@@ -68,7 +68,12 @@ public class CompanyController {
 		CandidateDTO candidateDTO = companyUtil.getCompanyInfoDetails(candidateId);
 		SimpleBeanPropertyFilter candidateFilter = SimpleBeanPropertyFilter.filterOutAllExcept("id",
 				"kgpInterviewDate1", "kgpInterviewDate2", "kgpInterviewDate3", "interviews");
-		FilterProvider filters = new SimpleFilterProvider().addFilter("candidateFilter", candidateFilter);
+		SimpleBeanPropertyFilter interviewFilter = SimpleBeanPropertyFilter.filterOutAllExcept("id", "method",
+				"comments", "position", "interviewDate", "client");
+		SimpleBeanPropertyFilter userFilter = SimpleBeanPropertyFilter.filterOutAllExcept("id", "firstName",
+				"lastName");
+		FilterProvider filters = new SimpleFilterProvider().addFilter("candidateFilter", candidateFilter)
+				.addFilter("interviewFilter", interviewFilter).addFilter("userFilter", userFilter);
 		MappingJacksonValue mapping = new MappingJacksonValue(candidateDTO);
 		mapping.setFilters(filters);
 

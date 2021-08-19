@@ -63,10 +63,10 @@ public class CompanyUtil {
 	public CandidateDTO getCompanyInfoDetails(String candidateId) {
 		String apiResponse = restUtil.newGetMethod(Constant.CANDIDATE_URL.replace("{candidateId}", candidateId));
 		JsonObject json = (JsonObject) JsonParser.parseString(apiResponse);
-		JsonObject jsonObj = json.getAsJsonObject("candidate");
+		JsonObject jsonObjects = json.getAsJsonObject("candidate");
 		CandidateDTO candidateDTO = new CandidateDTO();
 		try {
-			candidateDTO = new Gson().fromJson(jsonObj, new TypeToken<CandidateDTO>() {
+			candidateDTO = new Gson().fromJson(jsonObjects, new TypeToken<CandidateDTO>() {
 
 				/**
 				 * 

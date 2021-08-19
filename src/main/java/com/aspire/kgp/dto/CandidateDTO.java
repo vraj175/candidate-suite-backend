@@ -1,5 +1,7 @@
 package com.aspire.kgp.dto;
 
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonFilter;
 import com.google.gson.annotations.SerializedName;
 
@@ -16,7 +18,7 @@ public class CandidateDTO {
 
 	@SerializedName("kgp_interview_date3")
 	private String kgpInterviewDate3;
-	private String[] interviews;
+	private List<InterviewDTO> interviews;
 
 	public String getKgpInterviewDate1() {
 		return kgpInterviewDate1;
@@ -42,11 +44,11 @@ public class CandidateDTO {
 		this.kgpInterviewDate3 = kgpInterviewDate3;
 	}
 
-	public String[] getInterviews() {
+	public List<InterviewDTO> getInterviews() {
 		return interviews;
 	}
 
-	public void setInterviews(String[] interviews) {
+	public void setInterviews(List<InterviewDTO> interviews) {
 		this.interviews = interviews;
 	}
 
