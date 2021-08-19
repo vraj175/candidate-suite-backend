@@ -170,14 +170,13 @@ public class UserServiceImpl implements UserService {
     dt = c.getTime();
 
     String auth = userName + ":" + password;
-    String encoding = Base64.getEncoder().encodeToString(auth.getBytes(StandardCharsets.UTF_8));
+    String token = Base64.getEncoder().encodeToString(auth.getBytes(StandardCharsets.UTF_8));
     
-    String token = Jwts.builder().setSubject("candidateSuite").setExpiration(dt)
-        .setIssuer(Constant.FROM_MAIL).claim("authentication", "Basic " + encoding)
+    return Jwts.builder().setSubject("candidateSuite").setExpiration(dt)
+        .setIssuer(Constant.FROM_MAIL).claim("authentication", "Basic " + token)
         .signWith(SignatureAlgorithm.HS512,
             Base64.getEncoder().encodeToString("candidateSuite-secret-key".getBytes()))
         .compact();
-    return token;
   }
 
   @Transactional(value = TxType.MANDATORY)
