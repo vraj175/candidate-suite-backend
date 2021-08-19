@@ -34,7 +34,7 @@ public class CompanyUtil {
 				private static final long serialVersionUID = 1L;
 			}.getType());
 		} catch (JsonSyntaxException e) {
-			throw new APIException("Error in coverting json to object");
+			throw new APIException(Constant.JSON_PROCESSING_EXCEPTION + e.getMessage());
 		}
 	}
 
@@ -51,10 +51,10 @@ public class CompanyUtil {
 				private static final long serialVersionUID = 1L;
 			}.getType());
 			if (contactDTO == null) {
-				throw new APIException("Candidate Id is not valid");
+				throw new APIException(Constant.INVALID_CANDIDATE_ID);
 			}
 		} catch (JsonSyntaxException e) {
-			throw new APIException("Error in coverting json to object");
+			throw new APIException(Constant.JSON_PROCESSING_EXCEPTION + e.getMessage());
 		}
 		return contactDTO;
 	}
@@ -73,10 +73,10 @@ public class CompanyUtil {
 				private static final long serialVersionUID = 1L;
 			}.getType());
 			if (candidateDTO == null) {
-				throw new APIException("Candidate Id is not valid");
+				throw new APIException(Constant.INVALID_CANDIDATE_ID);
 			}
 		} catch (JsonSyntaxException e) {
-			throw new APIException("Error in coverting json to object");
+			throw new APIException(Constant.JSON_PROCESSING_EXCEPTION + e.getMessage());
 		}
 		return candidateDTO;
 	}

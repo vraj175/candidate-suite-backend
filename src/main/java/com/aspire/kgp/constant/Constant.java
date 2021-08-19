@@ -55,6 +55,7 @@ public class Constant {
 	public static final String PARSING_ERROR = "Exception while parsing";
 	public static final String ILLEGAL_ARGUMENT_EXCEPTION = "Illegal Argument Exception";
 	public static final String JSON_PROCESSING_EXCEPTION = "JsonProcessingException : ";
+	public static final String INVALID_CANDIDATE_ID = "Invalid Candidate Id";
 
 	public static final String EMPTY_STRING = "";
 	public static final String ASC = "ASC";
