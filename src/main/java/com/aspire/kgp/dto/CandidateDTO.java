@@ -20,6 +20,30 @@ public class CandidateDTO {
 	private String kgpInterviewDate3;
 	private List<InterviewDTO> interviews;
 
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
+
+	public UserDTO getContact() {
+		return contact;
+	}
+
+	public void setContact(UserDTO contact) {
+		this.contact = contact;
+	}
+
+	public SearchDTO getSearch() {
+		return search;
+	}
+
+	public void setSearch(SearchDTO search) {
+		this.search = search;
+	}
+
 	public String getKgpInterviewDate1() {
 		return kgpInterviewDate1;
 	}
@@ -52,27 +76,4 @@ public class CandidateDTO {
 		this.interviews = interviews;
 	}
 
-	public String getId() {
-		return id;
-	}
-
-	public void setId(String id) {
-		this.id = id;
-	}
-
-	public UserDTO getContact() {
-		return contact;
-	}
-
-	public void setContact(UserDTO contact) {
-		this.contact = contact;
-	}
-
-	public SearchDTO getSearch() {
-		return search;
-	}
-
-	public void setSearch(SearchDTO search) {
-		this.search = search;
-	}
 }

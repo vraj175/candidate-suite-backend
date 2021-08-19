@@ -13,8 +13,8 @@ import org.springframework.stereotype.Component;
 
 import com.aspire.kgp.constant.Constant;
 import com.aspire.kgp.dto.CandidateDTO;
+import com.aspire.kgp.dto.ContactDTO;
 import com.aspire.kgp.dto.SearchDTO;
-import com.aspire.kgp.dto.UserDTO;
 import com.aspire.kgp.exception.APIException;
 import com.aspire.kgp.exception.NotFoundException;
 import com.aspire.kgp.model.User;
@@ -115,7 +115,7 @@ public class SearchUtil {
 
   public List<CandidateDTO> getCandidateList(String searchId) {
 
-    UserDTO contact = null;
+    ContactDTO contact = null;
     CandidateDTO candidate;
     List<CandidateDTO> listCandidate = new ArrayList<>();
 
@@ -135,7 +135,7 @@ public class SearchUtil {
     Gson gson = new Gson();
     for (JsonElement jsonElement : jsonArray) {
       contact =
-          gson.fromJson(jsonElement.getAsJsonObject().get("contact"), new TypeToken<UserDTO>() {
+          gson.fromJson(jsonElement.getAsJsonObject().get("contact"), new TypeToken<ContactDTO>() {
             /**
             *
             */

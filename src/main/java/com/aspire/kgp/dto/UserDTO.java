@@ -6,101 +6,109 @@ import com.google.gson.annotations.SerializedName;
 
 @JsonFilter("userFilter")
 public class UserDTO {
-	private String id;
-	@SerializedName("first_name")
-	private String firstName;
-	@SerializedName("last_name")
-	private String lastName;
-	@SerializedName("work_email")
-	private String workEmail;
-	@SerializedName(value = "private_email", alternate = { "email" })
-	private String email;
-	private String role;
-	@JsonIgnore
-	private String token;
-	@SerializedName("current_job_title")
-	private String currentJobTitle;
-	private CompanyDTO company;
-	private String country;
+  private String id;
+  @SerializedName("first_name")
+  private String firstName;
+  @SerializedName("last_name")
+  private String lastName;
+  @SerializedName("work_email")
+  private String workEmail;
+  @SerializedName(value = "private_email", alternate = {"email"})
+  private String email;
+  private String role;
+  @JsonIgnore
+  private String token;
+  private String title;
+  private String country;
+  @SerializedName("linkedin_url")
+  private String linkedinUrl;
+  private String bio;
 
-	public String getCountry() {
-		return country;
-	}
+  public String getId() {
+    return id;
+  }
 
-	public void setCountry(String country) {
-		this.country = country;
-	}
+  public void setId(String id) {
+    this.id = id;
+  }
 
-	public String getCurrentJobTitle() {
-		return currentJobTitle;
-	}
+  public String getFirstName() {
+    return firstName;
+  }
 
-	public void setCurrentJobTitle(String currentJobTitle) {
-		this.currentJobTitle = currentJobTitle;
-	}
+  public void setFirstName(String firstName) {
+    this.firstName = firstName;
+  }
 
-	public CompanyDTO getCompany() {
-		return company;
-	}
+  public String getLastName() {
+    return lastName;
+  }
 
-	public void setCompany(CompanyDTO company) {
-		this.company = company;
-	}
+  public void setLastName(String lastName) {
+    this.lastName = lastName;
+  }
 
-	public String getId() {
-		return id;
-	}
+  public String getWorkEmail() {
+    return workEmail;
+  }
 
-	public void setId(String id) {
-		this.id = id;
-	}
+  public void setWorkEmail(String workEmail) {
+    this.workEmail = workEmail;
+  }
 
-	public String getFirstName() {
-		return firstName;
-	}
+  public String getEmail() {
+    return email;
+  }
 
-	public void setFirstName(String firstName) {
-		this.firstName = firstName;
-	}
+  public void setEmail(String email) {
+    this.email = email;
+  }
 
-	public String getLastName() {
-		return lastName;
-	}
+  public String getRole() {
+    return role;
+  }
 
-	public void setLastName(String lastName) {
-		this.lastName = lastName;
-	}
+  public void setRole(String role) {
+    this.role = role;
+  }
 
-	public String getWorkEmail() {
-		return workEmail;
-	}
+  public String getToken() {
+    return token;
+  }
 
-	public void setWorkEmail(String workEmail) {
-		this.workEmail = workEmail;
-	}
+  public void setToken(String token) {
+    this.token = token;
+  }
 
-	public String getEmail() {
-		return email;
-	}
+  public String getTitle() {
+    return title;
+  }
 
-	public void setEmail(String email) {
-		this.email = email;
-	}
+  public void setTitle(String title) {
+    this.title = title;
+  }
 
-	public String getRole() {
-		return role;
-	}
+  public String getCountry() {
+    return country;
+  }
 
-	public void setRole(String role) {
-		this.role = role;
-	}
+  public void setCountry(String country) {
+    this.country = country;
+  }
 
-	public String getToken() {
-		return token;
-	}
+  public String getLinkedinUrl() {
+    return linkedinUrl;
+  }
 
-	public void setToken(String token) {
-		this.token = token;
-	}
+  public void setLinkedinUrl(String linkedinUrl) {
+    this.linkedinUrl = linkedinUrl;
+  }
 
+  public String getBio() {
+    return bio;
+  }
+
+  public void setBio(String bio) {
+    this.bio = bio;
+  }
 }

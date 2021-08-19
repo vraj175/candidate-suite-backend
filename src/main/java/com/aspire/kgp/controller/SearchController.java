@@ -52,13 +52,13 @@ public class SearchController {
   public MappingJacksonValue getCandidateList(@PathVariable("searchId") String searchId) {
     List<CandidateDTO> listCandidate = searchUtil.getCandidateList(searchId);
 
-    SimpleBeanPropertyFilter userFilter = SimpleBeanPropertyFilter.filterOutAllExcept("id",
+    SimpleBeanPropertyFilter contactFilter = SimpleBeanPropertyFilter.filterOutAllExcept("id",
         "firstName", "lastName", "workEmail", "currentJobTitle", "company");
 
     SimpleBeanPropertyFilter candidateFilter =
         SimpleBeanPropertyFilter.filterOutAllExcept("id", "contact");
 
-    FilterProvider filters = new SimpleFilterProvider().addFilter("userFilter", userFilter)
+    FilterProvider filters = new SimpleFilterProvider().addFilter("contactFilter", contactFilter)
         .addFilter("candidateFilter", candidateFilter);
 
     MappingJacksonValue mapping = new MappingJacksonValue(listCandidate);

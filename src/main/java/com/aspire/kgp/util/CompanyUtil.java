@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 import com.aspire.kgp.constant.Constant;
 import com.aspire.kgp.dto.CandidateDTO;
 import com.aspire.kgp.dto.CompanyDTO;
-import com.aspire.kgp.dto.UserDTO;
+import com.aspire.kgp.dto.ContactDTO;
 import com.aspire.kgp.exception.APIException;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
@@ -38,33 +38,32 @@ public class CompanyUtil {
 		}
 	}
 
-	public UserDTO getCompanyDetails(String candidateId) {
+	public ContactDTO getCompanyDetails(String candidateId) {
 		String apiResponse = restUtil.newGetMethod(Constant.CANDIDATE_URL.replace("{candidateId}", candidateId));
 		JsonObject json = (JsonObject) JsonParser.parseString(apiResponse);
-		JsonObject jsonObj = json.getAsJsonObject("contact");
-		UserDTO userDTO = new UserDTO();
+		ContactDTO contactDTO;
 		try {
-			userDTO = new Gson().fromJson(jsonObj, new TypeToken<UserDTO>() {
+			contactDTO = new Gson().fromJson(json.getAsJsonObject("contact"), new TypeToken<ContactDTO>() {
 
 				/**
 				 * 
 				 */
 				private static final long serialVersionUID = 1L;
 			}.getType());
-			if (userDTO == null) {
+			if (contactDTO == null) {
 				throw new APIException("Candidate Id is not valid");
 			}
 		} catch (JsonSyntaxException e) {
 			throw new APIException("Error in coverting json to object");
 		}
-		return userDTO;
+		return contactDTO;
 	}
 
 	public CandidateDTO getCompanyInfoDetails(String candidateId) {
 		String apiResponse = restUtil.newGetMethod(Constant.CANDIDATE_URL.replace("{candidateId}", candidateId));
 		JsonObject json = (JsonObject) JsonParser.parseString(apiResponse);
 		JsonObject jsonObjects = json.getAsJsonObject("candidate");
-		CandidateDTO candidateDTO = new CandidateDTO();
+		CandidateDTO candidateDTO;
 		try {
 			candidateDTO = new Gson().fromJson(jsonObjects, new TypeToken<CandidateDTO>() {
 

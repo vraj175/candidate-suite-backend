@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.aspire.kgp.constant.Constant;
 import com.aspire.kgp.dto.CandidateDTO;
 import com.aspire.kgp.dto.CompanyDTO;
-import com.aspire.kgp.dto.UserDTO;
+import com.aspire.kgp.dto.ContactDTO;
 import com.aspire.kgp.exception.NotFoundException;
 import com.aspire.kgp.model.User;
 import com.aspire.kgp.util.CompanyUtil;
@@ -52,26 +52,26 @@ public class CompanyController {
 	@ApiOperation(value = "Get Company Info Details")
 	@GetMapping("/company/{candidateId}")
 	public MappingJacksonValue getCompanyDetails(@PathVariable("candidateId") String candidateId) {
-		UserDTO userDTO = companyUtil.getCompanyDetails(candidateId);
-		SimpleBeanPropertyFilter userFilter = SimpleBeanPropertyFilter.filterOutAllExcept("id", "currentJobTitle",
-				"company", "country");
-		FilterProvider filters = new SimpleFilterProvider().addFilter("userFilter", userFilter);
-		MappingJacksonValue mapping = new MappingJacksonValue(userDTO);
+		ContactDTO contactDTO = companyUtil.getCompanyDetails(candidateId);
+		SimpleBeanPropertyFilter contactFilter = SimpleBeanPropertyFilter.filterOutAllExcept(Constant.ID,
+				Constant.CURRENT_JOB_TITLE, "company", Constant.COUNTRY);
+		FilterProvider filters = new SimpleFilterProvider().addFilter("contactFilter", contactFilter);
+		MappingJacksonValue mapping = new MappingJacksonValue(contactDTO);
 		mapping.setFilters(filters);
 
 		return mapping;
 	}
 
-	@ApiOperation(value = "Get Company Info Details")
+	@ApiOperation(value = "Get candidate Details")
 	@GetMapping("/companyInfo/{candidateId}")
 	public MappingJacksonValue getCompanyInfoDetails(@PathVariable("candidateId") String candidateId) {
 		CandidateDTO candidateDTO = companyUtil.getCompanyInfoDetails(candidateId);
-		SimpleBeanPropertyFilter candidateFilter = SimpleBeanPropertyFilter.filterOutAllExcept("id",
+		SimpleBeanPropertyFilter candidateFilter = SimpleBeanPropertyFilter.filterOutAllExcept(Constant.ID,
 				"kgpInterviewDate1", "kgpInterviewDate2", "kgpInterviewDate3", "interviews");
-		SimpleBeanPropertyFilter interviewFilter = SimpleBeanPropertyFilter.filterOutAllExcept("id", "method",
+		SimpleBeanPropertyFilter interviewFilter = SimpleBeanPropertyFilter.filterOutAllExcept(Constant.ID, "method",
 				"comments", "position", "interviewDate", "client");
-		SimpleBeanPropertyFilter userFilter = SimpleBeanPropertyFilter.filterOutAllExcept("id", "firstName",
-				"lastName");
+		SimpleBeanPropertyFilter userFilter = SimpleBeanPropertyFilter.filterOutAllExcept(Constant.ID,
+				Constant.FIRST_NAME, Constant.LAST_NAME);
 		FilterProvider filters = new SimpleFilterProvider().addFilter("candidateFilter", candidateFilter)
 				.addFilter("interviewFilter", interviewFilter).addFilter("userFilter", userFilter);
 		MappingJacksonValue mapping = new MappingJacksonValue(candidateDTO);
