@@ -18,6 +18,8 @@ public class SearchDTO {
   private List<UserDTO> recruiters;
   private List<UserDTO> researchers;
   private List<UserDTO> eas;
+  @SerializedName("client_team")
+  private List<ClientTeamDTO> clienTeam;
 
   public String getId() {
     return id;
@@ -89,6 +91,14 @@ public class SearchDTO {
 
   public void setEas(List<UserDTO> eas) {
     this.eas = eas;
+  }
+
+  public List<ClientTeamDTO> getClienTeam() {
+    return clienTeam;
+  }
+
+  public void setClienTeam(List<ClientTeamDTO> clienTeam) {
+    this.clienTeam = clienTeam;
   }
 
 }

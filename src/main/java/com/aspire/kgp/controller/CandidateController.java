@@ -31,14 +31,49 @@ public class CandidateController {
   @GetMapping("/candidates/{candidateId}")
   public MappingJacksonValue getCandidateDetails(@PathVariable("candidateId") String candidateId) {
     CandidateDTO candidateDTO = candidateUtil.getCandidateDetails(candidateId);
+
+    SimpleBeanPropertyFilter candidateFilter =
+        SimpleBeanPropertyFilter.filterOutAllExcept("contact", "search");
+    
     SimpleBeanPropertyFilter userFilter =
         SimpleBeanPropertyFilter.filterOutAllExcept("id", "firstName", "lastName");
 
-    SimpleBeanPropertyFilter searchFilter =
-        SimpleBeanPropertyFilter.filterOutAllExcept("id", "jobTitle", "jobNumber", "company", "partners", "recruiters", "researchers", "eas");
+    SimpleBeanPropertyFilter searchFilter = SimpleBeanPropertyFilter.filterOutAllExcept("id",
+        "jobTitle", "jobNumber", "company", "partners", "recruiters", "researchers", "eas");
 
-    FilterProvider filters = new SimpleFilterProvider().addFilter("userFilter", userFilter)
-        .addFilter("searchFilter", searchFilter);
+    FilterProvider filters =
+        new SimpleFilterProvider().addFilter("candidateFilter", candidateFilter)
+            .addFilter("userFilter", userFilter).addFilter("searchFilter", searchFilter);
+
+    MappingJacksonValue mapping = new MappingJacksonValue(candidateDTO);
+    mapping.setFilters(filters);
+
+    return mapping;
+  }
+
+  @ApiOperation(value = "Get Team Member Details")
+  @GetMapping(value = {"/candidates/{candidateId}/team-members"})
+  public MappingJacksonValue getBiosDetails(@PathVariable("candidateId") String candidateId) {
+    CandidateDTO candidateDTO = candidateUtil.getCandidateDetails(candidateId);
+    SimpleBeanPropertyFilter candidateFilter =
+        SimpleBeanPropertyFilter.filterOutAllExcept("search");
+
+    SimpleBeanPropertyFilter searchFilter = SimpleBeanPropertyFilter.filterOutAllExcept("clienTeam",
+        "partners", "recruiters", "researchers", "eas");
+
+    SimpleBeanPropertyFilter userFilter = SimpleBeanPropertyFilter.filterOutAllExcept("id",
+        "firstName", "lastName", "email", "title", "country", "linkedinUrl", "bio");
+
+    SimpleBeanPropertyFilter clientTeamFilter =
+        SimpleBeanPropertyFilter.filterOutAllExcept("id", "contact");
+
+    SimpleBeanPropertyFilter contactFilter = SimpleBeanPropertyFilter.filterOutAllExcept("id",
+        "firstName", "lastName", "currentJobTitle", "mobilePhone", "publishedBio", "company");
+
+    FilterProvider filters = new SimpleFilterProvider()
+        .addFilter("candidateFilter", candidateFilter).addFilter("searchFilter", searchFilter)
+        .addFilter("userFilter", userFilter).addFilter("clientTeamFilter", clientTeamFilter)
+        .addFilter("contactFilter", contactFilter);
 
     MappingJacksonValue mapping = new MappingJacksonValue(candidateDTO);
     mapping.setFilters(filters);
