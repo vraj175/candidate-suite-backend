@@ -4,8 +4,17 @@ import com.fasterxml.jackson.annotation.JsonFilter;
 
 @JsonFilter("candidateFilter")
 public class CandidateDTO {
+  private String id;
   private UserDTO contact;
   private SearchDTO search;
+
+  public String getId() {
+    return id;
+  }
+
+  public void setId(String id) {
+    this.id = id;
+  }
 
   public UserDTO getContact() {
     return contact;

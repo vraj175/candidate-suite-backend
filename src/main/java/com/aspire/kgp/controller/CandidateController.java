@@ -34,7 +34,7 @@ public class CandidateController {
 
     SimpleBeanPropertyFilter candidateFilter =
         SimpleBeanPropertyFilter.filterOutAllExcept("contact", "search");
-    
+
     SimpleBeanPropertyFilter userFilter =
         SimpleBeanPropertyFilter.filterOutAllExcept("id", "firstName", "lastName");
 
