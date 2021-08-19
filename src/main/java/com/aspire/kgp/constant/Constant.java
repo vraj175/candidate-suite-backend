@@ -97,4 +97,27 @@ public class Constant {
   public static final String EMAILS_CONTENT_MAP = "emailsStaticContents";
   public static final String CANDIDATE_INVITE_EMAIL_TEMPLATE = "candidate-invitation.ftl";
   
+  // Json Fields
+  public static final String FIRST_NAME = "firstName";
+  public static final String LAST_NAME = "lastName";
+  public static final String ID = "id";
+  public static final String CONTACT = "contact";
+  public static final String SEARCH = "search";
+  public static final String JOB_TITLE = "jobTitle";
+  public static final String JOB_NUMBER = "jobNumber";
+  public static final String COMPANY = "company";
+  public static final String PARTNERS = "partners";
+  public static final String RECRUITERS = "recruiters";
+  public static final String RESEARCHERS = "researchers";
+  public static final String EAS = "eas";
+  public static final String CLIENT_TEAM = "clienTeam";
+  public static final String EMAIL = "email";
+  public static final String TITLE = "title";
+  public static final String COUNTRY = "country";
+  public static final String LINKEDIN_URL = "linkedinUrl";
+  public static final String BIO = "bio";
+  public static final String CURRENT_JOB_TITLE = "currentJobTitle";
+  public static final String MOBILE_PHONE = "mobilePhone";
+  public static final String PUBLISHED_BIO = "publishedBio";
+
 }

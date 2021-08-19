@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.aspire.kgp.constant.Constant;
 import com.aspire.kgp.dto.CandidateDTO;
 import com.aspire.kgp.util.CandidateUtil;
 import com.fasterxml.jackson.databind.ser.FilterProvider;
@@ -33,13 +34,14 @@ public class CandidateController {
     CandidateDTO candidateDTO = candidateUtil.getCandidateDetails(candidateId);
 
     SimpleBeanPropertyFilter candidateFilter =
-        SimpleBeanPropertyFilter.filterOutAllExcept("contact", "search");
+        SimpleBeanPropertyFilter.filterOutAllExcept(Constant.CONTACT, Constant.SEARCH);
 
-    SimpleBeanPropertyFilter userAndContactFilter =
-        SimpleBeanPropertyFilter.filterOutAllExcept("id", "firstName", "lastName");
+    SimpleBeanPropertyFilter userAndContactFilter = SimpleBeanPropertyFilter
+        .filterOutAllExcept(Constant.ID, Constant.FIRST_NAME, Constant.LAST_NAME);
 
-    SimpleBeanPropertyFilter searchFilter = SimpleBeanPropertyFilter.filterOutAllExcept("id",
-        "jobTitle", "jobNumber", "company", "partners", "recruiters", "researchers", "eas");
+    SimpleBeanPropertyFilter searchFilter = SimpleBeanPropertyFilter.filterOutAllExcept(Constant.ID,
+        Constant.JOB_TITLE, Constant.JOB_NUMBER, Constant.COMPANY, Constant.PARTNERS,
+        Constant.RECRUITERS, Constant.RESEARCHERS, Constant.EAS);
 
     FilterProvider filters = new SimpleFilterProvider()
         .addFilter("candidateFilter", candidateFilter).addFilter("userFilter", userAndContactFilter)
@@ -56,19 +58,22 @@ public class CandidateController {
   public MappingJacksonValue getBiosDetails(@PathVariable("candidateId") String candidateId) {
     CandidateDTO candidateDTO = candidateUtil.getCandidateDetails(candidateId);
     SimpleBeanPropertyFilter candidateFilter =
-        SimpleBeanPropertyFilter.filterOutAllExcept("search");
+        SimpleBeanPropertyFilter.filterOutAllExcept(Constant.SEARCH);
 
-    SimpleBeanPropertyFilter searchFilter = SimpleBeanPropertyFilter.filterOutAllExcept("clienTeam",
-        "partners", "recruiters", "researchers", "eas");
+    SimpleBeanPropertyFilter searchFilter =
+        SimpleBeanPropertyFilter.filterOutAllExcept(Constant.CLIENT_TEAM, Constant.PARTNERS,
+            Constant.RECRUITERS, Constant.RESEARCHERS, Constant.EAS);
 
-    SimpleBeanPropertyFilter userFilter = SimpleBeanPropertyFilter.filterOutAllExcept("id",
-        "firstName", "lastName", "email", "title", "country", "linkedinUrl", "bio");
+    SimpleBeanPropertyFilter userFilter = SimpleBeanPropertyFilter.filterOutAllExcept(Constant.ID,
+        Constant.FIRST_NAME, Constant.LAST_NAME, Constant.EMAIL, Constant.TITLE, Constant.COUNTRY,
+        Constant.LINKEDIN_URL, Constant.BIO);
 
     SimpleBeanPropertyFilter clientTeamFilter =
-        SimpleBeanPropertyFilter.filterOutAllExcept("id", "contact");
+        SimpleBeanPropertyFilter.filterOutAllExcept(Constant.ID, Constant.CONTACT);
 
-    SimpleBeanPropertyFilter contactFilter = SimpleBeanPropertyFilter.filterOutAllExcept("id",
-        "firstName", "lastName", "currentJobTitle", "mobilePhone", "publishedBio", "company");
+    SimpleBeanPropertyFilter contactFilter = SimpleBeanPropertyFilter.filterOutAllExcept(
+        Constant.ID, Constant.FIRST_NAME, Constant.LAST_NAME, Constant.CURRENT_JOB_TITLE,
+        Constant.MOBILE_PHONE, Constant.PUBLISHED_BIO, Constant.COMPANY);
 
     FilterProvider filters = new SimpleFilterProvider()
         .addFilter("candidateFilter", candidateFilter).addFilter("searchFilter", searchFilter)
