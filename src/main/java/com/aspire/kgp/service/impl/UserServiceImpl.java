@@ -3,6 +3,8 @@ package com.aspire.kgp.service.impl;
 import java.nio.charset.StandardCharsets;
 import java.sql.Timestamp;
 import java.util.Base64;
+import java.util.Calendar;
+import java.util.Date;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
@@ -33,6 +35,9 @@ import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -72,9 +77,10 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
-  public User saveOrUpdatePartner(String galaxyId, String email, String password, boolean isLastLogin) {
+  public User saveOrUpdatePartner(String galaxyId, String email, String password,
+      boolean isLastLogin) {
     User user = findByEmail(email);
-    if(user==null) {
+    if (user == null) {
       user = new User();
     }
     user.setRole(roleService.findByName(Constant.PARTNER));
@@ -82,7 +88,7 @@ public class UserServiceImpl implements UserService {
     user.setPassword(CommonUtil.hash(password));
     user.setGalaxyId(galaxyId);
     user.setLanguage(languageService.findByName(Constant.ENGLISH));
-    if(isLastLogin) {
+    if (isLastLogin) {
       user.setLastLogin(new Timestamp(System.currentTimeMillis()));
     }
     return saveorUpdate(user);
@@ -93,8 +99,8 @@ public class UserServiceImpl implements UserService {
   public boolean inviteUser(String candidateId, String language, String email, String[] bcc,
       User invitedBy, boolean removeDuplicate, HttpServletRequest request) {
     boolean response = false;
-    String apiResponse = restUtil
-        .newGetMethod(Constant.CONDIDATE_URL.replace("{candidateId}", candidateId));
+    String apiResponse =
+        restUtil.newGetMethod(Constant.CONDIDATE_URL.replace("{candidateId}", candidateId));
     JsonObject json = (JsonObject) JsonParser.parseString(apiResponse);
     CandidateDTO candidateDTO =
         new Gson().fromJson(json.get("candidate"), new TypeToken<CandidateDTO>() {
@@ -135,23 +141,42 @@ public class UserServiceImpl implements UserService {
       searchService.saveorUpdate(userSearch);
 
       UserDTO userDTO = candidateDTO.getContact();
-      userDTO.setToken("");
+      userDTO.setToken(generateJwtToken(email, email));
       userDTO.setEmail(email);
 
       log.info("staring email sending...");
       if (user.isPasswordReset()) {
         // mail for add user or mail for invite
+        log.info("mail for add user or mail for invite");
         mailService.sendEmail(email, bcc, Constant.INVITE_SUBJECT,
             mailService.getInviteEmailContent(request, userDTO, language), null);
       } else {
+        log.info("mail for add search");
         // mail for add search
       }
       response = true;
     } catch (Exception e) {
-      log.debug(e);
+      log.info(e);
       throw new APIException("Error in send invite");
     }
     return response;
+  }
+
+  private String generateJwtToken(String userName, String password) {
+    Date dt = new Date();
+    Calendar c = Calendar.getInstance();
+    c.setTime(dt);
+    c.add(Calendar.DATE, 1);
+    dt = c.getTime();
+
+    String auth = userName + ":" + password;
+    String token = Base64.getEncoder().encodeToString(auth.getBytes(StandardCharsets.UTF_8));
+    
+    return Jwts.builder().setSubject("candidateSuite").setExpiration(dt)
+        .setIssuer(Constant.FROM_MAIL).claim("authentication", "Basic " + token)
+        .signWith(SignatureAlgorithm.HS512,
+            Base64.getEncoder().encodeToString("candidateSuite-secret-key".getBytes()))
+        .compact();
   }
 
   @Transactional(value = TxType.MANDATORY)
@@ -176,36 +201,33 @@ public class UserServiceImpl implements UserService {
 
   @Override
   public UserDTO getContactDetails(String contactId) {
-    String apiResponse = restUtil
-        .newGetMethod(Constant.CONTACT_URL.replace("{contactId}", contactId));
+    String apiResponse =
+        restUtil.newGetMethod(Constant.CONTACT_URL.replace("{contactId}", contactId));
     JsonObject json = (JsonObject) JsonParser.parseString(apiResponse);
-    UserDTO userDTO =
-        new Gson().fromJson(json, new TypeToken<UserDTO>() {
+    UserDTO userDTO = new Gson().fromJson(json, new TypeToken<UserDTO>() {
 
-          /**
-           * 
-           */
-          private static final long serialVersionUID = 1L;
-        }.getType());
+      /**
+       * 
+       */
+      private static final long serialVersionUID = 1L;
+    }.getType());
     if (userDTO == null) {
       throw new APIException("Invalid contactId");
     }
     return userDTO;
   }
-  
+
   @Override
   public UserDTO getGalaxyUserDetails(String userId) {
-    String apiResponse = restUtil
-        .newGetMethod(Constant.USER_URL.replace("{userId}", userId));
+    String apiResponse = restUtil.newGetMethod(Constant.USER_URL.replace("{userId}", userId));
     JsonObject json = (JsonObject) JsonParser.parseString(apiResponse);
-    UserDTO userDTO =
-        new Gson().fromJson(json, new TypeToken<UserDTO>() {
+    UserDTO userDTO = new Gson().fromJson(json, new TypeToken<UserDTO>() {
 
-          /**
-           * 
-           */
-          private static final long serialVersionUID = 1L;
-        }.getType());
+      /**
+       * 
+       */
+      private static final long serialVersionUID = 1L;
+    }.getType());
     if (userDTO == null) {
       throw new APIException("Invalid userId");
     }
