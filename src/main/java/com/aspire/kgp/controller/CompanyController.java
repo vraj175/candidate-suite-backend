@@ -14,7 +14,10 @@ import org.springframework.web.bind.annotation.RestController;
 import com.aspire.kgp.constant.Constant;
 import com.aspire.kgp.dto.CandidateDTO;
 import com.aspire.kgp.dto.CompanyDTO;
+import com.aspire.kgp.dto.CompanyInfoDTO;
 import com.aspire.kgp.dto.CompanySearchDTO;
+import com.aspire.kgp.dto.ContactDTO;
+import com.aspire.kgp.dto.UserDTO;
 import com.aspire.kgp.exception.NotFoundException;
 import com.aspire.kgp.model.User;
 import com.aspire.kgp.util.CompanyUtil;
@@ -51,8 +54,27 @@ public class CompanyController {
 
 	@ApiOperation(value = "Get Company Info Details")
 	@GetMapping("/company/{candidateId}")
-	public CompanySearchDTO getCandidateDetails(@PathVariable("candidateId") String candidateId) {
-		CompanySearchDTO companySearchDTO = companyUtil.getCompanyDetails(candidateId);
-		return companySearchDTO;
+	public MappingJacksonValue getCompanyDetails(@PathVariable("candidateId") String candidateId) {
+		UserDTO userDTO = companyUtil.getCompanyDetails(candidateId);
+		SimpleBeanPropertyFilter userFilter = SimpleBeanPropertyFilter.filterOutAllExcept("id", "currentJobTitle",
+				"company", "location");
+		FilterProvider filters = new SimpleFilterProvider().addFilter("userFilter", userFilter);
+		MappingJacksonValue mapping = new MappingJacksonValue(userDTO);
+		mapping.setFilters(filters);
+
+		return mapping;
+	}
+
+	@ApiOperation(value = "Get Company Info Details")
+	@GetMapping("/companyInfo/{candidateId}")
+	public MappingJacksonValue getCompanyInfoDetails(@PathVariable("candidateId") String candidateId) {
+		CompanyInfoDTO companyInfoDTO = companyUtil.getCompanyInfoDetails(candidateId);
+		SimpleBeanPropertyFilter companyInfoFilter = SimpleBeanPropertyFilter.filterOutAllExcept("id",
+				"kgpInterviewDate1", "kgpInterviewDate2", "kgpInterviewDate3", "interviews");
+		FilterProvider filters = new SimpleFilterProvider().addFilter("companyInfoFilter", companyInfoFilter);
+		MappingJacksonValue mapping = new MappingJacksonValue(companyInfoDTO);
+		mapping.setFilters(filters);
+
+		return mapping;
 	}
 }

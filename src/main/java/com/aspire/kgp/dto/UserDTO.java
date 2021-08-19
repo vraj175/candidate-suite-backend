@@ -6,92 +6,102 @@ import com.google.gson.annotations.SerializedName;
 
 @JsonFilter("userFilter")
 public class UserDTO {
-  private String id;
-  @SerializedName("first_name")
-  private String firstName;
-  @SerializedName("last_name")
-  private String lastName;
-  @SerializedName("work_email")
-  private String workEmail;
-  @SerializedName(value = "private_email", alternate = {"email"})
-  private String email;
-  private String role;
-  @JsonIgnore
-  private String token;
-  @SerializedName("current_job_title")
-  private String currentJobTitle;
-  private CompanyDTO company;
+	private String id;
+	@SerializedName("first_name")
+	private String firstName;
+	@SerializedName("last_name")
+	private String lastName;
+	@SerializedName("work_email")
+	private String workEmail;
+	@SerializedName(value = "private_email", alternate = { "email" })
+	private String email;
+	private String role;
+	@JsonIgnore
+	private String token;
+	@SerializedName("current_job_title")
+	private String currentJobTitle;
+	private CompanyDTO company;
+	@SerializedName("country")
+	private String location;
 
-  public String getCurrentJobTitle() {
-    return currentJobTitle;
-  }
+	public String getLocation() {
+		return location;
+	}
 
-  public void setCurrentJobTitle(String currentJobTitle) {
-    this.currentJobTitle = currentJobTitle;
-  }
+	public void setLocation(String location) {
+		this.location = location;
+	}
 
-  public CompanyDTO getCompany() {
-    return company;
-  }
+	public String getCurrentJobTitle() {
+		return currentJobTitle;
+	}
 
-  public void setCompany(CompanyDTO company) {
-    this.company = company;
-  }
+	public void setCurrentJobTitle(String currentJobTitle) {
+		this.currentJobTitle = currentJobTitle;
+	}
 
-  public String getId() {
-    return id;
-  }
+	public CompanyDTO getCompany() {
+		return company;
+	}
 
-  public void setId(String id) {
-    this.id = id;
-  }
+	public void setCompany(CompanyDTO company) {
+		this.company = company;
+	}
 
-  public String getFirstName() {
-    return firstName;
-  }
+	public String getId() {
+		return id;
+	}
 
-  public void setFirstName(String firstName) {
-    this.firstName = firstName;
-  }
+	public void setId(String id) {
+		this.id = id;
+	}
 
-  public String getLastName() {
-    return lastName;
-  }
+	public String getFirstName() {
+		return firstName;
+	}
 
-  public void setLastName(String lastName) {
-    this.lastName = lastName;
-  }
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
+	}
 
-  public String getWorkEmail() {
-    return workEmail;
-  }
+	public String getLastName() {
+		return lastName;
+	}
 
-  public void setWorkEmail(String workEmail) {
-    this.workEmail = workEmail;
-  }
+	public void setLastName(String lastName) {
+		this.lastName = lastName;
+	}
 
-  public String getEmail() {
-    return email;
-  }
+	public String getWorkEmail() {
+		return workEmail;
+	}
 
-  public void setEmail(String email) {
-    this.email = email;
-  }
+	public void setWorkEmail(String workEmail) {
+		this.workEmail = workEmail;
+	}
 
-  public String getRole() {
-    return role;
-  }
+	public String getEmail() {
+		return email;
+	}
 
-  public void setRole(String role) {
-    this.role = role;
-  }
+	public void setEmail(String email) {
+		this.email = email;
+	}
 
-  public String getToken() {
-    return token;
-  }
+	public String getRole() {
+		return role;
+	}
 
-  public void setToken(String token) {
-    this.token = token;
-  }
+	public void setRole(String role) {
+		this.role = role;
+	}
+
+	public String getToken() {
+		return token;
+	}
+
+	public void setToken(String token) {
+		this.token = token;
+	}
 
 }
