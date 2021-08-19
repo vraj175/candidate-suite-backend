@@ -58,7 +58,7 @@ public class UserController {
     if (user == null) {
       throw new NotFoundException("Invalid Partner Id");
     }
-    
+
     boolean result = service.inviteUser(invite.getCandidateId(), invite.getLanguage(),
         invite.getEmail(), invite.getBcc(), user, invite.isRemoveDuplicate(), request);
     if (result) {
@@ -87,9 +87,9 @@ public class UserController {
     }
     userDTO.setEmail(user.getEmail());
     userDTO.setRole(role);
-    
-    SimpleBeanPropertyFilter filter = SimpleBeanPropertyFilter.filterOutAllExcept("id", "firstName",
-        "lastName", "email", "role");
+
+    SimpleBeanPropertyFilter filter =
+        SimpleBeanPropertyFilter.filterOutAllExcept("id", "firstName", "lastName", "email", "role");
 
     FilterProvider filters = new SimpleFilterProvider().addFilter("userFilter", filter);
     MappingJacksonValue mapping = new MappingJacksonValue(userDTO);
