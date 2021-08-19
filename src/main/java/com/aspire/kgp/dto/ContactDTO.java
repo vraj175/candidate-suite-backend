@@ -8,16 +8,6 @@ public class ContactDTO extends UserDTO {
 	@SerializedName("current_job_title")
 	private String currentJobTitle;
 	private CompanyDTO company;
-	@SerializedName("country")
-	private String location;
-
-	public String getLocation() {
-		return location;
-	}
-
-	public void setLocation(String location) {
-		this.location = location;
-	}
 
 	public String getCurrentJobTitle() {
 		return currentJobTitle;
