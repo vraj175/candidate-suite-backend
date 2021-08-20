@@ -157,8 +157,8 @@ public class UserServiceImpl implements UserService {
         Map<String, String> staticContentsMap = StaticContentsMultiLanguageUtil
             .getStaticContentsMap(languageCode, Constant.EMAILS_CONTENT_MAP);
         String mailSubject = staticContentsMap.get("candidate.suite.invitation.email.subject");
-        mailService.sendEmail(email, bcc, mailSubject,
-            mailService.getInviteEmailContent(request, userDTO, staticContentsMap), null);
+        mailService.sendEmail(email, bcc, mailSubject, mailService.getEmailContent(request, userDTO,
+            staticContentsMap, Constant.CANDIDATE_INVITE_EMAIL_TEMPLATE), null);
       } else {
         log.info("mail for add search");
         // mail for add search
@@ -287,10 +287,14 @@ public class UserServiceImpl implements UserService {
     UserDTO userDTO = getContactDetails(user.getGalaxyId());
     userDTO.setToken(generateJwtToken(email, email));
     userDTO.setEmail(email);
-
+    log.info("staring email sending...");
+    String languageCode = CommonUtil.getLanguageCode(user.getLanguage().getName());
+    Map<String, String> staticContentsMap = StaticContentsMultiLanguageUtil
+        .getStaticContentsMap(languageCode, Constant.EMAILS_CONTENT_MAP);
+    String mailSubject = staticContentsMap.get("candidate.suite.forgot.email.subject");
     try {
-      mailService.sendEmail(email, null, Constant.FORGOT_PASSWORD_SUBJECT,
-          mailService.getForgotPasswordContent(request, userDTO, user.getLanguage().getName()), null);
+      mailService.sendEmail(email, null, mailSubject, mailService.getEmailContent(request, userDTO,
+          staticContentsMap, Constant.FORGOT_EMAIL_TEMPLATE), null);
       response = true;
     } catch (IOException | TemplateException e) {
       log.info(e);

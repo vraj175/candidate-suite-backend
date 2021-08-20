@@ -14,10 +14,8 @@ public interface MailService {
   public void sendEmail(String mailTo, String[] mailBcc, String mailSubject, String mailContent,
       List<Object> attachments);
 
-  public String getInviteEmailContent(HttpServletRequest request, UserDTO userDTO,
-      Map<String, String> staticContentsMap) throws IOException, TemplateException;
-
-  public String getForgotPasswordContent(HttpServletRequest request, UserDTO userDTO,
-      String language) throws IOException, TemplateException;
+  public String getEmailContent(HttpServletRequest request, UserDTO userDTO,
+      Map<String, String> staticContentsMap, String templateName)
+      throws IOException, TemplateException;
 
 }

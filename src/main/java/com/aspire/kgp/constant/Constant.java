@@ -99,6 +99,7 @@ public class Constant {
 
 	public static final String EMAILS_CONTENT_MAP = "emailsStaticContents";
 	public static final String CANDIDATE_INVITE_EMAIL_TEMPLATE = "candidate-invitation.ftl";
+	public static final String FORGOT_EMAIL_TEMPLATE = "forgot-password.ftl";
 
 	// Json Fields
 	public static final String FIRST_NAME = "firstName";
