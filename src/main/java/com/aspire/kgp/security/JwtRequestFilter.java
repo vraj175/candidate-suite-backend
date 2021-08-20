@@ -65,13 +65,15 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     } else if (currentUrl.indexOf("/api/") < 0) {
       log.info("not need to authorize ");
       apiKeyValidate = false;
-    } else if (!(currentUrl.indexOf("/initialize") > 0 || currentUrl.indexOf("/user/invite") > 0 || currentUrl.indexOf("/user/forgotPassword") > 0)) {
+    } else if (!(currentUrl.indexOf("/initialize") > 0 || currentUrl.indexOf("/user/invite") > 0
+        || currentUrl.indexOf("/user/forgotPassword") > 0
+        || currentUrl.indexOf("/user/resetPassword") > 0)) {
       jwtTokenValidate = true;
     }
-    
+
     ObjectMapper objectMapper = new ObjectMapper();
     Map<String, Object> errorDetails = new HashMap<>();
-    if(apiKeyValidate) {
+    if (apiKeyValidate) {
       String apiKey = request.getHeader(Constant.API_KEY);
       try {
         apiKeyCheck(apiKey);
@@ -90,7 +92,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         return;
       }
     }
-    if(jwtTokenValidate) {
+    if (jwtTokenValidate) {
       String accessToken = request.getHeader(Constant.AUTHORIZATION);
       log.info("accessToken:" + accessToken);
       try {
@@ -111,7 +113,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         return;
       }
     }
-    
+
     filterChain.doFilter(request, response);
     log.info("filter end");
   }
