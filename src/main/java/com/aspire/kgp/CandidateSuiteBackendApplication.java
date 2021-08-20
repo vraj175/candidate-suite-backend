@@ -85,7 +85,7 @@ public class CandidateSuiteBackendApplication {
   
   private SecurityContext publicSecurityContext() {
     return SecurityContext.builder().securityReferences(defaultAuth())
-        .forPaths(PathSelectors.regex("/api/v1.0/public/*")).build();
+        .forPaths(PathSelectors.regex("/api/v1.*")).build();
   }
 
   private List<SecurityReference> defaultAuth() {
