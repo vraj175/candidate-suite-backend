@@ -85,4 +85,17 @@ public class MailServiceImpl implements MailService {
     return stringWriter.getBuffer().toString();
   }
 
+  @Override
+  public String getForgotPasswordContent(HttpServletRequest request, UserDTO userDTO,
+      String language) throws IOException, TemplateException {
+    String homeUrl = "";
+    String serverUrl = CommonUtil.getServerUrl(request) + request.getContextPath();
+    return "<p>Dear "
+        + userDTO.getFirstName() + " " + userDTO.getLastName()
+        + ", You can Reset your password by clicking on  <a href=\"" + serverUrl + homeUrl
+        + "?token=" + userDTO.getToken()
+        + "\" target=\"_blank\" style=\"color:#5443d5; font-weight: bold; text-decoration:none;\">"
+        + serverUrl + "</a>   Sincerely, Admin</p>";
+  }
+
 }

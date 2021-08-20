@@ -25,4 +25,6 @@ public interface UserService {
   
   User saveOrUpdatePartner(String userName, String password);
 
+  boolean forgotPassword(HttpServletRequest request, String email);
+
 }

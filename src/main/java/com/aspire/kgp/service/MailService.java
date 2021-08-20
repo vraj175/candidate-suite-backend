@@ -15,5 +15,8 @@ public interface MailService {
 
   public String getInviteEmailContent(HttpServletRequest request, UserDTO userDTO, String language)
       throws IOException, TemplateException;
+  
+  public String getForgotPasswordContent(HttpServletRequest request, UserDTO userDTO, String language)
+      throws IOException, TemplateException;
 
 }
