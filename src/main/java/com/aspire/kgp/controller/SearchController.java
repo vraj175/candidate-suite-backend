@@ -37,7 +37,18 @@ public class SearchController {
   public MappingJacksonValue getCompanyList(HttpServletRequest request,
       @PathVariable("stage") String stage) {
     User user = (User) request.getAttribute("user");
-    return searchUtil.applySearchFilter(searchUtil.getSearchListForUser(user, stage));
+    List<CandidateDTO> candidateList = searchUtil.getSearchListForUser(user, stage);
+
+    SimpleBeanPropertyFilter searchFilter = SimpleBeanPropertyFilter.filterOutAllExcept("id",
+        "jobTitle", "jobNumber", "stage", "company");
+    SimpleBeanPropertyFilter candidateFilter =
+        SimpleBeanPropertyFilter.filterOutAllExcept("id", "search");
+
+    FilterProvider filters = new SimpleFilterProvider().addFilter("searchFilter", searchFilter)
+        .addFilter("candidateFilter", candidateFilter);
+    MappingJacksonValue mapping = new MappingJacksonValue(candidateList);
+    mapping.setFilters(filters);
+    return mapping;
   }
 
   @ApiOperation(value = "Get Search list for company")
