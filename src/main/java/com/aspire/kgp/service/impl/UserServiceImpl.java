@@ -6,6 +6,7 @@ import java.sql.Timestamp;
 import java.util.Base64;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
@@ -33,6 +34,7 @@ import com.aspire.kgp.service.UserSearchService;
 import com.aspire.kgp.service.UserService;
 import com.aspire.kgp.util.CommonUtil;
 import com.aspire.kgp.util.RestUtil;
+import com.aspire.kgp.util.StaticContentsMultiLanguageUtil;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
@@ -151,8 +153,12 @@ public class UserServiceImpl implements UserService {
       if (user.isPasswordReset()) {
         // mail for add user or mail for invite
         log.info("mail for add user or mail for invite");
-        mailService.sendEmail(email, bcc, Constant.INVITE_SUBJECT,
-            mailService.getInviteEmailContent(request, userDTO, language), null);
+        String languageCode = CommonUtil.getLanguageCode(language);
+        Map<String, String> staticContentsMap = StaticContentsMultiLanguageUtil
+            .getStaticContentsMap(languageCode, Constant.EMAILS_CONTENT_MAP);
+        String mailSubject = staticContentsMap.get("candidate.suite.invitation.email.subject");
+        mailService.sendEmail(email, bcc, mailSubject,
+            mailService.getInviteEmailContent(request, userDTO, staticContentsMap), null);
       } else {
         log.info("mail for add search");
         // mail for add search

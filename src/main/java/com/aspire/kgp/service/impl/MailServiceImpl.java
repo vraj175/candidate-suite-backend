@@ -23,7 +23,6 @@ import com.aspire.kgp.constant.Constant;
 import com.aspire.kgp.dto.UserDTO;
 import com.aspire.kgp.service.MailService;
 import com.aspire.kgp.util.CommonUtil;
-import com.aspire.kgp.util.StaticContentsMultiLanguageUtil;
 
 import freemarker.template.Configuration;
 import freemarker.template.TemplateException;
@@ -66,7 +65,7 @@ public class MailServiceImpl implements MailService {
   }
 
   @Override
-  public String getInviteEmailContent(HttpServletRequest request, UserDTO user, String language)
+  public String getInviteEmailContent(HttpServletRequest request, UserDTO user, Map<String, String> staticContentsMap)
       throws IOException, TemplateException {
     log.info("starting getInviteEmailContent");
     StringWriter stringWriter = new StringWriter();
@@ -76,9 +75,7 @@ public class MailServiceImpl implements MailService {
     model.put("name", user.getFirstName() + " " + user.getLastName());
     model.put("token", user.getToken());
     model.put("userEmail", user.getEmail());
-    String languageCode = CommonUtil.getLanguageCode(language);
-    model.put("staticContentsMap", StaticContentsMultiLanguageUtil
-        .getStaticContentsMap(languageCode, Constant.EMAILS_CONTENT_MAP));
+    model.put("staticContentsMap", staticContentsMap);
     configuration.getTemplate(Constant.CANDIDATE_INVITE_EMAIL_TEMPLATE).process(model,
         stringWriter);
     log.info("ending getInviteEmailContent");
