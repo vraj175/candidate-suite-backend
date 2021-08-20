@@ -322,7 +322,7 @@ public class UserServiceImpl implements UserService {
     user.setPassword(CommonUtil.hash(resetPasswordDTO.getNewPassword()));
     user.setPasswordReset(Boolean.FALSE);
     user.setModifyDate(new Timestamp(System.currentTimeMillis()));
-    user = saveorUpdate(user);
+    saveorUpdate(user);
     response = true;
 
     return response;
