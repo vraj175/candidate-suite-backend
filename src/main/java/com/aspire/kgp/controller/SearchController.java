@@ -37,7 +37,18 @@ public class SearchController {
   public MappingJacksonValue getCompanyList(HttpServletRequest request,
       @PathVariable("stage") String stage) {
     User user = (User) request.getAttribute("user");
-    return searchUtil.applySearchFilter(searchUtil.getSearchListForUser(user, stage));
+    List<CandidateDTO> candidateList = searchUtil.getSearchListForUser(user, stage);
+
+    SimpleBeanPropertyFilter searchFilter = SimpleBeanPropertyFilter.filterOutAllExcept("id",
+        "jobTitle", "jobNumber", "stage", "company");
+    SimpleBeanPropertyFilter candidateFilter =
+        SimpleBeanPropertyFilter.filterOutAllExcept("id", "search");
+
+    FilterProvider filters = new SimpleFilterProvider().addFilter("searchFilter", searchFilter)
+        .addFilter("candidateFilter", candidateFilter);
+    MappingJacksonValue mapping = new MappingJacksonValue(candidateList);
+    mapping.setFilters(filters);
+    return mapping;
   }
 
   @ApiOperation(value = "Get Search list for company")
@@ -52,13 +63,13 @@ public class SearchController {
   public MappingJacksonValue getCandidateList(@PathVariable("searchId") String searchId) {
     List<CandidateDTO> listCandidate = searchUtil.getCandidateList(searchId);
 
-    SimpleBeanPropertyFilter userFilter = SimpleBeanPropertyFilter.filterOutAllExcept("id",
+    SimpleBeanPropertyFilter contactFilter = SimpleBeanPropertyFilter.filterOutAllExcept("id",
         "firstName", "lastName", "workEmail", "currentJobTitle", "company");
 
     SimpleBeanPropertyFilter candidateFilter =
         SimpleBeanPropertyFilter.filterOutAllExcept("id", "contact");
 
-    FilterProvider filters = new SimpleFilterProvider().addFilter("userFilter", userFilter)
+    FilterProvider filters = new SimpleFilterProvider().addFilter("contactFilter", contactFilter)
         .addFilter("candidateFilter", candidateFilter);
 
     MappingJacksonValue mapping = new MappingJacksonValue(listCandidate);

@@ -13,8 +13,8 @@ import org.springframework.stereotype.Component;
 
 import com.aspire.kgp.constant.Constant;
 import com.aspire.kgp.dto.CandidateDTO;
+import com.aspire.kgp.dto.ContactDTO;
 import com.aspire.kgp.dto.SearchDTO;
-import com.aspire.kgp.dto.UserDTO;
 import com.aspire.kgp.exception.APIException;
 import com.aspire.kgp.exception.NotFoundException;
 import com.aspire.kgp.model.User;
@@ -49,7 +49,7 @@ public class SearchUtil {
     return getSearchListFromJsonResponse(searchListResponse, stage);
   }
 
-  public final List<SearchDTO> getSearchListForUser(User user, String stage) {
+  public final List<CandidateDTO> getSearchListForUser(User user, String stage) {
     List<UserSearch> searches = searchService.findByUser(user);
 
     if (searches.isEmpty()) {
@@ -83,7 +83,20 @@ public class SearchUtil {
 
     String searchListResponse =
         restUtil.postMethod(Constant.SEARCHES_LIST_BY_IDS, paramJSON.toString());
-    return getSearchListFromJsonResponse(searchListResponse, stage);
+    List<SearchDTO> searchList = getSearchListFromJsonResponse(searchListResponse, stage);
+    List<CandidateDTO> candidateList = new ArrayList<>();
+    for (SearchDTO search : searchList) {
+
+      searches.forEach(userSearch -> {
+        if (userSearch.getSearchId().equals(search.getId())) {
+          CandidateDTO candidate = new CandidateDTO();
+          candidate.setId(userSearch.getCandidateId());
+          candidate.setSearch(search);
+          candidateList.add(candidate);
+        }
+      });
+    }
+    return candidateList;
   }
 
   private List<SearchDTO> getSearchListFromJsonResponse(String searchListResponse, String stage) {
@@ -115,7 +128,7 @@ public class SearchUtil {
 
   public List<CandidateDTO> getCandidateList(String searchId) {
 
-    UserDTO contact = null;
+    ContactDTO contact = null;
     CandidateDTO candidate;
     List<CandidateDTO> listCandidate = new ArrayList<>();
 
@@ -135,7 +148,7 @@ public class SearchUtil {
     Gson gson = new Gson();
     for (JsonElement jsonElement : jsonArray) {
       contact =
-          gson.fromJson(jsonElement.getAsJsonObject().get("contact"), new TypeToken<UserDTO>() {
+          gson.fromJson(jsonElement.getAsJsonObject().get("contact"), new TypeToken<ContactDTO>() {
             /**
             *
             */

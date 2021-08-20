@@ -23,7 +23,6 @@ import com.aspire.kgp.constant.Constant;
 import com.aspire.kgp.dto.UserDTO;
 import com.aspire.kgp.service.MailService;
 import com.aspire.kgp.util.CommonUtil;
-import com.aspire.kgp.util.StaticContentsMultiLanguageUtil;
 
 import freemarker.template.Configuration;
 import freemarker.template.TemplateException;
@@ -66,23 +65,34 @@ public class MailServiceImpl implements MailService {
   }
 
   @Override
-  public String getInviteEmailContent(HttpServletRequest request, UserDTO user, String language)
+  public String getInviteEmailContent(HttpServletRequest request, UserDTO user, Map<String, String> staticContentsMap)
       throws IOException, TemplateException {
     log.info("starting getInviteEmailContent");
     StringWriter stringWriter = new StringWriter();
     Map<String, Object> model = new HashMap<>();
     model.put("serverUrl", CommonUtil.getServerUrl(request) + request.getContextPath());
-    model.put("homeUrl", "");
+    model.put("homeUrl", "/login");
     model.put("name", user.getFirstName() + " " + user.getLastName());
     model.put("token", user.getToken());
     model.put("userEmail", user.getEmail());
-    String languageCode = CommonUtil.getLanguageCode(language);
-    model.put("staticContentsMap", StaticContentsMultiLanguageUtil
-        .getStaticContentsMap(languageCode, Constant.EMAILS_CONTENT_MAP));
+    model.put("staticContentsMap", staticContentsMap);
     configuration.getTemplate(Constant.CANDIDATE_INVITE_EMAIL_TEMPLATE).process(model,
         stringWriter);
     log.info("ending getInviteEmailContent");
     return stringWriter.getBuffer().toString();
+  }
+
+  @Override
+  public String getForgotPasswordContent(HttpServletRequest request, UserDTO userDTO,
+      String language) throws IOException, TemplateException {
+    String homeUrl = "/login";
+    String serverUrl = CommonUtil.getServerUrl(request) + request.getContextPath();
+    return "<p>Dear "
+        + userDTO.getFirstName() + " " + userDTO.getLastName()
+        + ", You can Reset your password by clicking on  <a href=\"" + serverUrl + homeUrl
+        + "?token=" + userDTO.getToken()
+        + "\" target=\"_blank\" style=\"color:#5443d5; font-weight: bold; text-decoration:none;\">"
+        + serverUrl + "</a>   Sincerely, Admin</p>";
   }
 
 }
