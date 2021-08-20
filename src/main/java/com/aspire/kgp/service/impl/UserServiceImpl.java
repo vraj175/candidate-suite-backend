@@ -1,5 +1,6 @@
 package com.aspire.kgp.service.impl;
 
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.sql.Timestamp;
 import java.util.Base64;
@@ -21,6 +22,7 @@ import com.aspire.kgp.constant.Constant;
 import com.aspire.kgp.dto.CandidateDTO;
 import com.aspire.kgp.dto.UserDTO;
 import com.aspire.kgp.exception.APIException;
+import com.aspire.kgp.exception.NotFoundException;
 import com.aspire.kgp.exception.ValidateException;
 import com.aspire.kgp.model.User;
 import com.aspire.kgp.model.UserSearch;
@@ -38,6 +40,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
+import freemarker.template.TemplateException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 
@@ -261,6 +264,40 @@ public class UserServiceImpl implements UserService {
       }
     }
     return null;
+  }
+
+  @Override
+  @Transactional(value = TxType.REQUIRES_NEW)
+  public boolean forgotPassword(HttpServletRequest request, String email) {
+    boolean response = false;
+    User user = findByEmail(email);
+    if (user == null) {
+      throw new NotFoundException("User is not available");
+    }
+
+    if (user.getRole().getName().equalsIgnoreCase(Constant.PARTNER)) {
+      throw new APIException("you can't change the partner password from this app");
+    }
+
+    user.setPassword(CommonUtil.hash(email));
+    user.setPasswordReset(Boolean.TRUE);
+    user.setModifyDate(new Timestamp(System.currentTimeMillis()));
+    user = saveorUpdate(user);
+
+    UserDTO userDTO = getContactDetails(user.getGalaxyId());
+    userDTO.setToken(generateJwtToken(email, email));
+    userDTO.setEmail(email);
+
+    try {
+      mailService.sendEmail(email, null, Constant.FORGOT_PASSWORD_SUBJECT,
+          mailService.getForgotPasswordContent(request, userDTO, user.getLanguage().getName()), null);
+      response = true;
+    } catch (IOException | TemplateException e) {
+      log.info(e);
+      throw new APIException("Error in send Email");
+    }
+
+    return response;
   }
 
 }

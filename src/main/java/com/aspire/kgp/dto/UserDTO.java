@@ -23,6 +23,7 @@ public class UserDTO {
   @SerializedName("linkedin_url")
   private String linkedinUrl;
   private String bio;
+  private boolean passwordReset;
 
   public String getId() {
     return id;
@@ -110,5 +111,13 @@ public class UserDTO {
 
   public void setBio(String bio) {
     this.bio = bio;
+  }
+
+  public boolean isPasswordReset() {
+    return passwordReset;
+  }
+
+  public void setPasswordReset(boolean passwordReset) {
+    this.passwordReset = passwordReset;
   }
 }

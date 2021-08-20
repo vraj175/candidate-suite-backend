@@ -87,13 +87,30 @@ public class UserController {
     }
     userDTO.setEmail(user.getEmail());
     userDTO.setRole(role);
+    userDTO.setPasswordReset(user.isPasswordReset());
 
     SimpleBeanPropertyFilter filter =
-        SimpleBeanPropertyFilter.filterOutAllExcept("id", "firstName", "lastName", "email", "role");
+        SimpleBeanPropertyFilter.filterOutAllExcept("id", "firstName", "lastName", "email", "role", "passwordReset");
 
     FilterProvider filters = new SimpleFilterProvider().addFilter("userFilter", filter);
     MappingJacksonValue mapping = new MappingJacksonValue(userDTO);
     mapping.setFilters(filters);
     return mapping;
+  }
+  
+  @ApiOperation(value = "Forgot password for candidate")
+  @PostMapping(value = "/public/user/forgotPassword")
+  public ResponseEntity<Object> inviteUser(@RequestBody String email,
+      HttpServletRequest request) {
+
+    boolean result = service.forgotPassword(request, email);
+    if (result) {
+      Map<String, Object> body = new LinkedHashMap<>();
+      body.put(Constant.TIMESTAMP, new Date());
+      body.put(Constant.STATUS, HttpStatus.OK);
+      body.put(Constant.MESSAGE, "Forgot password e-mail is sent to the provided user.");
+      return new ResponseEntity<>(body, HttpStatus.OK);
+    }
+    throw new APIException("Something went wront");
   }
 }

@@ -71,7 +71,7 @@ public class MailServiceImpl implements MailService {
     StringWriter stringWriter = new StringWriter();
     Map<String, Object> model = new HashMap<>();
     model.put("serverUrl", CommonUtil.getServerUrl(request) + request.getContextPath());
-    model.put("homeUrl", "");
+    model.put("homeUrl", "/login");
     model.put("name", user.getFirstName() + " " + user.getLastName());
     model.put("token", user.getToken());
     model.put("userEmail", user.getEmail());
@@ -80,6 +80,19 @@ public class MailServiceImpl implements MailService {
         stringWriter);
     log.info("ending getInviteEmailContent");
     return stringWriter.getBuffer().toString();
+  }
+
+  @Override
+  public String getForgotPasswordContent(HttpServletRequest request, UserDTO userDTO,
+      String language) throws IOException, TemplateException {
+    String homeUrl = "/login";
+    String serverUrl = CommonUtil.getServerUrl(request) + request.getContextPath();
+    return "<p>Dear "
+        + userDTO.getFirstName() + " " + userDTO.getLastName()
+        + ", You can Reset your password by clicking on  <a href=\"" + serverUrl + homeUrl
+        + "?token=" + userDTO.getToken()
+        + "\" target=\"_blank\" style=\"color:#5443d5; font-weight: bold; text-decoration:none;\">"
+        + serverUrl + "</a>   Sincerely, Admin</p>";
   }
 
 }
