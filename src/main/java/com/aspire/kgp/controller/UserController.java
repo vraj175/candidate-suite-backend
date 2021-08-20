@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.aspire.kgp.constant.Constant;
 import com.aspire.kgp.dto.InviteDTO;
+import com.aspire.kgp.dto.ResetPasswordDTO;
 import com.aspire.kgp.dto.UserDTO;
 import com.aspire.kgp.exception.APIException;
 import com.aspire.kgp.exception.NotFoundException;
@@ -100,7 +101,7 @@ public class UserController {
   
   @ApiOperation(value = "Forgot password for candidate")
   @PostMapping(value = "/public/user/forgotPassword")
-  public ResponseEntity<Object> inviteUser(@RequestBody String email,
+  public ResponseEntity<Object> forgotUserPassword(@RequestBody String email,
       HttpServletRequest request) {
 
     boolean result = service.forgotPassword(request, email);
@@ -109,6 +110,21 @@ public class UserController {
       body.put(Constant.TIMESTAMP, new Date());
       body.put(Constant.STATUS, HttpStatus.OK);
       body.put(Constant.MESSAGE, "Forgot password e-mail is sent to the provided user.");
+      return new ResponseEntity<>(body, HttpStatus.OK);
+    }
+    throw new APIException("Something went wront");
+  }
+  
+  @ApiOperation(value = "Reset Password for User")
+  @PostMapping(value = "/user/resetPassword")
+  public ResponseEntity<Object> resetUserPassword(@Valid @RequestBody ResetPasswordDTO resetPasswordDTO,
+      HttpServletRequest request) {
+    boolean result = service.resetPassword(request, resetPasswordDTO);
+    if (result) {
+      Map<String, Object> body = new LinkedHashMap<>();
+      body.put(Constant.TIMESTAMP, new Date());
+      body.put(Constant.STATUS, HttpStatus.OK);
+      body.put(Constant.MESSAGE, "User Password reset successfully.");
       return new ResponseEntity<>(body, HttpStatus.OK);
     }
     throw new APIException("Something went wront");

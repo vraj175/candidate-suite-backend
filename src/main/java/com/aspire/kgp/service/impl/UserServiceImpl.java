@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import com.amazonaws.services.cognitoidp.model.AuthenticationResultType;
 import com.aspire.kgp.constant.Constant;
 import com.aspire.kgp.dto.CandidateDTO;
+import com.aspire.kgp.dto.ResetPasswordDTO;
 import com.aspire.kgp.dto.UserDTO;
 import com.aspire.kgp.exception.APIException;
 import com.aspire.kgp.exception.NotFoundException;
@@ -300,6 +301,32 @@ public class UserServiceImpl implements UserService {
       log.info(e);
       throw new APIException("Error in send Email");
     }
+
+    return response;
+  }
+
+  @Override
+  @Transactional(value = TxType.REQUIRES_NEW)
+  public boolean resetPassword(HttpServletRequest request, ResetPasswordDTO resetPasswordDTO) {
+    boolean response = false;
+    User user = findByEmail(resetPasswordDTO.getEmail());
+    if (user == null) {
+      throw new NotFoundException("User is not available");
+    }
+
+    if (user.getRole().getName().equalsIgnoreCase(Constant.PARTNER)) {
+      throw new APIException("you can't change the partner password from this app");
+    }
+
+    if (!CommonUtil.verifyHash(resetPasswordDTO.getOldPassword(), user.getPassword())) {
+      throw new APIException("old password doesn't match");
+    }
+
+    user.setPassword(CommonUtil.hash(resetPasswordDTO.getNewPassword()));
+    user.setPasswordReset(Boolean.FALSE);
+    user.setModifyDate(new Timestamp(System.currentTimeMillis()));
+    saveorUpdate(user);
+    response = true;
 
     return response;
   }
