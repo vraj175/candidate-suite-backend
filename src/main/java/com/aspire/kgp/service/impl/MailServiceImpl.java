@@ -71,7 +71,7 @@ public class MailServiceImpl implements MailService {
     StringWriter stringWriter = new StringWriter();
     Map<String, Object> model = new HashMap<>();
     model.put("serverUrl", CommonUtil.getServerUrl(request) + request.getContextPath());
-    model.put("homeUrl", "");
+    model.put("homeUrl", "/login");
     model.put("name", user.getFirstName() + " " + user.getLastName());
     model.put("token", user.getToken());
     model.put("userEmail", user.getEmail());
@@ -85,7 +85,7 @@ public class MailServiceImpl implements MailService {
   @Override
   public String getForgotPasswordContent(HttpServletRequest request, UserDTO userDTO,
       String language) throws IOException, TemplateException {
-    String homeUrl = "";
+    String homeUrl = "/login";
     String serverUrl = CommonUtil.getServerUrl(request) + request.getContextPath();
     return "<p>Dear "
         + userDTO.getFirstName() + " " + userDTO.getLastName()
