@@ -3,7 +3,7 @@
 	<property resource="application.properties" />
 	<property
 		resource="application-${spring.profiles.active}.properties" />
-	<property name="LOG_DIR" value="${logging.path}" />
+	<property name="LOG_DIR" value="${logging.file.path}" />
 	<property name="FILE_PREFIX" value="kgpCandidateSuite" />
 
 	<timestamp key="DATE" datePattern="yyyy-MM-dd" />
