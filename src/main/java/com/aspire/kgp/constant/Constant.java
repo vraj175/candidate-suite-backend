@@ -47,7 +47,7 @@ public class Constant {
 	public static final String CANDIDATE = "candidate";
 
 	/* Emails */
-	public static final String FROM_MAIL = "vivek.tanna@aspiresoftserv.com";//"candidatesuite@kingsleygate.com";
+	public static final String FROM_MAIL = "candidatesuite@kingsleygate.com";
 	public static final String SENDER_NAME = "Candidate Suite";
 	public static final String INVITE_SUBJECT = "Welcome to Kingsley Gate Partners Portal!";
 	public static final String FORGOT_PASSWORD_SUBJECT = "Forgot Password";
@@ -99,6 +99,7 @@ public class Constant {
 
 	public static final String EMAILS_CONTENT_MAP = "emailsStaticContents";
 	public static final String CANDIDATE_INVITE_EMAIL_TEMPLATE = "candidate-invitation.ftl";
+	public static final String FORGOT_EMAIL_TEMPLATE = "forgot-password.ftl";
 
 	// Json Fields
 	public static final String FIRST_NAME = "firstName";
