@@ -47,7 +47,7 @@ public class Constant {
 	public static final String CANDIDATE = "candidate";
 
 	/* Emails */
-	public static final String FROM_MAIL = "vivek.tanna@aspiresoftserv.com";//"candidatesuite@kingsleygate.com";
+	public static final String FROM_MAIL = "candidatesuite@kingsleygate.com";
 	public static final String SENDER_NAME = "Candidate Suite";
 	public static final String INVITE_SUBJECT = "Welcome to Kingsley Gate Partners Portal!";
 	public static final String FORGOT_PASSWORD_SUBJECT = "Forgot Password";
