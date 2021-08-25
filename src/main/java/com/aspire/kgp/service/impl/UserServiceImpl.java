@@ -1,8 +1,12 @@
 package com.aspire.kgp.service.impl;
 
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.sql.Timestamp;
 import java.util.Base64;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
@@ -16,8 +20,10 @@ import org.springframework.stereotype.Service;
 import com.amazonaws.services.cognitoidp.model.AuthenticationResultType;
 import com.aspire.kgp.constant.Constant;
 import com.aspire.kgp.dto.CandidateDTO;
+import com.aspire.kgp.dto.ResetPasswordDTO;
 import com.aspire.kgp.dto.UserDTO;
 import com.aspire.kgp.exception.APIException;
+import com.aspire.kgp.exception.NotFoundException;
 import com.aspire.kgp.exception.ValidateException;
 import com.aspire.kgp.model.User;
 import com.aspire.kgp.model.UserSearch;
@@ -29,10 +35,15 @@ import com.aspire.kgp.service.UserSearchService;
 import com.aspire.kgp.service.UserService;
 import com.aspire.kgp.util.CommonUtil;
 import com.aspire.kgp.util.RestUtil;
+import com.aspire.kgp.util.StaticContentsMultiLanguageUtil;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+
+import freemarker.template.TemplateException;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -72,9 +83,10 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
-  public User saveOrUpdatePartner(String galaxyId, String email, String password, boolean isLastLogin) {
+  public User saveOrUpdatePartner(String galaxyId, String email, String password,
+      boolean isLastLogin) {
     User user = findByEmail(email);
-    if(user==null) {
+    if (user == null) {
       user = new User();
     }
     user.setRole(roleService.findByName(Constant.PARTNER));
@@ -82,7 +94,7 @@ public class UserServiceImpl implements UserService {
     user.setPassword(CommonUtil.hash(password));
     user.setGalaxyId(galaxyId);
     user.setLanguage(languageService.findByName(Constant.ENGLISH));
-    if(isLastLogin) {
+    if (isLastLogin) {
       user.setLastLogin(new Timestamp(System.currentTimeMillis()));
     }
     return saveorUpdate(user);
@@ -93,8 +105,8 @@ public class UserServiceImpl implements UserService {
   public boolean inviteUser(String candidateId, String language, String email, String[] bcc,
       User invitedBy, boolean removeDuplicate, HttpServletRequest request) {
     boolean response = false;
-    String apiResponse = restUtil
-        .newGetMethod(Constant.CONDIDATE_URL.replace("{candidateId}", candidateId));
+    String apiResponse =
+        restUtil.newGetMethod(Constant.CONDIDATE_URL.replace("{candidateId}", candidateId));
     JsonObject json = (JsonObject) JsonParser.parseString(apiResponse);
     CandidateDTO candidateDTO =
         new Gson().fromJson(json.get("candidate"), new TypeToken<CandidateDTO>() {
@@ -106,6 +118,12 @@ public class UserServiceImpl implements UserService {
         }.getType());
     if (candidateDTO == null) {
       throw new APIException("Invalid Candidate Id");
+    }
+
+    User userWithEmail = findByEmail(email);
+    if (userWithEmail != null
+        && !candidateDTO.getContact().getId().equalsIgnoreCase(userWithEmail.getGalaxyId())) {
+      throw new APIException("Other Contact is already registered with same email");
     }
 
     User user = findByGalaxyId(candidateDTO.getContact().getId());
@@ -135,23 +153,46 @@ public class UserServiceImpl implements UserService {
       searchService.saveorUpdate(userSearch);
 
       UserDTO userDTO = candidateDTO.getContact();
-      userDTO.setToken("");
+      userDTO.setToken(generateJwtToken(email, email));
       userDTO.setEmail(email);
 
       log.info("staring email sending...");
       if (user.isPasswordReset()) {
         // mail for add user or mail for invite
-        mailService.sendEmail(email, bcc, Constant.INVITE_SUBJECT,
-            mailService.getInviteEmailContent(request, userDTO, language), null);
+        log.info("mail for add user or mail for invite");
+        String languageCode = CommonUtil.getLanguageCode(language);
+        Map<String, String> staticContentsMap = StaticContentsMultiLanguageUtil
+            .getStaticContentsMap(languageCode, Constant.EMAILS_CONTENT_MAP);
+        String mailSubject = staticContentsMap.get("candidate.suite.invitation.email.subject");
+        mailService.sendEmail(email, bcc, mailSubject, mailService.getEmailContent(request, userDTO,
+            staticContentsMap, Constant.CANDIDATE_INVITE_EMAIL_TEMPLATE), null);
       } else {
+        log.info("mail for add search");
         // mail for add search
       }
       response = true;
     } catch (Exception e) {
-      log.debug(e);
+      log.info(e);
       throw new APIException("Error in send invite");
     }
     return response;
+  }
+
+  private String generateJwtToken(String userName, String password) {
+    Date dt = new Date();
+    Calendar c = Calendar.getInstance();
+    c.setTime(dt);
+    c.add(Calendar.DATE, 1);
+    dt = c.getTime();
+
+    String auth = userName + ":" + password;
+    String token = Base64.getEncoder().encodeToString(auth.getBytes(StandardCharsets.UTF_8));
+
+    return Jwts.builder().setSubject("candidateSuite").setExpiration(dt)
+        .setIssuer(Constant.FROM_MAIL).claim("authentication", "Basic " + token)
+        .signWith(SignatureAlgorithm.HS512,
+            Base64.getEncoder().encodeToString("candidateSuite-secret-key".getBytes()))
+        .compact();
   }
 
   @Transactional(value = TxType.MANDATORY)
@@ -176,36 +217,33 @@ public class UserServiceImpl implements UserService {
 
   @Override
   public UserDTO getContactDetails(String contactId) {
-    String apiResponse = restUtil
-        .newGetMethod(Constant.CONTACT_URL.replace("{contactId}", contactId));
+    String apiResponse =
+        restUtil.newGetMethod(Constant.CONTACT_URL.replace("{contactId}", contactId));
     JsonObject json = (JsonObject) JsonParser.parseString(apiResponse);
-    UserDTO userDTO =
-        new Gson().fromJson(json, new TypeToken<UserDTO>() {
+    UserDTO userDTO = new Gson().fromJson(json, new TypeToken<UserDTO>() {
 
-          /**
-           * 
-           */
-          private static final long serialVersionUID = 1L;
-        }.getType());
+      /**
+       * 
+       */
+      private static final long serialVersionUID = 1L;
+    }.getType());
     if (userDTO == null) {
       throw new APIException("Invalid contactId");
     }
     return userDTO;
   }
-  
+
   @Override
   public UserDTO getGalaxyUserDetails(String userId) {
-    String apiResponse = restUtil
-        .newGetMethod(Constant.USER_URL.replace("{userId}", userId));
+    String apiResponse = restUtil.newGetMethod(Constant.USER_URL.replace("{userId}", userId));
     JsonObject json = (JsonObject) JsonParser.parseString(apiResponse);
-    UserDTO userDTO =
-        new Gson().fromJson(json, new TypeToken<UserDTO>() {
+    UserDTO userDTO = new Gson().fromJson(json, new TypeToken<UserDTO>() {
 
-          /**
-           * 
-           */
-          private static final long serialVersionUID = 1L;
-        }.getType());
+      /**
+       * 
+       */
+      private static final long serialVersionUID = 1L;
+    }.getType());
     if (userDTO == null) {
       throw new APIException("Invalid userId");
     }
@@ -233,6 +271,70 @@ public class UserServiceImpl implements UserService {
       }
     }
     return null;
+  }
+
+  @Override
+  @Transactional(value = TxType.REQUIRES_NEW)
+  public boolean forgotPassword(HttpServletRequest request, String email) {
+    boolean response = false;
+    User user = findByEmail(email);
+    if (user == null) {
+      throw new NotFoundException("User is not available");
+    }
+
+    if (user.getRole().getName().equalsIgnoreCase(Constant.PARTNER)) {
+      throw new APIException("you can't change the partner password from this app");
+    }
+
+    user.setPassword(CommonUtil.hash(email));
+    user.setPasswordReset(Boolean.TRUE);
+    user.setModifyDate(new Timestamp(System.currentTimeMillis()));
+    user = saveorUpdate(user);
+
+    UserDTO userDTO = getContactDetails(user.getGalaxyId());
+    userDTO.setToken(generateJwtToken(email, email));
+    userDTO.setEmail(email);
+    log.info("staring email sending...");
+    String languageCode = CommonUtil.getLanguageCode(user.getLanguage().getName());
+    Map<String, String> staticContentsMap = StaticContentsMultiLanguageUtil
+        .getStaticContentsMap(languageCode, Constant.EMAILS_CONTENT_MAP);
+    String mailSubject = staticContentsMap.get("candidate.suite.forgot.email.subject");
+    try {
+      mailService.sendEmail(email, null, mailSubject, mailService.getEmailContent(request, userDTO,
+          staticContentsMap, Constant.FORGOT_EMAIL_TEMPLATE), null);
+      response = true;
+    } catch (IOException | TemplateException e) {
+      log.info(e);
+      throw new APIException("Error in send Email");
+    }
+
+    return response;
+  }
+
+  @Override
+  @Transactional(value = TxType.REQUIRES_NEW)
+  public boolean resetPassword(HttpServletRequest request, ResetPasswordDTO resetPasswordDTO) {
+    boolean response = false;
+    User user = findByEmail(resetPasswordDTO.getEmail());
+    if (user == null) {
+      throw new NotFoundException("User is not available");
+    }
+
+    if (user.getRole().getName().equalsIgnoreCase(Constant.PARTNER)) {
+      throw new APIException("you can't change the partner password from this app");
+    }
+
+    if (!CommonUtil.verifyHash(resetPasswordDTO.getOldPassword(), user.getPassword())) {
+      throw new APIException("old password doesn't match");
+    }
+
+    user.setPassword(CommonUtil.hash(resetPasswordDTO.getNewPassword()));
+    user.setPasswordReset(Boolean.FALSE);
+    user.setModifyDate(new Timestamp(System.currentTimeMillis()));
+    saveorUpdate(user);
+    response = true;
+
+    return response;
   }
 
 }

@@ -1,21 +1,49 @@
 package com.aspire.kgp.dto;
 
+import com.fasterxml.jackson.annotation.JsonFilter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.gson.annotations.SerializedName;
 
+@JsonFilter("userFilter")
 public class UserDTO {
   private String id;
   @SerializedName("first_name")
   private String firstName;
   @SerializedName("last_name")
   private String lastName;
-  @JsonIgnore
   @SerializedName("work_email")
   private String workEmail;
   @SerializedName(value = "private_email", alternate = {"email"})
   private String email;
+  private String role;
   @JsonIgnore
   private String token;
+  private String title;
+  private String country;
+  @SerializedName("linkedin_url")
+  private String linkedinUrl;
+  private String bio;
+  private boolean passwordReset;
+  @SerializedName("mobile_phone")
+  private String mobilePhone;
+  @SerializedName("work_phone")
+  private String workPhone;
+
+  public String getMobilePhone() {
+    return mobilePhone;
+  }
+
+  public void setMobilePhone(String mobilePhone) {
+    this.mobilePhone = mobilePhone;
+  }
+
+  public String getWorkPhone() {
+    return workPhone;
+  }
+
+  public void setWorkPhone(String workPhone) {
+    this.workPhone = workPhone;
+  }
 
   public String getId() {
     return id;
@@ -57,6 +85,14 @@ public class UserDTO {
     this.email = email;
   }
 
+  public String getRole() {
+    return role;
+  }
+
+  public void setRole(String role) {
+    this.role = role;
+  }
+
   public String getToken() {
     return token;
   }
@@ -65,4 +101,43 @@ public class UserDTO {
     this.token = token;
   }
 
+  public String getTitle() {
+    return title;
+  }
+
+  public void setTitle(String title) {
+    this.title = title;
+  }
+
+  public String getCountry() {
+    return country;
+  }
+
+  public void setCountry(String country) {
+    this.country = country;
+  }
+
+  public String getLinkedinUrl() {
+    return linkedinUrl;
+  }
+
+  public void setLinkedinUrl(String linkedinUrl) {
+    this.linkedinUrl = linkedinUrl;
+  }
+
+  public String getBio() {
+    return bio;
+  }
+
+  public void setBio(String bio) {
+    this.bio = bio;
+  }
+
+  public boolean isPasswordReset() {
+    return passwordReset;
+  }
+
+  public void setPasswordReset(boolean passwordReset) {
+    this.passwordReset = passwordReset;
+  }
 }

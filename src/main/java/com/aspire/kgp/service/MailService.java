@@ -2,6 +2,7 @@ package com.aspire.kgp.service;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -13,7 +14,8 @@ public interface MailService {
   public void sendEmail(String mailTo, String[] mailBcc, String mailSubject, String mailContent,
       List<Object> attachments);
 
-  public String getInviteEmailContent(HttpServletRequest request, UserDTO userDTO, String language)
+  public String getEmailContent(HttpServletRequest request, UserDTO userDTO,
+      Map<String, String> staticContentsMap, String templateName)
       throws IOException, TemplateException;
 
 }
