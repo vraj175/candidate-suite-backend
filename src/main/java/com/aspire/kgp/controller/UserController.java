@@ -45,7 +45,7 @@ public class UserController {
   UserService service;
 
   @ApiOperation(value = "Invite User as Candidates")
-  @PostMapping(value = "/public/user/invite")
+  @PostMapping(value = Constant.PUBLIC_API_URL + "/user/invite")
   public ResponseEntity<Object> inviteUser(@Valid @RequestBody InviteDTO invite,
       HttpServletRequest request) {
     User user = service.findByGalaxyId(invite.getPartnerId());
@@ -90,17 +90,17 @@ public class UserController {
     userDTO.setRole(role);
     userDTO.setPasswordReset(user.isPasswordReset());
 
-    SimpleBeanPropertyFilter filter =
-        SimpleBeanPropertyFilter.filterOutAllExcept("id", "firstName", "lastName", "email", "role", "passwordReset");
+    SimpleBeanPropertyFilter filter = SimpleBeanPropertyFilter.filterOutAllExcept("id", "firstName",
+        "lastName", "email", "role", "passwordReset");
 
     FilterProvider filters = new SimpleFilterProvider().addFilter("userFilter", filter);
     MappingJacksonValue mapping = new MappingJacksonValue(userDTO);
     mapping.setFilters(filters);
     return mapping;
   }
-  
+
   @ApiOperation(value = "Forgot password for candidate")
-  @PostMapping(value = "/public/user/forgotPassword")
+  @PostMapping(value = Constant.PUBLIC_API_URL + "/user/forgotPassword")
   public ResponseEntity<Object> forgotUserPassword(@RequestBody String email,
       HttpServletRequest request) {
 
@@ -114,11 +114,11 @@ public class UserController {
     }
     throw new APIException("Something went wront");
   }
-  
+
   @ApiOperation(value = "Reset Password for User")
   @PostMapping(value = "/user/resetPassword")
-  public ResponseEntity<Object> resetUserPassword(@Valid @RequestBody ResetPasswordDTO resetPassword,
-      HttpServletRequest request) {
+  public ResponseEntity<Object> resetUserPassword(
+      @Valid @RequestBody ResetPasswordDTO resetPassword, HttpServletRequest request) {
     boolean result = service.resetPassword(request, resetPassword);
     if (result) {
       Map<String, Object> body = new LinkedHashMap<>();
