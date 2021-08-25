@@ -11,11 +11,11 @@ public class ResetPasswordDTO {
   @Email(message = "Email must be a valid email address")
   private String email;
 
-  @JsonProperty(value = "old Password", required = true)
+  @JsonProperty(value = "Old Password", required = true)
   @NotEmpty(message = "old Password cannot be missing or empty")
   private String oldPassword;
 
-  @JsonProperty(value = "new Password", required = true)
+  @JsonProperty(value = "New Password", required = true)
   @NotEmpty(message = "new Password cannot be missing or empty")
   private String newPassword;
 
