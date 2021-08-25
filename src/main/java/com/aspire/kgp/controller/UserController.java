@@ -117,9 +117,9 @@ public class UserController {
   
   @ApiOperation(value = "Reset Password for User")
   @PostMapping(value = "/user/resetPassword")
-  public ResponseEntity<Object> resetUserPassword(@Valid @RequestBody ResetPasswordDTO resetPasswordDTO,
+  public ResponseEntity<Object> resetUserPassword(@Valid @RequestBody ResetPasswordDTO resetPassword,
       HttpServletRequest request) {
-    boolean result = service.resetPassword(request, resetPasswordDTO);
+    boolean result = service.resetPassword(request, resetPassword);
     if (result) {
       Map<String, Object> body = new LinkedHashMap<>();
       body.put(Constant.TIMESTAMP, new Date());
