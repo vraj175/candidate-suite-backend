@@ -120,6 +120,12 @@ public class UserServiceImpl implements UserService {
       throw new APIException("Invalid Candidate Id");
     }
 
+    User userWithEmail = findByEmail(email);
+    if (userWithEmail != null
+        && !candidateDTO.getContact().getId().equalsIgnoreCase(userWithEmail.getGalaxyId())) {
+      throw new APIException("Other Contact is already registered with same email");
+    }
+
     User user = findByGalaxyId(candidateDTO.getContact().getId());
     if (user != null) {
       log.info("removing duplicate invite...");
