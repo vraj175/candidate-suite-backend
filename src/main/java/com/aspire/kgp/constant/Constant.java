@@ -122,6 +122,7 @@ public class Constant {
 	public static final String BIO = "bio";
 	public static final String CURRENT_JOB_TITLE = "currentJobTitle";
 	public static final String MOBILE_PHONE = "mobilePhone";
+	public static final String WORK_PHONE = "workPhone";
 	public static final String PUBLISHED_BIO = "publishedBio";
 	
 	// Test Fields
