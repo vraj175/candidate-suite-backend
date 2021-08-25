@@ -6,10 +6,13 @@ import java.util.List;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.aspire.kgp.constant.Constant;
+import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
 
+import springfox.documentation.RequestHandler;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.service.ApiKey;
 import springfox.documentation.service.AuthorizationScope;
@@ -47,8 +50,9 @@ public class CandidateSuiteBackendApplication {
   @Bean
   public Docket userAuthentication() {
     return new Docket(DocumentationType.SWAGGER_2).groupName(Constant.USER_AUTHENTICATE_GROUP_NAME)
-        .select().paths(PathSelectors.ant(Constant.USER_AUTHENTICATE_API_URL)).build()
-        .securitySchemes(Arrays.asList(accessToken(), tokenType(), apiKey()))
+        .select().apis(httpRequestHandler())
+        .paths(PathSelectors.ant(Constant.USER_AUTHENTICATE_API_URL)).build()
+        .securitySchemes(Arrays.asList(apiKey()))
         .securityContexts(Arrays.asList(userAuthenticateSecurityContext()));
   }
 
@@ -66,10 +70,6 @@ public class CandidateSuiteBackendApplication {
 
   private ApiKey accessToken() {
     return new ApiKey(Constant.AUTHORIZATION, Constant.AUTHORIZATION, Constant.HEADER);
-  }
-
-  private ApiKey tokenType() {
-    return new ApiKey(Constant.GRANT_TYPE, Constant.GRANT_TYPE, Constant.HEADER);
   }
 
   private SecurityContext securityContext() {
@@ -108,4 +108,7 @@ public class CandidateSuiteBackendApplication {
     return UiConfigurationBuilder.builder().defaultModelsExpandDepth(-1).build();
   }
 
+  private Predicate<RequestHandler> httpRequestHandler() {
+    return p -> p.supportedMethods().contains(RequestMethod.POST);
+  }
 }
