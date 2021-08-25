@@ -117,14 +117,14 @@ class LanguageServiceImplTest {
     String result = service.initializeData();
 
     assertNotNull(result);
-    assertEquals("Data already initialized", result);
+    assertEquals(Constant.DATA_ALREADY_INITIALIZED, result);
 
     when(repository.findAll()).thenReturn(new ArrayList<>());
 
     result = service.initializeData();
 
     assertNotNull(result);
-    assertEquals("Data saved successfully", result);
+    assertEquals(Constant.DATA_SAVED, result);
   }
 
 }

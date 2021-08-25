@@ -127,6 +127,11 @@ public class Constant {
 	public static final String WORK_PHONE = "workPhone";
 	public static final String PUBLISHED_BIO = "publishedBio";
 	
+	//messages
+	public static final String DATA_SAVED= "Data saved successfully";
+	public static final String DATA_ALREADY_INITIALIZED= "Data already initialized";
+	
+	
 	// Test Fields
 	public static final String TEST = "Test";
 }
