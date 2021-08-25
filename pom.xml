@@ -176,16 +176,6 @@
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
                 <version>0.8.6</version>
-                <configuration>
-					<skip>${maven.test.skip}</skip>
-					<destFile>${basedir}/target/coverage-reports/jacoco-unit.exec</destFile>
-					<dataFile>${basedir}/target/coverage-reports/jacoco-unit.exec</dataFile>
-					<output>file</output>
-					<append>true</append>
-					<excludes>
-						<exclude>*MethodAccess</exclude>
-					</excludes>
-				</configuration>
                 <executions>
                     <execution>
                         <id>default-prepare-agent</id>
