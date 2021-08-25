@@ -6,7 +6,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,6 +15,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import com.aspire.kgp.CustomTestData;
 import com.aspire.kgp.constant.Constant;
 import com.aspire.kgp.model.Language;
 import com.aspire.kgp.repository.LanguageRepository;
@@ -36,27 +36,9 @@ class LanguageServiceImplTest {
     MockitoAnnotations.openMocks(this);
   }
 
-  private Language getLanguage() {
-    Timestamp t1 = new Timestamp(System.currentTimeMillis());
-
-    Language language = new Language();
-    language.setId(Long.MIN_VALUE);
-    language.setName(Constant.TEST);
-    language.setCreatedDate(t1);
-    language.setModifyDate(t1);
-
-    return language;
-  }
-
-  private List<Language> getLanguages() {
-    List<Language> languages = new ArrayList<>();
-    languages.add(getLanguage());
-    return languages;
-  }
-
   @Test
   void testSaveorUpdate() {
-    Language language = getLanguage();
+    Language language = CustomTestData.getLanguage();
 
     when(repository.save(any())).thenReturn(language);
 
@@ -71,7 +53,7 @@ class LanguageServiceImplTest {
 
   @Test
   void testSaveAll() {
-    List<Language> languages = getLanguages();
+    List<Language> languages = CustomTestData.getLanguages();
 
     when(repository.saveAll(any())).thenReturn(languages);
 
@@ -83,7 +65,7 @@ class LanguageServiceImplTest {
 
   @Test
   void testFindAll() {
-    List<Language> languages = getLanguages();
+    List<Language> languages = CustomTestData.getLanguages();
 
     when(repository.findAll()).thenReturn(languages);
 
@@ -95,7 +77,7 @@ class LanguageServiceImplTest {
 
   @Test
   void testFindByName() {
-    Language language = getLanguage();
+    Language language = CustomTestData.getLanguage();
 
     when(repository.findByName(anyString())).thenReturn(language);
 
@@ -110,7 +92,7 @@ class LanguageServiceImplTest {
 
   @Test
   void testInitializeData() {
-    List<Language> languages = getLanguages();
+    List<Language> languages = CustomTestData.getLanguages();
 
     when(repository.findAll()).thenReturn(languages);
 

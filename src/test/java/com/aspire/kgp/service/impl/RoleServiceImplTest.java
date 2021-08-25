@@ -1,11 +1,11 @@
 package com.aspire.kgp.service.impl;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,15 +15,16 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import com.aspire.kgp.CustomTestData;
 import com.aspire.kgp.constant.Constant;
 import com.aspire.kgp.model.Role;
 import com.aspire.kgp.repository.RoleRepository;
 
 class RoleServiceImplTest {
-  
+
   @InjectMocks
   RoleServiceImpl service;
-  
+
   @Mock
   RoleRepository repository;
 
@@ -31,28 +32,10 @@ class RoleServiceImplTest {
   void setUp() throws Exception {
     MockitoAnnotations.openMocks(this);
   }
-  
-  private Role getRole() {
-    Timestamp t1 = new Timestamp(System.currentTimeMillis());
 
-    Role role = new Role();
-    role.setId(Long.MIN_VALUE);
-    role.setName(Constant.TEST);
-    role.setCreatedDate(t1);
-    role.setModifyDate(t1);
-
-    return role;
-  }
-
-  private List<Role> getRoles() {
-    List<Role> roles = new ArrayList<>();
-    roles.add(getRole());
-    return roles;
-  }
-  
   @Test
   void testSaveorUpdate() {
-    Role role = getRole();
+    Role role = CustomTestData.getRole();
 
     when(repository.save(any())).thenReturn(role);
 
@@ -67,7 +50,7 @@ class RoleServiceImplTest {
 
   @Test
   void testSaveAll() {
-    List<Role> roles = getRoles();
+    List<Role> roles = CustomTestData.getRoles();
 
     when(repository.saveAll(any())).thenReturn(roles);
 
@@ -79,7 +62,7 @@ class RoleServiceImplTest {
 
   @Test
   void testFindAll() {
-    List<Role> roles = getRoles();
+    List<Role> roles = CustomTestData.getRoles();
 
     when(repository.findAll()).thenReturn(roles);
 
@@ -91,7 +74,7 @@ class RoleServiceImplTest {
 
   @Test
   void testFindByName() {
-    Role role = getRole();
+    Role role = CustomTestData.getRole();
 
     when(repository.findByName(anyString())).thenReturn(role);
 
@@ -106,7 +89,7 @@ class RoleServiceImplTest {
 
   @Test
   void testInitializeData() {
-    List<Role> roles = getRoles();
+    List<Role> roles = CustomTestData.getRoles();
 
     when(repository.findAll()).thenReturn(roles);
 
