@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.aspire.kgp.constant.Constant;
 import com.aspire.kgp.model.Role;
 import com.aspire.kgp.service.RoleService;
 
@@ -24,9 +25,9 @@ public class RoleController {
 
   @Autowired
   RoleService service;
-  
+
   @ApiOperation(value = "Initialize Roles")
-  @PostMapping(value = "/public/roles/initialize")
+  @PostMapping(value = Constant.PUBLIC_API_URL + "/roles/initialize")
   public String initializeLanguages() {
     return service.initializeData();
   }

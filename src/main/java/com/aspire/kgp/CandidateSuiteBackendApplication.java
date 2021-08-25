@@ -39,8 +39,8 @@ public class CandidateSuiteBackendApplication {
     return new Docket(DocumentationType.SWAGGER_2).select()
         .paths(Predicates.not(PathSelectors.ant(Constant.USER_AUTHENTICATE_API_URL)))
         .paths(PathSelectors.ant("/api/**"))
-        .paths(Predicates.not(PathSelectors.ant("/api/v1.0/public/**"))).build()
-        .securitySchemes(Arrays.asList(accessToken(), apiKey()))
+        .paths(Predicates.not(PathSelectors.ant("/api/v1.0" + Constant.PUBLIC_API_URL + "/**")))
+        .build().securitySchemes(Arrays.asList(accessToken(), apiKey()))
         .securityContexts(Arrays.asList(securityContext()));
   }
 
@@ -51,11 +51,11 @@ public class CandidateSuiteBackendApplication {
         .securitySchemes(Arrays.asList(accessToken(), tokenType(), apiKey()))
         .securityContexts(Arrays.asList(userAuthenticateSecurityContext()));
   }
-  
+
   @Bean
   public Docket publicAuthentication() {
-    return new Docket(DocumentationType.SWAGGER_2).groupName(Constant.PUBLIC_GROUP_NAME)
-        .select().paths(PathSelectors.ant("/api/v1.0/public/**")).build()
+    return new Docket(DocumentationType.SWAGGER_2).groupName(Constant.PUBLIC_GROUP_NAME).select()
+        .paths(PathSelectors.ant("/api/v1.0" + Constant.PUBLIC_API_URL + "/**")).build()
         .securitySchemes(Arrays.asList(apiKey()))
         .securityContexts(Arrays.asList(publicSecurityContext()));
   }
@@ -74,7 +74,7 @@ public class CandidateSuiteBackendApplication {
 
   private SecurityContext securityContext() {
     return SecurityContext.builder().securityReferences(defaultAuth())
-        .forPaths(Predicates.not(PathSelectors.ant("/api/v1.0/public/*")))
+        .forPaths(Predicates.not(PathSelectors.ant("/api/v1.0" + Constant.PUBLIC_API_URL + "/*")))
         .forPaths(PathSelectors.regex("/api/v1.*")).build();
   }
 
@@ -82,7 +82,7 @@ public class CandidateSuiteBackendApplication {
     return SecurityContext.builder().securityReferences(defaultAuth())
         .forPaths(PathSelectors.regex(Constant.USER_AUTHENTICATE_API_URL)).build();
   }
-  
+
   private SecurityContext publicSecurityContext() {
     return SecurityContext.builder().securityReferences(defaultAuth())
         .forPaths(PathSelectors.regex("/api/v1.*")).build();

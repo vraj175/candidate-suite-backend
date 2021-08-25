@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.aspire.kgp.constant.Constant;
 import com.aspire.kgp.model.Language;
 import com.aspire.kgp.service.LanguageService;
 
@@ -24,9 +25,9 @@ public class LanguageController {
 
   @Autowired
   LanguageService service;
-  
+
   @ApiOperation(value = "Initialize languages")
-  @PostMapping(value = "/public/languages/initialize")
+  @PostMapping(value = Constant.PUBLIC_API_URL + "/languages/initialize")
   public String initializeLanguages() {
     return service.initializeData();
   }
