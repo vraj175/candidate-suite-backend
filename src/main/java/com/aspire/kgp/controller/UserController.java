@@ -116,7 +116,7 @@ public class UserController {
   }
 
   @ApiOperation(value = "Reset Password for User")
-  @PostMapping(value = "/user/resetPassword")
+  @PostMapping(value = Constant.PUBLIC_API_URL + "/user/resetPassword")
   public ResponseEntity<Object> resetUserPassword(
       @Valid @RequestBody ResetPasswordDTO resetPassword, HttpServletRequest request) {
     boolean result = service.resetPassword(request, resetPassword);
