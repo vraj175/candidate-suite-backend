@@ -21,6 +21,7 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import com.aspire.kgp.CustomTestData;
 import com.aspire.kgp.constant.Constant;
 import com.aspire.kgp.exception.APIException;
+import com.aspire.kgp.exception.ValidateException;
 import com.aspire.kgp.model.User;
 import com.aspire.kgp.model.UserSearch;
 import com.aspire.kgp.repository.UserRepository;
@@ -226,19 +227,49 @@ class UserServiceImplTest {
     assertTrue(result);
 
   }
-  
+
   @Test
   void testInviteUser_APIException() {
     MockHttpServletRequest request = CustomTestData.getRequest();
     User user = CustomTestData.getUser();
-    String responseJson = "{"
-        + "    \"candidate\": null"
-        + "}";
+    String responseJson = "{" + "    \"candidate\": null" + "}";
     when(restUtil.newGetMethod(anyString())).thenReturn(responseJson);
-    Exception e = assertThrows(APIException.class, () -> 
-      service.inviteUser(Constant.TEST, Constant.TEST, Constant.TEST, new String[] {}, user,
-          Boolean.TRUE, request)
-    );
+    Exception e = assertThrows(APIException.class, () -> service.inviteUser(Constant.TEST,
+        Constant.TEST, Constant.TEST, new String[] {}, user, Boolean.TRUE, request));
     assertEquals("Invalid Candidate Id", e.getMessage());
+
+    responseJson = "{" + "    \"candidate\": {" + "        \"contact\": {" + "            \"id\": "
+        + Constant.TEST + "," + "            \"first_name\": " + Constant.TEST + ","
+        + "            \"last_name\": " + Constant.TEST + "         }, " + "        \"search\": {"
+        + "             \"id\": " + Constant.TEST + "         } " + "     } " + "}";
+    when(restUtil.newGetMethod(anyString())).thenReturn(responseJson);
+    when(service.findByEmail(anyString())).thenReturn(user);
+
+    e = assertThrows(APIException.class, () -> service.inviteUser(Constant.TEST, Constant.TEST,
+        Constant.TEST, new String[] {}, user, Boolean.TRUE, request));
+    assertEquals("Error in send invite", e.getMessage());
+
+    user.setGalaxyId(Constant.BAD_REQUEST);
+    e = assertThrows(APIException.class, () -> service.inviteUser(Constant.TEST, Constant.TEST,
+        Constant.TEST, new String[] {}, user, Boolean.TRUE, request));
+    assertEquals("Other Contact is already registered with same email", e.getMessage());
+  }
+
+  @Test
+  void testInviteUser_ValidateException() {
+    MockHttpServletRequest request = CustomTestData.getRequest();
+    User user = CustomTestData.getUser();
+    UserSearch userSearch = CustomTestData.getUserSearch();
+    String responseJson = "{" + "    \"candidate\": {" + "        \"contact\": {"
+        + "            \"id\": " + Constant.TEST + "," + "            \"first_name\": "
+        + Constant.TEST + "," + "            \"last_name\": " + Constant.TEST + "         }, "
+        + "        \"search\": {" + "             \"id\": " + Constant.TEST + "         } "
+        + "     } " + "}";
+    when(restUtil.newGetMethod(anyString())).thenReturn(responseJson);
+    when(service.findByGalaxyId(anyString())).thenReturn(user);
+    when(searchService.findByUserAndCandidateId(any(), anyString())).thenReturn(userSearch);
+    Exception e = assertThrows(ValidateException.class, () -> service.inviteUser(Constant.TEST,
+        Constant.TEST, Constant.TEST, new String[] {}, user, Boolean.FALSE, request));
+    assertEquals("Candidate already invited", e.getMessage());
   }
 }
