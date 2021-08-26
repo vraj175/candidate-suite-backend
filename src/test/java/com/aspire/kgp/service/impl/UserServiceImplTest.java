@@ -1,7 +1,9 @@
 package com.aspire.kgp.service.impl;
 
+import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -14,13 +16,19 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.mock.web.MockHttpServletRequest;
 
 import com.aspire.kgp.CustomTestData;
 import com.aspire.kgp.constant.Constant;
+import com.aspire.kgp.exception.APIException;
 import com.aspire.kgp.model.User;
+import com.aspire.kgp.model.UserSearch;
 import com.aspire.kgp.repository.UserRepository;
 import com.aspire.kgp.service.LanguageService;
+import com.aspire.kgp.service.MailService;
 import com.aspire.kgp.service.RoleService;
+import com.aspire.kgp.service.UserSearchService;
+import com.aspire.kgp.util.RestUtil;
 
 class UserServiceImplTest {
 
@@ -35,6 +43,15 @@ class UserServiceImplTest {
 
   @Mock
   LanguageService languageService;
+
+  @Mock
+  UserSearchService searchService;
+
+  @Mock
+  MailService mailService;
+
+  @Mock
+  RestUtil restUtil;
 
   @BeforeEach
   void setUp() throws Exception {
@@ -171,5 +188,57 @@ class UserServiceImplTest {
     assertEquals(user.isPasswordReset(), result.isPasswordReset());
     assertEquals(user.getLanguage(), result.getLanguage());
     assertEquals(user.getRole(), result.getRole());
+  }
+
+  @Test
+  void testInviteUser() {
+    User user = CustomTestData.getUser();
+    UserSearch userSearch = CustomTestData.getUserSearch();
+    String responseJson = "{" + "    \"candidate\": {" + "        \"contact\": {"
+        + "            \"id\": " + Constant.TEST + "," + "            \"first_name\": "
+        + Constant.TEST + "," + "            \"last_name\": " + Constant.TEST + "         }, "
+        + "        \"search\": {" + "             \"id\": " + Constant.TEST + "         } "
+        + "     } " + "}";
+    when(restUtil.newGetMethod(anyString())).thenReturn(responseJson);
+    when(service.findByEmail(anyString())).thenReturn(null);
+    when(service.findByGalaxyId(anyString())).thenReturn(null);
+    when(service.saveorUpdate(any())).thenReturn(user);
+    when(searchService.saveorUpdate(any())).thenReturn(userSearch);
+
+    boolean result = service.inviteUser(Constant.TEST, Constant.TEST, Constant.TEST,
+        new String[] {}, user, Boolean.FALSE, CustomTestData.getRequest());
+
+    assertTrue(result);
+
+    when(service.findByGalaxyId(anyString())).thenReturn(user);
+    when(searchService.findByUserAndCandidateId(any(), anyString())).thenReturn(null);
+
+    result = service.inviteUser(Constant.TEST, Constant.TEST, Constant.TEST, new String[] {}, user,
+        Boolean.FALSE, CustomTestData.getRequest());
+
+    assertTrue(result);
+
+    user.setPasswordReset(Boolean.TRUE);
+    when(searchService.findByUserAndCandidateId(any(), anyString())).thenReturn(userSearch);
+    result = service.inviteUser(Constant.TEST, Constant.TEST, Constant.TEST, new String[] {}, user,
+        Boolean.TRUE, CustomTestData.getRequest());
+
+    assertTrue(result);
+
+  }
+  
+  @Test
+  void testInviteUser_APIException() {
+    MockHttpServletRequest request = CustomTestData.getRequest();
+    User user = CustomTestData.getUser();
+    String responseJson = "{"
+        + "    \"candidate\": null"
+        + "}";
+    when(restUtil.newGetMethod(anyString())).thenReturn(responseJson);
+    Exception e = assertThrows(APIException.class, () -> 
+      service.inviteUser(Constant.TEST, Constant.TEST, Constant.TEST, new String[] {}, user,
+          Boolean.TRUE, request)
+    );
+    assertEquals("Invalid Candidate Id", e.getMessage());
   }
 }

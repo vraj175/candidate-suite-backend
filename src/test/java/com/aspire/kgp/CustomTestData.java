@@ -4,12 +4,24 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
+
 import com.aspire.kgp.constant.Constant;
 import com.aspire.kgp.model.Language;
 import com.aspire.kgp.model.Role;
 import com.aspire.kgp.model.User;
+import com.aspire.kgp.model.UserSearch;
 
 public class CustomTestData {
+  
+  public static MockHttpServletRequest getRequest() {
+    MockHttpServletRequest request = new MockHttpServletRequest();
+    RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
+    return request;
+  }
+  
   public static Language getLanguage() {
     Timestamp t1 = new Timestamp(System.currentTimeMillis());
 
@@ -69,5 +81,20 @@ public class CustomTestData {
     List<User> users = new ArrayList<>();
     users.add(getUser());
     return users;
+  }
+  
+  public static UserSearch getUserSearch() {
+    Timestamp t1 = new Timestamp(System.currentTimeMillis());
+
+    UserSearch userSearch = new UserSearch();
+    userSearch.setId(Long.MIN_VALUE);
+    userSearch.setCreatedDate(t1);
+    userSearch.setModifyDate(t1);
+    userSearch.setDeleted(Boolean.FALSE);
+    userSearch.setCandidateId(Constant.TEST);
+    userSearch.setInvitedBy(getUser());
+    userSearch.setSearchId(Constant.TEST);
+    
+    return userSearch;
   }
 }
