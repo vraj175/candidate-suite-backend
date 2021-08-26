@@ -121,7 +121,11 @@ public class SearchUtil {
     SimpleBeanPropertyFilter filter = SimpleBeanPropertyFilter.filterOutAllExcept("id", "jobTitle",
         "jobNumber", "stage", "company");
 
-    FilterProvider filters = new SimpleFilterProvider().addFilter("searchFilter", filter);
+    SimpleBeanPropertyFilter companyFilter =
+        SimpleBeanPropertyFilter.filterOutAllExcept("id", "name");
+
+    FilterProvider filters = new SimpleFilterProvider().addFilter("searchFilter", filter)
+        .addFilter("companyFilter", companyFilter);
     MappingJacksonValue mapping = new MappingJacksonValue(searchDTOs);
     mapping.setFilters(filters);
     return mapping;

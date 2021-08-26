@@ -40,13 +40,16 @@ public class SearchController {
     User user = (User) request.getAttribute("user");
     List<CandidateDTO> candidateList = searchUtil.getSearchListForUser(user, stage);
 
+    SimpleBeanPropertyFilter companyFilter =
+        SimpleBeanPropertyFilter.filterOutAllExcept("id", "name");
+
     SimpleBeanPropertyFilter searchFilter = SimpleBeanPropertyFilter.filterOutAllExcept("id",
         "jobTitle", "jobNumber", "stage", "company");
     SimpleBeanPropertyFilter candidateFilter =
         SimpleBeanPropertyFilter.filterOutAllExcept("id", "search");
 
     FilterProvider filters = new SimpleFilterProvider().addFilter("searchFilter", searchFilter)
-        .addFilter("candidateFilter", candidateFilter);
+        .addFilter("companyFilter", companyFilter).addFilter("candidateFilter", candidateFilter);
     MappingJacksonValue mapping = new MappingJacksonValue(candidateList);
     mapping.setFilters(filters);
     return mapping;
