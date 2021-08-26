@@ -119,4 +119,45 @@ class UserServiceImplTest {
     assertEquals(user.getLanguage(), result.getLanguage());
     assertEquals(user.getRole(), result.getRole());
   }
+  
+  @Test
+  void testSaveOrUpdatePartner() {
+    User user = CustomTestData.getUser();
+
+    when(repository.findByEmailAndIsDeletedFalse(anyString())).thenReturn(user);
+    when(repository.save(any())).thenReturn(user);
+
+    User result = service.saveOrUpdatePartner(Constant.TEST,Constant.TEST, Constant.TEST, Boolean.TRUE);
+
+    assertNotNull(result);
+    assertEquals(user.getId(), result.getId());
+    assertEquals(user.getCreatedDate(), result.getCreatedDate());
+    assertEquals(user.getModifyDate(), result.getModifyDate());
+    assertEquals(user.getGalaxyId(), result.getGalaxyId());
+    assertEquals(user.isDeleted(), result.isDeleted());
+    assertEquals(user.getEmail(), result.getEmail());
+    assertEquals(user.getLastLogin(), result.getLastLogin());
+    assertEquals(user.getPassword(), result.getPassword());
+    assertEquals(user.isPasswordReset(), result.isPasswordReset());
+    assertEquals(user.getLanguage(), result.getLanguage());
+    assertEquals(user.getRole(), result.getRole());
+    
+    when(repository.findByEmailAndIsDeletedFalse(anyString())).thenReturn(null);
+    when(repository.save(any())).thenReturn(user);
+
+    result = service.saveOrUpdatePartner(Constant.TEST,Constant.TEST, Constant.TEST, Boolean.FALSE);
+
+    assertNotNull(result);
+    assertEquals(user.getId(), result.getId());
+    assertEquals(user.getCreatedDate(), result.getCreatedDate());
+    assertEquals(user.getModifyDate(), result.getModifyDate());
+    assertEquals(user.getGalaxyId(), result.getGalaxyId());
+    assertEquals(user.isDeleted(), result.isDeleted());
+    assertEquals(user.getEmail(), result.getEmail());
+    assertEquals(user.getLastLogin(), result.getLastLogin());
+    assertEquals(user.getPassword(), result.getPassword());
+    assertEquals(user.isPasswordReset(), result.isPasswordReset());
+    assertEquals(user.getLanguage(), result.getLanguage());
+    assertEquals(user.getRole(), result.getRole());
+  }
 }
