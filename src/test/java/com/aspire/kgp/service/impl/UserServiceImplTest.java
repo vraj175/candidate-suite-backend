@@ -3,7 +3,10 @@ package com.aspire.kgp.service.impl;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
+
+import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -27,6 +30,28 @@ class UserServiceImplTest {
   @BeforeEach
   void setUp() throws Exception {
     MockitoAnnotations.openMocks(this);
+  }
+  
+  @Test
+  void testFindById() {
+    Optional<User> user = Optional.ofNullable(CustomTestData.getUser());
+
+    when(repository.findById(anyLong())).thenReturn(user);
+
+    User result = service.findById(Long.MIN_VALUE);
+
+    assertNotNull(result);
+    assertEquals(user.get().getId(), result.getId());
+    assertEquals(user.get().getCreatedDate(), result.getCreatedDate());
+    assertEquals(user.get().getModifyDate(), result.getModifyDate());
+    assertEquals(user.get().getGalaxyId(), result.getGalaxyId());
+    assertEquals(user.get().isDeleted(), result.isDeleted());
+    assertEquals(user.get().getEmail(), result.getEmail());
+    assertEquals(user.get().getLastLogin(), result.getLastLogin());
+    assertEquals(user.get().getPassword(), result.getPassword());
+    assertEquals(user.get().isPasswordReset(), result.isPasswordReset());
+    assertEquals(user.get().getLanguage(), result.getLanguage());
+    assertEquals(user.get().getRole(), result.getRole());
   }
 
   @Test
