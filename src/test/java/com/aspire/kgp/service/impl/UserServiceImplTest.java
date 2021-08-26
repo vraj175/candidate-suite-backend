@@ -3,6 +3,7 @@ package com.aspire.kgp.service.impl;
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -15,9 +16,11 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.mock.web.MockHttpServletRequest;
 
 import com.aspire.kgp.CustomTestData;
 import com.aspire.kgp.constant.Constant;
+import com.aspire.kgp.exception.APIException;
 import com.aspire.kgp.model.User;
 import com.aspire.kgp.model.UserSearch;
 import com.aspire.kgp.repository.UserRepository;
@@ -222,5 +225,20 @@ class UserServiceImplTest {
 
     assertTrue(result);
 
+  }
+  
+  @Test
+  void testInviteUser_APIException() {
+    MockHttpServletRequest request = CustomTestData.getRequest();
+    User user = CustomTestData.getUser();
+    String responseJson = "{"
+        + "    \"candidate\": null"
+        + "}";
+    when(restUtil.newGetMethod(anyString())).thenReturn(responseJson);
+    Exception e = assertThrows(APIException.class, () -> 
+      service.inviteUser(Constant.TEST, Constant.TEST, Constant.TEST, new String[] {}, user,
+          Boolean.TRUE, request)
+    );
+    assertEquals("Invalid Candidate Id", e.getMessage());
   }
 }
