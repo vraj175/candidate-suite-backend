@@ -179,11 +179,12 @@ public class SearchUtil {
          */
         private static final long serialVersionUID = 1L;
       }.getType());
-      if (PositionProfile == null) {
-        throw new APIException("Invalid searchId Id");
-      }
     } catch (Exception e) {
       throw new APIException("Error in coverting json to object");
+    }
+
+    if (PositionProfile == null || PositionProfile.getIsYearsOfExperienceMandatory() == null) {
+      throw new APIException("Invalid searchId Id");
     }
     return PositionProfile;
   }
