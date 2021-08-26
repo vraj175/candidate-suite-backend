@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.aspire.kgp.dto.CandidateDTO;
+import com.aspire.kgp.dto.PositionProfileDTO;
 import com.aspire.kgp.model.User;
 import com.aspire.kgp.util.SearchUtil;
 import com.fasterxml.jackson.databind.ser.FilterProvider;
@@ -63,6 +64,9 @@ public class SearchController {
   public MappingJacksonValue getCandidateList(@PathVariable("searchId") String searchId) {
     List<CandidateDTO> listCandidate = searchUtil.getCandidateList(searchId);
 
+    SimpleBeanPropertyFilter companyFilter =
+        SimpleBeanPropertyFilter.filterOutAllExcept("id", "name");
+
     SimpleBeanPropertyFilter contactFilter = SimpleBeanPropertyFilter.filterOutAllExcept("id",
         "firstName", "lastName", "workEmail", "currentJobTitle", "company");
 
@@ -70,9 +74,31 @@ public class SearchController {
         SimpleBeanPropertyFilter.filterOutAllExcept("id", "contact");
 
     FilterProvider filters = new SimpleFilterProvider().addFilter("contactFilter", contactFilter)
-        .addFilter("candidateFilter", candidateFilter);
+        .addFilter("companyFilter", companyFilter).addFilter("candidateFilter", candidateFilter);
 
     MappingJacksonValue mapping = new MappingJacksonValue(listCandidate);
+    mapping.setFilters(filters);
+    return mapping;
+  }
+
+  @ApiOperation(value = "Get Postion Profile Details")
+  @GetMapping(value = {"/searches/{searchId}/sfpa"})
+  public MappingJacksonValue getPositionProfile(@PathVariable("searchId") String searchId) {
+    PositionProfileDTO positionProfile = searchUtil.getPositionProfileDetails(searchId);
+
+    SimpleBeanPropertyFilter companyFilter =
+        SimpleBeanPropertyFilter.filterOutAllExcept("description");
+
+    SimpleBeanPropertyFilter positionProfileFilter = SimpleBeanPropertyFilter.filterOutAllExcept(
+        "isDegreeMandatory", "isApprovedByPartner", "isYearsOfExperienceMandatory",
+        "positionOverview", "productsServicesOverview", "professionalExperience",
+        "yearsOfExperience", "degreeName", "certifications", "company");
+
+    FilterProvider filters =
+        new SimpleFilterProvider().addFilter("positionProfileFilter", positionProfileFilter)
+            .addFilter("companyFilter", companyFilter);
+
+    MappingJacksonValue mapping = new MappingJacksonValue(positionProfile);
     mapping.setFilters(filters);
     return mapping;
   }
