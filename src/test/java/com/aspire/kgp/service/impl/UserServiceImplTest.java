@@ -97,5 +97,26 @@ class UserServiceImplTest {
     assertEquals(user.getLanguage(), result.getLanguage());
     assertEquals(user.getRole(), result.getRole());
   }
+  
+  @Test
+  void testFindByEmail() {
+    User user = CustomTestData.getUser();
 
+    when(repository.findByEmailAndIsDeletedFalse(anyString())).thenReturn(user);
+
+    User result = service.findByEmail(Constant.TEST);
+
+    assertNotNull(result);
+    assertEquals(user.getId(), result.getId());
+    assertEquals(user.getCreatedDate(), result.getCreatedDate());
+    assertEquals(user.getModifyDate(), result.getModifyDate());
+    assertEquals(user.getGalaxyId(), result.getGalaxyId());
+    assertEquals(user.isDeleted(), result.isDeleted());
+    assertEquals(user.getEmail(), result.getEmail());
+    assertEquals(user.getLastLogin(), result.getLastLogin());
+    assertEquals(user.getPassword(), result.getPassword());
+    assertEquals(user.isPasswordReset(), result.isPasswordReset());
+    assertEquals(user.getLanguage(), result.getLanguage());
+    assertEquals(user.getRole(), result.getRole());
+  }
 }
