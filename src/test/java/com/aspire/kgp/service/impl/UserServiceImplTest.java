@@ -1,9 +1,10 @@
 package com.aspire.kgp.service.impl;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 import java.util.Optional;
@@ -18,20 +19,28 @@ import com.aspire.kgp.CustomTestData;
 import com.aspire.kgp.constant.Constant;
 import com.aspire.kgp.model.User;
 import com.aspire.kgp.repository.UserRepository;
+import com.aspire.kgp.service.LanguageService;
+import com.aspire.kgp.service.RoleService;
 
 class UserServiceImplTest {
-  
+
   @InjectMocks
   UserServiceImpl service;
-  
+
   @Mock
   UserRepository repository;
+
+  @Mock
+  RoleService roleService;
+
+  @Mock
+  LanguageService languageService;
 
   @BeforeEach
   void setUp() throws Exception {
     MockitoAnnotations.openMocks(this);
   }
-  
+
   @Test
   void testFindById() {
     Optional<User> user = Optional.ofNullable(CustomTestData.getUser());
@@ -75,7 +84,7 @@ class UserServiceImplTest {
     assertEquals(user.getLanguage(), result.getLanguage());
     assertEquals(user.getRole(), result.getRole());
   }
-  
+
   @Test
   void testFindByGalaxyId() {
     User user = CustomTestData.getUser();
@@ -97,7 +106,7 @@ class UserServiceImplTest {
     assertEquals(user.getLanguage(), result.getLanguage());
     assertEquals(user.getRole(), result.getRole());
   }
-  
+
   @Test
   void testFindByEmail() {
     User user = CustomTestData.getUser();
@@ -119,15 +128,18 @@ class UserServiceImplTest {
     assertEquals(user.getLanguage(), result.getLanguage());
     assertEquals(user.getRole(), result.getRole());
   }
-  
+
   @Test
   void testSaveOrUpdatePartner() {
     User user = CustomTestData.getUser();
 
-    when(repository.findByEmailAndIsDeletedFalse(anyString())).thenReturn(user);
-    when(repository.save(any())).thenReturn(user);
+    when(service.saveorUpdate(any())).thenReturn(user);
+    when(roleService.findByName(anyString())).thenReturn(CustomTestData.getRole());
+    when(languageService.findByName(anyString())).thenReturn(CustomTestData.getLanguage());
+    when(service.findByEmail(anyString())).thenReturn(user);
 
-    User result = service.saveOrUpdatePartner(Constant.TEST,Constant.TEST, Constant.TEST, Boolean.TRUE);
+    User result =
+        service.saveOrUpdatePartner(Constant.TEST, Constant.TEST, Constant.TEST, Boolean.TRUE);
 
     assertNotNull(result);
     assertEquals(user.getId(), result.getId());
@@ -141,11 +153,11 @@ class UserServiceImplTest {
     assertEquals(user.isPasswordReset(), result.isPasswordReset());
     assertEquals(user.getLanguage(), result.getLanguage());
     assertEquals(user.getRole(), result.getRole());
-    
-    when(repository.findByEmailAndIsDeletedFalse(anyString())).thenReturn(null);
-    when(repository.save(any())).thenReturn(user);
 
-    result = service.saveOrUpdatePartner(Constant.TEST,Constant.TEST, Constant.TEST, Boolean.FALSE);
+    when(service.findByEmail(anyString())).thenReturn(null);
+
+    result =
+        service.saveOrUpdatePartner(Constant.TEST, Constant.TEST, Constant.TEST, Boolean.FALSE);
 
     assertNotNull(result);
     assertEquals(user.getId(), result.getId());
