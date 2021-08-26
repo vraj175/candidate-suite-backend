@@ -191,18 +191,11 @@ class UserServiceImplTest {
   void testInviteUser() {
     User user = CustomTestData.getUser();
     UserSearch userSearch = CustomTestData.getUserSearch();
-    String responseJson = "{" 
-        + "    \"candidate\": {" 
-        + "        \"contact\": {"
-        + "            \"id\": " + Constant.TEST + "," 
-        + "            \"first_name\": " + Constant.TEST + "," 
-        + "            \"last_name\": " + Constant.TEST
-        + "         }, "
-        + "        \"search\": {"
-        + "             \"id\": "+ Constant.TEST
-        + "         } "
-        + "     } "
-        + "}";
+    String responseJson = "{" + "    \"candidate\": {" + "        \"contact\": {"
+        + "            \"id\": " + Constant.TEST + "," + "            \"first_name\": "
+        + Constant.TEST + "," + "            \"last_name\": " + Constant.TEST + "         }, "
+        + "        \"search\": {" + "             \"id\": " + Constant.TEST + "         } "
+        + "     } " + "}";
     when(restUtil.newGetMethod(anyString())).thenReturn(responseJson);
     when(service.findByEmail(anyString())).thenReturn(null);
     when(service.findByGalaxyId(anyString())).thenReturn(null);
@@ -213,12 +206,19 @@ class UserServiceImplTest {
         new String[] {}, user, Boolean.FALSE, CustomTestData.getRequest());
 
     assertTrue(result);
-    
+
     when(service.findByGalaxyId(anyString())).thenReturn(user);
     when(searchService.findByUserAndCandidateId(any(), anyString())).thenReturn(null);
-    
-    result = service.inviteUser(Constant.TEST, Constant.TEST, Constant.TEST,
-        new String[] {}, user, Boolean.FALSE, CustomTestData.getRequest());
+
+    result = service.inviteUser(Constant.TEST, Constant.TEST, Constant.TEST, new String[] {}, user,
+        Boolean.FALSE, CustomTestData.getRequest());
+
+    assertTrue(result);
+
+    user.setPasswordReset(Boolean.TRUE);
+    when(searchService.findByUserAndCandidateId(any(), anyString())).thenReturn(userSearch);
+    result = service.inviteUser(Constant.TEST, Constant.TEST, Constant.TEST, new String[] {}, user,
+        Boolean.TRUE, CustomTestData.getRequest());
 
     assertTrue(result);
 
