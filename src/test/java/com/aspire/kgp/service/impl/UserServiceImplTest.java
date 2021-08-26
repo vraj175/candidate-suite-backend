@@ -19,6 +19,7 @@ import org.mockito.MockitoAnnotations;
 import com.aspire.kgp.CustomTestData;
 import com.aspire.kgp.constant.Constant;
 import com.aspire.kgp.model.User;
+import com.aspire.kgp.model.UserSearch;
 import com.aspire.kgp.repository.UserRepository;
 import com.aspire.kgp.service.LanguageService;
 import com.aspire.kgp.service.MailService;
@@ -189,6 +190,7 @@ class UserServiceImplTest {
   @Test
   void testInviteUser() {
     User user = CustomTestData.getUser();
+    UserSearch userSearch = CustomTestData.getUserSearch();
     String responseJson = "{" 
         + "    \"candidate\": {" 
         + "        \"contact\": {"
@@ -205,9 +207,17 @@ class UserServiceImplTest {
     when(service.findByEmail(anyString())).thenReturn(null);
     when(service.findByGalaxyId(anyString())).thenReturn(null);
     when(service.saveorUpdate(any())).thenReturn(user);
-    when(searchService.saveorUpdate(any())).thenReturn(CustomTestData.getUserSearch());
+    when(searchService.saveorUpdate(any())).thenReturn(userSearch);
 
     boolean result = service.inviteUser(Constant.TEST, Constant.TEST, Constant.TEST,
+        new String[] {}, user, Boolean.FALSE, CustomTestData.getRequest());
+
+    assertTrue(result);
+    
+    when(service.findByGalaxyId(anyString())).thenReturn(user);
+    when(searchService.findByUserAndCandidateId(any(), anyString())).thenReturn(null);
+    
+    result = service.inviteUser(Constant.TEST, Constant.TEST, Constant.TEST,
         new String[] {}, user, Boolean.FALSE, CustomTestData.getRequest());
 
     assertTrue(result);
