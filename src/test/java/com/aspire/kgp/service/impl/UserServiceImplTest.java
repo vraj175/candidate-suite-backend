@@ -240,5 +240,24 @@ class UserServiceImplTest {
           Boolean.TRUE, request)
     );
     assertEquals("Invalid Candidate Id", e.getMessage());
+    
+    responseJson = "{" + "    \"candidate\": {" + "        \"contact\": {"
+        + "            \"id\": " + Constant.TEST + "," + "            \"first_name\": "
+        + Constant.TEST + "," + "            \"last_name\": " + Constant.TEST + "         }, "
+        + "        \"search\": {" + "             \"id\": " + Constant.TEST + "         } "
+        + "     } " + "}";
+    when(restUtil.newGetMethod(anyString())).thenReturn(responseJson);
+    when(service.findByEmail(anyString())).thenReturn(user);
+    
+    e = assertThrows(APIException.class, () -> 
+    service.inviteUser(Constant.TEST, Constant.TEST, Constant.TEST, new String[] {}, user,
+      Boolean.TRUE, request));
+    assertEquals("Error in send invite", e.getMessage());
+    
+    user.setGalaxyId(Constant.BAD_REQUEST);
+    e = assertThrows(APIException.class, () -> 
+      service.inviteUser(Constant.TEST, Constant.TEST, Constant.TEST, new String[] {}, user,
+        Boolean.TRUE, request));
+    assertEquals("Other Contact is already registered with same email", e.getMessage());
   }
 }
