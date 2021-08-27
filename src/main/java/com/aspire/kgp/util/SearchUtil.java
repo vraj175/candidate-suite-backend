@@ -168,12 +168,12 @@ public class SearchUtil {
   }
 
   public PositionProfileDTO getPositionProfileDetails(String searchId) {
-    PositionProfileDTO PositionProfile;
+    PositionProfileDTO positionProfile;
     String apiResponse =
         restUtil.newGetMethod(Constant.POSITION_PROFILE_URL.replace("{searchId}", searchId));
     try {
       JsonObject json = (JsonObject) JsonParser.parseString(apiResponse);
-      PositionProfile = new Gson().fromJson(json, new TypeToken<PositionProfileDTO>() {
+      positionProfile = new Gson().fromJson(json, new TypeToken<PositionProfileDTO>() {
         /**
          * 
          */
@@ -183,9 +183,9 @@ public class SearchUtil {
       throw new APIException("Error in coverting json to object");
     }
 
-    if (PositionProfile == null || PositionProfile.getIsYearsOfExperienceMandatory() == null) {
+    if (positionProfile == null || positionProfile.getIsYearsOfExperienceMandatory() == null) {
       throw new APIException("Invalid searchId Id");
     }
-    return PositionProfile;
+    return positionProfile;
   }
 }
