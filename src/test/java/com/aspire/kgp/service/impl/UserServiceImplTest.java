@@ -9,6 +9,7 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
+import java.io.IOException;
 import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -30,6 +31,8 @@ import com.aspire.kgp.service.MailService;
 import com.aspire.kgp.service.RoleService;
 import com.aspire.kgp.service.UserSearchService;
 import com.aspire.kgp.util.RestUtil;
+
+import freemarker.template.TemplateException;
 
 class UserServiceImplTest {
 
@@ -271,5 +274,23 @@ class UserServiceImplTest {
     Exception e = assertThrows(ValidateException.class, () -> service.inviteUser(Constant.TEST,
         Constant.TEST, Constant.TEST, new String[] {}, user, Boolean.FALSE, request));
     assertEquals("Candidate already invited", e.getMessage());
+  }
+  
+  @Test
+  void testForgotPassword() throws IOException, TemplateException {
+    User user = CustomTestData.getUser();
+    
+    String responseJson = "{"
+        + "    \"name\": "+Constant.TEST+","
+        + "    \"id\": "+Constant.TEST
+        + "   }";
+    when(restUtil.newGetMethod(anyString())).thenReturn(responseJson);
+    when(service.saveorUpdate(any())).thenReturn(user);
+    when(service.findByEmail(anyString())).thenReturn(user);
+    when(mailService.getEmailContent(any(),any(),any(),anyString())).thenReturn(Constant.TEST);
+
+    boolean result = service.forgotPassword(CustomTestData.getRequest(), Constant.TEST);
+
+    assertTrue(result);
   }
 }
