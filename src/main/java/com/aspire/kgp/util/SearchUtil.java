@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component;
 import com.aspire.kgp.constant.Constant;
 import com.aspire.kgp.dto.CandidateDTO;
 import com.aspire.kgp.dto.ContactDTO;
+import com.aspire.kgp.dto.PositionProfileDTO;
 import com.aspire.kgp.dto.SearchDTO;
 import com.aspire.kgp.exception.APIException;
 import com.aspire.kgp.exception.NotFoundException;
@@ -120,7 +121,11 @@ public class SearchUtil {
     SimpleBeanPropertyFilter filter = SimpleBeanPropertyFilter.filterOutAllExcept("id", "jobTitle",
         "jobNumber", "stage", "company");
 
-    FilterProvider filters = new SimpleFilterProvider().addFilter("searchFilter", filter);
+    SimpleBeanPropertyFilter companyFilter =
+        SimpleBeanPropertyFilter.filterOutAllExcept("id", "name");
+
+    FilterProvider filters = new SimpleFilterProvider().addFilter("searchFilter", filter)
+        .addFilter("companyFilter", companyFilter);
     MappingJacksonValue mapping = new MappingJacksonValue(searchDTOs);
     mapping.setFilters(filters);
     return mapping;
@@ -160,5 +165,27 @@ public class SearchUtil {
       listCandidate.add(candidate);
     }
     return listCandidate;
+  }
+
+  public PositionProfileDTO getPositionProfileDetails(String searchId) {
+    PositionProfileDTO PositionProfile;
+    String apiResponse =
+        restUtil.newGetMethod(Constant.POSITION_PROFILE_URL.replace("{searchId}", searchId));
+    try {
+      JsonObject json = (JsonObject) JsonParser.parseString(apiResponse);
+      PositionProfile = new Gson().fromJson(json, new TypeToken<PositionProfileDTO>() {
+        /**
+         * 
+         */
+        private static final long serialVersionUID = 1L;
+      }.getType());
+    } catch (Exception e) {
+      throw new APIException("Error in coverting json to object");
+    }
+
+    if (PositionProfile == null || PositionProfile.getIsYearsOfExperienceMandatory() == null) {
+      throw new APIException("Invalid searchId Id");
+    }
+    return PositionProfile;
   }
 }

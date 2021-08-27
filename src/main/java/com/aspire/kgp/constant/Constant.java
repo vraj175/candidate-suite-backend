@@ -70,6 +70,7 @@ public class Constant {
 	public static final String SEARCHES_LIST_BY_COMAPNY = "/clientsuite/partner/companies/{companyId}/searches";
 	public static final String SEARCHES_LIST_BY_IDS = "/searches/search-details-by-ids";
 	public static final String CANDIDATE_LIST_URL = "/searches/{searchId}/candidates";
+	public static final String POSITION_PROFILE_URL = "/searches/{searchId}/sfpa";
 	public static final String CANDIDATE_URL = "/candidates/{candidateId}/activity";
 	// Queries parameter
 	public static final String INVALID_JSON_ERROR = "oops ! invalid json";
@@ -131,6 +132,9 @@ public class Constant {
 	public static final String GOOGLE_CAPTCHA_SECRET_KEY = "6LfPQ10aAAAAAHP7HDxskU_c1c8oBVSpf5SZdZ4C";
 	public static final String GOOGLE_CAPTCHA_SITE_KEY = "6LfPQ10aAAAAAHvVgZtpCU5ROuzwup5Q6yyZMoq_";
 	public static final String GOOGLE_CAPTCHA_VALIDATE_URL = "https://www.google.com/recaptcha/api/siteverify";
+
+	// Json Filter Name
+	public static final String COMPANY_FILTER = "companyFilter";
 	
 	//messages
 	public static final String DATA_SAVED= "Data saved successfully";

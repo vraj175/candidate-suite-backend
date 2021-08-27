@@ -29,54 +29,61 @@ import io.swagger.annotations.Tag;
 
 @RestController
 @RequestMapping("/api/v1.0")
-@Api(tags = { "Company" })
-@SwaggerDefinition(tags = { @Tag(name = "Company", description = "Rest API For Company") })
+@Api(tags = {"Company"})
+@SwaggerDefinition(tags = {@Tag(name = "Company", description = "Rest API For Company")})
 public class CompanyController {
 
-	@Autowired
-	CompanyUtil companyUtil;
+  @Autowired
+  CompanyUtil companyUtil;
 
-	@ApiOperation(value = "Get Client list")
-	@GetMapping("/companies/{stage}")
-	public List<CompanyDTO> getCompanyList(HttpServletRequest request, @PathVariable("stage") String stage) {
-		User user = (User) request.getAttribute("user");
-		List<CompanyDTO> companyList;
-		if (Constant.PARTNER.equalsIgnoreCase(user.getRole().getName())) {
-			companyList = companyUtil.getCompanyList(stage);
-		} else {
-			throw new NotFoundException("Partner Not Found");
-		}
-		return companyList;
-	}
+  @ApiOperation(value = "Get Client list")
+  @GetMapping("/companies/{stage}")
+  public List<CompanyDTO> getCompanyList(HttpServletRequest request,
+      @PathVariable("stage") String stage) {
+    User user = (User) request.getAttribute("user");
+    List<CompanyDTO> companyList;
+    if (Constant.PARTNER.equalsIgnoreCase(user.getRole().getName())) {
+      companyList = companyUtil.getCompanyList(stage);
+    } else {
+      throw new NotFoundException("Partner Not Found");
+    }
+    return companyList;
+  }
 
-	@ApiOperation(value = "Get Company Info Details")
-	@GetMapping("/company/{candidateId}")
-	public MappingJacksonValue getCompanyDetails(@PathVariable("candidateId") String candidateId) {
-		ContactDTO contactDTO = companyUtil.getCompanyDetails(candidateId);
-		SimpleBeanPropertyFilter contactFilter = SimpleBeanPropertyFilter.filterOutAllExcept(Constant.ID,
-				Constant.CURRENT_JOB_TITLE, "company", Constant.COUNTRY);
-		FilterProvider filters = new SimpleFilterProvider().addFilter("contactFilter", contactFilter);
-		MappingJacksonValue mapping = new MappingJacksonValue(contactDTO);
-		mapping.setFilters(filters);
+  @ApiOperation(value = "Get Company Info Details")
+  @GetMapping("/company/{candidateId}")
+  public MappingJacksonValue getCompanyDetails(@PathVariable("candidateId") String candidateId) {
+    ContactDTO contactDTO = companyUtil.getCompanyDetails(candidateId);
 
-		return mapping;
-	}
+    SimpleBeanPropertyFilter companyFilter =
+        SimpleBeanPropertyFilter.filterOutAllExcept("id", "name");
+    SimpleBeanPropertyFilter contactFilter = SimpleBeanPropertyFilter
+        .filterOutAllExcept(Constant.ID, Constant.CURRENT_JOB_TITLE, "company", Constant.COUNTRY);
+    FilterProvider filters = new SimpleFilterProvider().addFilter("contactFilter", contactFilter)
+        .addFilter("companyFilter", companyFilter);
+    MappingJacksonValue mapping = new MappingJacksonValue(contactDTO);
+    mapping.setFilters(filters);
 
-	@ApiOperation(value = "Get candidate Details")
-	@GetMapping("/companyInfo/{candidateId}")
-	public MappingJacksonValue getCompanyInfoDetails(@PathVariable("candidateId") String candidateId) {
-		CandidateDTO candidateDTO = companyUtil.getCompanyInfoDetails(candidateId);
-		SimpleBeanPropertyFilter candidateFilter = SimpleBeanPropertyFilter.filterOutAllExcept(Constant.ID,
-				"kgpInterviewDate1", "kgpInterviewDate2", "kgpInterviewDate3", "interviews");
-		SimpleBeanPropertyFilter interviewFilter = SimpleBeanPropertyFilter.filterOutAllExcept(Constant.ID, "method",
-				"comments", "position", "interviewDate", "client");
-		SimpleBeanPropertyFilter userFilter = SimpleBeanPropertyFilter.filterOutAllExcept(Constant.ID,
-				Constant.FIRST_NAME, Constant.LAST_NAME);
-		FilterProvider filters = new SimpleFilterProvider().addFilter("candidateFilter", candidateFilter)
-				.addFilter("interviewFilter", interviewFilter).addFilter("userFilter", userFilter);
-		MappingJacksonValue mapping = new MappingJacksonValue(candidateDTO);
-		mapping.setFilters(filters);
+    return mapping;
+  }
 
-		return mapping;
-	}
+  @ApiOperation(value = "Get candidate Details")
+  @GetMapping("/companyInfo/{candidateId}")
+  public MappingJacksonValue getCompanyInfoDetails(
+      @PathVariable("candidateId") String candidateId) {
+    CandidateDTO candidateDTO = companyUtil.getCompanyInfoDetails(candidateId);
+    SimpleBeanPropertyFilter candidateFilter = SimpleBeanPropertyFilter.filterOutAllExcept(
+        Constant.ID, "kgpInterviewDate1", "kgpInterviewDate2", "kgpInterviewDate3", "interviews");
+    SimpleBeanPropertyFilter interviewFilter = SimpleBeanPropertyFilter.filterOutAllExcept(
+        Constant.ID, "method", "comments", "position", "interviewDate", "client");
+    SimpleBeanPropertyFilter userFilter = SimpleBeanPropertyFilter.filterOutAllExcept(Constant.ID,
+        Constant.FIRST_NAME, Constant.LAST_NAME);
+    FilterProvider filters =
+        new SimpleFilterProvider().addFilter("candidateFilter", candidateFilter)
+            .addFilter("interviewFilter", interviewFilter).addFilter("userFilter", userFilter);
+    MappingJacksonValue mapping = new MappingJacksonValue(candidateDTO);
+    mapping.setFilters(filters);
+
+    return mapping;
+  }
 }

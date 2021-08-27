@@ -36,6 +36,9 @@ public class CandidateController {
     SimpleBeanPropertyFilter candidateFilter =
         SimpleBeanPropertyFilter.filterOutAllExcept(Constant.CONTACT, Constant.SEARCH);
 
+    SimpleBeanPropertyFilter companyFilter =
+        SimpleBeanPropertyFilter.filterOutAllExcept("id", "name");
+
     SimpleBeanPropertyFilter userAndContactFilter = SimpleBeanPropertyFilter
         .filterOutAllExcept(Constant.ID, Constant.FIRST_NAME, Constant.LAST_NAME);
 
@@ -45,7 +48,8 @@ public class CandidateController {
 
     FilterProvider filters = new SimpleFilterProvider()
         .addFilter("candidateFilter", candidateFilter).addFilter("userFilter", userAndContactFilter)
-        .addFilter("searchFilter", searchFilter).addFilter("contactFilter", userAndContactFilter);
+        .addFilter("searchFilter", searchFilter).addFilter("contactFilter", userAndContactFilter)
+        .addFilter("companyFilter", companyFilter);
 
     MappingJacksonValue mapping = new MappingJacksonValue(candidateDTO);
     mapping.setFilters(filters);
@@ -71,6 +75,9 @@ public class CandidateController {
     SimpleBeanPropertyFilter clientTeamFilter =
         SimpleBeanPropertyFilter.filterOutAllExcept(Constant.ID, Constant.CONTACT);
 
+    SimpleBeanPropertyFilter companyFilter =
+        SimpleBeanPropertyFilter.filterOutAllExcept("id", "name");
+
     SimpleBeanPropertyFilter contactFilter =
         SimpleBeanPropertyFilter.filterOutAllExcept(Constant.ID, Constant.FIRST_NAME,
             Constant.LAST_NAME, Constant.CURRENT_JOB_TITLE, Constant.MOBILE_PHONE,
@@ -79,7 +86,7 @@ public class CandidateController {
     FilterProvider filters = new SimpleFilterProvider()
         .addFilter("candidateFilter", candidateFilter).addFilter("searchFilter", searchFilter)
         .addFilter("userFilter", userFilter).addFilter("clientTeamFilter", clientTeamFilter)
-        .addFilter("contactFilter", contactFilter);
+        .addFilter("contactFilter", contactFilter).addFilter("companyFilter", companyFilter);
 
     MappingJacksonValue mapping = new MappingJacksonValue(candidateDTO);
     mapping.setFilters(filters);
