@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.json.MappingJacksonValue;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,6 +27,7 @@ import com.aspire.kgp.exception.NotFoundException;
 import com.aspire.kgp.model.User;
 import com.aspire.kgp.service.UserService;
 import com.aspire.kgp.util.CommonUtil;
+import com.aspire.kgp.util.RestUtil;
 import com.fasterxml.jackson.databind.ser.FilterProvider;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
@@ -43,6 +45,9 @@ public class UserController {
 
   @Autowired
   UserService service;
+
+  @Autowired
+  RestUtil restUtil;
 
   @ApiOperation(value = "Invite User as Candidates")
   @PostMapping(value = Constant.PUBLIC_API_URL + "/user/invite")
@@ -128,5 +133,11 @@ public class UserController {
       return new ResponseEntity<>(body, HttpStatus.OK);
     }
     throw new APIException("Something went wront");
+  }
+
+  @ApiOperation(value = "Verify recaptcha response from google")
+  @PostMapping(value = Constant.PUBLIC_API_URL + "/user/verify/recaptcha/{response}")
+  public String performVerifyGoogleCaptchaRequest(@PathVariable("response") String response) {
+    return restUtil.performVerifyGoogleCaptchaRequest(response);
   }
 }

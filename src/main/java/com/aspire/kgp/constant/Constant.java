@@ -127,6 +127,11 @@ public class Constant {
 	public static final String WORK_PHONE = "workPhone";
 	public static final String PUBLISHED_BIO = "publishedBio";
 	
+	//google capcha
+	public static final String GOOGLE_CAPTCHA_SECRET_KEY = "6LfPQ10aAAAAAHP7HDxskU_c1c8oBVSpf5SZdZ4C";
+	public static final String GOOGLE_CAPTCHA_SITE_KEY = "6LfPQ10aAAAAAHvVgZtpCU5ROuzwup5Q6yyZMoq_";
+	public static final String GOOGLE_CAPTCHA_VALIDATE_URL = "https://www.google.com/recaptcha/api/siteverify";
+	
 	//messages
 	public static final String DATA_SAVED= "Data saved successfully";
 	public static final String DATA_ALREADY_INITIALIZED= "Data already initialized";
