@@ -136,7 +136,7 @@ public class UserController {
   }
 
   @ApiOperation(value = "Verify recaptcha response from google")
-  @PostMapping(value = Constant.PUBLIC_API_URL + "/user/verify/recaptcha/{response}")
+  @GetMapping(value = Constant.PUBLIC_API_URL + "/user/verify/recaptcha/{response}")
   public String performVerifyGoogleCaptchaRequest(@PathVariable("response") String response) {
     return restUtil.performVerifyGoogleCaptchaRequest(response);
   }
