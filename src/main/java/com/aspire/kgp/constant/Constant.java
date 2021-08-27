@@ -128,6 +128,9 @@ public class Constant {
 	public static final String WORK_PHONE = "workPhone";
 	public static final String PUBLISHED_BIO = "publishedBio";
 	
+	// Json Filter Name
+	public static final String COMPANY_FILTER = "companyFilter";
+	
 	//messages
 	public static final String DATA_SAVED= "Data saved successfully";
 	public static final String DATA_ALREADY_INITIALIZED= "Data already initialized";

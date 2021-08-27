@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.aspire.kgp.constant.Constant;
 import com.aspire.kgp.dto.CandidateDTO;
 import com.aspire.kgp.dto.PositionProfileDTO;
 import com.aspire.kgp.model.User;
@@ -44,12 +45,13 @@ public class SearchController {
         SimpleBeanPropertyFilter.filterOutAllExcept("id", "name");
 
     SimpleBeanPropertyFilter searchFilter = SimpleBeanPropertyFilter.filterOutAllExcept("id",
-        "jobTitle", "jobNumber", "stage", "company");
+        "jobTitle", "jobNumber", "stage", Constant.COMPANY);
     SimpleBeanPropertyFilter candidateFilter =
         SimpleBeanPropertyFilter.filterOutAllExcept("id", "search");
 
     FilterProvider filters = new SimpleFilterProvider().addFilter("searchFilter", searchFilter)
-        .addFilter("companyFilter", companyFilter).addFilter("candidateFilter", candidateFilter);
+        .addFilter(Constant.COMPANY_FILTER, companyFilter)
+        .addFilter("candidateFilter", candidateFilter);
     MappingJacksonValue mapping = new MappingJacksonValue(candidateList);
     mapping.setFilters(filters);
     return mapping;
@@ -71,13 +73,14 @@ public class SearchController {
         SimpleBeanPropertyFilter.filterOutAllExcept("id", "name");
 
     SimpleBeanPropertyFilter contactFilter = SimpleBeanPropertyFilter.filterOutAllExcept("id",
-        "firstName", "lastName", "workEmail", "currentJobTitle", "company");
+        "firstName", "lastName", "workEmail", "currentJobTitle", Constant.COMPANY);
 
     SimpleBeanPropertyFilter candidateFilter =
         SimpleBeanPropertyFilter.filterOutAllExcept("id", "contact");
 
     FilterProvider filters = new SimpleFilterProvider().addFilter("contactFilter", contactFilter)
-        .addFilter("companyFilter", companyFilter).addFilter("candidateFilter", candidateFilter);
+        .addFilter(Constant.COMPANY_FILTER, companyFilter)
+        .addFilter("candidateFilter", candidateFilter);
 
     MappingJacksonValue mapping = new MappingJacksonValue(listCandidate);
     mapping.setFilters(filters);
@@ -95,11 +98,11 @@ public class SearchController {
     SimpleBeanPropertyFilter positionProfileFilter = SimpleBeanPropertyFilter.filterOutAllExcept(
         "isDegreeMandatory", "isApprovedByPartner", "isYearsOfExperienceMandatory",
         "positionOverview", "productsServicesOverview", "professionalExperience",
-        "yearsOfExperience", "degreeName", "certifications", "company");
+        "yearsOfExperience", "degreeName", "certifications", Constant.COMPANY);
 
     FilterProvider filters =
         new SimpleFilterProvider().addFilter("positionProfileFilter", positionProfileFilter)
-            .addFilter("companyFilter", companyFilter);
+            .addFilter(Constant.COMPANY_FILTER, companyFilter);
 
     MappingJacksonValue mapping = new MappingJacksonValue(positionProfile);
     mapping.setFilters(filters);
