@@ -6,10 +6,13 @@ import java.util.List;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.aspire.kgp.constant.Constant;
+import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
 
+import springfox.documentation.RequestHandler;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.service.ApiKey;
 import springfox.documentation.service.AuthorizationScope;
@@ -39,23 +42,25 @@ public class CandidateSuiteBackendApplication {
     return new Docket(DocumentationType.SWAGGER_2).select()
         .paths(Predicates.not(PathSelectors.ant(Constant.USER_AUTHENTICATE_API_URL)))
         .paths(PathSelectors.ant("/api/**"))
-        .paths(Predicates.not(PathSelectors.ant("/api/v1.0/public/**"))).build()
-        .securitySchemes(Arrays.asList(accessToken(), apiKey()))
+        .paths(Predicates
+            .not(PathSelectors.ant(Constant.BASE_API_URL + Constant.PUBLIC_API_URL + "/**")))
+        .build().securitySchemes(Arrays.asList(accessToken(), apiKey()))
         .securityContexts(Arrays.asList(securityContext()));
   }
 
   @Bean
   public Docket userAuthentication() {
     return new Docket(DocumentationType.SWAGGER_2).groupName(Constant.USER_AUTHENTICATE_GROUP_NAME)
-        .select().paths(PathSelectors.ant(Constant.USER_AUTHENTICATE_API_URL)).build()
-        .securitySchemes(Arrays.asList(accessToken(), tokenType(), apiKey()))
+        .select().apis(httpRequestHandler())
+        .paths(PathSelectors.ant(Constant.USER_AUTHENTICATE_API_URL)).build()
+        .securitySchemes(Arrays.asList(apiKey()))
         .securityContexts(Arrays.asList(userAuthenticateSecurityContext()));
   }
-  
+
   @Bean
   public Docket publicAuthentication() {
-    return new Docket(DocumentationType.SWAGGER_2).groupName(Constant.PUBLIC_GROUP_NAME)
-        .select().paths(PathSelectors.ant("/api/v1.0/public/**")).build()
+    return new Docket(DocumentationType.SWAGGER_2).groupName(Constant.PUBLIC_GROUP_NAME).select()
+        .paths(PathSelectors.ant(Constant.BASE_API_URL + Constant.PUBLIC_API_URL + "/**")).build()
         .securitySchemes(Arrays.asList(apiKey()))
         .securityContexts(Arrays.asList(publicSecurityContext()));
   }
@@ -68,24 +73,21 @@ public class CandidateSuiteBackendApplication {
     return new ApiKey(Constant.AUTHORIZATION, Constant.AUTHORIZATION, Constant.HEADER);
   }
 
-  private ApiKey tokenType() {
-    return new ApiKey(Constant.GRANT_TYPE, Constant.GRANT_TYPE, Constant.HEADER);
-  }
-
   private SecurityContext securityContext() {
     return SecurityContext.builder().securityReferences(defaultAuth())
-        .forPaths(Predicates.not(PathSelectors.ant("/api/v1.0/public/*")))
-        .forPaths(PathSelectors.regex("/api/v1.*")).build();
+        .forPaths(Predicates
+            .not(PathSelectors.ant(Constant.BASE_API_URL + Constant.PUBLIC_API_URL + "/*")))
+        .forPaths(PathSelectors.regex(Constant.BASE_API_URL + ".*")).build();
   }
 
   private SecurityContext userAuthenticateSecurityContext() {
     return SecurityContext.builder().securityReferences(defaultAuth())
         .forPaths(PathSelectors.regex(Constant.USER_AUTHENTICATE_API_URL)).build();
   }
-  
+
   private SecurityContext publicSecurityContext() {
     return SecurityContext.builder().securityReferences(defaultAuth())
-        .forPaths(PathSelectors.regex("/api/v1.*")).build();
+        .forPaths(PathSelectors.regex(Constant.BASE_API_URL + ".*")).build();
   }
 
   private List<SecurityReference> defaultAuth() {
@@ -108,4 +110,7 @@ public class CandidateSuiteBackendApplication {
     return UiConfigurationBuilder.builder().defaultModelsExpandDepth(-1).build();
   }
 
+  private Predicate<RequestHandler> httpRequestHandler() {
+    return p -> p.supportedMethods().contains(RequestMethod.POST);
+  }
 }

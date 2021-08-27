@@ -24,6 +24,26 @@ public class UserDTO {
   private String linkedinUrl;
   private String bio;
   private boolean passwordReset;
+  @SerializedName("mobile_phone")
+  private String mobilePhone;
+  @SerializedName("work_phone")
+  private String workPhone;
+
+  public String getMobilePhone() {
+    return mobilePhone;
+  }
+
+  public void setMobilePhone(String mobilePhone) {
+    this.mobilePhone = mobilePhone;
+  }
+
+  public String getWorkPhone() {
+    return workPhone;
+  }
+
+  public void setWorkPhone(String workPhone) {
+    this.workPhone = workPhone;
+  }
 
   public String getId() {
     return id;

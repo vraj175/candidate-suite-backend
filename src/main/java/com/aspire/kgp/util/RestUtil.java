@@ -80,6 +80,33 @@ public class RestUtil {
     return response;
   }
 
+  public String performVerifyGoogleCaptchaRequest(String capchaResponse) {
+    String baseURL = Constant.GOOGLE_CAPTCHA_VALIDATE_URL
+        .concat("?secret=" + Constant.GOOGLE_CAPTCHA_SECRET_KEY);
+    baseURL = baseURL.concat("&response=" + capchaResponse);
+    log.info(baseURL);
+    GetMethod get = new GetMethod(baseURL);
+    /* set the token in the header */
+    get.setRequestHeader(Constant.X_API_KEY, apiKey);
+    /* set the token in the header */
+    get.setRequestHeader(Constant.AUTHORIZATION,
+        validateCognitoWithAuthenticationToken(defaultAuth).getAccessToken());
+    String response = "";
+    try {
+      log.info("Request time: " + new Date());
+      new HttpClient().executeMethod(get);
+      log.info("Request Code : " + get.getStatusCode());
+      response = get.getResponseBodyAsString();
+      
+      log.info("Response time: " + new Date());
+    } catch (IOException e) {
+      log.error("error while executing query " + e);
+    } finally {
+      get.releaseConnection();
+    }
+    return response;
+  }
+
   /*
    * Post Method
    */

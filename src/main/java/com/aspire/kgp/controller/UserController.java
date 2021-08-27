@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.json.MappingJacksonValue;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,6 +27,7 @@ import com.aspire.kgp.exception.NotFoundException;
 import com.aspire.kgp.model.User;
 import com.aspire.kgp.service.UserService;
 import com.aspire.kgp.util.CommonUtil;
+import com.aspire.kgp.util.RestUtil;
 import com.fasterxml.jackson.databind.ser.FilterProvider;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
@@ -44,8 +46,11 @@ public class UserController {
   @Autowired
   UserService service;
 
+  @Autowired
+  RestUtil restUtil;
+
   @ApiOperation(value = "Invite User as Candidates")
-  @PostMapping(value = "/public/user/invite")
+  @PostMapping(value = Constant.PUBLIC_API_URL + "/user/invite")
   public ResponseEntity<Object> inviteUser(@Valid @RequestBody InviteDTO invite,
       HttpServletRequest request) {
     User user = service.findByGalaxyId(invite.getPartnerId());
@@ -90,17 +95,17 @@ public class UserController {
     userDTO.setRole(role);
     userDTO.setPasswordReset(user.isPasswordReset());
 
-    SimpleBeanPropertyFilter filter =
-        SimpleBeanPropertyFilter.filterOutAllExcept("id", "firstName", "lastName", "email", "role", "passwordReset");
+    SimpleBeanPropertyFilter filter = SimpleBeanPropertyFilter.filterOutAllExcept("id", "firstName",
+        "lastName", "email", "role", "passwordReset");
 
     FilterProvider filters = new SimpleFilterProvider().addFilter("userFilter", filter);
     MappingJacksonValue mapping = new MappingJacksonValue(userDTO);
     mapping.setFilters(filters);
     return mapping;
   }
-  
+
   @ApiOperation(value = "Forgot password for candidate")
-  @PostMapping(value = "/public/user/forgotPassword")
+  @PostMapping(value = Constant.PUBLIC_API_URL + "/user/forgotPassword")
   public ResponseEntity<Object> forgotUserPassword(@RequestBody String email,
       HttpServletRequest request) {
 
@@ -114,11 +119,11 @@ public class UserController {
     }
     throw new APIException("Something went wront");
   }
-  
+
   @ApiOperation(value = "Reset Password for User")
-  @PostMapping(value = "/user/resetPassword")
-  public ResponseEntity<Object> resetUserPassword(@Valid @RequestBody ResetPasswordDTO resetPassword,
-      HttpServletRequest request) {
+  @PostMapping(value = Constant.PUBLIC_API_URL + "/user/resetPassword")
+  public ResponseEntity<Object> resetUserPassword(
+      @Valid @RequestBody ResetPasswordDTO resetPassword, HttpServletRequest request) {
     boolean result = service.resetPassword(request, resetPassword);
     if (result) {
       Map<String, Object> body = new LinkedHashMap<>();
@@ -128,5 +133,11 @@ public class UserController {
       return new ResponseEntity<>(body, HttpStatus.OK);
     }
     throw new APIException("Something went wront");
+  }
+
+  @ApiOperation(value = "Verify recaptcha response from google")
+  @PostMapping(value = Constant.PUBLIC_API_URL + "/user/verify/recaptcha/{response}")
+  public String performVerifyGoogleCaptchaRequest(@PathVariable("response") String response) {
+    return restUtil.performVerifyGoogleCaptchaRequest(response);
   }
 }

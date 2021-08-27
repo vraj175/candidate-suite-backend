@@ -51,9 +51,9 @@ public class RoleServiceImpl implements RoleService {
       roles.add(role2);
 
       saveAll(roles);
-      return "Data saved successfully";
+      return Constant.DATA_SAVED;
     } else {
-      return "Data already initialized";
+      return Constant.DATA_ALREADY_INITIALIZED;
     }
   }
 

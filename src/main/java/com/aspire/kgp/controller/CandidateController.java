@@ -36,6 +36,9 @@ public class CandidateController {
     SimpleBeanPropertyFilter candidateFilter =
         SimpleBeanPropertyFilter.filterOutAllExcept(Constant.CONTACT, Constant.SEARCH);
 
+    SimpleBeanPropertyFilter companyFilter =
+        SimpleBeanPropertyFilter.filterOutAllExcept("id", "name");
+
     SimpleBeanPropertyFilter userAndContactFilter = SimpleBeanPropertyFilter
         .filterOutAllExcept(Constant.ID, Constant.FIRST_NAME, Constant.LAST_NAME);
 
@@ -45,7 +48,8 @@ public class CandidateController {
 
     FilterProvider filters = new SimpleFilterProvider()
         .addFilter("candidateFilter", candidateFilter).addFilter("userFilter", userAndContactFilter)
-        .addFilter("searchFilter", searchFilter).addFilter("contactFilter", userAndContactFilter);
+        .addFilter("searchFilter", searchFilter).addFilter("contactFilter", userAndContactFilter)
+        .addFilter("companyFilter", companyFilter);
 
     MappingJacksonValue mapping = new MappingJacksonValue(candidateDTO);
     mapping.setFilters(filters);
@@ -66,20 +70,23 @@ public class CandidateController {
 
     SimpleBeanPropertyFilter userFilter = SimpleBeanPropertyFilter.filterOutAllExcept(Constant.ID,
         Constant.FIRST_NAME, Constant.LAST_NAME, Constant.EMAIL, Constant.TITLE, Constant.COUNTRY,
-        Constant.LINKEDIN_URL, Constant.BIO);
+        Constant.LINKEDIN_URL, Constant.BIO, Constant.MOBILE_PHONE, Constant.WORK_PHONE);
 
     SimpleBeanPropertyFilter clientTeamFilter =
         SimpleBeanPropertyFilter.filterOutAllExcept(Constant.ID, Constant.CONTACT);
 
+    SimpleBeanPropertyFilter companyFilter =
+        SimpleBeanPropertyFilter.filterOutAllExcept("id", "name");
+
     SimpleBeanPropertyFilter contactFilter =
         SimpleBeanPropertyFilter.filterOutAllExcept(Constant.ID, Constant.FIRST_NAME,
             Constant.LAST_NAME, Constant.CURRENT_JOB_TITLE, Constant.MOBILE_PHONE,
-            Constant.PUBLISHED_BIO, Constant.COMPANY,Constant.LINKEDIN_URL);
+            Constant.PUBLISHED_BIO, Constant.COMPANY, Constant.LINKEDIN_URL, Constant.COUNTRY);
 
     FilterProvider filters = new SimpleFilterProvider()
         .addFilter("candidateFilter", candidateFilter).addFilter("searchFilter", searchFilter)
         .addFilter("userFilter", userFilter).addFilter("clientTeamFilter", clientTeamFilter)
-        .addFilter("contactFilter", contactFilter);
+        .addFilter("contactFilter", contactFilter).addFilter("companyFilter", companyFilter);
 
     MappingJacksonValue mapping = new MappingJacksonValue(candidateDTO);
     mapping.setFilters(filters);

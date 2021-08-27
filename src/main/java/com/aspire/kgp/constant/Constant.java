@@ -70,6 +70,7 @@ public class Constant {
 	public static final String SEARCHES_LIST_BY_COMAPNY = "/clientsuite/partner/companies/{companyId}/searches";
 	public static final String SEARCHES_LIST_BY_IDS = "/searches/search-details-by-ids";
 	public static final String CANDIDATE_LIST_URL = "/searches/{searchId}/candidates";
+	public static final String POSITION_PROFILE_URL = "/searches/{searchId}/sfpa";
 	public static final String CANDIDATE_URL = "/candidates/{candidateId}/activity";
 	// Queries parameter
 	public static final String INVALID_JSON_ERROR = "oops ! invalid json";
@@ -83,6 +84,8 @@ public class Constant {
 	public static final String USER_AUTHENTICATE_API_URL = "/api/v1.0/oauth/token";
 	public static final String USER_AUTHENTICATE_GROUP_NAME = "user-authenticate";
 	public static final String PUBLIC_GROUP_NAME = "public";
+	public static final String PUBLIC_API_URL = "/open";
+	public static final String BASE_API_URL = "/api/v1.0";
 	public static final String HEADER = "header";
 	public static final String GLOBAL_AUTHORIZATION_SCOPE = "global";
 	public static final String ACCESS_EVERYTHING_AUTHORZATION_SCOPE = "accessEverything";
@@ -122,7 +125,21 @@ public class Constant {
 	public static final String BIO = "bio";
 	public static final String CURRENT_JOB_TITLE = "currentJobTitle";
 	public static final String MOBILE_PHONE = "mobilePhone";
+	public static final String WORK_PHONE = "workPhone";
 	public static final String PUBLISHED_BIO = "publishedBio";
+	
+	//google capcha
+	public static final String GOOGLE_CAPTCHA_SECRET_KEY = "6LfPQ10aAAAAAHP7HDxskU_c1c8oBVSpf5SZdZ4C";
+	public static final String GOOGLE_CAPTCHA_SITE_KEY = "6LfPQ10aAAAAAHvVgZtpCU5ROuzwup5Q6yyZMoq_";
+	public static final String GOOGLE_CAPTCHA_VALIDATE_URL = "https://www.google.com/recaptcha/api/siteverify";
+
+	// Json Filter Name
+	public static final String COMPANY_FILTER = "companyFilter";
+	
+	//messages
+	public static final String DATA_SAVED= "Data saved successfully";
+	public static final String DATA_ALREADY_INITIALIZED= "Data already initialized";
+	
 	
 	// Test Fields
 	public static final String TEST = "Test";

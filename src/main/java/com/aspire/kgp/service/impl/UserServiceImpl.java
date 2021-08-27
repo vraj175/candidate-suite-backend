@@ -179,6 +179,7 @@ public class UserServiceImpl implements UserService {
   }
 
   private String generateJwtToken(String userName, String password) {
+    log.info("generating Token for user...");
     Date dt = new Date();
     Calendar c = Calendar.getInstance();
     c.setTime(dt);
