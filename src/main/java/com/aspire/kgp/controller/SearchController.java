@@ -88,7 +88,7 @@ public class SearchController {
   }
 
   @ApiOperation(value = "Get Postion Profile Details")
-  @GetMapping(value = {"/searches/{searchId}/sfpa"})
+  @GetMapping(value = {"/searches/{searchId}/position_profile"})
   public MappingJacksonValue getPositionProfile(@PathVariable("searchId") String searchId) {
     PositionProfileDTO positionProfile = searchUtil.getPositionProfileDetails(searchId);
 

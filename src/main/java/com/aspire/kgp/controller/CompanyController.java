@@ -38,7 +38,7 @@ public class CompanyController {
 
   @ApiOperation(value = "Get Client list")
   @GetMapping("/companies/{stage}")
-  public List<CompanyDTO> getCompanyList(HttpServletRequest request,
+  public MappingJacksonValue getCompanyList(HttpServletRequest request,
       @PathVariable("stage") String stage) {
     User user = (User) request.getAttribute("user");
     List<CompanyDTO> companyList;
@@ -47,7 +47,15 @@ public class CompanyController {
     } else {
       throw new NotFoundException("Partner Not Found");
     }
-    return companyList;
+
+    SimpleBeanPropertyFilter companyFilter =
+        SimpleBeanPropertyFilter.filterOutAllExcept("id", "name");
+
+    FilterProvider filters = new SimpleFilterProvider().addFilter("companyFilter", companyFilter);
+    MappingJacksonValue mapping = new MappingJacksonValue(companyList);
+    mapping.setFilters(filters);
+
+    return mapping;
   }
 
   @ApiOperation(value = "Get Company Info Details")
