@@ -24,8 +24,6 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
-import io.swagger.annotations.Example;
-import io.swagger.annotations.ExampleProperty;
 import io.swagger.annotations.SwaggerDefinition;
 import io.swagger.annotations.Tag;
 
@@ -93,8 +91,8 @@ public class SearchController {
 
   @ApiOperation(value = "Get Postion Profile Details")
   @GetMapping(value = {"/searches/{searchId}/position_profile"})
-  @ApiResponses(value = {@ApiResponse(code = 200, message = "ok Message",
-      response = PositionProfileDTO.class)})
+  @ApiResponses(
+      value = {@ApiResponse(code = 200, message = "OK", response = PositionProfileDTO.class)})
   public MappingJacksonValue getPositionProfile(@PathVariable("searchId") String searchId) {
     PositionProfileDTO positionProfile = searchUtil.getPositionProfileDetails(searchId);
 
