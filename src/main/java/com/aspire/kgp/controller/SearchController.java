@@ -94,8 +94,7 @@ public class SearchController {
   @ApiOperation(value = "Get Postion Profile Details")
   @GetMapping(value = {"/searches/{searchId}/position_profile"})
   @ApiResponses(value = {@ApiResponse(code = 200, message = "ok Message",
-      examples = @Example(value = @ExampleProperty(mediaType = "application/json",
-          value = "{\"positionOverview\": \"positionOverview\", \"productsServicesOverview\": \"productsServicesOverview\"}")))})
+      response = PositionProfileDTO.class)})
   public MappingJacksonValue getPositionProfile(@PathVariable("searchId") String searchId) {
     PositionProfileDTO positionProfile = searchUtil.getPositionProfileDetails(searchId);
 
