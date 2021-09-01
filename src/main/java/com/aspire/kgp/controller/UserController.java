@@ -33,6 +33,10 @@ import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
@@ -76,6 +80,9 @@ public class UserController {
 
   @Operation(summary = "get user profile details ")
   @GetMapping(value = "/user/profile")
+  @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK",
+      content = @Content(mediaType = "application/json", schema = @Schema(type = "UserDTO",
+          example = "{\"id\": \"string\",\"firstName\": \"string\",\"lastName\": \"string\",\"email\": \"string\",\"role\": \"string\",\"passwordReset\": true}")))})
   public MappingJacksonValue getUserProfile(HttpServletRequest request) {
     User user = (User) request.getAttribute("user");
     UserDTO userDTO = null;

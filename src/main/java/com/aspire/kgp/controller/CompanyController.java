@@ -22,22 +22,26 @@ import com.fasterxml.jackson.databind.ser.FilterProvider;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.SwaggerDefinition;
-import io.swagger.annotations.Tag;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
 @RequestMapping("/api/v1.0")
-@Api(tags = {"Company"})
-@SwaggerDefinition(tags = {@Tag(name = "Company", description = "Rest API For Company")})
+@Tag(name = "Company", description = "Rest API For Company")
 public class CompanyController {
 
   @Autowired
   CompanyUtil companyUtil;
 
-  @ApiOperation(value = "Get Client list")
+  @Operation(summary = "Get Client list")
   @GetMapping("/companies/{stage}")
+  @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK",
+      content = @Content(mediaType = "application/json", schema = @Schema(type = "List<CompanyDTO>",
+          example = "[{\"id\": \"string\",\"name\": \"string\"}]")))})
   public MappingJacksonValue getCompanyList(HttpServletRequest request,
       @PathVariable("stage") String stage) {
     User user = (User) request.getAttribute("user");
@@ -58,8 +62,11 @@ public class CompanyController {
     return mapping;
   }
 
-  @ApiOperation(value = "Get Company Info Details")
+  @Operation(summary = "Get Company Info Details")
   @GetMapping("/company/{candidateId}")
+  @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK",
+      content = @Content(mediaType = "application/json", schema = @Schema(type = "ContactDTO",
+          example = "{\"id\": \"string\",\"country\": \"string\",\"currentJobTitle\": \"string\",\"company\": {\"id\": \"string\",\"name\": \"string\"}}")))})
   public MappingJacksonValue getCompanyDetails(@PathVariable("candidateId") String candidateId) {
     ContactDTO contactDTO = companyUtil.getCompanyDetails(candidateId);
 
@@ -75,8 +82,11 @@ public class CompanyController {
     return mapping;
   }
 
-  @ApiOperation(value = "Get candidate Details")
+  @Operation(summary = "Get candidate Details")
   @GetMapping("/companyInfo/{candidateId}")
+  @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK",
+      content = @Content(mediaType = "application/json", schema = @Schema(type = "CandidateDTO",
+          example = "{\"id\": \"string\",\"kgpInterviewDate1\": \"string\",\"kgpInterviewDate2\": \"string\",\"kgpInterviewDate3\": \"string\",\"interviews\": [{\"id\": \"string\",\"method\": \"string\",\"comments\": \"string\",\"position\": 0,\"interviewDate\": \"string\",\"client\": {\"id\": \"string\",\"firstName\": \"string\",\"lastName\": \"string\"}}]}")))})
   public MappingJacksonValue getCompanyInfoDetails(
       @PathVariable("candidateId") String candidateId) {
     CandidateDTO candidateDTO = companyUtil.getCompanyInfoDetails(candidateId);

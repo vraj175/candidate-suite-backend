@@ -12,27 +12,24 @@ import com.aspire.kgp.constant.Constant;
 import com.aspire.kgp.model.Language;
 import com.aspire.kgp.service.LanguageService;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.SwaggerDefinition;
-import io.swagger.annotations.Tag;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
 @RequestMapping("/api/v1.0")
-@Api(tags = {"Language"})
-@SwaggerDefinition(tags = {@Tag(name = "Language", description = "REST API for Language")})
+@Tag(name = "Language", description = "REST API for Language")
 public class LanguageController {
 
   @Autowired
   LanguageService service;
 
-  @ApiOperation(value = "Initialize languages")
+  @Operation(summary = "Initialize languages")
   @PostMapping(value = Constant.PUBLIC_API_URL + "/languages/initialize")
   public String initializeLanguages() {
     return service.initializeData();
   }
 
-  @ApiOperation(value = "Get list of Languages")
+  @Operation(summary = "Get list of Languages")
   @GetMapping(value = "/languages")
   public List<Language> getLanguages() {
     return service.findAll();
