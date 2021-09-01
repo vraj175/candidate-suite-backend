@@ -20,10 +20,12 @@ import com.fasterxml.jackson.databind.ser.FilterProvider;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
 import io.swagger.annotations.SwaggerDefinition;
 import io.swagger.annotations.Tag;
 
@@ -91,8 +93,14 @@ public class SearchController {
 
   @ApiOperation(value = "Get Postion Profile Details")
   @GetMapping(value = {"/searches/{searchId}/position_profile"})
-  @ApiResponses(
-      value = {@ApiResponse(code = 200, message = "OK", response = PositionProfileDTO.class)})
+  @ApiResponses(value = {
+      @ApiResponse(
+          responseCode = "200",
+          description = "OK",
+          content = @Content (mediaType = "application/json",
+          schema = @Schema(
+              type = "PositionProfileDTO",
+              example = "{\"positionOverview\": \"positionOverview\", \"productsServicesOverview\": \"productsServicesOverview\"}")))})
   public MappingJacksonValue getPositionProfile(@PathVariable("searchId") String searchId) {
     PositionProfileDTO positionProfile = searchUtil.getPositionProfileDetails(searchId);
 
