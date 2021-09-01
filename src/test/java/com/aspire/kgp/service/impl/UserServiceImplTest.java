@@ -22,6 +22,7 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import com.aspire.kgp.CustomTestData;
 import com.aspire.kgp.constant.Constant;
 import com.aspire.kgp.exception.APIException;
+import com.aspire.kgp.exception.NotFoundException;
 import com.aspire.kgp.exception.ValidateException;
 import com.aspire.kgp.model.User;
 import com.aspire.kgp.model.UserSearch;
@@ -275,22 +276,46 @@ class UserServiceImplTest {
         Constant.TEST, Constant.TEST, new String[] {}, user, Boolean.FALSE, request));
     assertEquals("Candidate already invited", e.getMessage());
   }
-  
+
   @Test
   void testForgotPassword() throws IOException, TemplateException {
     User user = CustomTestData.getUser();
-    
-    String responseJson = "{"
-        + "    \"name\": "+Constant.TEST+","
-        + "    \"id\": "+Constant.TEST
-        + "   }";
+
+    String responseJson =
+        "{" + "    \"name\": " + Constant.TEST + "," + "    \"id\": " + Constant.TEST + "   }";
     when(restUtil.newGetMethod(anyString())).thenReturn(responseJson);
     when(service.saveorUpdate(any())).thenReturn(user);
     when(service.findByEmail(anyString())).thenReturn(user);
-    when(mailService.getEmailContent(any(),any(),any(),anyString())).thenReturn(Constant.TEST);
+    when(mailService.getEmailContent(any(), any(), any(), anyString())).thenReturn(Constant.TEST);
 
     boolean result = service.forgotPassword(CustomTestData.getRequest(), Constant.TEST);
 
     assertTrue(result);
   }
+
+  @Test
+  void testForgotPassword_NotFoundException() {
+    MockHttpServletRequest request = CustomTestData.getRequest();
+    when(service.findByEmail(anyString())).thenReturn(null);
+
+    Exception e =
+        assertThrows(NotFoundException.class, () -> service.forgotPassword(request, Constant.TEST));
+    assertEquals("User is not available", e.getMessage());
+  }
+  
+//  @Test
+//  void testForgotPassword_APIException() {
+//    MockHttpServletRequest request = CustomTestData.getRequest();
+//    User user = CustomTestData.getUser();
+//    String responseJson ="{"
+//        + "    \"message\": \"Cannot read property 'id' of null\""
+//        + "}";
+//    when(restUtil.newGetMethod(anyString())).thenReturn(responseJson);
+//    when(service.findByEmail(anyString())).thenReturn(user);
+//
+//    Exception e =
+//        assertThrows(APIException.class, () -> service.forgotPassword(request, Constant.TEST));
+//    System.out.println(e.getMessage());
+//    //assertEquals("User is not available", e.getMessage());
+//  }
 }
