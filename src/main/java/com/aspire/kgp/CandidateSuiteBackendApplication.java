@@ -12,6 +12,9 @@ import com.aspire.kgp.constant.Constant;
 import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
 
+import io.swagger.v3.oas.models.Components;
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.info.Info;
 import springfox.documentation.RequestHandler;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.service.ApiKey;
@@ -30,6 +33,13 @@ public class CandidateSuiteBackendApplication {
 
   public static void main(String[] args) {
     SpringApplication.run(CandidateSuiteBackendApplication.class, args);
+  }
+
+  @Bean
+  public OpenAPI customOpenAPI() {
+    return new OpenAPI().components(new Components())
+        .info(new Info().title("Candidatesuite Application API").description(
+            "This is a sample Spring Boot RESTful service using springdoc-openapi and OpenAPI 3."));
   }
 
   /***
