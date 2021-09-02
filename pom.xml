@@ -72,6 +72,12 @@
 			<artifactId>springdoc-openapi-ui</artifactId>
 			<version>1.5.10</version>
 		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.springdoc/springdoc-openapi-security -->
+		<dependency>
+			<groupId>org.springdoc</groupId>
+			<artifactId>springdoc-openapi-security</artifactId>
+			<version>1.5.10</version>
+		</dependency>
 
 		<!-- For Call 3rd party API -->
 		<dependency>
