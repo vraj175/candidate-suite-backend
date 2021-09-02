@@ -50,29 +50,6 @@ public class CandidateSuiteBackendApplication {
    * 
    * @return
    */
-  /*
-   * @Bean public Docket swaggerConfiguration() { return new
-   * Docket(DocumentationType.SWAGGER_2).select()
-   * .paths(Predicates.not(PathSelectors.ant(Constant.USER_AUTHENTICATE_API_URL)))
-   * .paths(PathSelectors.ant("/api/**")) .paths(Predicates
-   * .not(PathSelectors.ant(Constant.BASE_API_URL + Constant.PUBLIC_API_URL + "/**")))
-   * .build().securitySchemes(Arrays.asList(accessToken(), apiKey()))
-   * .securityContexts(Arrays.asList(securityContext())); }
-   * 
-   * @Bean public Docket userAuthentication() { return new
-   * Docket(DocumentationType.SWAGGER_2).groupName(Constant.USER_AUTHENTICATE_GROUP_NAME)
-   * .select().apis(httpRequestHandler())
-   * .paths(PathSelectors.ant(Constant.USER_AUTHENTICATE_API_URL)).build()
-   * .securitySchemes(Arrays.asList(apiKey()))
-   * .securityContexts(Arrays.asList(userAuthenticateSecurityContext())); }
-   * 
-   * @Bean public Docket publicAuthentication() { return new
-   * Docket(DocumentationType.SWAGGER_2).groupName(Constant.PUBLIC_GROUP_NAME).select()
-   * .paths(PathSelectors.ant(Constant.BASE_API_URL + Constant.PUBLIC_API_URL + "/**")).build()
-   * .securitySchemes(Arrays.asList(apiKey()))
-   * .securityContexts(Arrays.asList(publicSecurityContext())); }
-   */
-
   @Bean
   public GroupedOpenApi swaggerConfiguration() {
     return GroupedOpenApi.builder().group("default")
@@ -84,74 +61,38 @@ public class CandidateSuiteBackendApplication {
         .addOpenApiCustomiser(defaultAPIConfig()).build();
   }
 
-
-  public OpenApiCustomiser defaultAPIConfig() {
-    return openApi -> openApi
-        .components(new Components()
-            .addSecuritySchemes("Api_key",
-                new SecurityScheme().type(SecurityScheme.Type.APIKEY).in(SecurityScheme.In.HEADER)
-                    .name("Api_key"))
-            .addSecuritySchemes("Authorization",
-                new SecurityScheme().type(SecurityScheme.Type.APIKEY).in(SecurityScheme.In.HEADER)
-                    .name("Authorization")))
-        .addSecurityItem(new SecurityRequirement().addList("Api_key").addList("Authorization"));
-  }
-
   @Bean
   public GroupedOpenApi publicAuthentication() {
     return GroupedOpenApi.builder().group(Constant.PUBLIC_GROUP_NAME)
         .pathsToMatch(Constant.BASE_API_URL + Constant.PUBLIC_API_URL + "/**")
         .addOpenApiCustomiser(apiConfig()).build();
   }
-
-  public OpenApiCustomiser apiConfig() {
-    return openApi -> openApi
-        .components(
-            new Components().addSecuritySchemes("Api_key",
-                new SecurityScheme().type(SecurityScheme.Type.APIKEY).in(SecurityScheme.In.HEADER)
-                    .name("Api_key")))
-        .addSecurityItem(new SecurityRequirement().addList("Api_key"));
-  }
-
+  
   @Bean
   public GroupedOpenApi userAuthentication() {
     return GroupedOpenApi.builder().group(Constant.USER_AUTHENTICATE_GROUP_NAME)
         .pathsToMatch(Constant.USER_AUTHENTICATE_API_URL).addOpenApiCustomiser(apiConfig()).build();
   }
-
-  private ApiKey apiKey() {
-    return new ApiKey(Constant.API_KEY, Constant.API_KEY, Constant.HEADER);
+  
+  private OpenApiCustomiser defaultAPIConfig() {
+    return openApi -> openApi
+        .components(new Components()
+            .addSecuritySchemes(Constant.API_KEY,
+                new SecurityScheme().type(SecurityScheme.Type.APIKEY).in(SecurityScheme.In.HEADER)
+                    .name(Constant.API_KEY))
+            .addSecuritySchemes(Constant.AUTHORIZATION,
+                new SecurityScheme().type(SecurityScheme.Type.APIKEY).in(SecurityScheme.In.HEADER)
+                    .name(Constant.AUTHORIZATION)))
+        .addSecurityItem(new SecurityRequirement().addList(Constant.API_KEY).addList(Constant.AUTHORIZATION));
   }
 
-  private ApiKey accessToken() {
-    return new ApiKey(Constant.AUTHORIZATION, Constant.AUTHORIZATION, Constant.HEADER);
-  }
-
-  private SecurityContext securityContext() {
-    return SecurityContext.builder().securityReferences(defaultAuth())
-        .forPaths(Predicates
-            .not(PathSelectors.ant(Constant.BASE_API_URL + Constant.PUBLIC_API_URL + "/*")))
-        .forPaths(PathSelectors.regex(Constant.BASE_API_URL + ".*")).build();
-  }
-
-  private SecurityContext userAuthenticateSecurityContext() {
-    return SecurityContext.builder().securityReferences(defaultAuth())
-        .forPaths(PathSelectors.regex(Constant.USER_AUTHENTICATE_API_URL)).build();
-  }
-
-  private SecurityContext publicSecurityContext() {
-    return SecurityContext.builder().securityReferences(defaultAuth())
-        .forPaths(PathSelectors.regex(Constant.BASE_API_URL + ".*")).build();
-  }
-
-  private List<SecurityReference> defaultAuth() {
-    AuthorizationScope authorizationScope = new AuthorizationScope(
-        Constant.GLOBAL_AUTHORIZATION_SCOPE, Constant.ACCESS_EVERYTHING_AUTHORZATION_SCOPE);
-    AuthorizationScope[] authorizationScopes = new AuthorizationScope[1];
-    authorizationScopes[0] = authorizationScope;
-    return Arrays.asList(new SecurityReference(Constant.AUTHORIZATION, authorizationScopes),
-        new SecurityReference(Constant.API_KEY, authorizationScopes),
-        new SecurityReference(Constant.GRANT_TYPE, authorizationScopes));
+  private OpenApiCustomiser apiConfig() {
+    return openApi -> openApi
+        .components(
+            new Components().addSecuritySchemes(Constant.API_KEY,
+                new SecurityScheme().type(SecurityScheme.Type.APIKEY).in(SecurityScheme.In.HEADER)
+                    .name(Constant.API_KEY)))
+        .addSecurityItem(new SecurityRequirement().addList(Constant.API_KEY));
   }
 
   /***
