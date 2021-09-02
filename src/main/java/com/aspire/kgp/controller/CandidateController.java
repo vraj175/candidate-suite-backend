@@ -14,22 +14,26 @@ import com.fasterxml.jackson.databind.ser.FilterProvider;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.SwaggerDefinition;
-import io.swagger.annotations.Tag;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
 @RequestMapping("/api/v1.0")
-@Api(tags = {"Candidate"})
-@SwaggerDefinition(tags = {@Tag(name = "Candidate", description = "REST API for Candidate")})
+@Tag(name = "Candidate", description = "REST API for Candidate")
 public class CandidateController {
 
   @Autowired
   CandidateUtil candidateUtil;
 
-  @ApiOperation(value = "Get Candidate Details")
+  @Operation(summary = "Get Candidate Details")
   @GetMapping("/candidates/{candidateId}")
+  @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK",
+      content = @Content(mediaType = "application/json", schema = @Schema(type = "CandidateDTO",
+          example = "\"{\\\"contact\\\":{\\\"id\\\":\\\"string\\\",\\\"firstName\\\":\\\"string\\\",\\\"lastName\\\":\\\"string\\\"},\\\"search\\\":{\\\"id\\\":\\\"string\\\",\\\"jobTitle\\\":\\\"string\\\",\\\"jobNumber\\\":\\\"string\\\",\\\"company\\\":{\\\"id\\\":\\\"string\\\",\\\"name\\\":\\\"string\\\"},\\\"partners\\\":[{\\\"id\\\":\\\"string\\\",\\\"firstName\\\":\\\"string\\\",\\\"lastName\\\":\\\"string\\\"}],\\\"recruiters\\\":[{\\\"id\\\":\\\"string\\\",\\\"firstName\\\":\\\"string\\\",\\\"lastName\\\":\\\"string\\\"}],\\\"researchers\\\":[{\\\"id\\\":\\\"string\\\",\\\"firstName\\\":\\\"string\\\",\\\"lastName\\\":\\\"string\\\"}],\\\"eas\\\":[{\\\"id\\\":\\\"string\\\",\\\"firstName\\\":\\\"string\\\",\\\"lastName\\\":\\\"string\\\"}]}}\"")))})
   public MappingJacksonValue getCandidateDetails(@PathVariable("candidateId") String candidateId) {
     CandidateDTO candidateDTO = candidateUtil.getCandidateDetails(candidateId);
 
@@ -57,8 +61,11 @@ public class CandidateController {
     return mapping;
   }
 
-  @ApiOperation(value = "Get Team Member Details")
+  @Operation(summary = "Get Team Member Details")
   @GetMapping(value = {"/candidates/{candidateId}/team-members"})
+  @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK",
+      content = @Content(mediaType = "application/json", schema = @Schema(type = "CandidateDTO",
+          example = "\"{\\\"search\\\":{\\\"partners\\\":[{\\\"id\\\":\\\"string\\\",\\\"firstName\\\":\\\"string\\\",\\\"lastName\\\":\\\"string\\\",\\\"email\\\":\\\"string\\\",\\\"title\\\":\\\"string\\\",\\\"country\\\":\\\"string\\\",\\\"linkedinUrl\\\":\\\"string\\\",\\\"bio\\\":\\\"string\\\",\\\"mobilePhone\\\":\\\"string\\\",\\\"workPhone\\\":\\\"string\\\"}],\\\"recruiters\\\":[{\\\"id\\\":\\\"string\\\",\\\"firstName\\\":\\\"string\\\",\\\"lastName\\\":\\\"string\\\",\\\"email\\\":\\\"string\\\",\\\"title\\\":\\\"string\\\",\\\"country\\\":\\\"string\\\",\\\"linkedinUrl\\\":\\\"string\\\",\\\"bio\\\":\\\"string\\\",\\\"mobilePhone\\\":\\\"string\\\",\\\"workPhone\\\":\\\"string\\\"}],\\\"researchers\\\":[{\\\"id\\\":\\\"string\\\",\\\"firstName\\\":\\\"string\\\",\\\"lastName\\\":\\\"string\\\",\\\"email\\\":\\\"string\\\",\\\"title\\\":\\\"string\\\",\\\"country\\\":\\\"string\\\",\\\"linkedinUrl\\\":\\\"string\\\",\\\"bio\\\":\\\"string\\\",\\\"mobilePhone\\\":\\\"string\\\",\\\"workPhone\\\":\\\"string\\\"}],\\\"eas\\\":[{\\\"id\\\":\\\"string\\\",\\\"firstName\\\":\\\"string\\\",\\\"lastName\\\":\\\"string\\\",\\\"email\\\":\\\"string\\\",\\\"title\\\":\\\"string\\\",\\\"country\\\":\\\"string\\\",\\\"linkedinUrl\\\":\\\"string\\\",\\\"bio\\\":\\\"string\\\",\\\"mobilePhone\\\":\\\"string\\\",\\\"workPhone\\\":\\\"string\\\"}],\\\"clienTeam\\\":[{\\\"id\\\":\\\"string\\\",\\\"contact\\\":{\\\"id\\\":\\\"string\\\",\\\"firstName\\\":\\\"string\\\",\\\"lastName\\\":\\\"string\\\",\\\"country\\\":\\\"string\\\",\\\"linkedinUrl\\\":\\\"string\\\",\\\"mobilePhone\\\":\\\"string\\\",\\\"currentJobTitle\\\":\\\"string\\\",\\\"company\\\":{\\\"id\\\":\\\"string\\\",\\\"name\\\":\\\"string\\\"},\\\"publishedBio\\\":\\\"string\\\"}}]}}\"")))})
   public MappingJacksonValue getBiosDetails(@PathVariable("candidateId") String candidateId) {
     CandidateDTO candidateDTO = candidateUtil.getCandidateDetails(candidateId);
     SimpleBeanPropertyFilter candidateFilter =

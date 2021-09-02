@@ -32,15 +32,16 @@ import com.fasterxml.jackson.databind.ser.FilterProvider;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.SwaggerDefinition;
-import io.swagger.annotations.Tag;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
 @RequestMapping("/api/v1.0")
-@Api(tags = {"User"})
-@SwaggerDefinition(tags = {@Tag(name = "User", description = "REST API for User")})
+@Tag(name = "User", description = "REST API for User")
 public class UserController {
 
   @Autowired
@@ -49,7 +50,7 @@ public class UserController {
   @Autowired
   RestUtil restUtil;
 
-  @ApiOperation(value = "Invite User as Candidates")
+  @Operation(summary = "Invite User as Candidates")
   @PostMapping(value = Constant.PUBLIC_API_URL + "/user/invite")
   public ResponseEntity<Object> inviteUser(@Valid @RequestBody InviteDTO invite,
       HttpServletRequest request) {
@@ -77,8 +78,11 @@ public class UserController {
     throw new APIException("Error in send invite");
   }
 
-  @ApiOperation(value = "get user profile details ")
+  @Operation(summary = "get user profile details ")
   @GetMapping(value = "/user/profile")
+  @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK",
+      content = @Content(mediaType = "application/json", schema = @Schema(type = "UserDTO",
+          example = "{\"id\": \"string\",\"firstName\": \"string\",\"lastName\": \"string\",\"email\": \"string\",\"role\": \"string\",\"passwordReset\": true}")))})
   public MappingJacksonValue getUserProfile(HttpServletRequest request) {
     User user = (User) request.getAttribute("user");
     UserDTO userDTO = null;
@@ -104,7 +108,7 @@ public class UserController {
     return mapping;
   }
 
-  @ApiOperation(value = "Forgot password for candidate")
+  @Operation(summary = "Forgot password for candidate")
   @PostMapping(value = Constant.PUBLIC_API_URL + "/user/forgotPassword")
   public ResponseEntity<Object> forgotUserPassword(@RequestBody String email,
       HttpServletRequest request) {
@@ -120,7 +124,7 @@ public class UserController {
     throw new APIException("Something went wront");
   }
 
-  @ApiOperation(value = "Reset Password for User")
+  @Operation(summary = "Reset Password for User")
   @PostMapping(value = Constant.PUBLIC_API_URL + "/user/resetPassword")
   public ResponseEntity<Object> resetUserPassword(
       @Valid @RequestBody ResetPasswordDTO resetPassword, HttpServletRequest request) {
@@ -135,7 +139,7 @@ public class UserController {
     throw new APIException("Something went wront");
   }
 
-  @ApiOperation(value = "Verify recaptcha response from google")
+  @Operation(summary = "Verify recaptcha response from google")
   @GetMapping(value = Constant.PUBLIC_API_URL + "/user/verify/recaptcha/{response}")
   public String performVerifyGoogleCaptchaRequest(@PathVariable("response") String response) {
     return restUtil.performVerifyGoogleCaptchaRequest(response);

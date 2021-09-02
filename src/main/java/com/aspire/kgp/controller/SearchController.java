@@ -20,22 +20,27 @@ import com.fasterxml.jackson.databind.ser.FilterProvider;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.SwaggerDefinition;
-import io.swagger.annotations.Tag;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
 @RequestMapping("/api/v1.0")
-@Api(tags = {"Search"})
-@SwaggerDefinition(tags = {@Tag(name = "Search", description = "Rest API For Search")})
+@Tag(name = "Search", description = "Rest API For Search")
 public class SearchController {
 
   @Autowired
   SearchUtil searchUtil;
 
-  @ApiOperation(value = "Get Search list for user")
+  @Operation(summary = "Get Search list for user")
   @GetMapping("/searches/stage/{stage}")
+  @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK",
+      content = @Content(mediaType = "application/json", schema = @Schema(
+          type = "List<CandidateDTO>",
+          example = "[{\"id\": \"string\",\"search\": {\"id\": \"string\",\"jobTitle\": \"string\",\"jobNumber\": \"string\",\"stage\": \"string\",\"company\": {\"id\": \"string\",\"name\": \"string\"}}}]")))})
   public MappingJacksonValue getCompanyList(HttpServletRequest request,
       @PathVariable("stage") String stage) {
     User user = (User) request.getAttribute("user");
@@ -57,15 +62,22 @@ public class SearchController {
     return mapping;
   }
 
-  @ApiOperation(value = "Get Search list for company")
+  @Operation(summary = "Get Search list for company")
   @GetMapping("/searches/companies/{companyId}/stage/{stage}")
+  @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK",
+      content = @Content(mediaType = "application/json", schema = @Schema(type = "List<SearchDTO>",
+          example = "[{\"id\": \"string\",\"jobTitle\": \"string\",\"jobNumber\": \"string\",\"stage\": \"string\",\"company\": {\"id\": \"string\",\"name\": \"string\"}}]")))})
   public MappingJacksonValue getCompanyList(@PathVariable("companyId") String companyId,
       @PathVariable("stage") String stage) {
     return searchUtil.applySearchFilter(searchUtil.getSearchList(companyId, stage));
   }
 
-  @ApiOperation(value = "Get Candidate list")
+  @Operation(summary = "Get Candidate list")
   @GetMapping(value = {"/searches/{searchId}/candidates"})
+  @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK",
+      content = @Content(mediaType = "application/json", schema = @Schema(
+          type = "List<CandidateDTO>",
+          example = "[{\"id\": \"string\",\"contact\": {\"id\": \"string\",\"firstName\": \"string\",\"lastName\": \"string\",\"workEmail\": \"string\",\"currentJobTitle\": \"string\",\"company\": {\"id\": \"string\",\"name\": \"string\"}}}]")))})
   public MappingJacksonValue getCandidateList(@PathVariable("searchId") String searchId) {
     List<CandidateDTO> listCandidate = searchUtil.getCandidateList(searchId);
 
@@ -87,8 +99,12 @@ public class SearchController {
     return mapping;
   }
 
-  @ApiOperation(value = "Get Postion Profile Details")
+  @Operation(summary = "Get Postion Profile Details")
   @GetMapping(value = {"/searches/{searchId}/position_profile"})
+  @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK",
+      content = @Content(mediaType = "application/json", schema = @Schema(
+          type = "PositionProfileDTO",
+          example = "{\"isDegreeMandatory\": true,\"isApprovedByPartner\": true,\"isYearsOfExperienceMandatory\": true,\"positionOverview\": \"string\",\"productsServicesOverview\": \"string\",\"professionalExperience\": \"string\",\"yearsOfExperience\": \"string\",\"degreeName\": \"string\",\"certifications\": \"string\",\"company\": {\"description\": \"string\"}}")))})
   public MappingJacksonValue getPositionProfile(@PathVariable("searchId") String searchId) {
     PositionProfileDTO positionProfile = searchUtil.getPositionProfileDetails(searchId);
 
