@@ -228,7 +228,7 @@ public class UserServiceImpl implements UserService {
        */
       private static final long serialVersionUID = 1L;
     }.getType());
-    if (userDTO == null) {
+    if (userDTO == null || userDTO.getId() ==null) {
       throw new APIException("Invalid contactId");
     }
     return userDTO;

@@ -302,25 +302,30 @@ class UserServiceImplTest {
         assertThrows(NotFoundException.class, () -> service.forgotPassword(request, Constant.TEST));
     assertEquals("User is not available", e.getMessage());
   }
-  
+
   @Test
   void testForgotPassword_APIException() throws IOException, TemplateException {
     User user = CustomTestData.getUser();
     MockHttpServletRequest request = CustomTestData.getRequest();
-    String responseJson =
-        "{" + "    \"name\": " + Constant.TEST + "," + "    \"id\": " + Constant.TEST + "   }";
+
+    String responseJson = "{" + "    \"message\": \"Cannot read property 'id' of null\"" + "}";
     when(restUtil.newGetMethod(anyString())).thenReturn(responseJson);
     when(service.saveorUpdate(any())).thenReturn(user);
     when(service.findByEmail(anyString())).thenReturn(user);
-    when(mailService.getEmailContent(any(), any(), any(), anyString())).thenThrow(TemplateException.class);
-
     Exception e =
         assertThrows(APIException.class, () -> service.forgotPassword(request, Constant.TEST));
+    assertEquals("Invalid contactId", e.getMessage());
+
+    responseJson =
+        "{" + "    \"name\": " + Constant.TEST + "," + "    \"id\": " + Constant.TEST + "   }";
+    when(restUtil.newGetMethod(anyString())).thenReturn(responseJson);
+    when(mailService.getEmailContent(any(), any(), any(), anyString()))
+        .thenThrow(TemplateException.class);
+    e = assertThrows(APIException.class, () -> service.forgotPassword(request, Constant.TEST));
     assertEquals("Error in send Email", e.getMessage());
-    
+
     user.getRole().setName(Constant.PARTNER);
-    e =
-        assertThrows(APIException.class, () -> service.forgotPassword(request, Constant.TEST));
+    e = assertThrows(APIException.class, () -> service.forgotPassword(request, Constant.TEST));
     assertEquals("you can't change the partner password from this app", e.getMessage());
   }
 }
