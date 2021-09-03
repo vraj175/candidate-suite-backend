@@ -317,5 +317,10 @@ class UserServiceImplTest {
     Exception e =
         assertThrows(APIException.class, () -> service.forgotPassword(request, Constant.TEST));
     assertEquals("Error in send Email", e.getMessage());
+    
+    user.getRole().setName(Constant.PARTNER);
+    e =
+        assertThrows(APIException.class, () -> service.forgotPassword(request, Constant.TEST));
+    assertEquals("you can't change the partner password from this app", e.getMessage());
   }
 }
