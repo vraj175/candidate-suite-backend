@@ -1,5 +1,8 @@
 package com.aspire.kgp;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springdoc.core.GroupedOpenApi;
 import org.springdoc.core.customizers.OpenApiCustomiser;
 import org.springframework.boot.SpringApplication;
@@ -10,7 +13,15 @@ import com.aspire.kgp.constant.Constant;
 
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.Operation;
+import io.swagger.v3.oas.models.PathItem;
 import io.swagger.v3.oas.models.info.Info;
+import io.swagger.v3.oas.models.media.Content;
+import io.swagger.v3.oas.models.media.MediaType;
+import io.swagger.v3.oas.models.media.Schema;
+import io.swagger.v3.oas.models.parameters.Parameter;
+import io.swagger.v3.oas.models.responses.ApiResponse;
+import io.swagger.v3.oas.models.responses.ApiResponses;
 import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
 import springfox.documentation.swagger.web.UiConfiguration;
@@ -53,13 +64,14 @@ public class CandidateSuiteBackendApplication {
   public GroupedOpenApi publicAuthentication() {
     return GroupedOpenApi.builder().group(Constant.PUBLIC_GROUP_NAME)
         .pathsToMatch(Constant.BASE_API_URL + Constant.PUBLIC_API_URL + "/**")
-        .addOpenApiCustomiser(apiConfig()).build();
+        .addOpenApiCustomiser(publicAPIConfig()).build();
   }
 
   @Bean
   public GroupedOpenApi userAuthentication() {
     return GroupedOpenApi.builder().group(Constant.USER_AUTHENTICATE_GROUP_NAME)
-        .pathsToMatch(Constant.USER_AUTHENTICATE_API_URL).addOpenApiCustomiser(apiConfig()).build();
+        .pathsToMatch(Constant.USER_AUTHENTICATE_API_URL)
+        .addOpenApiCustomiser(userAuthenticationAPIConfig()).build();
   }
 
   private OpenApiCustomiser defaultAPIConfig() {
@@ -75,11 +87,33 @@ public class CandidateSuiteBackendApplication {
             new SecurityRequirement().addList(Constant.API_KEY).addList(Constant.AUTHORIZATION));
   }
 
-  private OpenApiCustomiser apiConfig() {
+  private OpenApiCustomiser publicAPIConfig() {
     return openApi -> openApi
         .components(new Components().addSecuritySchemes(Constant.API_KEY,
             new SecurityScheme().type(SecurityScheme.Type.APIKEY).in(SecurityScheme.In.HEADER)
                 .name(Constant.API_KEY)))
+        .addSecurityItem(new SecurityRequirement().addList(Constant.API_KEY));
+  }
+
+  private OpenApiCustomiser userAuthenticationAPIConfig() {
+    PathItem pathItem = new PathItem();
+    List<Parameter> parameters = new ArrayList<>();
+    parameters.add(0, new Parameter().name("grant_type").in("query"));
+    parameters.add(1, new Parameter().name("username").in("query"));
+    parameters.add(2, new Parameter().name("password").in("query"));
+    pathItem.setParameters(parameters);
+    Content content = new Content();
+    content.addMediaType("application/json", new MediaType().schema(new Schema<>().example(
+        "{\"access_token\": \"string\",\"token_type\": \"string\",\"refresh_token\": \"string\",\"expires_in\": 0,\"scope\": \"string\",\"jti\": \"string\"}")));
+
+    pathItem.setPost(new Operation().parameters(parameters).responses(new ApiResponses()
+        .addApiResponse("200", new ApiResponse().description("OK").content(content))));
+
+    return openApi -> openApi
+        .components(new Components().addSecuritySchemes(Constant.API_KEY,
+            new SecurityScheme().type(SecurityScheme.Type.APIKEY).in(SecurityScheme.In.HEADER)
+                .name(Constant.API_KEY)))
+        .path(Constant.USER_AUTHENTICATE_API_URL, pathItem)
         .addSecurityItem(new SecurityRequirement().addList(Constant.API_KEY));
   }
 
