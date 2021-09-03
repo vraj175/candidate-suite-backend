@@ -303,19 +303,19 @@ class UserServiceImplTest {
     assertEquals("User is not available", e.getMessage());
   }
   
-//  @Test
-//  void testForgotPassword_APIException() {
-//    MockHttpServletRequest request = CustomTestData.getRequest();
-//    User user = CustomTestData.getUser();
-//    String responseJson ="{"
-//        + "    \"message\": \"Cannot read property 'id' of null\""
-//        + "}";
-//    when(restUtil.newGetMethod(anyString())).thenReturn(responseJson);
-//    when(service.findByEmail(anyString())).thenReturn(user);
-//
-//    Exception e =
-//        assertThrows(APIException.class, () -> service.forgotPassword(request, Constant.TEST));
-//    System.out.println(e.getMessage());
-//    //assertEquals("User is not available", e.getMessage());
-//  }
+  @Test
+  void testForgotPassword_APIException() throws IOException, TemplateException {
+    User user = CustomTestData.getUser();
+    MockHttpServletRequest request = CustomTestData.getRequest();
+    String responseJson =
+        "{" + "    \"name\": " + Constant.TEST + "," + "    \"id\": " + Constant.TEST + "   }";
+    when(restUtil.newGetMethod(anyString())).thenReturn(responseJson);
+    when(service.saveorUpdate(any())).thenReturn(user);
+    when(service.findByEmail(anyString())).thenReturn(user);
+    when(mailService.getEmailContent(any(), any(), any(), anyString())).thenThrow(TemplateException.class);
+
+    Exception e =
+        assertThrows(APIException.class, () -> service.forgotPassword(request, Constant.TEST));
+    assertEquals("Error in send Email", e.getMessage());
+  }
 }

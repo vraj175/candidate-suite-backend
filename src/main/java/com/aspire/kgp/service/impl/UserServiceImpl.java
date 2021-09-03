@@ -305,7 +305,6 @@ public class UserServiceImpl implements UserService {
           staticContentsMap, Constant.FORGOT_EMAIL_TEMPLATE), null);
       response = true;
     } catch (IOException | TemplateException e) {
-      log.info(e);
       throw new APIException("Error in send Email");
     }
 
