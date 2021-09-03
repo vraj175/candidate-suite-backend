@@ -98,9 +98,9 @@ public class CandidateSuiteBackendApplication {
   private OpenApiCustomiser userAuthenticationAPIConfig() {
     PathItem pathItem = new PathItem();
     List<Parameter> parameters = new ArrayList<>();
-    parameters.add(0, new Parameter().name("grant_type").in("query"));
-    parameters.add(1, new Parameter().name("username").in("query"));
-    parameters.add(2, new Parameter().name("password").in("query"));
+    parameters.add(0, new Parameter().name("grant_type").in(Constant.QUERY));
+    parameters.add(1, new Parameter().name("username").in(Constant.QUERY));
+    parameters.add(2, new Parameter().name("password").in(Constant.QUERY));
     pathItem.setParameters(parameters);
     Content content = new Content();
     content.addMediaType("application/json", new MediaType().schema(new Schema<>().example(
