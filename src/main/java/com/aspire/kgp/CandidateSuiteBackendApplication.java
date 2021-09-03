@@ -1,30 +1,18 @@
 package com.aspire.kgp;
 
-import java.util.Arrays;
-import java.util.List;
-
 import org.springdoc.core.GroupedOpenApi;
 import org.springdoc.core.customizers.OpenApiCustomiser;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
-import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.aspire.kgp.constant.Constant;
-import com.google.common.base.Predicate;
-import com.google.common.base.Predicates;
 
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
-import springfox.documentation.RequestHandler;
-import springfox.documentation.builders.PathSelectors;
-import springfox.documentation.service.ApiKey;
-import springfox.documentation.service.AuthorizationScope;
-import springfox.documentation.service.SecurityReference;
-import springfox.documentation.spi.service.contexts.SecurityContext;
 import springfox.documentation.swagger.web.UiConfiguration;
 import springfox.documentation.swagger.web.UiConfigurationBuilder;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
@@ -67,13 +55,13 @@ public class CandidateSuiteBackendApplication {
         .pathsToMatch(Constant.BASE_API_URL + Constant.PUBLIC_API_URL + "/**")
         .addOpenApiCustomiser(apiConfig()).build();
   }
-  
+
   @Bean
   public GroupedOpenApi userAuthentication() {
     return GroupedOpenApi.builder().group(Constant.USER_AUTHENTICATE_GROUP_NAME)
         .pathsToMatch(Constant.USER_AUTHENTICATE_API_URL).addOpenApiCustomiser(apiConfig()).build();
   }
-  
+
   private OpenApiCustomiser defaultAPIConfig() {
     return openApi -> openApi
         .components(new Components()
@@ -83,15 +71,15 @@ public class CandidateSuiteBackendApplication {
             .addSecuritySchemes(Constant.AUTHORIZATION,
                 new SecurityScheme().type(SecurityScheme.Type.APIKEY).in(SecurityScheme.In.HEADER)
                     .name(Constant.AUTHORIZATION)))
-        .addSecurityItem(new SecurityRequirement().addList(Constant.API_KEY).addList(Constant.AUTHORIZATION));
+        .addSecurityItem(
+            new SecurityRequirement().addList(Constant.API_KEY).addList(Constant.AUTHORIZATION));
   }
 
   private OpenApiCustomiser apiConfig() {
     return openApi -> openApi
-        .components(
-            new Components().addSecuritySchemes(Constant.API_KEY,
-                new SecurityScheme().type(SecurityScheme.Type.APIKEY).in(SecurityScheme.In.HEADER)
-                    .name(Constant.API_KEY)))
+        .components(new Components().addSecuritySchemes(Constant.API_KEY,
+            new SecurityScheme().type(SecurityScheme.Type.APIKEY).in(SecurityScheme.In.HEADER)
+                .name(Constant.API_KEY)))
         .addSecurityItem(new SecurityRequirement().addList(Constant.API_KEY));
   }
 
@@ -103,9 +91,5 @@ public class CandidateSuiteBackendApplication {
   @Bean
   UiConfiguration uiConfig() {
     return UiConfigurationBuilder.builder().defaultModelsExpandDepth(-1).build();
-  }
-
-  private Predicate<RequestHandler> httpRequestHandler() {
-    return p -> p.supportedMethods().contains(RequestMethod.POST);
   }
 }
