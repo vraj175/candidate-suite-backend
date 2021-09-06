@@ -23,6 +23,11 @@ public class UserSearchServiceImpl implements UserSearchService {
   }
 
   @Override
+  public UserSearch findByCandidateId(String candidateId) {
+    return repository.findByCandidateIdAndIsDeletedFalse(candidateId);
+  }
+
+  @Override
   public UserSearch deleteUserSearch(UserSearch userSearch) {
     userSearch.setModifyDate(new Timestamp(System.currentTimeMillis()));
     userSearch.setDeleted(Boolean.TRUE);
