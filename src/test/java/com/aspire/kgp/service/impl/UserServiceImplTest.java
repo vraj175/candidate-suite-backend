@@ -352,4 +352,24 @@ class UserServiceImplTest {
         assertThrows(NotFoundException.class, () -> service.resetPassword(request, resetPasswordDTO));
     assertEquals("User is not available", e.getMessage());
   }
+  
+  @Test
+  void testResetPassword_APIException() {
+    MockHttpServletRequest request = CustomTestData.getRequest();
+    ResetPasswordDTO resetPasswordDTO = CustomTestData.getResetPasswordDTO();
+    User user = CustomTestData.getUser();
+    when(service.findByEmail(any())).thenReturn(user);
+    
+    user.getRole().setName(Constant.PARTNER);
+    Exception e =
+        assertThrows(APIException.class, () -> service.resetPassword(request, resetPasswordDTO));
+    assertEquals("you can't change the partner password from this app", e.getMessage());
+
+    user.getRole().setName(Constant.CANDIDATE);
+    resetPasswordDTO.setOldPassword(Constant.PARTNER);
+    when(service.findByEmail(any())).thenReturn(user);
+    e =
+        assertThrows(APIException.class, () -> service.resetPassword(request, resetPasswordDTO));
+    assertEquals("old password doesn't match", e.getMessage());
+  }
 }
