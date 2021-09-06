@@ -24,6 +24,7 @@ import com.amazonaws.services.cognitoidp.model.AuthenticationResultType;
 import com.aspire.kgp.CustomTestData;
 import com.aspire.kgp.constant.Constant;
 import com.aspire.kgp.dto.ResetPasswordDTO;
+import com.aspire.kgp.dto.UserDTO;
 import com.aspire.kgp.exception.APIException;
 import com.aspire.kgp.exception.NotFoundException;
 import com.aspire.kgp.exception.ValidateException;
@@ -407,5 +408,23 @@ class UserServiceImplTest {
     assertEquals(user.getLanguage(), result.getLanguage());
     assertEquals(user.getRole(), result.getRole());
 
+  }
+  
+  @Test
+  void testGetGalaxyUserDetails() {
+    String response = "{"
+        + "    \"email\": "+Constant.TEST+","
+        + "    \"id\": "+Constant.TEST+","
+        + "    \"first_name\": "+Constant.TEST+","
+        + "    \"last_name\": "+Constant.TEST+"}";
+    when(restUtil.newGetMethod(anyString())).thenReturn(response);
+    
+    UserDTO result = service.getGalaxyUserDetails(Constant.TEST);
+    
+    assertNotNull(result);
+    assertEquals(Constant.TEST, result.getId());
+    assertEquals(Constant.TEST, result.getFirstName());
+    assertEquals(Constant.TEST, result.getLastName());
+    assertEquals(Constant.TEST, result.getEmail());
   }
 }

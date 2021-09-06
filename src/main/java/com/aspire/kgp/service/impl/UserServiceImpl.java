@@ -245,7 +245,7 @@ public class UserServiceImpl implements UserService {
        */
       private static final long serialVersionUID = 1L;
     }.getType());
-    if (userDTO == null) {
+    if (userDTO.getId() ==null) {
       throw new APIException("Invalid userId");
     }
     return userDTO;
