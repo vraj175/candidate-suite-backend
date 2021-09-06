@@ -23,6 +23,7 @@ public class Constant {
 	public static final String GRANT_TYPE = "Grant_type";
 	public static final String INVALID_GRANT_TYPE = "Invalid Grant_type";
 	public static final String PASSWORD = "password";
+	public static final String USER_NAME = "username";
 	public static final String TOKEN = "token";
 	public static final String REFRESH_TOKEN = "refresh_token";
 	public static final String SUCCESS = "success";

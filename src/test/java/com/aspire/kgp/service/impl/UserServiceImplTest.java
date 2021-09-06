@@ -21,6 +21,7 @@ import org.springframework.mock.web.MockHttpServletRequest;
 
 import com.aspire.kgp.CustomTestData;
 import com.aspire.kgp.constant.Constant;
+import com.aspire.kgp.dto.ResetPasswordDTO;
 import com.aspire.kgp.exception.APIException;
 import com.aspire.kgp.exception.NotFoundException;
 import com.aspire.kgp.exception.ValidateException;
@@ -302,20 +303,73 @@ class UserServiceImplTest {
         assertThrows(NotFoundException.class, () -> service.forgotPassword(request, Constant.TEST));
     assertEquals("User is not available", e.getMessage());
   }
+
+  @Test
+  void testForgotPassword_APIException() throws IOException, TemplateException {
+    User user = CustomTestData.getUser();
+    MockHttpServletRequest request = CustomTestData.getRequest();
+
+    String responseJson = "{" + "    \"message\": \"Cannot read property 'id' of null\"" + "}";
+    when(restUtil.newGetMethod(anyString())).thenReturn(responseJson);
+    when(service.saveorUpdate(any())).thenReturn(user);
+    when(service.findByEmail(anyString())).thenReturn(user);
+    Exception e =
+        assertThrows(APIException.class, () -> service.forgotPassword(request, Constant.TEST));
+    assertEquals("Invalid contactId", e.getMessage());
+
+    responseJson =
+        "{" + "    \"name\": " + Constant.TEST + "," + "    \"id\": " + Constant.TEST + "   }";
+    when(restUtil.newGetMethod(anyString())).thenReturn(responseJson);
+    when(mailService.getEmailContent(any(), any(), any(), anyString()))
+        .thenThrow(TemplateException.class);
+    e = assertThrows(APIException.class, () -> service.forgotPassword(request, Constant.TEST));
+    assertEquals("Error in send Email", e.getMessage());
+
+    user.getRole().setName(Constant.PARTNER);
+    e = assertThrows(APIException.class, () -> service.forgotPassword(request, Constant.TEST));
+    assertEquals("you can't change the partner password from this app", e.getMessage());
+  }
+
+  @Test
+  void testResetPassword() {
+    User user = CustomTestData.getUser();
+    when(service.findByEmail(any())).thenReturn(user);
+    when(service.saveorUpdate(any())).thenReturn(user);
+
+    boolean result =
+        service.resetPassword(CustomTestData.getRequest(), CustomTestData.getResetPasswordDTO());
+
+    assertTrue(result);
+  }
   
-//  @Test
-//  void testForgotPassword_APIException() {
-//    MockHttpServletRequest request = CustomTestData.getRequest();
-//    User user = CustomTestData.getUser();
-//    String responseJson ="{"
-//        + "    \"message\": \"Cannot read property 'id' of null\""
-//        + "}";
-//    when(restUtil.newGetMethod(anyString())).thenReturn(responseJson);
-//    when(service.findByEmail(anyString())).thenReturn(user);
-//
-//    Exception e =
-//        assertThrows(APIException.class, () -> service.forgotPassword(request, Constant.TEST));
-//    System.out.println(e.getMessage());
-//    //assertEquals("User is not available", e.getMessage());
-//  }
+  @Test
+  void testResetPassword_NotFoundException() {
+    MockHttpServletRequest request = CustomTestData.getRequest();
+    ResetPasswordDTO resetPasswordDTO = CustomTestData.getResetPasswordDTO();
+    when(service.findByEmail(any())).thenReturn(null);
+
+    Exception e =
+        assertThrows(NotFoundException.class, () -> service.resetPassword(request, resetPasswordDTO));
+    assertEquals("User is not available", e.getMessage());
+  }
+  
+  @Test
+  void testResetPassword_APIException() {
+    MockHttpServletRequest request = CustomTestData.getRequest();
+    ResetPasswordDTO resetPasswordDTO = CustomTestData.getResetPasswordDTO();
+    User user = CustomTestData.getUser();
+    when(service.findByEmail(any())).thenReturn(user);
+    
+    user.getRole().setName(Constant.PARTNER);
+    Exception e =
+        assertThrows(APIException.class, () -> service.resetPassword(request, resetPasswordDTO));
+    assertEquals("you can't change the partner password from this app", e.getMessage());
+
+    user.getRole().setName(Constant.CANDIDATE);
+    resetPasswordDTO.setOldPassword(Constant.PARTNER);
+    when(service.findByEmail(any())).thenReturn(user);
+    e =
+        assertThrows(APIException.class, () -> service.resetPassword(request, resetPasswordDTO));
+    assertEquals("old password doesn't match", e.getMessage());
+  }
 }

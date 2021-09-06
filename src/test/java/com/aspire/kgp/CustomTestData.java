@@ -9,10 +9,13 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import com.aspire.kgp.constant.Constant;
+import com.aspire.kgp.dto.ResetPasswordDTO;
+import com.aspire.kgp.dto.UserDTO;
 import com.aspire.kgp.model.Language;
 import com.aspire.kgp.model.Role;
 import com.aspire.kgp.model.User;
 import com.aspire.kgp.model.UserSearch;
+import com.aspire.kgp.util.CommonUtil;
 
 public class CustomTestData {
   
@@ -69,10 +72,28 @@ public class CustomTestData {
     user.setDeleted(Boolean.FALSE);
     user.setEmail(Constant.TEST);
     user.setLastLogin(t1);
-    user.setPassword(Constant.TEST);
+    user.setPassword(CommonUtil.hash(Constant.TEST));
     user.setPasswordReset(Boolean.FALSE);
     user.setLanguage(getLanguage());
     user.setRole(getRole());
+
+    return user;
+  }
+  
+  public static UserDTO getUserDTO() {
+    UserDTO user = new UserDTO();
+    user.setFirstName(Constant.TEST);
+    user.setLastName(Constant.TEST);
+    user.setWorkEmail(Constant.TEST);
+    user.setEmail(Constant.TEST);
+    user.setRole(Constant.TEST);
+    user.setToken(Constant.TEST);
+    user.setCountry(Constant.TEST);
+    user.setLinkedinUrl(Constant.TEST);
+    user.setBio(Constant.TEST);
+    user.setMobilePhone(Constant.TEST);
+    user.setWorkPhone(Constant.TEST);
+    user.setPasswordReset(Boolean.FALSE);
 
     return user;
   }
@@ -96,5 +117,13 @@ public class CustomTestData {
     userSearch.setSearchId(Constant.TEST);
     
     return userSearch;
+  }
+  
+  public static ResetPasswordDTO getResetPasswordDTO() {
+    ResetPasswordDTO resetPasswordDTO = new ResetPasswordDTO();
+    resetPasswordDTO.setEmail(Constant.TEST);
+    resetPasswordDTO.setOldPassword(Constant.TEST);
+    resetPasswordDTO.setNewPassword(Constant.TEST);
+    return resetPasswordDTO;
   }
 }

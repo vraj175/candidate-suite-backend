@@ -9,6 +9,8 @@ import com.aspire.kgp.model.UserSearch;
 
 public interface UserSearchRepository extends JpaRepository<UserSearch, Long> {
   UserSearch findByUserAndCandidateIdAndIsDeletedFalse(User user, String candidateId);
+  
+  UserSearch findByCandidateIdAndIsDeletedFalse(String candidateId);
 
   List<UserSearch> findByUserAndIsDeletedFalse(User user);
 }
