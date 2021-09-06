@@ -5,8 +5,12 @@ import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.text.ParseException;
 import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
+import java.util.Date;
+
+import static com.google.common.base.Preconditions.*;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -242,4 +246,47 @@ public class CommonUtil {
     }
   }
 
+  /**
+   * Method to convert date to desired format
+   * 
+   * @param date
+   * @return
+   * @throws java.text.ParseException
+   */
+
+  public static String dateFormatter(String interviewDate) throws ParseException {
+    SimpleDateFormat oldFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
+    Date date = oldFormat.parse(interviewDate);
+    SimpleDateFormat newFormat = new SimpleDateFormat("dd MMM yyyy 'at' hh:mmaa z");
+    interviewDate = newFormat.format(date);
+    interviewDate = interviewDate.replace("AM", "am").replace("PM", "pm")
+        .replace(interviewDate.substring(3, 6), interviewDate.substring(3, 6).toUpperCase());
+    return (interviewDate.substring(0, 2)
+        + getDayOfMonthSuffix(Integer.parseInt(interviewDate.substring(0, 2))))
+        + interviewDate.substring(2);
+  }
+
+  /**
+   * Method to add suffix in date
+   * 
+   * @param date
+   * @return
+   */
+
+  private static String getDayOfMonthSuffix(final int n) {
+    checkArgument(n >= 1 && n <= 31, "illegal day of month: " + n);
+    if (n >= 11 && n <= 13) {
+      return "th";
+    }
+    switch (n % 10) {
+      case 1:
+        return "st";
+      case 2:
+        return "nd";
+      case 3:
+        return "rd";
+      default:
+        return "th";
+    }
+  }
 }
