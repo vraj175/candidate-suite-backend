@@ -245,7 +245,7 @@ public class UserServiceImpl implements UserService {
        */
       private static final long serialVersionUID = 1L;
     }.getType());
-    if (userDTO == null) {
+    if (userDTO.getId() ==null) {
       throw new APIException("Invalid userId");
     }
     return userDTO;
@@ -254,7 +254,7 @@ public class UserServiceImpl implements UserService {
   @Override
   public User saveOrUpdatePartner(String userName, String password) {
     User user = findByEmail(userName);
-    if (user == null || user.getRole().getName().equalsIgnoreCase(Constant.PARTNER)) {
+    if (user == null || Constant.PARTNER.equalsIgnoreCase(user.getRole().getName())) {
       String auth = userName + ":" + password;
       try {
         byte[] encodedAuth = Base64.getEncoder().encode(auth.getBytes(StandardCharsets.UTF_8));
