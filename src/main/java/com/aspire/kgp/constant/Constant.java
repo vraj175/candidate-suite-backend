@@ -23,6 +23,7 @@ public class Constant {
 	public static final String GRANT_TYPE = "Grant_type";
 	public static final String INVALID_GRANT_TYPE = "Invalid Grant_type";
 	public static final String PASSWORD = "password";
+	public static final String USER_NAME = "username";
 	public static final String TOKEN = "token";
 	public static final String REFRESH_TOKEN = "refresh_token";
 	public static final String SUCCESS = "success";
@@ -73,7 +74,6 @@ public class Constant {
 	public static final String POSITION_PROFILE_URL = "/searches/{searchId}/sfpa";
 	public static final String CANDIDATE_URL = "/candidates/{candidateId}/activity";
 	// Queries parameter
-	public static final String QUERY = "query";
 	public static final String INVALID_JSON_ERROR = "oops ! invalid json";
 	public static final String SPACE_STRING = "[\\s]";
 

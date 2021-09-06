@@ -19,7 +19,7 @@ import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.media.Content;
 import io.swagger.v3.oas.models.media.MediaType;
 import io.swagger.v3.oas.models.media.Schema;
-import io.swagger.v3.oas.models.parameters.Parameter;
+import io.swagger.v3.oas.models.parameters.RequestBody;
 import io.swagger.v3.oas.models.responses.ApiResponse;
 import io.swagger.v3.oas.models.responses.ApiResponses;
 import io.swagger.v3.oas.models.security.SecurityRequirement;
@@ -97,17 +97,29 @@ public class CandidateSuiteBackendApplication {
 
   private OpenApiCustomiser userAuthenticationAPIConfig() {
     PathItem pathItem = new PathItem();
-    List<Parameter> parameters = new ArrayList<>();
-    parameters.add(0, new Parameter().name("grant_type").in(Constant.QUERY));
-    parameters.add(1, new Parameter().name("username").in(Constant.QUERY));
-    parameters.add(2, new Parameter().name("password").in(Constant.QUERY));
-    pathItem.setParameters(parameters);
-    Content content = new Content();
-    content.addMediaType("application/json", new MediaType().schema(new Schema<>().example(
-        "{\"access_token\": \"string\",\"token_type\": \"string\",\"refresh_token\": \"string\",\"expires_in\": 0,\"scope\": \"string\",\"jti\": \"string\"}")));
+    RequestBody requestBody = new RequestBody();
 
-    pathItem.setPost(new Operation().parameters(parameters).responses(new ApiResponses()
-        .addApiResponse("200", new ApiResponse().description("OK").content(content))));
+    Schema<?> propSchema = new Schema<>();
+    Schema<?> schema = new Schema<>();
+    schema.setType("object");
+    schema.addProperties(Constant.GRANT_TYPE.toLowerCase(), propSchema);
+    schema.addProperties(Constant.USER_NAME, propSchema);
+    schema.addProperties(Constant.PASSWORD, propSchema);
+    List<String> list = new ArrayList<>();
+    list.add(Constant.GRANT_TYPE.toLowerCase());
+    list.add(Constant.USER_NAME);
+    list.add(Constant.PASSWORD);
+    schema.required(list);
+
+    Content requestContent = new Content();
+    requestContent.addMediaType("multipart/form-data", new MediaType().schema(schema));
+    requestBody.setContent(requestContent);
+
+    Content responseContent = new Content();
+    responseContent.addMediaType("application/json", new MediaType().schema(new Schema<>().example(
+        "{\"access_token\": \"string\",\"token_type\": \"string\",\"refresh_token\": \"string\",\"expires_in\": 0,\"scope\": \"string\",\"jti\": \"string\"}")));
+    pathItem.setPost(new Operation().requestBody(requestBody).responses(new ApiResponses()
+        .addApiResponse("200", new ApiResponse().description("OK").content(responseContent))));
 
     return openApi -> openApi
         .components(new Components().addSecuritySchemes(Constant.API_KEY,
