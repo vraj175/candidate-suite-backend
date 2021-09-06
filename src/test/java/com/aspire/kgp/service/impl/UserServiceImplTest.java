@@ -385,6 +385,9 @@ class UserServiceImplTest {
     when(service.findByEmail(any())).thenReturn(user);
     when(restUtil.validateCognitoWithAuthenticationToken(anyString()))
         .thenReturn(authenticationResultType);
+    result = service.saveOrUpdatePartner(Constant.TEST, Constant.TEST);
+    assertNull(result);
+    
     user.getRole().setName(Constant.PARTNER);
     String response = "{ \"id\": \"6f080cd2-c65b-48a8-a6f2-014541d3626d\"}";
     when(restUtil.getUserDetails(anyString())).thenReturn(response);
