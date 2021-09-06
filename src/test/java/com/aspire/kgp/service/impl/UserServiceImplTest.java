@@ -328,4 +328,16 @@ class UserServiceImplTest {
     e = assertThrows(APIException.class, () -> service.forgotPassword(request, Constant.TEST));
     assertEquals("you can't change the partner password from this app", e.getMessage());
   }
+  
+  @Test
+  void testResetPassword() {
+    User user = CustomTestData.getUser();
+    when(service.findByEmail(any())).thenReturn(user);
+    when(service.saveorUpdate(any())).thenReturn(user);
+    
+    boolean result = service.resetPassword(CustomTestData.getRequest(), CustomTestData.getResetPasswordDTO());
+
+    assertTrue(result);
+    
+  }  
 }
