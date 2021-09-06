@@ -1,5 +1,6 @@
 package com.aspire.kgp.service.impl;
 
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -19,6 +20,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.mock.web.MockHttpServletRequest;
 
+import com.amazonaws.services.cognitoidp.model.AuthenticationResultType;
 import com.aspire.kgp.CustomTestData;
 import com.aspire.kgp.constant.Constant;
 import com.aspire.kgp.dto.ResetPasswordDTO;
@@ -341,25 +343,25 @@ class UserServiceImplTest {
 
     assertTrue(result);
   }
-  
+
   @Test
   void testResetPassword_NotFoundException() {
     MockHttpServletRequest request = CustomTestData.getRequest();
     ResetPasswordDTO resetPasswordDTO = CustomTestData.getResetPasswordDTO();
     when(service.findByEmail(any())).thenReturn(null);
 
-    Exception e =
-        assertThrows(NotFoundException.class, () -> service.resetPassword(request, resetPasswordDTO));
+    Exception e = assertThrows(NotFoundException.class,
+        () -> service.resetPassword(request, resetPasswordDTO));
     assertEquals("User is not available", e.getMessage());
   }
-  
+
   @Test
   void testResetPassword_APIException() {
     MockHttpServletRequest request = CustomTestData.getRequest();
     ResetPasswordDTO resetPasswordDTO = CustomTestData.getResetPasswordDTO();
     User user = CustomTestData.getUser();
     when(service.findByEmail(any())).thenReturn(user);
-    
+
     user.getRole().setName(Constant.PARTNER);
     Exception e =
         assertThrows(APIException.class, () -> service.resetPassword(request, resetPasswordDTO));
@@ -368,8 +370,41 @@ class UserServiceImplTest {
     user.getRole().setName(Constant.CANDIDATE);
     resetPasswordDTO.setOldPassword(Constant.PARTNER);
     when(service.findByEmail(any())).thenReturn(user);
-    e =
-        assertThrows(APIException.class, () -> service.resetPassword(request, resetPasswordDTO));
+    e = assertThrows(APIException.class, () -> service.resetPassword(request, resetPasswordDTO));
     assertEquals("old password doesn't match", e.getMessage());
+  }
+
+  @Test
+  void testSaveOrUpdatePartnerWithUsernameAndPassword() throws IOException {
+    User user = CustomTestData.getUser();
+    AuthenticationResultType authenticationResultType = new AuthenticationResultType();
+    authenticationResultType.setAccessToken(Constant.TEST);
+
+    when(service.findByEmail(any())).thenReturn(user);
+    when(restUtil.validateCognitoWithAuthenticationToken(anyString()))
+        .thenReturn(authenticationResultType);
+
+    User result = service.saveOrUpdatePartner(Constant.TEST, Constant.TEST);
+    assertNull(result);
+
+    user.getRole().setName(Constant.PARTNER);
+    String response = "{ \"id\": \"6f080cd2-c65b-48a8-a6f2-014541d3626d\"}";
+    when(restUtil.getUserDetails(anyString())).thenReturn(response);
+    when(service.saveorUpdate(any())).thenReturn(user);
+    result = service.saveOrUpdatePartner(Constant.TEST, Constant.TEST);
+
+    assertNotNull(result);
+    assertEquals(user.getId(), result.getId());
+    assertEquals(user.getCreatedDate(), result.getCreatedDate());
+    assertEquals(user.getModifyDate(), result.getModifyDate());
+    assertEquals(user.getGalaxyId(), result.getGalaxyId());
+    assertEquals(user.isDeleted(), result.isDeleted());
+    assertEquals(user.getEmail(), result.getEmail());
+    assertEquals(user.getLastLogin(), result.getLastLogin());
+    assertEquals(user.getPassword(), result.getPassword());
+    assertEquals(user.isPasswordReset(), result.isPasswordReset());
+    assertEquals(user.getLanguage(), result.getLanguage());
+    assertEquals(user.getRole(), result.getRole());
+
   }
 }
