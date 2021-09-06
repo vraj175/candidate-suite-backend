@@ -387,10 +387,13 @@ class UserServiceImplTest {
     User result = service.saveOrUpdatePartner(Constant.TEST, Constant.TEST);
     assertNull(result);
 
-    user.getRole().setName(Constant.PARTNER);
     String response = "{ \"id\": \"6f080cd2-c65b-48a8-a6f2-014541d3626d\"}";
     when(restUtil.getUserDetails(anyString())).thenReturn(response);
     when(service.saveorUpdate(any())).thenReturn(user);
+    result = service.saveOrUpdatePartner(Constant.TEST, Constant.TEST);
+    assertNull(result);
+    
+    user.getRole().setName(Constant.PARTNER);
     result = service.saveOrUpdatePartner(Constant.TEST, Constant.TEST);
 
     assertNotNull(result);
