@@ -21,6 +21,7 @@ import org.springframework.mock.web.MockHttpServletRequest;
 
 import com.aspire.kgp.CustomTestData;
 import com.aspire.kgp.constant.Constant;
+import com.aspire.kgp.dto.ResetPasswordDTO;
 import com.aspire.kgp.exception.APIException;
 import com.aspire.kgp.exception.NotFoundException;
 import com.aspire.kgp.exception.ValidateException;
@@ -328,16 +329,27 @@ class UserServiceImplTest {
     e = assertThrows(APIException.class, () -> service.forgotPassword(request, Constant.TEST));
     assertEquals("you can't change the partner password from this app", e.getMessage());
   }
-  
+
   @Test
   void testResetPassword() {
     User user = CustomTestData.getUser();
     when(service.findByEmail(any())).thenReturn(user);
     when(service.saveorUpdate(any())).thenReturn(user);
-    
-    boolean result = service.resetPassword(CustomTestData.getRequest(), CustomTestData.getResetPasswordDTO());
+
+    boolean result =
+        service.resetPassword(CustomTestData.getRequest(), CustomTestData.getResetPasswordDTO());
 
     assertTrue(result);
-    
-  }  
+  }
+  
+  @Test
+  void testResetPassword_NotFoundException() {
+    MockHttpServletRequest request = CustomTestData.getRequest();
+    ResetPasswordDTO resetPasswordDTO = CustomTestData.getResetPasswordDTO();
+    when(service.findByEmail(any())).thenReturn(null);
+
+    Exception e =
+        assertThrows(NotFoundException.class, () -> service.resetPassword(request, resetPasswordDTO));
+    assertEquals("User is not available", e.getMessage());
+  }
 }
