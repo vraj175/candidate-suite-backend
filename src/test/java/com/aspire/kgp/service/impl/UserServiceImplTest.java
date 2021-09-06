@@ -388,7 +388,7 @@ class UserServiceImplTest {
         .thenReturn(authenticationResultType);
     result = service.saveOrUpdatePartner(Constant.TEST, Constant.TEST);
     assertNull(result);
-    
+
     user.getRole().setName(Constant.PARTNER);
     String response = "{ \"id\": \"6f080cd2-c65b-48a8-a6f2-014541d3626d\"}";
     when(restUtil.getUserDetails(anyString())).thenReturn(response);
@@ -409,22 +409,32 @@ class UserServiceImplTest {
     assertEquals(user.getRole(), result.getRole());
 
   }
-  
+
   @Test
   void testGetGalaxyUserDetails() {
-    String response = "{"
-        + "    \"email\": "+Constant.TEST+","
-        + "    \"id\": "+Constant.TEST+","
-        + "    \"first_name\": "+Constant.TEST+","
-        + "    \"last_name\": "+Constant.TEST+"}";
+    String response = "{" + "    \"email\": " + Constant.TEST + "," + "    \"id\": " + Constant.TEST
+        + "," + "    \"first_name\": " + Constant.TEST + "," + "    \"last_name\": " + Constant.TEST
+        + "}";
     when(restUtil.newGetMethod(anyString())).thenReturn(response);
-    
+
     UserDTO result = service.getGalaxyUserDetails(Constant.TEST);
-    
+
     assertNotNull(result);
     assertEquals(Constant.TEST, result.getId());
     assertEquals(Constant.TEST, result.getFirstName());
     assertEquals(Constant.TEST, result.getLastName());
     assertEquals(Constant.TEST, result.getEmail());
+  }
+
+  @Test
+  void testGetGalaxyUserDetails_APIException() {
+    String response = "{"
+        + "    \"message\": \"invalid input syntax for type uuid: \\\"6f080cd2-c65b-48a8-a6f2-014541d3626\\\"\"\n"
+        + "}";
+    when(restUtil.newGetMethod(anyString())).thenReturn(response);
+
+    Exception e =
+        assertThrows(APIException.class, () -> service.getGalaxyUserDetails(Constant.TEST));
+    assertEquals("Invalid userId", e.getMessage());
   }
 }
