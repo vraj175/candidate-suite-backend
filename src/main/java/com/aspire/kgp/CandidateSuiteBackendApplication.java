@@ -24,6 +24,7 @@ import io.swagger.v3.oas.models.responses.ApiResponse;
 import io.swagger.v3.oas.models.responses.ApiResponses;
 import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
+import io.swagger.v3.oas.models.servers.Server;
 import springfox.documentation.swagger.web.UiConfiguration;
 import springfox.documentation.swagger.web.UiConfigurationBuilder;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
@@ -41,7 +42,8 @@ public class CandidateSuiteBackendApplication {
     return new OpenAPI().components(new Components())
         .info(new Info().title("Candidatesuite Application API").description(
             "This is a sample Spring Boot RESTful service using springdoc-openapi and OpenAPI 3.")
-            .version("1.0"));
+            .version("1.0"))
+        .addServersItem(new Server().url("/").description("Default URL"));
   }
 
   /***
