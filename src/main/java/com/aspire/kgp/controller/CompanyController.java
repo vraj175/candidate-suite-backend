@@ -88,11 +88,13 @@ public class CompanyController {
   @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK",
       content = @Content(mediaType = "application/json", schema = @Schema(type = "CandidateDTO",
           example = "{\"id\": \"string\",\"kgpInterviewDate1\": \"string\",\"kgpInterviewDate2\": \"string\",\"kgpInterviewDate3\": \"string\",\"interviews\": [{\"id\": \"string\",\"method\": \"string\",\"comments\": \"string\",\"position\": 0,\"interviewDate\": \"string\",\"client\": {\"id\": \"string\",\"firstName\": \"string\",\"lastName\": \"string\"}}]}")))})
-  public MappingJacksonValue getCompanyInfoDetails(
-      @PathVariable("candidateId") String candidateId) throws ParseException {
+  public MappingJacksonValue getCompanyInfoDetails(@PathVariable("candidateId") String candidateId)
+      throws ParseException {
     CandidateDTO candidateDTO = companyUtil.getCompanyInfoDetails(candidateId);
-    SimpleBeanPropertyFilter candidateFilter = SimpleBeanPropertyFilter.filterOutAllExcept(
-        Constant.ID, "kgpInterviewDate1", "kgpInterviewDate2", "kgpInterviewDate3", "interviews");
+    SimpleBeanPropertyFilter candidateFilter =
+        SimpleBeanPropertyFilter.filterOutAllExcept(Constant.ID, "resumeUploaded",
+            "kgpInterviewDate1", "kgpInterviewDate2", "kgpInterviewDate3", "interviews",
+            "degreeVerification", "offerPresented", "athenaCompleted");
     SimpleBeanPropertyFilter interviewFilter = SimpleBeanPropertyFilter.filterOutAllExcept(
         Constant.ID, "method", "comments", "position", "interviewDate", "client");
     SimpleBeanPropertyFilter userFilter = SimpleBeanPropertyFilter.filterOutAllExcept(Constant.ID,
