@@ -1,5 +1,6 @@
 package com.aspire.kgp.controller;
 
+import java.text.ParseException;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -88,7 +89,7 @@ public class CompanyController {
       content = @Content(mediaType = "application/json", schema = @Schema(type = "CandidateDTO",
           example = "{\"id\": \"string\",\"kgpInterviewDate1\": \"string\",\"kgpInterviewDate2\": \"string\",\"kgpInterviewDate3\": \"string\",\"interviews\": [{\"id\": \"string\",\"method\": \"string\",\"comments\": \"string\",\"position\": 0,\"interviewDate\": \"string\",\"client\": {\"id\": \"string\",\"firstName\": \"string\",\"lastName\": \"string\"}}]}")))})
   public MappingJacksonValue getCompanyInfoDetails(
-      @PathVariable("candidateId") String candidateId) {
+      @PathVariable("candidateId") String candidateId) throws ParseException {
     CandidateDTO candidateDTO = companyUtil.getCompanyInfoDetails(candidateId);
     SimpleBeanPropertyFilter candidateFilter = SimpleBeanPropertyFilter.filterOutAllExcept(
         Constant.ID, "kgpInterviewDate1", "kgpInterviewDate2", "kgpInterviewDate3", "interviews");
