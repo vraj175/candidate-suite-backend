@@ -1,5 +1,7 @@
 package com.aspire.kgp.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.converter.json.MappingJacksonValue;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -9,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.aspire.kgp.constant.Constant;
 import com.aspire.kgp.dto.CandidateDTO;
+import com.aspire.kgp.dto.DocumentDTO;
 import com.aspire.kgp.util.CandidateUtil;
 import com.fasterxml.jackson.databind.ser.FilterProvider;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
@@ -101,4 +104,12 @@ public class CandidateController {
     return mapping;
   }
 
+  @Operation(summary = "Get Candidate Resumes")
+  @GetMapping(value = {"/candidates/{candidateId}/resumes"})
+  @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK",
+  content = @Content(mediaType = "application/json", schema = @Schema(type = "Resumes",
+      example = "[{ \"id\": \"string\",\"fileName\": \"string\",\"createdAt\": \"string\" }]")))})
+  public List<DocumentDTO> getResumeDetails(@PathVariable("candidateId") String candidateId) {
+    return candidateUtil.getCandidateResumes(candidateId);
+  }
 }
