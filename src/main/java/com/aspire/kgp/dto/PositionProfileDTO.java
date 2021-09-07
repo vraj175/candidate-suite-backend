@@ -1,5 +1,7 @@
 package com.aspire.kgp.dto;
 
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonFilter;
 import com.google.gson.annotations.SerializedName;
 
@@ -25,6 +27,57 @@ public class PositionProfileDTO {
   private String certifications;
   @SerializedName("company")
   private CompanyDTO company;
+
+  @SerializedName("cs_location_weather")
+  private List<LocationDTO> weather;
+  @SerializedName("cs_location_placeofinterest")
+  private List<LocationDTO> placeofinterest;
+  @SerializedName("cs_location_schoolsandcolleges")
+  private List<LocationDTO> schoolsandcolleges;
+  @SerializedName("cs_location_restaurantsandshopping")
+  private List<LocationDTO> restaurantsandshopping;
+  @SerializedName("cs_location_realestate")
+  private List<LocationDTO> realestate;
+
+  public List<LocationDTO> getWeather() {
+    return weather;
+  }
+
+  public void setWeather(List<LocationDTO> weather) {
+    this.weather = weather;
+  }
+
+  public List<LocationDTO> getPlaceofinterest() {
+    return placeofinterest;
+  }
+
+  public void setPlaceofinterest(List<LocationDTO> placeofinterest) {
+    this.placeofinterest = placeofinterest;
+  }
+
+  public List<LocationDTO> getSchoolsandcolleges() {
+    return schoolsandcolleges;
+  }
+
+  public void setSchoolsandcolleges(List<LocationDTO> schoolsandcolleges) {
+    this.schoolsandcolleges = schoolsandcolleges;
+  }
+
+  public List<LocationDTO> getRestaurantsandshopping() {
+    return restaurantsandshopping;
+  }
+
+  public void setRestaurantsandshopping(List<LocationDTO> restaurantsandshopping) {
+    this.restaurantsandshopping = restaurantsandshopping;
+  }
+
+  public List<LocationDTO> getRealestate() {
+    return realestate;
+  }
+
+  public void setRealestate(List<LocationDTO> realestate) {
+    this.realestate = realestate;
+  }
 
   public Boolean getIsDegreeMandatory() {
     return isDegreeMandatory;
