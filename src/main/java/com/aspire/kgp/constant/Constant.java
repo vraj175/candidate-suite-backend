@@ -73,6 +73,7 @@ public class Constant {
 	public static final String CANDIDATE_LIST_URL = "/searches/{searchId}/candidates";
 	public static final String POSITION_PROFILE_URL = "/searches/{searchId}/sfpa";
 	public static final String CANDIDATE_URL = "/candidates/{candidateId}/activity";
+	public static final String CONTACT_PROFILE_IMAGE_URL = "/clientsuite/contacts/{CONTACTID}/profile-image";
 	// Queries parameter
 	public static final String INVALID_JSON_ERROR = "oops ! invalid json";
 	public static final String SPACE_STRING = "[\\s]";
