@@ -54,7 +54,7 @@ public class CandidateSuiteBackendApplication {
     return GroupedOpenApi.builder().group("default")
         .pathsToExclude(Constant.BASE_API_URL + Constant.PUBLIC_API_URL + "/**",
             Constant.USER_AUTHENTICATE_API_URL)
-        .pathsToMatch("/api/v1.0/candidates/**", "/api/v1.0/searches/**", "/api/v1.0/companies/**",
+        .pathsToMatch("/api/v1.0/candidates/**","/api/v1.0/contact/**", "/api/v1.0/searches/**", "/api/v1.0/companies/**",
             "/api/v1.0/company/**", "/api/v1.0/companyInfo/**", "/api/v1.0/languages/**",
             "/api/v1.0/roles/**", "/api/v1.0/profile/**", "/api/v1.0/user/**", "/api/v1.0/video/**")
         .addOpenApiCustomiser(defaultAPIConfig()).build();

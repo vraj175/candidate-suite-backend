@@ -7,7 +7,6 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
-import org.springdoc.api.annotations.ParameterObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +14,7 @@ import org.springframework.http.converter.json.MappingJacksonValue;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -52,7 +52,7 @@ public class UserController {
 
   @Operation(summary = "Invite User as Candidates")
   @PostMapping(value = Constant.PUBLIC_API_URL + "/user/invite")
-  public ResponseEntity<Object> inviteUser(@Valid @ParameterObject InviteDTO invite,
+  public ResponseEntity<Object> inviteUser(@Valid @RequestBody InviteDTO invite,
       HttpServletRequest request) {
     User user = service.findByGalaxyId(invite.getPartnerId());
     if (user == null) {
@@ -110,7 +110,7 @@ public class UserController {
 
   @Operation(summary = "Forgot password for candidate")
   @PostMapping(value = Constant.PUBLIC_API_URL + "/user/forgotPassword")
-  public ResponseEntity<Object> forgotUserPassword(String email,
+  public ResponseEntity<Object> forgotUserPassword(@RequestBody String email,
       HttpServletRequest request) {
 
     boolean result = service.forgotPassword(request, email);
@@ -127,7 +127,7 @@ public class UserController {
   @Operation(summary = "Reset Password for User")
   @PostMapping(value = Constant.PUBLIC_API_URL + "/user/resetPassword")
   public ResponseEntity<Object> resetUserPassword(
-      @Valid @ParameterObject ResetPasswordDTO resetPassword, HttpServletRequest request) {
+      @Valid @RequestBody ResetPasswordDTO resetPassword, HttpServletRequest request) {
     boolean result = service.resetPassword(request, resetPassword);
     if (result) {
       Map<String, Object> body = new LinkedHashMap<>();
