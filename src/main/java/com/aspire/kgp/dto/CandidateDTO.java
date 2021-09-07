@@ -8,6 +8,7 @@ import com.google.gson.annotations.SerializedName;
 @JsonFilter("candidateFilter")
 public class CandidateDTO {
   private String id;
+  boolean resumeUploaded;
   private UserDTO contact;
   private SearchDTO search;
   @SerializedName("kgp_interview_date1")
@@ -19,6 +20,19 @@ public class CandidateDTO {
   @SerializedName("kgp_interview_date3")
   private String kgpInterviewDate3;
   private List<InterviewDTO> interviews;
+  boolean degreeVerification;
+  boolean offerPresented;
+  boolean athenaCompleted;
+  @SerializedName("athena_status")
+  private String athenaStatus;
+
+  public String getAthenaStatus() {
+    return athenaStatus;
+  }
+
+  public void setAthenaStatus(String athenaStatus) {
+    this.athenaStatus = athenaStatus;
+  }
 
   public String getId() {
     return id;
@@ -27,6 +41,32 @@ public class CandidateDTO {
   public void setId(String id) {
     this.id = id;
   }
+
+  public boolean isResumeUploaded() {
+    return resumeUploaded;
+  }
+
+  public void setResumeUploaded(boolean resumeUploaded) {
+    this.resumeUploaded = resumeUploaded;
+  }
+
+  public boolean isDegreeVerification() {
+    return degreeVerification;
+  }
+
+  public void setDegreeVerification(boolean degreeVerification) {
+    this.degreeVerification = degreeVerification;
+  }
+
+  public boolean isOfferPresented() {
+    return offerPresented;
+  }
+
+  public void setOfferPresented(boolean offerPresented) {
+    this.offerPresented = offerPresented;
+  }
+
+
 
   public UserDTO getContact() {
     return contact;
@@ -74,6 +114,14 @@ public class CandidateDTO {
 
   public void setInterviews(List<InterviewDTO> interviews) {
     this.interviews = interviews;
+  }
+
+  public boolean isAthenaCompleted() {
+    return athenaCompleted;
+  }
+
+  public void setAthenaCompleted(boolean athenaCompleted) {
+    this.athenaCompleted = athenaCompleted;
   }
 
 }

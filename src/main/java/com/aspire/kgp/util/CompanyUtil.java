@@ -68,8 +68,10 @@ public class CompanyUtil {
     String apiResponse =
         restUtil.newGetMethod(Constant.CANDIDATE_URL.replace("{candidateId}", candidateId));
     JsonObject json = (JsonObject) JsonParser.parseString(apiResponse);
+    JsonObject contact = json.getAsJsonObject("contact");
     JsonObject jsonObjects = json.getAsJsonObject("candidate");
     CandidateDTO candidateDTO;
+    CandidateDTO candidateContactDTO;
     try {
       candidateDTO = new Gson().fromJson(jsonObjects, new TypeToken<CandidateDTO>() {
 
@@ -78,12 +80,31 @@ public class CompanyUtil {
          */
         private static final long serialVersionUID = 1L;
       }.getType());
-      if (candidateDTO == null) {
+      candidateContactDTO = new Gson().fromJson(contact, new TypeToken<CandidateDTO>() {
+
+        /**
+         * 
+         */
+        private static final long serialVersionUID = 1L;
+      }.getType());
+
+      if (candidateDTO == null && candidateContactDTO == null) {
         throw new APIException(Constant.INVALID_CANDIDATE_ID);
       }
     } catch (JsonSyntaxException e) {
       throw new APIException(Constant.JSON_PROCESSING_EXCEPTION + e.getMessage());
     }
+    candidateDTO.setResumeUploaded(Boolean.TRUE);
+    candidateDTO.setDegreeVerification(Boolean.TRUE);
+    candidateDTO.setOfferPresented(Boolean.TRUE);
+    if (candidateContactDTO.getAthenaStatus() != null
+        && candidateContactDTO.getAthenaStatus().equalsIgnoreCase("Completed")) {
+      candidateDTO.setAthenaCompleted(Boolean.TRUE);
+      candidateDTO.setAthenaStatus(candidateContactDTO.getAthenaStatus());
+    } else {
+      candidateDTO.setAthenaCompleted(Boolean.FALSE);
+    }
+
     return convertDateFormat(candidateDTO);
   }
 
