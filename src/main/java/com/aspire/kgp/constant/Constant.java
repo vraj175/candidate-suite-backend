@@ -136,6 +136,7 @@ public class Constant {
 
 	// Json Filter Name
 	public static final String COMPANY_FILTER = "companyFilter";
+	public static final String LOCATION_FILTER = "locationFilter";
 	
 	//messages
 	public static final String DATA_SAVED= "Data saved successfully";
@@ -144,4 +145,10 @@ public class Constant {
 	
 	// Test Fields
 	public static final String TEST = "Test";
+	
+    // Swagger User authentication API desc
+    public static final String USER_AUTHENTICATION_DESC =
+        "To authentication user select grant_type = password and enter username, password parameters.\r\n"
+            + "\r\n"
+            + "To get a new authorization token after expiration select grant_type = refereshtoken and enter the current valid refresh token.";
 }
