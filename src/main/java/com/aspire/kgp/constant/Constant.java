@@ -73,6 +73,7 @@ public class Constant {
 	public static final String CANDIDATE_LIST_URL = "/searches/{searchId}/candidates";
 	public static final String POSITION_PROFILE_URL = "/searches/{searchId}/sfpa";
 	public static final String CANDIDATE_URL = "/candidates/{candidateId}/activity";
+	public static final String CONTACT_PROFILE_IMAGE_URL = "/clientsuite/contacts/{CONTACTID}/profile-image";
 	// Queries parameter
 	public static final String INVALID_JSON_ERROR = "oops ! invalid json";
 	public static final String SPACE_STRING = "[\\s]";
@@ -136,6 +137,7 @@ public class Constant {
 
 	// Json Filter Name
 	public static final String COMPANY_FILTER = "companyFilter";
+	public static final String LOCATION_FILTER = "locationFilter";
 	
 	//messages
 	public static final String DATA_SAVED= "Data saved successfully";
@@ -144,4 +146,10 @@ public class Constant {
 	
 	// Test Fields
 	public static final String TEST = "Test";
+	
+    // Swagger User authentication API desc
+    public static final String USER_AUTHENTICATION_DESC =
+        "To authentication user select grant_type = password and enter username, password parameters.\r\n"
+            + "\r\n"
+            + "To get a new authorization token after expiration select grant_type = refereshtoken and enter the current valid refresh token.";
 }

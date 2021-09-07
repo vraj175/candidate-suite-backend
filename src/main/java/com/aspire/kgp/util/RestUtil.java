@@ -62,6 +62,7 @@ public class RestUtil {
     /* set the token in the header */
     get.setRequestHeader(Constant.AUTHORIZATION,
         validateCognitoWithAuthenticationToken(defaultAuth).getAccessToken());
+    log.info("galaxy : " + validateCognitoWithAuthenticationToken(defaultAuth).getAccessToken());
     String response = "";
     try {
       log.info("Request time: " + new Date());
@@ -97,7 +98,7 @@ public class RestUtil {
       new HttpClient().executeMethod(get);
       log.info("Request Code : " + get.getStatusCode());
       response = get.getResponseBodyAsString();
-      
+
       log.info("Response time: " + new Date());
     } catch (IOException e) {
       log.error("error while executing query " + e);
@@ -272,5 +273,27 @@ public class RestUtil {
       errorMessage = Constant.REFRESH_TOKEN_EXPIRED;
     }
     throw new UnauthorizedAccessException(errorMessage);
+  }
+
+  public byte[] newGetImage(String apiUrl) {
+    log.info(baseApiUrl + apiUrl.replaceAll(Constant.SPACE_STRING, "%20"));
+    log.debug("API Key : " + apiKey);
+
+    GetMethod get = new GetMethod(baseApiUrl + apiUrl.replaceAll(Constant.SPACE_STRING, "%20"));
+    /* set the token in the header */
+    get.setRequestHeader(Constant.X_API_KEY, apiKey);
+    byte[] response = null;
+    try {
+      new HttpClient().executeMethod(get);
+      log.info("Request Code : " + get.getStatusCode());
+      response = get.getResponseBody();
+      log.debug("Response : " + response);
+    } catch (IOException e) {
+      log.error("error while executing query ", e);
+      return response;
+    } finally {
+      get.releaseConnection();
+    }
+    return response;
   }
 }
