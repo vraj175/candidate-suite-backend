@@ -1,6 +1,7 @@
 package com.aspire.kgp.util;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Component;
 
 import com.aspire.kgp.constant.Constant;
 import com.aspire.kgp.dto.CandidateDTO;
+import com.aspire.kgp.dto.DocumentDTO;
 import com.aspire.kgp.dto.UserDTO;
 import com.aspire.kgp.exception.APIException;
 import com.google.common.reflect.TypeToken;
@@ -17,6 +19,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.google.gson.JsonSyntaxException;
 
 @Component
 public class CandidateUtil {
@@ -46,6 +49,26 @@ public class CandidateUtil {
     candidateDTO.getSearch().setEas(addJsonArraytoList(json, "eas"));
     
     return candidateDTO;
+  }
+  
+  public final List<DocumentDTO> getCandidateResumes(String candidateId) {
+    List<DocumentDTO> documentList = null;
+    String apiResponse = restUtil
+        .newGetMethod(Constant.RESUME_URL.replace("{candidateId}", candidateId));
+    try {
+      documentList =
+          new Gson().fromJson(apiResponse, new TypeToken<List<DocumentDTO>>() {
+
+            /**
+             * 
+             */
+            private static final long serialVersionUID = 1L;}.getType());
+    } catch (JsonSyntaxException e) {
+      log.error("Oops! error while fetching document list details");
+      documentList = Collections.emptyList();
+    }
+    log.info("End of getDocuments method");
+    return documentList;
   }
   
   private List<UserDTO> addJsonArraytoList(JsonObject json, String listfor){
