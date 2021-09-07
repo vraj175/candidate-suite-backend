@@ -94,7 +94,7 @@ public class CompanyController {
     SimpleBeanPropertyFilter candidateFilter =
         SimpleBeanPropertyFilter.filterOutAllExcept(Constant.ID, "resumeUploaded",
             "kgpInterviewDate1", "kgpInterviewDate2", "kgpInterviewDate3", "interviews",
-            "degreeVerification", "offerPresented", "athenaCompleted","athenaStatus");
+            "degreeVerification", "offerPresented", "athenaCompleted");
     SimpleBeanPropertyFilter interviewFilter = SimpleBeanPropertyFilter.filterOutAllExcept(
         Constant.ID, "method", "comments", "position", "interviewDate", "client");
     SimpleBeanPropertyFilter userFilter = SimpleBeanPropertyFilter.filterOutAllExcept(Constant.ID,
