@@ -1,12 +1,17 @@
 package com.aspire.kgp.dto;
 
+import com.google.gson.annotations.SerializedName;
+
 public class EducationDTO {
 
   private String id;
-  private String school_name;
-  private String degree_name;
+  @SerializedName("school_name")
+  private String schoolName;
+  @SerializedName("degree_name")
+  private String degreeName;
   private String major;
-  private String degree_year;
+  @SerializedName("degree_year")
+  private String degreeYear;
   private String position;
 
   public String getId() {
@@ -17,20 +22,28 @@ public class EducationDTO {
     this.id = id;
   }
 
-  public String getSchool_name() {
-    return school_name;
+  public String getPosition() {
+    return position;
   }
 
-  public void setSchool_name(String school_name) {
-    this.school_name = school_name;
+  public void setPosition(String position) {
+    this.position = position;
   }
 
-  public String getDegree_name() {
-    return degree_name;
+  public String getSchoolName() {
+    return schoolName;
   }
 
-  public void setDegree_name(String degree_name) {
-    this.degree_name = degree_name;
+  public void setSchoolName(String schoolName) {
+    this.schoolName = schoolName;
+  }
+
+  public String getDegreeName() {
+    return degreeName;
+  }
+
+  public void setDegreeName(String degreeName) {
+    this.degreeName = degreeName;
   }
 
   public String getMajor() {
@@ -41,19 +54,13 @@ public class EducationDTO {
     this.major = major;
   }
 
-  public String getDegree_year() {
-    return degree_year;
+  public String getDegreeYear() {
+    return degreeYear;
   }
 
-  public void setDegree_year(String degree_year) {
-    this.degree_year = degree_year;
+  public void setDegreeYear(String degreeYear) {
+    this.degreeYear = degreeYear;
   }
 
-  public String getPosition() {
-    return position;
-  }
 
-  public void setPosition(String position) {
-    this.position = position;
-  }
 }
