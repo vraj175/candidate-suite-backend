@@ -124,4 +124,32 @@ public class SearchController {
     mapping.setFilters(filters);
     return mapping;
   }
+
+  @Operation(summary = "Get Location Information Details")
+  @GetMapping(value = {"/searches/{searchId}/location_info"})
+  @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK", content = @Content(
+      mediaType = "application/json",
+      schema = @Schema(type = "PositionProfileDTO",
+          example = "{\"weather\": [{\"title\": \"string\",\"description\": \"string\",\"websiteUrl\": \"string\",\"position\": \"string\"}],\"placeofinterest\": [\r\n"
+              + "{\"title\": \"string\",\"description\": \"string\",\"websiteUrl\": \"string\",\"position\": \"string\"}],\"schoolsandcolleges\": [\r\n"
+              + "{\"title\": \"string\",\"description\": \"string\",\"websiteUrl\": \"string\",\"position\": \"string\"}],\"restaurantsandshopping\": [\r\n"
+              + "{\"title\": \"string\",\"description\": \"string\",\"websiteUrl\": \"string\",\"position\": \"string\"}],\"realestate\": [\r\n"
+              + "{\"title\": \"string\",\"description\": \"string\",\"websiteUrl\": \"string\",\"position\": \"string\"}]}")))})
+  public MappingJacksonValue getLocationInfo(@PathVariable("searchId") String searchId) {
+    PositionProfileDTO positionProfile = searchUtil.getPositionProfileDetails(searchId);
+
+    SimpleBeanPropertyFilter locationFilter = SimpleBeanPropertyFilter.filterOutAllExcept("title",
+        "description", "websiteUrl", "position");
+
+    SimpleBeanPropertyFilter positionProfileFilter = SimpleBeanPropertyFilter.filterOutAllExcept(
+        "weather", "placeofinterest", "schoolsandcolleges", "restaurantsandshopping", "realestate");
+
+    FilterProvider filters =
+        new SimpleFilterProvider().addFilter("positionProfileFilter", positionProfileFilter)
+            .addFilter(Constant.LOCATION_FILTER, locationFilter);
+
+    MappingJacksonValue mapping = new MappingJacksonValue(positionProfile);
+    mapping.setFilters(filters);
+    return mapping;
+  }
 }

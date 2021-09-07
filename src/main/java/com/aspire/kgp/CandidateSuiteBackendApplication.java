@@ -54,9 +54,10 @@ public class CandidateSuiteBackendApplication {
     return GroupedOpenApi.builder().group("default")
         .pathsToExclude(Constant.BASE_API_URL + Constant.PUBLIC_API_URL + "/**",
             Constant.USER_AUTHENTICATE_API_URL)
-        .pathsToMatch("/api/v1.0/candidates/**", "/api/v1.0/searches/**", "/api/v1.0/companies/**",
-            "/api/v1.0/company/**", "/api/v1.0/companyInfo/**", "/api/v1.0/languages/**",
-            "/api/v1.0/roles/**", "/api/v1.0/profile/**", "/api/v1.0/user/**", "/api/v1.0/video/**")
+        .pathsToMatch("/api/v1.0/candidates/**", "/api/v1.0/contact/**", "/api/v1.0/searches/**",
+            "/api/v1.0/companies/**", "/api/v1.0/company/**", "/api/v1.0/companyInfo/**",
+            "/api/v1.0/languages/**", "/api/v1.0/roles/**", "/api/v1.0/profile/**",
+            "/api/v1.0/user/**", "/api/v1.0/video/**")
         .addOpenApiCustomiser(defaultAPIConfig()).build();
   }
 
@@ -100,26 +101,34 @@ public class CandidateSuiteBackendApplication {
     RequestBody requestBody = new RequestBody();
 
     Schema<?> propSchema = new Schema<>();
-    Schema<?> schema = new Schema<>();
-    schema.setType("object");
-    schema.addProperties(Constant.GRANT_TYPE.toLowerCase(), propSchema);
-    schema.addProperties(Constant.USER_NAME, propSchema);
-    schema.addProperties(Constant.PASSWORD, propSchema);
-    List<String> list = new ArrayList<>();
-    list.add(Constant.GRANT_TYPE.toLowerCase());
-    list.add(Constant.USER_NAME);
-    list.add(Constant.PASSWORD);
-    schema.required(list);
+    Schema<?> requestSchema = new Schema<>();
+    Schema<String> grantTypeSchema = new Schema<>();
+    List<String> grantTypeList = new ArrayList<>();
+    grantTypeList.add(Constant.PASSWORD);
+    grantTypeList.add(Constant.REFRESH_TOKEN);
+    grantTypeSchema.setEnum(grantTypeList);
+
+    requestSchema.setType("object");
+    requestSchema.addProperties(Constant.GRANT_TYPE.toLowerCase(), grantTypeSchema);
+    requestSchema.addProperties(Constant.USER_NAME, propSchema);
+    requestSchema.addProperties(Constant.PASSWORD, propSchema);
+    requestSchema.addProperties(Constant.REFRESH_TOKEN, propSchema);
+    List<String> requireParameterList = new ArrayList<>();
+    requireParameterList.add("grant_type");
+    requestSchema.required(requireParameterList);
 
     Content requestContent = new Content();
-    requestContent.addMediaType("multipart/form-data", new MediaType().schema(schema));
+    requestContent.addMediaType("multipart/form-data", new MediaType().schema(requestSchema));
     requestBody.setContent(requestContent);
 
     Content responseContent = new Content();
     responseContent.addMediaType("application/json", new MediaType().schema(new Schema<>().example(
         "{\"access_token\": \"string\",\"token_type\": \"string\",\"refresh_token\": \"string\",\"expires_in\": 0,\"scope\": \"string\",\"jti\": \"string\"}")));
-    pathItem.setPost(new Operation().requestBody(requestBody).responses(new ApiResponses()
-        .addApiResponse("200", new ApiResponse().description("OK").content(responseContent))));
+    pathItem.setPost(new Operation().requestBody(requestBody)
+        .responses(new ApiResponses().addApiResponse("200",
+            new ApiResponse().description("OK").content(responseContent)))
+        .addTagsItem("User Authentication").description(Constant.USER_AUTHENTICATION_DESC)
+        .summary("Get Refresh Token"));
 
     return openApi -> openApi
         .components(new Components().addSecuritySchemes(Constant.API_KEY,
