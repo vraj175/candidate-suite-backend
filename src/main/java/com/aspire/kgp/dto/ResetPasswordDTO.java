@@ -7,7 +7,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import io.swagger.v3.oas.annotations.Hidden;
 
-@Hidden
 public class ResetPasswordDTO {
   @JsonProperty(value = "Email", required = true)
   @NotEmpty(message = "Email must not be empty")

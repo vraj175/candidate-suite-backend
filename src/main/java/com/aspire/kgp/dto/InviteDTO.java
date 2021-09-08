@@ -6,9 +6,6 @@ import javax.validation.constraints.NotEmpty;
 import com.aspire.kgp.validator.Language;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import io.swagger.v3.oas.annotations.Hidden;
-
-@Hidden
 public class InviteDTO {
   
   @JsonProperty(value="Candidate Id" ,required = true)
