@@ -1,14 +1,18 @@
 package com.aspire.kgp.controller;
 
+import javax.servlet.http.HttpServletResponse;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.converter.json.MappingJacksonValue;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.aspire.kgp.constant.Constant;
 import com.aspire.kgp.dto.CandidateDTO;
+import com.aspire.kgp.dto.DocumentDTO;
 import com.aspire.kgp.util.CandidateUtil;
 import com.fasterxml.jackson.databind.ser.FilterProvider;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
@@ -101,4 +105,20 @@ public class CandidateController {
     return mapping;
   }
 
+  @Operation(summary = "Get Candidate Resumes")
+  @GetMapping(value = {"/candidates/{candidateId}/resumes"})
+  @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK",
+      content = @Content(mediaType = "application/json", schema = @Schema(type = "Resume",
+          example = "{ \"id\": \"string\",\"fileName\": \"string\",\"createdAt\": \"string\" }")))})
+  public DocumentDTO getResumeDetails(@PathVariable("candidateId") String candidateId) {
+    return candidateUtil.getCandidateResumes(candidateId);
+  }
+
+  @Operation(summary = "Download Documents")
+  @GetMapping(value = {"candidates/resumes/{attachmentId}/download"})
+  @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK")})
+  public void downloadDocument(@PathVariable("attachmentId") String attachmentId,
+      @RequestParam String documentName, HttpServletResponse response) {
+    candidateUtil.downloadDocument(documentName, attachmentId, response);
+  }
 }
