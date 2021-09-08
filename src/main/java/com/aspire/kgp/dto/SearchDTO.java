@@ -20,6 +20,8 @@ public class SearchDTO {
   private List<UserDTO> eas;
   @SerializedName("client_team")
   private List<ClientTeamDTO> clienTeam;
+  private String city;
+  private String state;
 
   public String getId() {
     return id;
@@ -99,6 +101,22 @@ public class SearchDTO {
 
   public void setClienTeam(List<ClientTeamDTO> clienTeam) {
     this.clienTeam = clienTeam;
+  }
+
+  public String getCity() {
+    return city;
+  }
+
+  public void setCity(String city) {
+    this.city = city;
+  }
+
+  public String getState() {
+    return state;
+  }
+
+  public void setState(String state) {
+    this.state = state;
   }
 
 }

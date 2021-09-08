@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.aspire.kgp.constant.Constant;
 import com.aspire.kgp.dto.CandidateDTO;
 import com.aspire.kgp.dto.PositionProfileDTO;
+import com.aspire.kgp.dto.SearchDTO;
 import com.aspire.kgp.model.User;
 import com.aspire.kgp.util.SearchUtil;
 import com.fasterxml.jackson.databind.ser.FilterProvider;
@@ -152,4 +153,25 @@ public class SearchController {
     mapping.setFilters(filters);
     return mapping;
   }
+
+  @Operation(summary = "Get Search Info Details")
+  @GetMapping("/searches/{searchId}")
+  @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK",
+      content = @Content(mediaType = "application/json", schema = @Schema(type = "ContactDTO",
+          example = "{\"id\": \"string\",\"country\": \"string\",\"currentJobTitle\": \"string\",\"company\": {\"id\": \"string\",\"name\": \"string\"}}")))})
+  public MappingJacksonValue getCompanyDetails(@PathVariable("searchId") String searchId) {
+    SearchDTO searchDTO = searchUtil.getsearchDetails(searchId);
+
+    SimpleBeanPropertyFilter companyFilter =
+        SimpleBeanPropertyFilter.filterOutAllExcept("id", "name");
+    SimpleBeanPropertyFilter searchFilter = SimpleBeanPropertyFilter.filterOutAllExcept(Constant.ID,
+        "jobTitle", "company", "city", "state");
+    FilterProvider filters = new SimpleFilterProvider().addFilter("searchFilter", searchFilter)
+        .addFilter("companyFilter", companyFilter);
+    MappingJacksonValue mapping = new MappingJacksonValue(searchDTO);
+    mapping.setFilters(filters);
+
+    return mapping;
+  }
+
 }
