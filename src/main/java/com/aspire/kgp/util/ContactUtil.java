@@ -1,5 +1,7 @@
 package com.aspire.kgp.util;
 
+import java.io.UnsupportedEncodingException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -34,7 +36,13 @@ public class ContactUtil {
   }
 
   public final byte[] getContactImage(String contactId) {
-    return restUtil.newGetImage(Constant.CONTACT_PROFILE_IMAGE_URL.replace("{CONTACTID}", contactId));
+    return restUtil
+        .newGetImage(Constant.CONTACT_PROFILE_IMAGE_URL.replace("{CONTACTID}", contactId));
+  }
+
+  public final String updateContactDetails(String contactId, String contactData)
+      throws UnsupportedEncodingException {
+    return restUtil.putMethod(Constant.CONTACT_URL.replace("{contactId}", contactId), contactData);
   }
 
 }

@@ -1,6 +1,7 @@
 package com.aspire.kgp.util;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.sql.Timestamp;
 import java.util.Base64;
@@ -12,6 +13,7 @@ import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
+import org.apache.commons.httpclient.methods.PutMethod;
 import org.apache.commons.httpclient.methods.StringRequestEntity;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -79,6 +81,44 @@ public class RestUtil {
       get.releaseConnection();
     }
     return response;
+  }
+
+  public String putMethod(String url, String paramJSON) throws UnsupportedEncodingException {
+    log.info(baseApiUrl + url.replaceAll(Constant.SPACE_STRING, "%20"));
+    JsonObject responseObj = new JsonObject();
+
+    log.info("Base API URL : " + baseApiUrl + url.replaceAll(Constant.SPACE_STRING, "%20"));
+    log.info("paramJSON:: " + paramJSON);
+    HttpClient httpClient = new HttpClient();
+    PutMethod httpPut = new PutMethod(baseApiUrl + url.replaceAll(Constant.SPACE_STRING, "%20"));
+    httpPut.setRequestHeader("X-API-Key", apiKey);
+    httpPut.setRequestHeader("Accept", "application/json");
+    httpPut.setRequestHeader("Content-type", "application/json");
+    httpPut.setRequestHeader(Constant.AUTHORIZATION,
+        validateCognitoWithAuthenticationToken(defaultAuth).getAccessToken());
+
+    StringRequestEntity body = new StringRequestEntity(paramJSON, "application/json", "UTF-8");
+    httpPut.setRequestEntity(body);
+
+    String responseString = "";
+    int statusCode = 0;
+    try {
+      statusCode = httpClient.executeMethod(httpPut);
+    } catch (IOException e1) {
+      e1.printStackTrace();
+    }
+
+    log.info("-----------Query response time " + new Date());
+    try {
+      responseString = httpPut.getResponseBodyAsString();
+    } catch (IOException e) {
+      log.error(e);
+    }
+    log.info("Status code :: " + statusCode);
+    log.info("RESPONSE : " + responseString);
+    responseObj.addProperty("statusCode", statusCode);
+    responseObj.addProperty("responseString", responseString);
+    return responseObj.toString();
   }
 
   public String performVerifyGoogleCaptchaRequest(String capchaResponse) {

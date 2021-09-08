@@ -1,9 +1,13 @@
 package com.aspire.kgp.controller;
 
+import java.io.UnsupportedEncodingException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.converter.json.MappingJacksonValue;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -38,8 +42,9 @@ public class ContactController {
     SimpleBeanPropertyFilter contactFilter = SimpleBeanPropertyFilter.filterOutAllExcept(
         "currentJobTitle", "company", "mobilePhone", "homePhone", "workEmail", "email",
         "linkedinUrl", "baseSalary", "targetBonusValue", "equity", "compensationExpectation",
-        "compensationNotes", "jobHistory", "educationDetails","boardDetails");
-    SimpleBeanPropertyFilter companyFilter = SimpleBeanPropertyFilter.filterOutAllExcept("id","name");
+        "compensationNotes", "jobHistory", "educationDetails", "boardDetails");
+    SimpleBeanPropertyFilter companyFilter =
+        SimpleBeanPropertyFilter.filterOutAllExcept("id", "name");
     FilterProvider filters = new SimpleFilterProvider().addFilter("contactFilter", contactFilter)
         .addFilter("companyFilter", companyFilter);
 
@@ -48,10 +53,17 @@ public class ContactController {
 
     return mapping;
   }
-  
+
   @Operation(summary = "Get contact profile image")
   @GetMapping("/contact/{contactId}/profile-image")
   public byte[] getContactImage(@PathVariable("contactId") String contactId) {
     return contactUtil.getContactImage(contactId);
+  }
+
+  @Operation(summary = "Update Contact Details")
+  @PutMapping("/contact/{contactId}")
+  public String updateContactDetails(@PathVariable("contactId") String contactId,
+      @RequestBody String contactData) throws UnsupportedEncodingException {
+    return contactUtil.updateContactDetails(contactId, contactData);
   }
 }
