@@ -1,7 +1,5 @@
 package com.aspire.kgp.controller;
 
-import java.util.List;
-
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -110,9 +108,9 @@ public class CandidateController {
   @Operation(summary = "Get Candidate Resumes")
   @GetMapping(value = {"/candidates/{candidateId}/resumes"})
   @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK",
-      content = @Content(mediaType = "application/json", schema = @Schema(type = "Resumes",
-          example = "[{ \"id\": \"string\",\"fileName\": \"string\",\"createdAt\": \"string\" }]")))})
-  public List<DocumentDTO> getResumeDetails(@PathVariable("candidateId") String candidateId) {
+      content = @Content(mediaType = "application/json", schema = @Schema(type = "Resume",
+          example = "{ \"id\": \"string\",\"fileName\": \"string\",\"createdAt\": \"string\" }")))})
+  public DocumentDTO getResumeDetails(@PathVariable("candidateId") String candidateId) {
     return candidateUtil.getCandidateResumes(candidateId);
   }
 

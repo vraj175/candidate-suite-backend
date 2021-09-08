@@ -57,7 +57,7 @@ public class CandidateUtil {
     return candidateDTO;
   }
 
-  public final List<DocumentDTO> getCandidateResumes(String candidateId) {
+  public final DocumentDTO getCandidateResumes(String candidateId) {
     List<DocumentDTO> documentList = null;
     String apiResponse =
         restUtil.newGetMethod(Constant.RESUME_URL.replace("{candidateId}", candidateId));
@@ -74,7 +74,10 @@ public class CandidateUtil {
       documentList = Collections.emptyList();
     }
     log.info("End of getDocuments method");
-    return documentList;
+    if(documentList.isEmpty()) {
+      return null;
+    }
+    return documentList.get(0);
   }
 
   private List<UserDTO> addJsonArraytoList(JsonObject json, String listfor) {
