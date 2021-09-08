@@ -16,6 +16,9 @@ public class UserVideo extends SuperBase {
 
   @Column(name = "fileToken", nullable = false)
   private String fileToken;
+  
+  @Column(columnDefinition = "boolean default false")
+  private boolean isDeleted;
 
   public UserSearch getUserSearch() {
     return userSearch;
@@ -31,6 +34,14 @@ public class UserVideo extends SuperBase {
 
   public void setFileToken(String fileToken) {
     this.fileToken = fileToken;
+  }
+
+  public boolean isDeleted() {
+    return isDeleted;
+  }
+
+  public void setDeleted(boolean isDeleted) {
+    this.isDeleted = isDeleted;
   }
 
 }
