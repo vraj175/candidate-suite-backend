@@ -92,7 +92,7 @@ public class CompanyController {
       throws ParseException {
     CandidateDTO candidateDTO = companyUtil.getCompanyInfoDetails(candidateId);
     SimpleBeanPropertyFilter candidateFilter =
-        SimpleBeanPropertyFilter.filterOutAllExcept(Constant.ID, "resumeUploaded",
+        SimpleBeanPropertyFilter.filterOutAllExcept(Constant.ID,
             "kgpInterviewDate1", "kgpInterviewDate2", "kgpInterviewDate3", "interviews",
             "degreeVerification", "offerPresented", "athenaCompleted");
     SimpleBeanPropertyFilter interviewFilter = SimpleBeanPropertyFilter.filterOutAllExcept(

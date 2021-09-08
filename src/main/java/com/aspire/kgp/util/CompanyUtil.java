@@ -94,7 +94,6 @@ public class CompanyUtil {
     } catch (JsonSyntaxException e) {
       throw new APIException(Constant.JSON_PROCESSING_EXCEPTION + e.getMessage());
     }
-    candidateDTO.setResumeUploaded(Boolean.TRUE);
     candidateDTO.setDegreeVerification(Boolean.TRUE);
     candidateDTO.setOfferPresented(Boolean.TRUE);
     if (candidateContactDTO.getAthenaStatus() != null
