@@ -105,12 +105,12 @@ public class SearchController {
   @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK",
       content = @Content(mediaType = "application/json", schema = @Schema(
           type = "PositionProfileDTO",
-          example = "{\"isDegreeMandatory\": true,\"isApprovedByPartner\": true,\"isYearsOfExperienceMandatory\": true,\"positionOverview\": \"string\",\"productsServicesOverview\": \"string\",\"professionalExperience\": \"string\",\"yearsOfExperience\": \"string\",\"degreeName\": \"string\",\"certifications\": \"string\",\"company\": {\"description\": \"string\"}}")))})
+          example = "{\"isDegreeMandatory\": true,\"isApprovedByPartner\": true,\"isYearsOfExperienceMandatory\": true,\"positionOverview\": \"string\",\"productsServicesOverview\": \"string\",\"professionalExperience\": \"string\",\"yearsOfExperience\": \"string\",\"degreeName\": \"string\",\"certifications\": \"string\",\"company\": {\"description\": \"string\",\"website\": \"string\"}}")))})
   public MappingJacksonValue getPositionProfile(@PathVariable("searchId") String searchId) {
     PositionProfileDTO positionProfile = searchUtil.getPositionProfileDetails(searchId);
 
     SimpleBeanPropertyFilter companyFilter =
-        SimpleBeanPropertyFilter.filterOutAllExcept("description");
+        SimpleBeanPropertyFilter.filterOutAllExcept("description", "website");
 
     SimpleBeanPropertyFilter positionProfileFilter = SimpleBeanPropertyFilter.filterOutAllExcept(
         "isDegreeMandatory", "isApprovedByPartner", "isYearsOfExperienceMandatory",
