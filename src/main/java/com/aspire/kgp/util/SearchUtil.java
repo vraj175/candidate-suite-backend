@@ -188,4 +188,21 @@ public class SearchUtil {
     }
     return positionProfile;
   }
+
+  public SearchDTO getsearchDetails(String searchId) {
+    String apiResponse =
+        restUtil.newGetMethod(Constant.SEARCH_INFO_URL.replace("{SEARCHID}", searchId));
+
+    try {
+      return new Gson().fromJson(apiResponse, new TypeToken<SearchDTO>() {
+
+        /**
+         * 
+         */
+        private static final long serialVersionUID = 1L;
+      }.getType());
+    } catch (JsonSyntaxException e) {
+      throw new APIException(Constant.JSON_PROCESSING_EXCEPTION + e.getMessage());
+    }
+  }
 }
