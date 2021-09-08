@@ -1,5 +1,7 @@
 package com.aspire.kgp.service.impl;
 
+import java.util.List;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +39,15 @@ public class UserVideoServiceImpl implements UserVideoService {
     userVideo.setUserSearch(userSearch);
     userVideo.setFileToken(fileToken);
     return saveorUpdate(userVideo);
+  }
+
+  @Override
+  public List<UserVideo> findByCandidateId(String candidateId) {
+    UserSearch userSearch = searchService.findByCandidateId(candidateId);
+    if (userSearch == null) {
+      throw new NotFoundException("Candidate is not available");
+    }
+    return repository.findByUserSearchAndIsDeletedFalseOrderByCreatedDateDesc(userSearch);
   }
 
 }
