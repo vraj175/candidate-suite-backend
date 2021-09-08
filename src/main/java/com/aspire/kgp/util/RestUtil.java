@@ -1,6 +1,8 @@
 package com.aspire.kgp.util;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.sql.Timestamp;
 import java.util.Base64;
@@ -79,6 +81,53 @@ public class RestUtil {
       get.releaseConnection();
     }
     return response;
+  }
+
+  public void newGetMethod(String apiUrl, OutputStream outputStream) {
+    log.debug("In getMethod method");
+    /* Configure get method */
+    log.info(baseApiUrl + apiUrl.replaceAll(Constant.SPACE_STRING, "%20"));
+    GetMethod get = new GetMethod(baseApiUrl + apiUrl.replaceAll(Constant.SPACE_STRING, "%20"));
+    /* set the token in the header */
+    get.setRequestHeader(Constant.X_API_KEY, apiKey);
+    /* set the token in the header */
+    get.setRequestHeader(Constant.AUTHORIZATION,
+        validateCognitoWithAuthenticationToken(defaultAuth).getAccessToken());
+
+    /* Get Data */
+    InputStream fileInputStream = null;
+    try {
+      new HttpClient().executeMethod(get);
+      log.info("Status code :: " + get.getStatusCode());
+      // Check for unauthorized and if it is 401 it will take new token,
+      // save it and call method again.
+      if (get.getStatusCode() == HttpStatus.SC_UNAUTHORIZED) {
+        // executing rest call
+        new HttpClient().executeMethod(get);
+        log.info("Next Status code :: " + get.getStatusCode());
+      }
+      if (get.getStatusCode() == HttpStatus.SC_OK) {
+        fileInputStream = get.getResponseBodyAsStream();
+        readInputStream(fileInputStream, outputStream);
+      }
+    } catch (IOException e) {
+      log.error("error while getting data ", e);
+    } finally {
+      get.releaseConnection();
+    }
+    log.debug("End of getMethod method");
+  }
+
+  private static void readInputStream(InputStream inputStream, OutputStream outputStream)
+      throws IOException {
+    byte[] buffer = new byte[1];
+    try {
+      while (inputStream.read(buffer) > 0) {
+        outputStream.write(buffer);
+      }
+    } catch (Exception e) {
+      log.error("Error while getting read input stream", e);
+    }
   }
 
   public String performVerifyGoogleCaptchaRequest(String capchaResponse) {
