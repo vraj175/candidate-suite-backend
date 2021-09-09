@@ -102,6 +102,7 @@ public class CompanyUtil {
     if (candidateContactDTO.getAthenaStatus() != null
         && candidateContactDTO.getAthenaStatus().equalsIgnoreCase(Constant.COMPLETED)
         && candidateDTO != null) {
+      candidateDTO.setContactId(candidateContactDTO.getId());
       candidateDTO.setAthenaCompleted(Boolean.TRUE);
     }
 
