@@ -56,7 +56,7 @@ public class CompanyController {
     SimpleBeanPropertyFilter companyFilter =
         SimpleBeanPropertyFilter.filterOutAllExcept("id", "name");
 
-    FilterProvider filters = new SimpleFilterProvider().addFilter(Constant.COMPANY_FILTER, companyFilter);
+    FilterProvider filters = new SimpleFilterProvider().addFilter("companyFilter", companyFilter);
     MappingJacksonValue mapping = new MappingJacksonValue(companyList);
     mapping.setFilters(filters);
 
@@ -76,7 +76,7 @@ public class CompanyController {
     SimpleBeanPropertyFilter contactFilter = SimpleBeanPropertyFilter
         .filterOutAllExcept(Constant.ID, Constant.CURRENT_JOB_TITLE, "company", Constant.COUNTRY);
     FilterProvider filters = new SimpleFilterProvider().addFilter("contactFilter", contactFilter)
-        .addFilter(Constant.COMPANY_FILTER, companyFilter);
+        .addFilter("companyFilter", companyFilter);
     MappingJacksonValue mapping = new MappingJacksonValue(contactDTO);
     mapping.setFilters(filters);
 
@@ -108,15 +108,15 @@ public class CompanyController {
   }
 
   @Operation(summary = "Get all matchiing companies")
-  @GetMapping("/companyName/{companyName}")
+  @GetMapping("/companyList/{companyName}")
   @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK",
-      content = @Content(mediaType = "application/json", schema = @Schema(type = "List<CompanyDTO>",
+      content = @Content(mediaType = "application/json", schema = @Schema(type = "CompanyDTO",
           example = "[{\"id\": \"string\",\"name\": \"string\"}]")))})
   public MappingJacksonValue getListOfCompany(@PathVariable("companyName") String companyName) {
     List<CompanyDTO> companyDTO = companyUtil.getListOfCompany(companyName);
     SimpleBeanPropertyFilter companyFilter =
         SimpleBeanPropertyFilter.filterOutAllExcept(Constant.ID, "name");
-    FilterProvider filters = new SimpleFilterProvider().addFilter(Constant.COMPANY_FILTER, companyFilter);
+    FilterProvider filters = new SimpleFilterProvider().addFilter("companyFilter", companyFilter);
     MappingJacksonValue mapping = new MappingJacksonValue(companyDTO);
     mapping.setFilters(filters);
 
