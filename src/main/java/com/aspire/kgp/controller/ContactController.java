@@ -79,6 +79,9 @@ public class ContactController {
 
   @Operation(summary = "Get List of contact references")
   @GetMapping("/contact/{contactId}/references")
+  @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK",
+      content = @Content(mediaType = "application/json", schema = @Schema(type = "List<ContactReferencesDTO>",
+          example = "[{\"id\": \"string\",\"searchId\": \"string\",\"relationship\": \"string\",\"contact\": {\"firstName\": \"string\",\"lastName\": \"string\",\"workEmail\": \"string\",\"email\": \"string\",\"mobilePhone\": \"string\",\"currentJobTitle\": \"string\",\"company\": {\"id\": \"string\",\"name\": \"string\"}}}]")))})
   public MappingJacksonValue getListOfReferences(@PathVariable("contactId") String contactId) {
     List<ContactReferencesDTO> contactReferenceDTO = contactUtil.getListOfReferences(contactId);
     SimpleBeanPropertyFilter contactReferenceFilter =
