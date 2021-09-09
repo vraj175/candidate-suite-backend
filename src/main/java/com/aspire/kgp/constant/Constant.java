@@ -155,4 +155,7 @@ public class Constant {
         "To authentication user select grant_type = password and enter username, password parameters.\r\n"
             + "\r\n"
             + "To get a new authorization token after expiration select grant_type = refereshtoken and enter the current valid refresh token.";
+
+    public static final String ATHENA_REPORT_URL =
+        "https://bsuite.kingsleygate.com/delegate/NewReportServlet?params={%22pageSize%22:%22{pageSize}%22,%22locale%22:%22{locale}%22,%22contactId%22:%22{contactId}%22,%22newReportAction%22:%22AthenaIndidualConsultingReport%22}";
 }
