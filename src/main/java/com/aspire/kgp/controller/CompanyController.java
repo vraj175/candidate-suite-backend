@@ -56,7 +56,7 @@ public class CompanyController {
     SimpleBeanPropertyFilter companyFilter =
         SimpleBeanPropertyFilter.filterOutAllExcept("id", "name");
 
-    FilterProvider filters = new SimpleFilterProvider().addFilter("companyFilter", companyFilter);
+    FilterProvider filters = new SimpleFilterProvider().addFilter(Constant.COMPANY_FILTER, companyFilter);
     MappingJacksonValue mapping = new MappingJacksonValue(companyList);
     mapping.setFilters(filters);
 
@@ -76,7 +76,7 @@ public class CompanyController {
     SimpleBeanPropertyFilter contactFilter = SimpleBeanPropertyFilter
         .filterOutAllExcept(Constant.ID, Constant.CURRENT_JOB_TITLE, "company", Constant.COUNTRY);
     FilterProvider filters = new SimpleFilterProvider().addFilter("contactFilter", contactFilter)
-        .addFilter("companyFilter", companyFilter);
+        .addFilter(Constant.COMPANY_FILTER, companyFilter);
     MappingJacksonValue mapping = new MappingJacksonValue(contactDTO);
     mapping.setFilters(filters);
 
@@ -116,7 +116,7 @@ public class CompanyController {
     List<CompanyDTO> companyDTO = companyUtil.getListOfCompany(companyName);
     SimpleBeanPropertyFilter companyFilter =
         SimpleBeanPropertyFilter.filterOutAllExcept(Constant.ID, "name");
-    FilterProvider filters = new SimpleFilterProvider().addFilter("companyFilter", companyFilter);
+    FilterProvider filters = new SimpleFilterProvider().addFilter(Constant.COMPANY_FILTER, companyFilter);
     MappingJacksonValue mapping = new MappingJacksonValue(companyDTO);
     mapping.setFilters(filters);
 
