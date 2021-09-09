@@ -9,6 +9,7 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import com.aspire.kgp.constant.Constant;
+import com.aspire.kgp.dto.InviteDTO;
 import com.aspire.kgp.dto.ResetPasswordDTO;
 import com.aspire.kgp.dto.UserDTO;
 import com.aspire.kgp.model.Language;
@@ -82,6 +83,7 @@ public class CustomTestData {
   
   public static UserDTO getUserDTO() {
     UserDTO user = new UserDTO();
+    user.setId(Constant.TEST);
     user.setFirstName(Constant.TEST);
     user.setLastName(Constant.TEST);
     user.setWorkEmail(Constant.TEST);
@@ -96,6 +98,17 @@ public class CustomTestData {
     user.setPasswordReset(Boolean.FALSE);
 
     return user;
+  }
+  
+  public static InviteDTO getInviteDTO() {
+    InviteDTO invite = new InviteDTO();
+    invite.setCandidateId(Constant.TEST);
+    invite.setEmail(Constant.TEST);
+    invite.setLanguage(Constant.TEST);
+    invite.setPartnerId(Constant.TEST);
+    invite.setRemoveDuplicate(Boolean.FALSE);
+    invite.setBcc(new String[] {});
+    return invite;
   }
 
   public static List<User> getUsers() {

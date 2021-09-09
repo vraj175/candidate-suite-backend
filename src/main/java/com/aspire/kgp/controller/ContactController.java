@@ -79,6 +79,9 @@ public class ContactController {
 
   @Operation(summary = "Get List of contact references")
   @GetMapping("/contact/{contactId}/references")
+  @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK",
+      content = @Content(mediaType = "application/json", schema = @Schema(type = "List<ContactReferencesDTO>",
+          example = "[{\"id\": \"string\",\"searchId\": \"string\",\"relationship\": \"string\",\"contact\": {\"firstName\": \"string\",\"lastName\": \"string\",\"workEmail\": \"string\",\"email\": \"string\",\"mobilePhone\": \"string\",\"currentJobTitle\": \"string\",\"company\": {\"id\": \"string\",\"name\": \"string\"}}}]")))})
   public MappingJacksonValue getListOfReferences(@PathVariable("contactId") String contactId) {
     List<ContactReferencesDTO> contactReferenceDTO = contactUtil.getListOfReferences(contactId);
     SimpleBeanPropertyFilter contactReferenceFilter =
@@ -111,8 +114,8 @@ public class ContactController {
   @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK",
       content = @Content(mediaType = "application/json", schema = @Schema(type = "Resume",
           example = "{ \"id\": \"string\",\"fileName\": \"string\",\"createdAt\": \"string\" }")))})
-  public DocumentDTO getResumeDetails(@PathVariable("candidateId") String candidateId) {
-    return contactUtil.getContactResumes(candidateId);
+  public DocumentDTO getResumeDetails(@PathVariable("contactId") String contactId) {
+    return contactUtil.getContactResumes(contactId);
   }
 
   @Operation(summary = "Download Documents")

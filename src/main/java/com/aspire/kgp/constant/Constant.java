@@ -79,7 +79,7 @@ public class Constant {
   public static final String CANDIDATE_URL = "/candidates/{candidateId}/activity";
 
   public static final String CONTACT_PROFILE_IMAGE_URL =
-      "/clientsuite/contacts/{CONTACTID}/profile-image";
+      "/clientsuite/contacts/{contactId}/profile-image";
   public static final String GET_COMPANY_LIST_URL = "/synclink/companies?name={COMPANYNAME}";
   public static final String DOWNLOAD_ATTACHMENT =
       "/clientsuite/candidate/resumes/{attachmentId}/download";
@@ -171,5 +171,5 @@ public class Constant {
           + "To get a new authorization token after expiration select grant_type = refereshtoken and enter the current valid refresh token.";
 
   public static final String ATHENA_REPORT_URL =
-      "https://bsuite.kingsleygate.com/delegate/NewReportServlet?params={%22pageSize%22:%22{pageSize}%22,%22locale%22:%22{locale}%22,%22contactId%22:%22{contactId}%22,%22newReportAction%22:%22AthenaIndidualConsultingReport%22}";
+      "/delegate/NewReportServlet?params={%22pageSize%22:%22{pageSize}%22,%22locale%22:%22{locale}%22,%22contactId%22:%22{contactId}%22,%22newReportAction%22:%22AthenaIndidualConsultingReport%22}";
 }
