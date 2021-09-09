@@ -123,11 +123,24 @@ public class CompanyUtil {
       candidateDTO
           .setKgpInterviewDate3(CommonUtil.dateFormatter(candidateDTO.getKgpInterviewDate3()));
     if (candidateDTO.getInterviews() != null && !candidateDTO.getInterviews().isEmpty())
-      for (InterviewDTO interviewDetails : candidateDTO.getInterviews()) {
-        if (interviewDetails.getInterviewDate() != null
-            && !interviewDetails.getInterviewDate().isEmpty())
-          interviewDetails
-              .setInterviewDate(CommonUtil.dateFormatter(interviewDetails.getInterviewDate()));
+      for (int i = 0; i < candidateDTO.getInterviews().size(); i++) {
+
+        if (candidateDTO.getInterviews().get(i).getInterviewDate() != null
+            && !candidateDTO.getInterviews().get(i).getInterviewDate().isEmpty())
+          candidateDTO.getInterviews().get(i).setInterviewDate(
+              CommonUtil.dateFormatter(candidateDTO.getInterviews().get(i).getInterviewDate()));
+        if (candidateDTO.getInterviews().get(i).getClient() == null
+            || candidateDTO.getInterviews().get(i).getClient().getFirstName() == null
+                && candidateDTO.getInterviews().get(i).getClient().getFirstName().isEmpty()) {
+          if (candidateDTO.getInterviews().get(i) != null) {
+            candidateDTO.getInterviews().remove(i);
+            i--;
+          }
+        } else {
+          candidateDTO.getInterviews().get(i).getClient()
+              .setName(candidateDTO.getInterviews().get(i).getClient().getFirstName() + " "
+                  + candidateDTO.getInterviews().get(i).getClient().getLastName());
+        }
       }
     return candidateDTO;
   }

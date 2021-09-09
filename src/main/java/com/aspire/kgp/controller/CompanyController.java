@@ -97,7 +97,7 @@ public class CompanyController {
     SimpleBeanPropertyFilter interviewFilter = SimpleBeanPropertyFilter.filterOutAllExcept(
         Constant.ID, "method", "comments", "position", "interviewDate", "client");
     SimpleBeanPropertyFilter userFilter = SimpleBeanPropertyFilter.filterOutAllExcept(Constant.ID,
-        Constant.FIRST_NAME, Constant.LAST_NAME);
+        "name");
     FilterProvider filters =
         new SimpleFilterProvider().addFilter("candidateFilter", candidateFilter)
             .addFilter("interviewFilter", interviewFilter).addFilter("userFilter", userFilter);
