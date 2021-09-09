@@ -3,6 +3,7 @@ package com.aspire.kgp.controller;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.json.MappingJacksonValue;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -120,5 +121,12 @@ public class CandidateController {
   public void downloadDocument(@PathVariable("attachmentId") String attachmentId,
       @RequestParam String documentName, HttpServletResponse response) {
     candidateUtil.downloadDocument(documentName, attachmentId, response);
+  }
+
+  @Operation(summary = "Download Athena Report")
+  @GetMapping(value = {"candidates/AthenaReport/{pageSize}/{locale}/{contactId}"})
+  public ResponseEntity<byte[]> getAthenaReport(@PathVariable("pageSize") String pageSize,
+      @PathVariable("locale") String locale, @PathVariable("contactId") String contactId) {
+    return candidateUtil.getAthenaReport(pageSize, locale, contactId);
   }
 }
