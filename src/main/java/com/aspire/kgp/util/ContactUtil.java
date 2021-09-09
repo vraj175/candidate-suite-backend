@@ -91,7 +91,7 @@ public class ContactUtil {
       e.printStackTrace();
       throw new APIException(Constant.FILE_UPLOAD_ERROR);
     }
-    return Constant.FILE_UPLOADED_SUCCESSFULLY;
+    return Constant.FILE_UPLOAD_ERROR;
   }
 
   public final DocumentDTO getContactResumes(String contactId) {
