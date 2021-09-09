@@ -56,7 +56,7 @@ public class CompanyController {
     SimpleBeanPropertyFilter companyFilter =
         SimpleBeanPropertyFilter.filterOutAllExcept("id", "name");
 
-    FilterProvider filters = new SimpleFilterProvider().addFilter("companyFilter", companyFilter);
+    FilterProvider filters = new SimpleFilterProvider().addFilter(Constant.COMPANY_FILTER, companyFilter);
     MappingJacksonValue mapping = new MappingJacksonValue(companyList);
     mapping.setFilters(filters);
 
@@ -76,7 +76,7 @@ public class CompanyController {
     SimpleBeanPropertyFilter contactFilter = SimpleBeanPropertyFilter
         .filterOutAllExcept(Constant.ID, Constant.CURRENT_JOB_TITLE, "company", Constant.COUNTRY);
     FilterProvider filters = new SimpleFilterProvider().addFilter("contactFilter", contactFilter)
-        .addFilter("companyFilter", companyFilter);
+        .addFilter(Constant.COMPANY_FILTER, companyFilter);
     MappingJacksonValue mapping = new MappingJacksonValue(contactDTO);
     mapping.setFilters(filters);
 
@@ -97,7 +97,7 @@ public class CompanyController {
     SimpleBeanPropertyFilter interviewFilter = SimpleBeanPropertyFilter.filterOutAllExcept(
         Constant.ID, "method", "comments", "position", "interviewDate", "client");
     SimpleBeanPropertyFilter userFilter = SimpleBeanPropertyFilter.filterOutAllExcept(Constant.ID,
-        Constant.FIRST_NAME, Constant.LAST_NAME);
+        "name");
     FilterProvider filters =
         new SimpleFilterProvider().addFilter("candidateFilter", candidateFilter)
             .addFilter("interviewFilter", interviewFilter).addFilter("userFilter", userFilter);
@@ -108,15 +108,15 @@ public class CompanyController {
   }
 
   @Operation(summary = "Get all matchiing companies")
-  @GetMapping("/companyList/{companyName}")
+  @GetMapping("/companyName/{companyName}")
   @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK",
-      content = @Content(mediaType = "application/json", schema = @Schema(type = "CompanyDTO",
+      content = @Content(mediaType = "application/json", schema = @Schema(type = "List<CompanyDTO>",
           example = "[{\"id\": \"string\",\"name\": \"string\"}]")))})
   public MappingJacksonValue getListOfCompany(@PathVariable("companyName") String companyName) {
     List<CompanyDTO> companyDTO = companyUtil.getListOfCompany(companyName);
     SimpleBeanPropertyFilter companyFilter =
         SimpleBeanPropertyFilter.filterOutAllExcept(Constant.ID, "name");
-    FilterProvider filters = new SimpleFilterProvider().addFilter("companyFilter", companyFilter);
+    FilterProvider filters = new SimpleFilterProvider().addFilter(Constant.COMPANY_FILTER, companyFilter);
     MappingJacksonValue mapping = new MappingJacksonValue(companyDTO);
     mapping.setFilters(filters);
 
