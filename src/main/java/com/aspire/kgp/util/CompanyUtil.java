@@ -100,7 +100,7 @@ public class CompanyUtil {
       convertDateFormat(candidateDTO);
     }
     if (candidateContactDTO.getAthenaStatus() != null
-        && candidateContactDTO.getAthenaStatus().equalsIgnoreCase("d")
+        && candidateContactDTO.getAthenaStatus().equalsIgnoreCase(Constant.COMPLETED)
         && candidateDTO != null) {
       candidateDTO.setAthenaCompleted(Boolean.TRUE);
     }
