@@ -4,14 +4,10 @@ import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-
-import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -25,7 +21,6 @@ import org.springframework.stereotype.Component;
 
 import com.aspire.kgp.constant.Constant;
 import com.aspire.kgp.dto.CandidateDTO;
-import com.aspire.kgp.dto.DocumentDTO;
 import com.aspire.kgp.dto.UserDTO;
 import com.aspire.kgp.exception.APIException;
 import com.aspire.kgp.exception.NotFoundException;
@@ -34,7 +29,6 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.google.gson.JsonSyntaxException;
 
 @Component
 public class CandidateUtil {
@@ -66,29 +60,6 @@ public class CandidateUtil {
     return candidateDTO;
   }
 
-  public final DocumentDTO getCandidateResumes(String candidateId) {
-    List<DocumentDTO> documentList = null;
-    String apiResponse =
-        restUtil.newGetMethod(Constant.RESUME_URL.replace("{candidateId}", candidateId));
-    try {
-      documentList = new Gson().fromJson(apiResponse, new TypeToken<List<DocumentDTO>>() {
-
-        /**
-         * 
-         */
-        private static final long serialVersionUID = 1L;
-      }.getType());
-    } catch (JsonSyntaxException e) {
-      log.error("Oops! error while fetching document list details");
-      documentList = Collections.emptyList();
-    }
-    log.info("End of getDocuments method");
-    if (documentList.isEmpty()) {
-      return null;
-    }
-    return documentList.get(0);
-  }
-
   private List<UserDTO> addJsonArraytoList(JsonObject json, String listfor) {
     JsonArray partnerArray =
         json.getAsJsonObject("candidate").getAsJsonObject("search").getAsJsonArray(listfor);
@@ -102,27 +73,6 @@ public class CandidateUtil {
           private static final long serialVersionUID = 1L;
         }.getType())));
     return partnerList;
-  }
-
-  public void downloadDocument(String documentName, String attachmentId,
-      HttpServletResponse response) {
-    try {
-      OutputStream os = response.getOutputStream();
-      response.setContentType("application/octet-stream; charset=ISO-8859-1");
-
-      ContentDisposition contentDisposition = ContentDisposition.builder("inline")
-          .filename(documentName.replaceAll("[?:,!%#\"]", "")).build();
-
-      response.setHeader(HttpHeaders.CONTENT_DISPOSITION, contentDisposition.toString());
-      // write document to output stream get data from API
-      restUtil.newGetMethod(Constant.DOWNLOAD_ATTACHMENT.replace("{attachmentId}", attachmentId),
-          os);
-      os.flush();
-      os.close();
-    } catch (IOException e) {
-      throw new APIException("error in download document");
-    }
-
   }
 
   public ResponseEntity<byte[]> getAthenaReport(String pageSize, String locale, String contactId) {
