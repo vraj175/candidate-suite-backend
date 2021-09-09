@@ -106,4 +106,20 @@ public class CompanyController {
 
     return mapping;
   }
+
+  @Operation(summary = "Get all matchiing companies")
+  @GetMapping("/companyList/{companyName}")
+  @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK",
+      content = @Content(mediaType = "application/json", schema = @Schema(type = "CompanyDTO",
+          example = "[{\"id\": \"string\",\"name\": \"string\"}]")))})
+  public MappingJacksonValue getListOfCompany(@PathVariable("companyName") String companyName) {
+    List<CompanyDTO> companyDTO = companyUtil.getListOfCompany(companyName);
+    SimpleBeanPropertyFilter companyFilter =
+        SimpleBeanPropertyFilter.filterOutAllExcept(Constant.ID, "name");
+    FilterProvider filters = new SimpleFilterProvider().addFilter("companyFilter", companyFilter);
+    MappingJacksonValue mapping = new MappingJacksonValue(companyDTO);
+    mapping.setFilters(filters);
+
+    return mapping;
+  }
 }

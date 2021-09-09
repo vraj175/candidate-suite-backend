@@ -1,9 +1,11 @@
 package com.aspire.kgp.util;
 
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.util.Collections;
 import java.util.List;
 
@@ -19,6 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.aspire.kgp.constant.Constant;
 import com.aspire.kgp.dto.ContactDTO;
+import com.aspire.kgp.dto.ContactReferencesDTO;
 import com.aspire.kgp.dto.DocumentDTO;
 import com.aspire.kgp.exception.APIException;
 import com.google.common.reflect.TypeToken;
@@ -36,7 +39,7 @@ public class ContactUtil {
 
   public final ContactDTO getContactDetails(String contactId) {
     String apiResponse =
-        restUtil.newGetMethod(Constant.CONTACT_URL.replace("{contactId}", contactId));
+        restUtil.newGetMethod(Constant.CONTACT_URL.replace(Constant.CONTACT_ID, contactId));
 
     try {
       return new Gson().fromJson(apiResponse, new TypeToken<ContactDTO>() {
@@ -53,7 +56,12 @@ public class ContactUtil {
 
   public final byte[] getContactImage(String contactId) {
     return restUtil
-        .newGetImage(Constant.CONTACT_PROFILE_IMAGE_URL.replace("{CONTACTID}", contactId));
+        .newGetImage(Constant.CONTACT_PROFILE_IMAGE_URL.replace(Constant.CONTACT_ID, contactId));
+  }
+
+  public final String updateContactDetails(String contactId, String contactData)
+      throws UnsupportedEncodingException {
+    return restUtil.putMethod(Constant.CONTACT_URL.replace("{contactId}", contactId), contactData);
   }
 
   public String uploadCandidateResume(MultipartFile multipartFile, String contactId) {
@@ -78,8 +86,8 @@ public class ContactUtil {
       throw new APIException(Constant.FILE_UPLOAD_ERROR);
     }
 
-    String response = restUtil.postMethod(Constant.RESUME_URL.replace("{CONTACTID}", contactId),
-        paramJSON.toString(), file);
+    String response = restUtil.postMethod(
+        Constant.RESUME_URL.replace(Constant.CONTACT_ID, contactId), paramJSON.toString(), file);
     log.info(response);
     JsonObject responseJson = new Gson().fromJson(response, JsonObject.class);
 
@@ -91,13 +99,13 @@ public class ContactUtil {
       e.printStackTrace();
       throw new APIException(Constant.FILE_UPLOAD_ERROR);
     }
-    return Constant.FILE_UPLOADED_SUCCESSFULLY;
+    return Constant.FILE_UPLOAD_ERROR;
   }
 
   public final DocumentDTO getContactResumes(String contactId) {
     List<DocumentDTO> documentList = null;
     String apiResponse =
-        restUtil.newGetMethod(Constant.RESUME_URL.replace("{CONTACTID}", contactId));
+        restUtil.newGetMethod(Constant.RESUME_URL.replace(Constant.CONTACT_ID, contactId));
     try {
       documentList = new Gson().fromJson(apiResponse, new TypeToken<List<DocumentDTO>>() {
 
@@ -137,4 +145,20 @@ public class ContactUtil {
     }
   }
 
+  public final List<ContactReferencesDTO> getListOfReferences(String contactId) {
+    String apiResponse =
+        restUtil.newGetMethod(Constant.CONTACT_REFERENCE_URL.replace("{CONTACTID}", contactId));
+
+    try {
+      return new Gson().fromJson(apiResponse, new TypeToken<List<ContactReferencesDTO>>() {
+
+        /**
+         * 
+         */
+        private static final long serialVersionUID = 1L;
+      }.getType());
+    } catch (JsonSyntaxException e) {
+      throw new APIException(Constant.JSON_PROCESSING_EXCEPTION + e.getMessage());
+    }
+  }
 }

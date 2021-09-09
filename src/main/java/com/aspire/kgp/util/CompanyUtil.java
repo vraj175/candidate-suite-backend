@@ -131,4 +131,20 @@ public class CompanyUtil {
       }
     return candidateDTO;
   }
+
+  public List<CompanyDTO> getListOfCompany(String companyName) {
+    String apiResponse =
+        restUtil.newGetMethod(Constant.GET_COMPANY_LIST_URL.replace("{COMPANYNAME}", companyName));
+    try {
+      return new Gson().fromJson(apiResponse, new TypeToken<List<CompanyDTO>>() {
+
+        /**
+         * 
+         */
+        private static final long serialVersionUID = 1L;
+      }.getType());
+    } catch (JsonSyntaxException e) {
+      throw new APIException(Constant.JSON_PROCESSING_EXCEPTION + e.getMessage());
+    }
+  }
 }
