@@ -28,15 +28,6 @@ public class UserDTO {
   private String mobilePhone;
   @SerializedName("work_phone")
   private String workPhone;
-  private String name;
-
-  public String getName() {
-    return name;
-  }
-
-  public void setName(String name) {
-    this.name = name;
-  }
 
   public String getMobilePhone() {
     return mobilePhone;
