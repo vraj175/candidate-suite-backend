@@ -12,6 +12,7 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -36,6 +37,9 @@ public class CandidateUtil {
 
   @Autowired
   RestUtil restUtil;
+
+  @Value("${clientsuite.url}")
+  private String clientsuiteUrl;
 
   public final CandidateDTO getCandidateDetails(String candidateId) {
     String apiResponse =
@@ -82,7 +86,7 @@ public class CandidateUtil {
     String dispositionRes = null;
     int responseCode = 0;
     try {
-      URL url = new URL(Constant.ATHENA_REPORT_URL.replace("{pageSize}", pageSize)
+      URL url = new URL(clientsuiteUrl + Constant.ATHENA_REPORT_URL.replace("{pageSize}", pageSize)
           .replace("{locale}", locale).replace("{contactId}", contactId));
 
       HttpURLConnection httpConn = (HttpURLConnection) url.openConnection();
