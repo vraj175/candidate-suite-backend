@@ -79,7 +79,7 @@ public class Constant {
   public static final String CANDIDATE_URL = "/candidates/{candidateId}/activity";
 
   public static final String CONTACT_PROFILE_IMAGE_URL =
-      "/clientsuite/contacts/{CONTACTID}/profile-image";
+      "/clientsuite/contacts/{contactId}/profile-image";
   public static final String GET_COMPANY_LIST_URL = "/synclink/companies?name={COMPANYNAME}";
   public static final String DOWNLOAD_ATTACHMENT =
       "/clientsuite/candidate/resumes/{attachmentId}/download";
