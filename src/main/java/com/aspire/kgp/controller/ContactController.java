@@ -1,19 +1,27 @@
 package com.aspire.kgp.controller;
 
+
 import java.io.UnsupportedEncodingException;
 import java.util.List;
+
+import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.converter.json.MappingJacksonValue;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
+import com.aspire.kgp.constant.Constant;
 import com.aspire.kgp.dto.ContactDTO;
 import com.aspire.kgp.dto.ContactReferencesDTO;
+import com.aspire.kgp.dto.DocumentDTO;
 import com.aspire.kgp.util.ContactUtil;
 import com.fasterxml.jackson.databind.ser.FilterProvider;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
@@ -87,5 +95,31 @@ public class ContactController {
     mapping.setFilters(filters);
 
     return mapping;
+  }
+
+  @Operation(summary = "upload resume for contact")
+  @PostMapping("/contact/{contactId}/resumes")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", description = Constant.FILE_UPLOADED_SUCCESSFULLY)})
+  public String uploadResume(@PathVariable("contactId") String contactId,
+      @RequestParam("file") MultipartFile file) {
+    return contactUtil.uploadCandidateResume(file, contactId);
+  }
+
+  @Operation(summary = "Get contact Resumes")
+  @GetMapping(value = {"/contact/{contactId}/resumes"})
+  @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK",
+      content = @Content(mediaType = "application/json", schema = @Schema(type = "Resume",
+          example = "{ \"id\": \"string\",\"fileName\": \"string\",\"createdAt\": \"string\" }")))})
+  public DocumentDTO getResumeDetails(@PathVariable("candidateId") String candidateId) {
+    return contactUtil.getContactResumes(candidateId);
+  }
+
+  @Operation(summary = "Download Documents")
+  @GetMapping(value = {"contact/resumes/{attachmentId}/download"})
+  @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK")})
+  public void downloadDocument(@PathVariable("attachmentId") String attachmentId,
+      @RequestParam String documentName, HttpServletResponse response) {
+    contactUtil.downloadDocument(documentName, attachmentId, response);
   }
 }

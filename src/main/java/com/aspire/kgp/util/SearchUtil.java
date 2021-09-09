@@ -83,7 +83,7 @@ public class SearchUtil {
     paramJSON.add("query", query);
 
     String searchListResponse =
-        restUtil.postMethod(Constant.SEARCHES_LIST_BY_IDS, paramJSON.toString());
+        restUtil.postMethod(Constant.SEARCHES_LIST_BY_IDS, paramJSON.toString(), null);
     List<SearchDTO> searchList = getSearchListFromJsonResponse(searchListResponse, stage);
     List<CandidateDTO> candidateList = new ArrayList<>();
     for (SearchDTO search : searchList) {

@@ -94,16 +94,18 @@ public class CompanyUtil {
     } catch (JsonSyntaxException e) {
       throw new APIException(Constant.JSON_PROCESSING_EXCEPTION + e.getMessage());
     }
-    candidateDTO.setDegreeVerification(Boolean.TRUE);
-    candidateDTO.setOfferPresented(Boolean.TRUE);
+    if (candidateDTO != null) {
+      candidateDTO.setDegreeVerification(Boolean.TRUE);
+      candidateDTO.setOfferPresented(Boolean.TRUE);
+      convertDateFormat(candidateDTO);
+    }
     if (candidateContactDTO.getAthenaStatus() != null
-        && candidateContactDTO.getAthenaStatus().equalsIgnoreCase("Completed")) {
+        && candidateContactDTO.getAthenaStatus().equalsIgnoreCase(Constant.COMPLETED)
+        && candidateDTO != null) {
       candidateDTO.setAthenaCompleted(Boolean.TRUE);
-    } else {
-      candidateDTO.setAthenaCompleted(Boolean.FALSE);
     }
 
-    return convertDateFormat(candidateDTO);
+    return candidateDTO;
   }
 
   private CandidateDTO convertDateFormat(CandidateDTO candidateDTO) throws ParseException {
