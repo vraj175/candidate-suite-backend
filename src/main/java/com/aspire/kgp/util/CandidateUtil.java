@@ -177,6 +177,7 @@ public class CandidateUtil {
         os.write(buffer, 0, count);
       }
     } catch (Exception e) {
+      throw new APIException("Error While creating PDF");
     }
     return os.toByteArray();
   }
