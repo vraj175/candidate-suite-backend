@@ -1,12 +1,14 @@
 package com.aspire.kgp.util;
 
 import java.io.UnsupportedEncodingException;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.aspire.kgp.constant.Constant;
 import com.aspire.kgp.dto.ContactDTO;
+import com.aspire.kgp.dto.ContactReferencesDTO;
 import com.aspire.kgp.exception.APIException;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
@@ -45,4 +47,20 @@ public class ContactUtil {
     return restUtil.putMethod(Constant.CONTACT_URL.replace("{contactId}", contactId), contactData);
   }
 
+  public final List<ContactReferencesDTO> getListOfReferences(String contactId) {
+    String apiResponse =
+        restUtil.newGetMethod(Constant.CONTACT_REFERENCE_URL.replace("{CONTACTID}", contactId));
+
+    try {
+      return new Gson().fromJson(apiResponse, new TypeToken<List<ContactReferencesDTO>>() {
+
+        /**
+         * 
+         */
+        private static final long serialVersionUID = 1L;
+      }.getType());
+    } catch (JsonSyntaxException e) {
+      throw new APIException(Constant.JSON_PROCESSING_EXCEPTION + e.getMessage());
+    }
+  }
 }

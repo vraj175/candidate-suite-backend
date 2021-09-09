@@ -79,6 +79,7 @@ public class Constant {
 	public static final String DOWNLOAD_ATTACHMENT = "/clientsuite/candidate/resumes/{attachmentId}/download";
 	public static final String SEARCH_INFO_URL = "/searches/{SEARCHID}";
 	public static final String EDUCATION_DEGREE_PICKLIST_URL = "/picklists/educations/degrees";
+	public static final String CONTACT_REFERENCE_URL = "/contact/{CONTACTID}/references";
 	// Queries parameter
 	public static final String INVALID_JSON_ERROR = "oops ! invalid json";
 	public static final String SPACE_STRING = "[\\s]";

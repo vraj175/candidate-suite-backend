@@ -1,6 +1,7 @@
 package com.aspire.kgp.controller;
 
 import java.io.UnsupportedEncodingException;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.converter.json.MappingJacksonValue;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.aspire.kgp.dto.ContactDTO;
+import com.aspire.kgp.dto.ContactReferencesDTO;
 import com.aspire.kgp.util.ContactUtil;
 import com.fasterxml.jackson.databind.ser.FilterProvider;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
@@ -65,5 +67,25 @@ public class ContactController {
   public String updateContactDetails(@PathVariable("contactId") String contactId,
       @RequestBody String contactData) throws UnsupportedEncodingException {
     return contactUtil.updateContactDetails(contactId, contactData);
+  }
+
+  @Operation(summary = "Get List of contact references")
+  @GetMapping("/contact/{contactId}/references")
+  public MappingJacksonValue getListOfReferences(@PathVariable("contactId") String contactId) {
+    List<ContactReferencesDTO> contactReferenceDTO = contactUtil.getListOfReferences(contactId);
+    SimpleBeanPropertyFilter contactReferenceFilter =
+        SimpleBeanPropertyFilter.filterOutAllExcept("id", "searchId", "relationship", "contact");
+    SimpleBeanPropertyFilter contactFilter = SimpleBeanPropertyFilter.filterOutAllExcept(
+        "firstName", "lastName", "currentJobTitle", "mobilePhone", "company", "email", "workEmail");
+    SimpleBeanPropertyFilter companyFilter =
+        SimpleBeanPropertyFilter.filterOutAllExcept("id", "name");
+    FilterProvider filters =
+        new SimpleFilterProvider().addFilter("contactReferenceFilter", contactReferenceFilter)
+            .addFilter("contactFilter", contactFilter).addFilter("companyFilter", companyFilter);
+
+    MappingJacksonValue mapping = new MappingJacksonValue(contactReferenceDTO);
+    mapping.setFilters(filters);
+
+    return mapping;
   }
 }
