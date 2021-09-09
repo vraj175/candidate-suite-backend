@@ -56,6 +56,11 @@ class UserControllerTest {
      ResponseEntity<Object> entity= controller.inviteUser(inviteDTO, request);
      
      assertNotNull(entity);
+     
+     when(service.findByGalaxyId(anyString())).thenReturn(user);
+     entity= controller.inviteUser(inviteDTO, request);
+     
+     assertNotNull(entity);
    }
 
   @Test
