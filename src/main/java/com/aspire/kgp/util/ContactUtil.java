@@ -36,7 +36,7 @@ public class ContactUtil {
 
   public final ContactDTO getContactDetails(String contactId) {
     String apiResponse =
-        restUtil.newGetMethod(Constant.CONTACT_URL.replace("{contactId}", contactId));
+        restUtil.newGetMethod(Constant.CONTACT_URL.replace(Constant.CONTACT_ID, contactId));
 
     try {
       return new Gson().fromJson(apiResponse, new TypeToken<ContactDTO>() {
@@ -53,7 +53,7 @@ public class ContactUtil {
 
   public final byte[] getContactImage(String contactId) {
     return restUtil
-        .newGetImage(Constant.CONTACT_PROFILE_IMAGE_URL.replace("{CONTACTID}", contactId));
+        .newGetImage(Constant.CONTACT_PROFILE_IMAGE_URL.replace(Constant.CONTACT_ID, contactId));
   }
 
   public String uploadCandidateResume(MultipartFile multipartFile, String contactId) {
@@ -78,7 +78,7 @@ public class ContactUtil {
       throw new APIException(Constant.FILE_UPLOAD_ERROR);
     }
 
-    String response = restUtil.postMethod(Constant.RESUME_URL.replace("{CONTACTID}", contactId),
+    String response = restUtil.postMethod(Constant.RESUME_URL.replace(Constant.CONTACT_ID, contactId),
         paramJSON.toString(), file);
     log.info(response);
     JsonObject responseJson = new Gson().fromJson(response, JsonObject.class);
@@ -97,7 +97,7 @@ public class ContactUtil {
   public final DocumentDTO getContactResumes(String contactId) {
     List<DocumentDTO> documentList = null;
     String apiResponse =
-        restUtil.newGetMethod(Constant.RESUME_URL.replace("{CONTACTID}", contactId));
+        restUtil.newGetMethod(Constant.RESUME_URL.replace(Constant.CONTACT_ID, contactId));
     try {
       documentList = new Gson().fromJson(apiResponse, new TypeToken<List<DocumentDTO>>() {
 

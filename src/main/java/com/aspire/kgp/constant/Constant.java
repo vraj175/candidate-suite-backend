@@ -76,10 +76,11 @@ public class Constant {
 	public static final String CANDIDATE_LIST_URL = "/searches/{searchId}/candidates";
 	public static final String POSITION_PROFILE_URL = "/searches/{searchId}/sfpa";
 	public static final String CANDIDATE_URL = "/candidates/{candidateId}/activity";
-	public static final String CONTACT_PROFILE_IMAGE_URL = "/clientsuite/contacts/{CONTACTID}/profile-image";
+	public static final String CONTACT_PROFILE_IMAGE_URL = "/clientsuite/contacts/{contactId}/profile-image";
 	public static final String DOWNLOAD_ATTACHMENT = "/clientsuite/candidate/resumes/{attachmentId}/download";
 	public static final String SEARCH_INFO_URL = "/searches/{SEARCHID}";
-	public static final String RESUME_URL = "/contact/{CONTACTID}/resumes";
+	public static final String RESUME_URL = "/contact/contactId}/resumes";
+	public static final String CONTACT_ID = "{contactId}";
 	// Queries parameter
 	public static final String INVALID_JSON_ERROR = "oops ! invalid json";
 	public static final String SPACE_STRING = "[\\s]";

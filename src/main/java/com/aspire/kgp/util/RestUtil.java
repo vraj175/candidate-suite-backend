@@ -94,14 +94,14 @@ public class RestUtil {
     try {
       log.info("Request time: " + new Date());
       new HttpClient().executeMethod(get);
-      log.info("Request Code : " + get.getStatusCode());
+      log.info(get.getStatusCode());
       response = get.getResponseBodyAsString();
       if (!(apiUrl.contains("/profile-image"))) {
         log.info("Response : " + response);
       }
       log.info("Response time: " + new Date());
     } catch (IOException e) {
-      log.error("error while executing query " + e);
+      log.error("error " + e);
     } finally {
       get.releaseConnection();
     }
@@ -170,7 +170,7 @@ public class RestUtil {
     try {
       log.info("Request time: " + new Date());
       new HttpClient().executeMethod(get);
-      log.info("Request Code : " + get.getStatusCode());
+      log.info(get.getStatusCode());
       response = get.getResponseBodyAsString();
 
       log.info("Response time: " + new Date());
@@ -365,7 +365,7 @@ public class RestUtil {
     byte[] response = null;
     try {
       new HttpClient().executeMethod(get);
-      log.info("Request Code : " + get.getStatusCode());
+      log.info(get.getStatusCode());
       response = get.getResponseBody();
       log.debug("Response : " + response);
     } catch (IOException e) {
