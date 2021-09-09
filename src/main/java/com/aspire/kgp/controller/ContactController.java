@@ -114,8 +114,8 @@ public class ContactController {
   @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK",
       content = @Content(mediaType = "application/json", schema = @Schema(type = "Resume",
           example = "{ \"id\": \"string\",\"fileName\": \"string\",\"createdAt\": \"string\" }")))})
-  public DocumentDTO getResumeDetails(@PathVariable("candidateId") String candidateId) {
-    return contactUtil.getContactResumes(candidateId);
+  public DocumentDTO getResumeDetails(@PathVariable("contactId") String contactId) {
+    return contactUtil.getContactResumes(contactId);
   }
 
   @Operation(summary = "Download Documents")
