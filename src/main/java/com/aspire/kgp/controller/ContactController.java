@@ -4,9 +4,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.converter.json.MappingJacksonValue;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
+import com.aspire.kgp.constant.Constant;
 import com.aspire.kgp.dto.ContactDTO;
 import com.aspire.kgp.util.ContactUtil;
 import com.fasterxml.jackson.databind.ser.FilterProvider;
@@ -53,5 +57,13 @@ public class ContactController {
   @GetMapping("/contact/{contactId}/profile-image")
   public byte[] getContactImage(@PathVariable("contactId") String contactId) {
     return contactUtil.getContactImage(contactId);
+  }
+  
+  @Operation(summary = "upload resume for contact")
+  @PostMapping("/contact/{contactId}/resumes")
+  @ApiResponses(value = {@ApiResponse(responseCode = "200", description = Constant.FILE_UPLOADED_SUCCESSFULLY)})
+  public String uploadResume(@PathVariable("contactId") String contactId,
+      @RequestParam("file") MultipartFile file) {
+    return contactUtil.uploadCandidateResume(file, contactId);
   }
 }
