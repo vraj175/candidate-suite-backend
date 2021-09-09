@@ -11,6 +11,7 @@ public class Constant {
 	public static final String TIMESTAMP = "timestamp";
 	public static final String STATUS = "status";
 	public static final String ERROR = "error";
+	public static final String COMPLETED = "Completed";
 	public static final String MESSAGE = "message";
 	public static final String SQL_EXCEPTION = "SQL Exception :";
 	public static final String MISSING_API_KEY = "Missing API key.";
@@ -76,10 +77,11 @@ public class Constant {
 	public static final String CANDIDATE_LIST_URL = "/searches/{searchId}/candidates";
 	public static final String POSITION_PROFILE_URL = "/searches/{searchId}/sfpa";
 	public static final String CANDIDATE_URL = "/candidates/{candidateId}/activity";
-	public static final String CONTACT_PROFILE_IMAGE_URL = "/clientsuite/contacts/{CONTACTID}/profile-image";
+	public static final String CONTACT_PROFILE_IMAGE_URL = "/clientsuite/contacts/{contactId}/profile-image";
 	public static final String DOWNLOAD_ATTACHMENT = "/clientsuite/candidate/resumes/{attachmentId}/download";
 	public static final String SEARCH_INFO_URL = "/searches/{SEARCHID}";
-	public static final String RESUME_URL = "/contact/{CONTACTID}/resumes";
+	public static final String RESUME_URL = "/contact/contactId}/resumes";
+	public static final String CONTACT_ID = "{contactId}";
 	// Queries parameter
 	public static final String INVALID_JSON_ERROR = "oops ! invalid json";
 	public static final String SPACE_STRING = "[\\s]";
