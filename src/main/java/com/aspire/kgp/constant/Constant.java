@@ -5,6 +5,7 @@ public class Constant {
 	private Constant() {
 	}
 
+	public static final String UTF_8 = "UTF-8";
 	public static final String ACCESS_TOKEN_X_TOKEN = "X-Token";
 	public static final String X_API_KEY = "X-API-Key";
 	public static final String TIMESTAMP = "timestamp";
@@ -52,12 +53,14 @@ public class Constant {
 	public static final String SENDER_NAME = "Candidate Suite";
 	public static final String INVITE_SUBJECT = "Welcome to Kingsley Gate Partners Portal!";
 	public static final String FORGOT_PASSWORD_SUBJECT = "Forgot Password";
+	public static final String FILE_UPLOADED_SUCCESSFULLY = "File uploaded successfully";
 
 	public static final String CLIENT_SUITE_PROD_SERVER_URL = "https://clients.kingsleygate.com";
 	public static final String PARSING_ERROR = "Exception while parsing";
 	public static final String ILLEGAL_ARGUMENT_EXCEPTION = "Illegal Argument Exception";
 	public static final String JSON_PROCESSING_EXCEPTION = "JsonProcessingException : ";
 	public static final String INVALID_CANDIDATE_ID = "Invalid Candidate Id";
+	public static final String FILE_UPLOAD_ERROR = "Error in upload file";
 
 	public static final String EMPTY_STRING = "";
 	public static final String ASC = "ASC";
@@ -77,6 +80,7 @@ public class Constant {
 	public static final String RESUME_URL = "/clientsuite/candidates/{candidateId}/resumes";
 	public static final String DOWNLOAD_ATTACHMENT = "/clientsuite/candidate/resumes/{attachmentId}/download";
 	public static final String SEARCH_INFO_URL = "/searches/{SEARCHID}";
+	public static final String UPLOAD_RESUME_URL = "/contact/{CONTACTID}/resumes";
 	// Queries parameter
 	public static final String INVALID_JSON_ERROR = "oops ! invalid json";
 	public static final String SPACE_STRING = "[\\s]";
@@ -155,4 +159,7 @@ public class Constant {
         "To authentication user select grant_type = password and enter username, password parameters.\r\n"
             + "\r\n"
             + "To get a new authorization token after expiration select grant_type = refereshtoken and enter the current valid refresh token.";
+
+    public static final String ATHENA_REPORT_URL =
+        "https://bsuite.kingsleygate.com/delegate/NewReportServlet?params={%22pageSize%22:%22{pageSize}%22,%22locale%22:%22{locale}%22,%22contactId%22:%22{contactId}%22,%22newReportAction%22:%22AthenaIndidualConsultingReport%22}";
 }

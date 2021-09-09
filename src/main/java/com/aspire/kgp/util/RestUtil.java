@@ -1,5 +1,6 @@
 package com.aspire.kgp.util;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -15,6 +16,10 @@ import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.StringRequestEntity;
+import org.apache.commons.httpclient.methods.multipart.FilePart;
+import org.apache.commons.httpclient.methods.multipart.MultipartRequestEntity;
+import org.apache.commons.httpclient.methods.multipart.Part;
+import org.apache.commons.httpclient.methods.multipart.PartBase;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -55,6 +60,26 @@ public class RestUtil {
   private String clientId;
   @Value("${cognito.user.pool.id}")
   private String userPullId;
+
+  private static class JsonPart extends PartBase {
+
+    private byte[] bytes;
+
+    public JsonPart(String name, String json) {
+      super(name, "application/json", Constant.UTF_8, null);
+      this.bytes = json.getBytes(StandardCharsets.UTF_8);
+    }
+
+    @Override
+    protected void sendData(OutputStream os) throws IOException {
+      os.write(bytes);
+    }
+
+    @Override
+    protected long lengthOfData() throws IOException {
+      return bytes.length;
+    }
+  }
 
   public String newGetMethod(String apiUrl) {
     log.info(baseApiUrl + apiUrl.replaceAll(Constant.SPACE_STRING, "%20"));
@@ -160,7 +185,7 @@ public class RestUtil {
   /*
    * Post Method
    */
-  public String postMethod(String apiUrl, String paramJSON) {
+  public String postMethod(String apiUrl, String paramJSON, File file) {
     log.debug("In postMethod method");
     /* Configure post method */
     PostMethod post = new PostMethod(baseApiUrl + apiUrl.replaceAll(Constant.SPACE_STRING, "%20"));
@@ -170,14 +195,20 @@ public class RestUtil {
     post.setRequestHeader(Constant.AUTHORIZATION,
         validateCognitoWithAuthenticationToken(defaultAuth).getAccessToken());
 
-    return returnPostString(post, paramJSON);
+    return returnPostString(post, paramJSON, file);
   }
 
-  private String returnPostString(PostMethod post, String paramJSON) {
+  private String returnPostString(PostMethod post, String paramJSON, File file) {
     String responseString = null;
     try {
-      StringRequestEntity body = new StringRequestEntity(paramJSON, "application/json", "UTF-8");
-      post.setRequestEntity(body);
+      if (file != null) {
+        Part[] parts = new Part[] {new JsonPart("Json", paramJSON), new FilePart("Body", file)};
+        post.setRequestEntity(new MultipartRequestEntity(parts, post.getParams()));
+      } else {
+        StringRequestEntity body =
+            new StringRequestEntity(paramJSON, "application/json", Constant.UTF_8);
+        post.setRequestEntity(body);
+      }
 
       new HttpClient().executeMethod(post);
       if (post.getStatusCode() == HttpStatus.SC_OK) {
