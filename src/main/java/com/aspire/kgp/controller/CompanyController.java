@@ -108,9 +108,9 @@ public class CompanyController {
   }
 
   @Operation(summary = "Get all matchiing companies")
-  @GetMapping("/companyList/{companyName}")
+  @GetMapping("/companyName/{companyName}")
   @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK",
-      content = @Content(mediaType = "application/json", schema = @Schema(type = "CompanyDTO",
+      content = @Content(mediaType = "application/json", schema = @Schema(type = "List<CompanyDTO>",
           example = "[{\"id\": \"string\",\"name\": \"string\"}]")))})
   public MappingJacksonValue getListOfCompany(@PathVariable("companyName") String companyName) {
     List<CompanyDTO> companyDTO = companyUtil.getListOfCompany(companyName);
