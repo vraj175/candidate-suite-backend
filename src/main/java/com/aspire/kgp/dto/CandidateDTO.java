@@ -25,6 +25,15 @@ public class CandidateDTO {
   boolean athenaCompleted;
   @SerializedName("athena_status")
   private String athenaStatus;
+  private String contactId;
+
+  public String getContactId() {
+    return contactId;
+  }
+
+  public void setContactId(String contactId) {
+    this.contactId = contactId;
+  }
 
   public String getAthenaStatus() {
     return athenaStatus;
