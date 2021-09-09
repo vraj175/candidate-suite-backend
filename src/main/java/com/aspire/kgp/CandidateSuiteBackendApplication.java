@@ -59,7 +59,7 @@ public class CandidateSuiteBackendApplication {
         .pathsToMatch("/api/v1.0/candidates/**", "/api/v1.0/contact/**", "/api/v1.0/searches/**",
             "/api/v1.0/companies/**", "/api/v1.0/company/**", "/api/v1.0/companyInfo/**",
             "/api/v1.0/languages/**", "/api/v1.0/roles/**", "/api/v1.0/profile/**",
-            "/api/v1.0/user/**", "/api/v1.0/video/**")
+            "/api/v1.0/user/**", "/api/v1.0/video/**","/api/v1.0/picklists/**")
         .addOpenApiCustomiser(defaultAPIConfig()).build();
   }
 

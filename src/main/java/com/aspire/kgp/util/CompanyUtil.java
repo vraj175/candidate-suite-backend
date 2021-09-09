@@ -102,6 +102,7 @@ public class CompanyUtil {
     if (candidateContactDTO.getAthenaStatus() != null
         && candidateContactDTO.getAthenaStatus().equalsIgnoreCase(Constant.COMPLETED)
         && candidateDTO != null) {
+      candidateDTO.setContactId(candidateContactDTO.getId());
       candidateDTO.setAthenaCompleted(Boolean.TRUE);
     }
 
@@ -129,5 +130,21 @@ public class CompanyUtil {
               .setInterviewDate(CommonUtil.dateFormatter(interviewDetails.getInterviewDate()));
       }
     return candidateDTO;
+  }
+
+  public List<CompanyDTO> getListOfCompany(String companyName) {
+    String apiResponse =
+        restUtil.newGetMethod(Constant.GET_COMPANY_LIST_URL.replace("{COMPANYNAME}", companyName));
+    try {
+      return new Gson().fromJson(apiResponse, new TypeToken<List<CompanyDTO>>() {
+
+        /**
+         * 
+         */
+        private static final long serialVersionUID = 1L;
+      }.getType());
+    } catch (JsonSyntaxException e) {
+      throw new APIException(Constant.JSON_PROCESSING_EXCEPTION + e.getMessage());
+    }
   }
 }
