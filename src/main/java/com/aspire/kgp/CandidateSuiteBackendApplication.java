@@ -67,7 +67,12 @@ public class CandidateSuiteBackendApplication {
   public GroupedOpenApi publicAuthentication() {
     return GroupedOpenApi.builder().group(Constant.PUBLIC_GROUP_NAME)
         .pathsToMatch(Constant.BASE_API_URL + Constant.PUBLIC_API_URL + "/**")
-        .addOpenApiCustomiser(publicAPIConfig()).build();
+        .addOpenApiCustomiser(publicAPIConfig()).addOpenApiCustomiser(buildV1OpenAPI()).build();
+  }
+
+
+  public OpenApiCustomiser buildV1OpenAPI() {
+    return openApi -> openApi.info(openApi.getInfo().version("v1.0"));
   }
 
   @Bean
@@ -91,11 +96,11 @@ public class CandidateSuiteBackendApplication {
   }
 
   private OpenApiCustomiser publicAPIConfig() {
-    return openApi -> openApi
-        .components(new Components().addSecuritySchemes(Constant.API_KEY,
-            new SecurityScheme().type(SecurityScheme.Type.APIKEY).in(SecurityScheme.In.HEADER)
-                .name(Constant.API_KEY)))
-        .addSecurityItem(new SecurityRequirement().addList(Constant.API_KEY));
+    return openApi -> {
+      openApi.getComponents().addSecuritySchemes(Constant.API_KEY, new SecurityScheme()
+          .type(SecurityScheme.Type.APIKEY).in(SecurityScheme.In.HEADER).name(Constant.API_KEY));
+      openApi.addSecurityItem(new SecurityRequirement().addList(Constant.API_KEY));
+    };
   }
 
   private OpenApiCustomiser userAuthenticationAPIConfig() {
