@@ -113,15 +113,15 @@ public class CompanyUtil {
     if (candidateDTO.getKgpInterviewDate1() != null
         && !candidateDTO.getKgpInterviewDate1().isEmpty())
       candidateDTO
-          .setKgpInterviewDate1(CommonUtil.dateFormatter(candidateDTO.getKgpInterviewDate1()));
+          .setKgpInterviewDate1(candidateDTO.getKgpInterviewDate1());
     if (candidateDTO.getKgpInterviewDate2() != null
         && !candidateDTO.getKgpInterviewDate2().isEmpty())
       candidateDTO
-          .setKgpInterviewDate2(CommonUtil.dateFormatter(candidateDTO.getKgpInterviewDate2()));
+          .setKgpInterviewDate2(candidateDTO.getKgpInterviewDate2());
     if (candidateDTO.getKgpInterviewDate3() != null
         && !candidateDTO.getKgpInterviewDate3().isEmpty())
       candidateDTO
-          .setKgpInterviewDate3(CommonUtil.dateFormatter(candidateDTO.getKgpInterviewDate3()));
+          .setKgpInterviewDate3(candidateDTO.getKgpInterviewDate3());
     if (candidateDTO.getInterviews() != null && !candidateDTO.getInterviews().isEmpty())
       for (InterviewDTO interviewDetails : candidateDTO.getInterviews()) {
         if (interviewDetails.getInterviewDate() != null
