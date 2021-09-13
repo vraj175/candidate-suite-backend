@@ -1,5 +1,6 @@
 package com.aspire.kgp.dto;
 
+import com.aspire.kgp.util.CommonUtil;
 import com.fasterxml.jackson.annotation.JsonFilter;
 import com.google.gson.annotations.SerializedName;
 
@@ -46,7 +47,7 @@ public class InterviewDTO {
   }
 
   public String getInterviewDate() {
-    return interviewDate;
+    return CommonUtil.removeTime(interviewDate);
   }
 
   public void setInterviewDate(String interviewDate) {
