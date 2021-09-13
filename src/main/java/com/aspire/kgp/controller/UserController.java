@@ -136,7 +136,7 @@ public class UserController {
       body.put(Constant.MESSAGE, "User Password reset successfully.");
       return new ResponseEntity<>(body, HttpStatus.OK);
     }
-    throw new APIException("Something went wront");
+    throw new APIException("Something went wrong");
   }
 
   @Operation(summary = "Verify recaptcha response from google")
