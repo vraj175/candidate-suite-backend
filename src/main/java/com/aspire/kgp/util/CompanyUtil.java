@@ -97,7 +97,7 @@ public class CompanyUtil {
     if (candidateDTO != null) {
       candidateDTO.setDegreeVerification(Boolean.TRUE);
       candidateDTO.setOfferPresented(Boolean.TRUE);
-      convertDateFormat(candidateDTO);
+      mergeName(candidateDTO);
     }
     if (candidateContactDTO.getAthenaStatus() != null
         && candidateContactDTO.getAthenaStatus().equalsIgnoreCase(Constant.COMPLETED)
@@ -109,25 +109,13 @@ public class CompanyUtil {
     return candidateDTO;
   }
 
-  private CandidateDTO convertDateFormat(CandidateDTO candidateDTO) throws ParseException {
-    if (candidateDTO.getKgpInterviewDate1() != null
-        && !candidateDTO.getKgpInterviewDate1().isEmpty())
-      candidateDTO
-          .setKgpInterviewDate1(candidateDTO.getKgpInterviewDate1());
-    if (candidateDTO.getKgpInterviewDate2() != null
-        && !candidateDTO.getKgpInterviewDate2().isEmpty())
-      candidateDTO
-          .setKgpInterviewDate2(candidateDTO.getKgpInterviewDate2());
-    if (candidateDTO.getKgpInterviewDate3() != null
-        && !candidateDTO.getKgpInterviewDate3().isEmpty())
-      candidateDTO
-          .setKgpInterviewDate3(candidateDTO.getKgpInterviewDate3());
+
+  private CandidateDTO mergeName(CandidateDTO candidateDTO) {
     if (candidateDTO.getInterviews() != null && !candidateDTO.getInterviews().isEmpty())
       for (InterviewDTO interviewDetails : candidateDTO.getInterviews()) {
-        if (interviewDetails.getInterviewDate() != null
-            && !interviewDetails.getInterviewDate().isEmpty())
-          interviewDetails
-              .setInterviewDate(CommonUtil.dateFormatter(interviewDetails.getInterviewDate()));
+        if (interviewDetails.getClient() != null)
+          interviewDetails.getClient().setName(interviewDetails.getClient().getFirstName() + " "
+              + interviewDetails.getClient().getLastName());
       }
     return candidateDTO;
   }
