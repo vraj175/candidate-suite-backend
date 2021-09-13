@@ -90,6 +90,7 @@ public class CustomTestData {
     user.setWorkEmail(Constant.TEST);
     user.setEmail(Constant.TEST);
     user.setRole(Constant.TEST);
+    user.setTitle(Constant.TEST);
     user.setToken(Constant.TEST);
     user.setCountry(Constant.TEST);
     user.setLinkedinUrl(Constant.TEST);

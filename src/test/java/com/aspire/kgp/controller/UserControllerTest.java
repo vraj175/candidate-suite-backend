@@ -125,6 +125,8 @@ class UserControllerTest {
     assertEquals(userDTO.getWorkPhone(), response.getWorkPhone());
     assertEquals(userDTO.getWorkEmail(), response.getWorkEmail());
     assertEquals(userDTO.getRole(), response.getRole());
+    assertEquals(userDTO.getToken(), response.getToken());
+    assertEquals(userDTO.getTitle(), response.getTitle());
     assertEquals(userDTO.getCountry(), response.getCountry());
     assertEquals(userDTO.getLinkedinUrl(), response.getLinkedinUrl());
     assertEquals(userDTO.getBio(), response.getBio());
