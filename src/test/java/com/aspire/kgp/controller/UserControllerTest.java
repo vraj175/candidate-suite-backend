@@ -132,4 +132,17 @@ class UserControllerTest {
     assertEquals(userDTO.getBio(), response.getBio());
     assertEquals(userDTO.isPasswordReset(), response.isPasswordReset());
   }
+  
+  @Test
+  void testGetUserProfile_APIException() {
+    MockHttpServletRequest request = CustomTestData.getRequest();
+    User user = CustomTestData.getUser();
+    request.setAttribute("user", user);
+    
+    UserDTO userDTO = new UserDTO();
+    when(service.getContactDetails(anyString())).thenReturn(userDTO);
+    
+    Exception e = assertThrows(APIException.class, () -> controller.getUserProfile(request));
+    assertEquals("Something went wrong to fetch the user data", e.getMessage());
+  }  
 }
