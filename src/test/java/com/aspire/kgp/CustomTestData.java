@@ -134,6 +134,12 @@ public class CustomTestData {
     return userSearch;
   }
   
+  public static List<UserSearch> getUserSearches() {
+    List<UserSearch> userSearches = new ArrayList<>();
+    userSearches.add(getUserSearch());
+    return userSearches;
+  }
+  
   public static ResetPasswordDTO getResetPasswordDTO() {
     ResetPasswordDTO resetPasswordDTO = new ResetPasswordDTO();
     resetPasswordDTO.setEmail(Constant.TEST);
