@@ -84,6 +84,7 @@ public class CustomTestData {
   public static UserDTO getUserDTO() {
     UserDTO user = new UserDTO();
     user.setId(Constant.TEST);
+    user.setName(Constant.TEST);
     user.setFirstName(Constant.TEST);
     user.setLastName(Constant.TEST);
     user.setWorkEmail(Constant.TEST);

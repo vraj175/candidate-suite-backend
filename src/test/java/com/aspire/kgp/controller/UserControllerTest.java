@@ -25,6 +25,8 @@ import com.aspire.kgp.exception.APIException;
 import com.aspire.kgp.exception.NotFoundException;
 import com.aspire.kgp.model.User;
 import com.aspire.kgp.service.UserService;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 
 class UserControllerTest {
 
@@ -39,31 +41,31 @@ class UserControllerTest {
     MockitoAnnotations.openMocks(this);
   }
 
-   @Test
-   void testInviteUser() {
-     MockHttpServletRequest request = CustomTestData.getRequest();
+  @Test
+  void testInviteUser() {
+    MockHttpServletRequest request = CustomTestData.getRequest();
 
-     when(service.findByGalaxyId(anyString())).thenReturn(null);
-     UserDTO userDTO = CustomTestData.getUserDTO();
-     when(service.getGalaxyUserDetails(anyString())).thenReturn(userDTO);
+    when(service.findByGalaxyId(anyString())).thenReturn(null);
+    UserDTO userDTO = CustomTestData.getUserDTO();
+    when(service.getGalaxyUserDetails(anyString())).thenReturn(userDTO);
 
-     User user = CustomTestData.getUser();
-     when(service.saveOrUpdatePartner(anyString(), anyString(), anyString(), anyBoolean()))
-         .thenReturn(user);
+    User user = CustomTestData.getUser();
+    when(service.saveOrUpdatePartner(anyString(), anyString(), anyString(), anyBoolean()))
+        .thenReturn(user);
 
-     when(service.inviteUser(anyString(), anyString(), anyString(), any(), any(), anyBoolean(),
-         any())).thenReturn(Boolean.TRUE);
+    when(service.inviteUser(anyString(), anyString(), anyString(), any(), any(), anyBoolean(),
+        any())).thenReturn(Boolean.TRUE);
 
-     InviteDTO inviteDTO = CustomTestData.getInviteDTO();
-     ResponseEntity<Object> entity= controller.inviteUser(inviteDTO, request);
-     
-     assertNotNull(entity);
-     
-     when(service.findByGalaxyId(anyString())).thenReturn(user);
-     entity= controller.inviteUser(inviteDTO, request);
-     
-     assertNotNull(entity);
-   }
+    InviteDTO inviteDTO = CustomTestData.getInviteDTO();
+    ResponseEntity<Object> entity = controller.inviteUser(inviteDTO, request);
+
+    assertNotNull(entity);
+
+    when(service.findByGalaxyId(anyString())).thenReturn(user);
+    entity = controller.inviteUser(inviteDTO, request);
+
+    assertNotNull(entity);
+  }
 
   @Test
   void testInviteUser_NotFoundException() {
@@ -97,25 +99,35 @@ class UserControllerTest {
 
     InviteDTO inviteDTO = CustomTestData.getInviteDTO();
 
-    Exception e =
-        assertThrows(APIException.class, () -> controller.inviteUser(inviteDTO, request));
+    Exception e = assertThrows(APIException.class, () -> controller.inviteUser(inviteDTO, request));
     assertEquals("Error in send invite", e.getMessage());
   }
-  
+
   @Test
-  void testGetUserProfile() {
+  void testGetUserProfile() throws JsonMappingException, JsonProcessingException {
     MockHttpServletRequest request = CustomTestData.getRequest();
     User user = CustomTestData.getUser();
-    request.setAttribute("user",user);
-    
+    request.setAttribute("user", user);
+
     UserDTO userDTO = CustomTestData.getUserDTO();
     when(service.getContactDetails(anyString())).thenReturn(userDTO);
     MappingJacksonValue mapping = controller.getUserProfile(request);
     assertNotNull(mapping);
-    
+
     user.getRole().setName(Constant.PARTNER);
     when(service.getGalaxyUserDetails(anyString())).thenReturn(userDTO);
     mapping = controller.getUserProfile(request);
-    assertNotNull(mapping);
+
+    UserDTO response = (UserDTO) mapping.getValue();
+    assertNotNull(response);
+    assertEquals(userDTO.getName(), response.getName());
+    assertEquals(userDTO.getMobilePhone(), response.getMobilePhone());
+    assertEquals(userDTO.getWorkPhone(), response.getWorkPhone());
+    assertEquals(userDTO.getWorkEmail(), response.getWorkEmail());
+    assertEquals(userDTO.getRole(), response.getRole());
+    assertEquals(userDTO.getCountry(), response.getCountry());
+    assertEquals(userDTO.getLinkedinUrl(), response.getLinkedinUrl());
+    assertEquals(userDTO.getBio(), response.getBio());
+    assertEquals(userDTO.isPasswordReset(), response.isPasswordReset());
   }
 }
