@@ -1,6 +1,5 @@
 package com.aspire.kgp.controller;
 
-import java.text.ParseException;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -56,7 +55,7 @@ public class CompanyController {
     SimpleBeanPropertyFilter companyFilter =
         SimpleBeanPropertyFilter.filterOutAllExcept("id", "name");
 
-    FilterProvider filters = new SimpleFilterProvider().addFilter("companyFilter", companyFilter);
+    FilterProvider filters = new SimpleFilterProvider().addFilter(Constant.COMPANY_FILTER, companyFilter);
     MappingJacksonValue mapping = new MappingJacksonValue(companyList);
     mapping.setFilters(filters);
 
@@ -76,7 +75,7 @@ public class CompanyController {
     SimpleBeanPropertyFilter contactFilter = SimpleBeanPropertyFilter
         .filterOutAllExcept(Constant.ID, Constant.CURRENT_JOB_TITLE, "company", Constant.COUNTRY);
     FilterProvider filters = new SimpleFilterProvider().addFilter("contactFilter", contactFilter)
-        .addFilter("companyFilter", companyFilter);
+        .addFilter(Constant.COMPANY_FILTER, companyFilter);
     MappingJacksonValue mapping = new MappingJacksonValue(contactDTO);
     mapping.setFilters(filters);
 
@@ -88,8 +87,8 @@ public class CompanyController {
   @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK",
       content = @Content(mediaType = "application/json", schema = @Schema(type = "CandidateDTO",
           example = "{\"id\": \"string\",\"kgpInterviewDate1\": \"string\",\"kgpInterviewDate2\": \"string\",\"kgpInterviewDate3\": \"string\",\"interviews\": [{\"id\": \"string\",\"method\": \"string\",\"comments\": \"string\",\"position\": 0,\"interviewDate\": \"string\",\"client\": {\"id\": \"string\",\"name\": \"string\"}}],\"degreeVerification\": true,\"offerPresented\": true,\"athenaCompleted\": true,\"conatctId\": \"string\"}")))})
-  public MappingJacksonValue getCompanyInfoDetails(@PathVariable("candidateId") String candidateId)
-      throws ParseException {
+  public MappingJacksonValue getCompanyInfoDetails(
+      @PathVariable("candidateId") String candidateId) {
     CandidateDTO candidateDTO = companyUtil.getCompanyInfoDetails(candidateId);
     SimpleBeanPropertyFilter candidateFilter = SimpleBeanPropertyFilter.filterOutAllExcept(
         Constant.ID, "contactId", "kgpInterviewDate1", "kgpInterviewDate2", "kgpInterviewDate3",
@@ -108,15 +107,15 @@ public class CompanyController {
   }
 
   @Operation(summary = "Get all matchiing companies")
-  @GetMapping("/companyList/{companyName}")
+  @GetMapping("/companyName/{companyName}")
   @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK",
-      content = @Content(mediaType = "application/json", schema = @Schema(type = "CompanyDTO",
+      content = @Content(mediaType = "application/json", schema = @Schema(type = "List<CompanyDTO>",
           example = "[{\"id\": \"string\",\"name\": \"string\"}]")))})
   public MappingJacksonValue getListOfCompany(@PathVariable("companyName") String companyName) {
     List<CompanyDTO> companyDTO = companyUtil.getListOfCompany(companyName);
     SimpleBeanPropertyFilter companyFilter =
         SimpleBeanPropertyFilter.filterOutAllExcept(Constant.ID, "name");
-    FilterProvider filters = new SimpleFilterProvider().addFilter("companyFilter", companyFilter);
+    FilterProvider filters = new SimpleFilterProvider().addFilter(Constant.COMPANY_FILTER, companyFilter);
     MappingJacksonValue mapping = new MappingJacksonValue(companyDTO);
     mapping.setFilters(filters);
 

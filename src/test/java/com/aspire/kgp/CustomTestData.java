@@ -84,11 +84,13 @@ public class CustomTestData {
   public static UserDTO getUserDTO() {
     UserDTO user = new UserDTO();
     user.setId(Constant.TEST);
+    user.setName(Constant.TEST);
     user.setFirstName(Constant.TEST);
     user.setLastName(Constant.TEST);
     user.setWorkEmail(Constant.TEST);
     user.setEmail(Constant.TEST);
     user.setRole(Constant.TEST);
+    user.setTitle(Constant.TEST);
     user.setToken(Constant.TEST);
     user.setCountry(Constant.TEST);
     user.setLinkedinUrl(Constant.TEST);
