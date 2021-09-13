@@ -18,6 +18,7 @@ import org.springframework.http.converter.json.MappingJacksonValue;
 import org.springframework.mock.web.MockHttpServletRequest;
 
 import com.aspire.kgp.CustomTestData;
+import com.aspire.kgp.constant.Constant;
 import com.aspire.kgp.dto.InviteDTO;
 import com.aspire.kgp.dto.UserDTO;
 import com.aspire.kgp.exception.APIException;
@@ -111,6 +112,11 @@ class UserControllerTest {
     when(service.getContactDetails(anyString())).thenReturn(userDTO);
     
     MappingJacksonValue mapping = controller.getUserProfile(request);
+    assertNotNull(mapping);
+    
+    user.getRole().setName(Constant.PARTNER);
+    when(service.getGalaxyUserDetails(anyString())).thenReturn(userDTO);
+    mapping = controller.getUserProfile(request);
     assertNotNull(mapping);
   }
 }
