@@ -1,6 +1,5 @@
 package com.aspire.kgp.util;
 
-import java.text.ParseException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,7 +63,7 @@ public class CompanyUtil {
     return contactDTO;
   }
 
-  public CandidateDTO getCompanyInfoDetails(String candidateId) throws ParseException {
+  public CandidateDTO getCompanyInfoDetails(String candidateId) {
     String apiResponse =
         restUtil.newGetMethod(Constant.CANDIDATE_URL.replace("{candidateId}", candidateId));
     JsonObject json = (JsonObject) JsonParser.parseString(apiResponse);

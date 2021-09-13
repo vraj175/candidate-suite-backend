@@ -1,6 +1,5 @@
 package com.aspire.kgp.controller;
 
-import java.text.ParseException;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -88,8 +87,8 @@ public class CompanyController {
   @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK",
       content = @Content(mediaType = "application/json", schema = @Schema(type = "CandidateDTO",
           example = "{\"id\": \"string\",\"kgpInterviewDate1\": \"string\",\"kgpInterviewDate2\": \"string\",\"kgpInterviewDate3\": \"string\",\"interviews\": [{\"id\": \"string\",\"method\": \"string\",\"comments\": \"string\",\"position\": 0,\"interviewDate\": \"string\",\"client\": {\"id\": \"string\",\"name\": \"string\"}}],\"degreeVerification\": true,\"offerPresented\": true,\"athenaCompleted\": true,\"conatctId\": \"string\"}")))})
-  public MappingJacksonValue getCompanyInfoDetails(@PathVariable("candidateId") String candidateId)
-      throws ParseException {
+  public MappingJacksonValue getCompanyInfoDetails(
+      @PathVariable("candidateId") String candidateId) {
     CandidateDTO candidateDTO = companyUtil.getCompanyInfoDetails(candidateId);
     SimpleBeanPropertyFilter candidateFilter = SimpleBeanPropertyFilter.filterOutAllExcept(
         Constant.ID, "contactId", "kgpInterviewDate1", "kgpInterviewDate2", "kgpInterviewDate3",
