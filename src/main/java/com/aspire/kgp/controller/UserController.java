@@ -121,7 +121,7 @@ public class UserController {
       body.put(Constant.MESSAGE, "Forgot password e-mail is sent to the provided user.");
       return new ResponseEntity<>(body, HttpStatus.OK);
     }
-    throw new APIException("Something went wront");
+    throw new APIException("Something went wrong");
   }
 
   @Operation(summary = "Reset Password for User")
