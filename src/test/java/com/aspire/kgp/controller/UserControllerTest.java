@@ -14,6 +14,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.json.MappingJacksonValue;
 import org.springframework.mock.web.MockHttpServletRequest;
 
 import com.aspire.kgp.CustomTestData;
@@ -99,5 +100,17 @@ class UserControllerTest {
         assertThrows(APIException.class, () -> controller.inviteUser(inviteDTO, request));
     assertEquals("Error in send invite", e.getMessage());
   }
-
+  
+  @Test
+  void testGetUserProfile() {
+    MockHttpServletRequest request = CustomTestData.getRequest();
+    User user = CustomTestData.getUser();
+    request.setAttribute("user",user);
+    
+    UserDTO userDTO = CustomTestData.getUserDTO();
+    when(service.getContactDetails(anyString())).thenReturn(userDTO);
+    
+    MappingJacksonValue mapping = controller.getUserProfile(request);
+    assertNotNull(mapping);
+  }
 }
