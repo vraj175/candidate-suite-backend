@@ -110,7 +110,6 @@ class UserControllerTest {
     
     UserDTO userDTO = CustomTestData.getUserDTO();
     when(service.getContactDetails(anyString())).thenReturn(userDTO);
-    
     MappingJacksonValue mapping = controller.getUserProfile(request);
     assertNotNull(mapping);
     
