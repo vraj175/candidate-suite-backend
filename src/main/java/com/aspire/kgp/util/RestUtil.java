@@ -68,7 +68,7 @@ public class RestUtil {
     private byte[] bytes;
 
     public JsonPart(String name, String json) {
-      super(name, "application/json", Constant.UTF_8, null);
+      super(name, Constant.CONTENT_TYPE_JSON, Constant.UTF_8, null);
       this.bytes = json.getBytes(StandardCharsets.UTF_8);
     }
 
@@ -166,12 +166,12 @@ public class RestUtil {
     HttpClient httpClient = new HttpClient();
     PutMethod httpPut = new PutMethod(baseApiUrl + url.replaceAll(Constant.SPACE_STRING, "%20"));
     httpPut.setRequestHeader("X-API-Key", apiKey);
-    httpPut.setRequestHeader("Accept", "application/json");
-    httpPut.setRequestHeader("Content-type", "application/json");
+    httpPut.setRequestHeader("Accept", Constant.CONTENT_TYPE_JSON);
+    httpPut.setRequestHeader("Content-type", Constant.CONTENT_TYPE_JSON);
     httpPut.setRequestHeader(Constant.AUTHORIZATION,
         validateCognitoWithAuthenticationToken(defaultAuth).getAccessToken());
 
-    StringRequestEntity body = new StringRequestEntity(paramJSON, "application/json", "UTF-8");
+    StringRequestEntity body = new StringRequestEntity(paramJSON, Constant.CONTENT_TYPE_JSON, "UTF-8");
     httpPut.setRequestEntity(body);
 
     String responseString = "";
@@ -246,7 +246,7 @@ public class RestUtil {
         post.setRequestEntity(new MultipartRequestEntity(parts, post.getParams()));
       } else {
         StringRequestEntity body =
-            new StringRequestEntity(paramJSON, "application/json", Constant.UTF_8);
+            new StringRequestEntity(paramJSON, Constant.CONTENT_TYPE_JSON, Constant.UTF_8);
         post.setRequestEntity(body);
       }
 
