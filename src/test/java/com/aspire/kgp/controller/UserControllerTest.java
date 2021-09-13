@@ -144,5 +144,24 @@ class UserControllerTest {
     
     Exception e = assertThrows(APIException.class, () -> controller.getUserProfile(request));
     assertEquals("Something went wrong to fetch the user data", e.getMessage());
-  }  
+  }
+  
+  @Test
+  void testForgotUserPassword() {
+    MockHttpServletRequest request = CustomTestData.getRequest();
+    when(service.forgotPassword(any(), anyString())).thenReturn(Boolean.TRUE);
+    
+    ResponseEntity<Object> entity = controller.forgotUserPassword(Constant.TEST, request);
+
+    assertNotNull(entity);
+  }
+  
+  @Test
+  void testForgotUserPassword_APIException() {
+    MockHttpServletRequest request = CustomTestData.getRequest();
+    when(service.forgotPassword(any(), anyString())).thenReturn(Boolean.FALSE);
+    
+    Exception e = assertThrows(APIException.class, () -> controller.forgotUserPassword(Constant.TEST, request));
+    assertEquals("Something went wrong", e.getMessage());
+  }
 }
