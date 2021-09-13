@@ -64,7 +64,7 @@ public class CompanyUtil {
     return contactDTO;
   }
 
-  public CandidateDTO getCompanyInfoDetails(String candidateId) throws ParseException {
+  public CandidateDTO getCompanyInfoDetails(String candidateId) {
     String apiResponse =
         restUtil.newGetMethod(Constant.CANDIDATE_URL.replace("{candidateId}", candidateId));
     JsonObject json = (JsonObject) JsonParser.parseString(apiResponse);
