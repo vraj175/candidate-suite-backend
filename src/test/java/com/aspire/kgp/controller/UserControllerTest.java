@@ -26,6 +26,7 @@ import com.aspire.kgp.exception.APIException;
 import com.aspire.kgp.exception.NotFoundException;
 import com.aspire.kgp.model.User;
 import com.aspire.kgp.service.UserService;
+import com.aspire.kgp.util.RestUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 
@@ -36,6 +37,9 @@ class UserControllerTest {
 
   @Mock
   UserService service;
+  
+  @Mock
+  RestUtil restUtil;
 
   @BeforeEach
   void setUp() throws Exception {
@@ -187,5 +191,15 @@ class UserControllerTest {
     Exception e = assertThrows(APIException.class,
         () -> controller.resetUserPassword(resetPasswordDTO, request));
     assertEquals("Something went wrong", e.getMessage());
+  }
+  
+  @Test
+  void testPerformVerifyGoogleCaptchaRequest() {
+    when(restUtil.performVerifyGoogleCaptchaRequest(anyString())).thenReturn(Constant.TEST);
+    
+    String response = controller.performVerifyGoogleCaptchaRequest(Constant.TEST);
+    
+    assertNotNull(response);
+    assertEquals(Constant.TEST, response);
   }
 }
