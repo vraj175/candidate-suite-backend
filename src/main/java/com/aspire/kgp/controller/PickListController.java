@@ -10,8 +10,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.aspire.kgp.util.PickListUtil;
 
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -26,9 +24,7 @@ public class PickListController {
 
   @Operation(summary = "Get Education Degree List")
   @GetMapping("/picklists/educations/degrees")
-  @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK",
-      content = @Content(mediaType = "application/json",
-          schema = @Schema(type = "List<String>", example = "[string]")))})
+  @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK")})
   public List<String> getEducationDegrees() {
     return pickListUtil.getEducationDegrees();
   }
