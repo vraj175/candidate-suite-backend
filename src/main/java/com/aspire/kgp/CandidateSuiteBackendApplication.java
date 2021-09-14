@@ -10,6 +10,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 
 import com.aspire.kgp.constant.Constant;
+import com.aspire.kgp.dto.InviteDTO;
+import com.aspire.kgp.dto.ResetPasswordDTO;
 
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
@@ -25,8 +27,6 @@ import io.swagger.v3.oas.models.responses.ApiResponses;
 import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
 import io.swagger.v3.oas.models.servers.Server;
-import springfox.documentation.swagger.web.UiConfiguration;
-import springfox.documentation.swagger.web.UiConfigurationBuilder;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 @SpringBootApplication
@@ -59,7 +59,8 @@ public class CandidateSuiteBackendApplication {
         .pathsToMatch("/api/v1.0/candidates/**", "/api/v1.0/contact/**", "/api/v1.0/searches/**",
             "/api/v1.0/companies/**", "/api/v1.0/company/**", "/api/v1.0/companyInfo/**",
             "/api/v1.0/languages/**", "/api/v1.0/roles/**", "/api/v1.0/profile/**",
-            "/api/v1.0/user/**", "/api/v1.0/video/**","/api/v1.0/picklists/**","/api/v1.0/companyName/**")
+            "/api/v1.0/user/**", "/api/v1.0/video/**", "/api/v1.0/picklists/**",
+            "/api/v1.0/companyName/**")
         .addOpenApiCustomiser(defaultAPIConfig()).build();
   }
 
@@ -67,12 +68,7 @@ public class CandidateSuiteBackendApplication {
   public GroupedOpenApi publicAuthentication() {
     return GroupedOpenApi.builder().group(Constant.PUBLIC_GROUP_NAME)
         .pathsToMatch(Constant.BASE_API_URL + Constant.PUBLIC_API_URL + "/**")
-        .addOpenApiCustomiser(publicAPIConfig()).addOpenApiCustomiser(buildV1OpenAPI()).build();
-  }
-
-
-  public OpenApiCustomiser buildV1OpenAPI() {
-    return openApi -> openApi.info(openApi.getInfo().version("v1.0"));
+        .addOpenApiCustomiser(publicAPIConfig()).build();
   }
 
   @Bean
@@ -96,11 +92,16 @@ public class CandidateSuiteBackendApplication {
   }
 
   private OpenApiCustomiser publicAPIConfig() {
-    return openApi -> {
-      openApi.getComponents().addSecuritySchemes(Constant.API_KEY, new SecurityScheme()
-          .type(SecurityScheme.Type.APIKEY).in(SecurityScheme.In.HEADER).name(Constant.API_KEY));
-      openApi.addSecurityItem(new SecurityRequirement().addList(Constant.API_KEY));
-    };
+
+    return openApi -> openApi
+        .components(new Components().addSecuritySchemes(Constant.API_KEY,
+            new SecurityScheme().type(SecurityScheme.Type.APIKEY).in(SecurityScheme.In.HEADER)
+                .name(Constant.API_KEY)))
+        .path(Constant.BASE_API_URL + Constant.PUBLIC_API_URL + "/user/invite",
+            getPathItem(getInviteSchema(), "User", "Invite User as Candidates"))
+        .path(Constant.BASE_API_URL + Constant.PUBLIC_API_URL + "/user/resetPassword",
+            getPathItem(getResetPasswordSchema(), "User", "Reset Password for User"))
+        .addSecurityItem(new SecurityRequirement().addList(Constant.API_KEY));
   }
 
   private OpenApiCustomiser userAuthenticationAPIConfig() {
@@ -129,13 +130,14 @@ public class CandidateSuiteBackendApplication {
     requestBody.setContent(requestContent);
 
     Content responseContent = new Content();
-    responseContent.addMediaType("application/json", new MediaType().schema(new Schema<>().example(
-        "{\"access_token\": \"string\",\"token_type\": \"string\",\"refresh_token\": \"string\",\"expires_in\": 0,\"scope\": \"string\",\"jti\": \"string\"}")));
+    responseContent.addMediaType(Constant.CONTENT_TYPE_JSON,
+        new MediaType().schema(new Schema<>().example(
+            "{\"access_token\": \"string\",\"token_type\": \"string\",\"refresh_token\": \"string\",\"expires_in\": 0,\"scope\": \"string\",\"jti\": \"string\"}")));
     pathItem.setPost(new Operation().requestBody(requestBody)
         .responses(new ApiResponses().addApiResponse("200",
             new ApiResponse().description("OK").content(responseContent)))
         .addTagsItem("User Authentication").description(Constant.USER_AUTHENTICATION_DESC)
-        .summary("Get Refresh Token"));
+        .summary("Get Authentication Token"));
 
     return openApi -> openApi
         .components(new Components().addSecuritySchemes(Constant.API_KEY,
@@ -145,13 +147,55 @@ public class CandidateSuiteBackendApplication {
         .addSecurityItem(new SecurityRequirement().addList(Constant.API_KEY));
   }
 
-  /***
-   * To remove Models section from Swagger UI available on http://localhost:8080/swagger-ui.html
-   * 
-   * @return
-   */
-  @Bean
-  UiConfiguration uiConfig() {
-    return UiConfigurationBuilder.builder().defaultModelsExpandDepth(-1).build();
+
+  private PathItem getPathItem(Schema<?> schema, String tagItem, String summary) {
+    PathItem pathItem = new PathItem();
+    RequestBody requestBody = new RequestBody();
+
+    requestBody.setContent(getRequestContent(schema));
+
+    pathItem.setPost(new Operation().requestBody(requestBody)
+        .responses(new ApiResponses().addApiResponse("200",
+            new ApiResponse().description("OK").content(getResponseContent())))
+        .addTagsItem(tagItem).summary(summary));
+    return pathItem;
+  }
+
+  private Schema<InviteDTO> getInviteSchema() {
+    Schema<InviteDTO> inviteSchema = new Schema<>();
+    InviteDTO invaite = new InviteDTO();
+    invaite.setCandidateId(Constant.STRING);
+    invaite.setLanguage(Constant.STRING);
+    invaite.setEmail(Constant.STRING);
+    invaite.setRemoveDuplicate(false);
+    invaite.setPartnerId(Constant.STRING);
+    String[] ddd = new String[1];
+    ddd[0] = Constant.STRING;
+    invaite.setBcc(ddd);
+    inviteSchema.addEnumItemObject(invaite);
+    return inviteSchema;
+  }
+
+  private Schema<ResetPasswordDTO> getResetPasswordSchema() {
+    Schema<ResetPasswordDTO> resetPasswordSchema = new Schema<>();
+    ResetPasswordDTO resetPassword = new ResetPasswordDTO();
+    resetPassword.setEmail(Constant.STRING);
+    resetPassword.setOldPassword(Constant.STRING);
+    resetPassword.setNewPassword(Constant.STRING);
+    resetPasswordSchema.addEnumItemObject(resetPassword);
+    return resetPasswordSchema;
+  }
+
+  private Content getRequestContent(Schema<?> schema) {
+    Content requestContent = new Content();
+    return requestContent.addMediaType(Constant.CONTENT_TYPE_JSON, new MediaType().schema(schema));
+
+  }
+
+  private Content getResponseContent() {
+    Content responseContent = new Content();
+    return responseContent.addMediaType(Constant.CONTENT_TYPE_JSON,
+        new MediaType().schema(new Schema<>().example(
+            "{\"timestamp\": \"string\",\"status\": \"string\",\"message\": \"string\"}")));
   }
 }

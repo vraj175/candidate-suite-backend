@@ -163,6 +163,7 @@ public class Constant {
 
   // Test Fields
   public static final String TEST = "Test";
+  public static final String STRING = "string";
 
   // Swagger User authentication API desc
   public static final String USER_AUTHENTICATION_DESC =
