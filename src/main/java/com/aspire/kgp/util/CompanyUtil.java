@@ -11,7 +11,6 @@ import com.aspire.kgp.constant.Constant;
 import com.aspire.kgp.dto.CandidateDTO;
 import com.aspire.kgp.dto.CompanyDTO;
 import com.aspire.kgp.dto.ContactDTO;
-import com.aspire.kgp.dto.InterviewDTO;
 import com.aspire.kgp.exception.APIException;
 import com.aspire.kgp.model.UserSearch;
 import com.aspire.kgp.service.UserSearchService;
