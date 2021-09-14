@@ -20,11 +20,13 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import com.aspire.kgp.CustomTestData;
 import com.aspire.kgp.constant.Constant;
 import com.aspire.kgp.dto.InviteDTO;
+import com.aspire.kgp.dto.ResetPasswordDTO;
 import com.aspire.kgp.dto.UserDTO;
 import com.aspire.kgp.exception.APIException;
 import com.aspire.kgp.exception.NotFoundException;
 import com.aspire.kgp.model.User;
 import com.aspire.kgp.service.UserService;
+import com.aspire.kgp.util.RestUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 
@@ -35,6 +37,9 @@ class UserControllerTest {
 
   @Mock
   UserService service;
+  
+  @Mock
+  RestUtil restUtil;
 
   @BeforeEach
   void setUp() throws Exception {
@@ -132,36 +137,69 @@ class UserControllerTest {
     assertEquals(userDTO.getBio(), response.getBio());
     assertEquals(userDTO.isPasswordReset(), response.isPasswordReset());
   }
-  
+
   @Test
   void testGetUserProfile_APIException() {
     MockHttpServletRequest request = CustomTestData.getRequest();
     User user = CustomTestData.getUser();
     request.setAttribute("user", user);
-    
+
     UserDTO userDTO = new UserDTO();
     when(service.getContactDetails(anyString())).thenReturn(userDTO);
-    
+
     Exception e = assertThrows(APIException.class, () -> controller.getUserProfile(request));
     assertEquals("Something went wrong to fetch the user data", e.getMessage());
   }
-  
+
   @Test
   void testForgotUserPassword() {
     MockHttpServletRequest request = CustomTestData.getRequest();
     when(service.forgotPassword(any(), anyString())).thenReturn(Boolean.TRUE);
-    
+
     ResponseEntity<Object> entity = controller.forgotUserPassword(Constant.TEST, request);
 
     assertNotNull(entity);
   }
-  
+
   @Test
   void testForgotUserPassword_APIException() {
     MockHttpServletRequest request = CustomTestData.getRequest();
     when(service.forgotPassword(any(), anyString())).thenReturn(Boolean.FALSE);
-    
-    Exception e = assertThrows(APIException.class, () -> controller.forgotUserPassword(Constant.TEST, request));
+
+    Exception e = assertThrows(APIException.class,
+        () -> controller.forgotUserPassword(Constant.TEST, request));
     assertEquals("Something went wrong", e.getMessage());
+  }
+
+  @Test
+  void testResetUserPassword() {
+    MockHttpServletRequest request = CustomTestData.getRequest();
+    when(service.resetPassword(any(), any())).thenReturn(Boolean.TRUE);
+
+    ResetPasswordDTO resetPasswordDTO = CustomTestData.getResetPasswordDTO();
+    ResponseEntity<Object> entity = controller.resetUserPassword(resetPasswordDTO, request);
+
+    assertNotNull(entity);
+  }
+
+  @Test
+  void testResetUserPassword_APIException() {
+    MockHttpServletRequest request = CustomTestData.getRequest();
+    when(service.resetPassword(any(), any())).thenReturn(Boolean.FALSE);
+
+    ResetPasswordDTO resetPasswordDTO = CustomTestData.getResetPasswordDTO();
+    Exception e = assertThrows(APIException.class,
+        () -> controller.resetUserPassword(resetPasswordDTO, request));
+    assertEquals("Something went wrong", e.getMessage());
+  }
+  
+  @Test
+  void testPerformVerifyGoogleCaptchaRequest() {
+    when(restUtil.performVerifyGoogleCaptchaRequest(anyString())).thenReturn(Constant.TEST);
+    
+    String response = controller.performVerifyGoogleCaptchaRequest(Constant.TEST);
+    
+    assertNotNull(response);
+    assertEquals(Constant.TEST, response);
   }
 }
