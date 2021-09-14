@@ -1,6 +1,8 @@
 package com.aspire.kgp.util;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -11,6 +13,8 @@ import com.aspire.kgp.dto.CompanyDTO;
 import com.aspire.kgp.dto.ContactDTO;
 import com.aspire.kgp.dto.InterviewDTO;
 import com.aspire.kgp.exception.APIException;
+import com.aspire.kgp.model.UserSearch;
+import com.aspire.kgp.service.UserSearchService;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
@@ -22,22 +26,32 @@ public class CompanyUtil {
 
   @Autowired
   RestUtil restUtil;
+  
+  @Autowired
+  UserSearchService searchService;
 
   public final List<CompanyDTO> getCompanyList(String stage) {
+    List<UserSearch> invitedCompanies = searchService.findByIsDeletedFalse();
+    if (invitedCompanies.isEmpty()) {
+      return Collections.emptyList();
+    }
 
     String companyListResponse =
         restUtil.newGetMethod(Constant.COMPANY_LIST.replace("{STAGE}", stage));
     try {
-      return new Gson().fromJson(companyListResponse, new TypeToken<List<CompanyDTO>>() {
+      List<CompanyDTO> allCompanies = new Gson().fromJson(companyListResponse, new TypeToken<List<CompanyDTO>>() {
 
         /**
          * 
          */
         private static final long serialVersionUID = 1L;
       }.getType());
+      return getInvitedCompaniesFromAllCompanies(allCompanies, invitedCompanies);
     } catch (JsonSyntaxException e) {
       throw new APIException(Constant.JSON_PROCESSING_EXCEPTION + e.getMessage());
     }
+    
+    
   }
 
   public ContactDTO getCompanyDetails(String candidateId) {
@@ -132,5 +146,19 @@ public class CompanyUtil {
     } catch (JsonSyntaxException e) {
       throw new APIException(Constant.JSON_PROCESSING_EXCEPTION + e.getMessage());
     }
+  }
+  
+  public List<CompanyDTO> getInvitedCompaniesFromAllCompanies(List<CompanyDTO> allCompanies,
+      List<UserSearch> invitedCompanies) {
+    // We create a stream of elements from the first list.
+    return allCompanies.stream()
+        // We select any elements such that in the stream of elements from the second
+        // list
+        .filter(two -> invitedCompanies.stream()
+            // there is an element that has the same name and school as this element,
+            .anyMatch(one -> one.getCompanyId().equals(two.getId())))
+        // and collect all matching elements from the first list into a new list.
+        .collect(Collectors.toList());
+    // We return the collected list.
   }
 }

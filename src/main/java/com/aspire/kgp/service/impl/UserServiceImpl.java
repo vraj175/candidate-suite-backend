@@ -146,6 +146,7 @@ public class UserServiceImpl implements UserService {
     try {
       log.info("insering new user search...");
       UserSearch userSearch = new UserSearch();
+      userSearch.setCompanyId(candidateDTO.getSearch().getCompany().getId());
       userSearch.setSearchId(candidateDTO.getSearch().getId());
       userSearch.setCandidateId(candidateId);
       userSearch.setUser(user);

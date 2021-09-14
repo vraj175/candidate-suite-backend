@@ -41,6 +41,7 @@ class UserSearchServiceImplTest {
     UserSearch result = service.findByUserAndCandidateId(CustomTestData.getUser(), Constant.TEST);
 
     assertNotNull(result);
+    assertEquals(userSearch.getCompanyId(), result.getCompanyId());
     assertEquals(userSearch.getSearchId(), result.getSearchId());
     assertEquals(userSearch.getCandidateId(), result.getCandidateId());
     assertEquals(userSearch.getUser(), result.getUser());
