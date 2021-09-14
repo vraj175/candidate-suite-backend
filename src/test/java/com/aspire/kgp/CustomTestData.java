@@ -130,6 +130,7 @@ public class CustomTestData {
     userSearch.setCandidateId(Constant.TEST);
     userSearch.setInvitedBy(getUser());
     userSearch.setSearchId(Constant.TEST);
+    userSearch.setCompanyId(Constant.TEST);
     
     return userSearch;
   }

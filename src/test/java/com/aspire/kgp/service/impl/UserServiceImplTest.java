@@ -203,11 +203,11 @@ class UserServiceImplTest {
   void testInviteUser() {
     User user = CustomTestData.getUser();
     UserSearch userSearch = CustomTestData.getUserSearch();
-    String responseJson = "{" + "    \"candidate\": {" + "        \"contact\": {"
-        + "            \"id\": " + Constant.TEST + "," + "            \"first_name\": "
-        + Constant.TEST + "," + "            \"last_name\": " + Constant.TEST + "         }, "
-        + "        \"search\": {" + "             \"id\": " + Constant.TEST + "         } "
-        + "     } " + "}";
+    String responseJson =
+        "{" + "    \"candidate\": {" + "        \"contact\": {" + "            \"id\": "
+            + Constant.TEST + "," + "            \"first_name\": " + Constant.TEST
+            + ", \"last_name\": " + Constant.TEST + "         }, " + "        \"search\": {\"id\": "
+            + Constant.TEST + ", \"company\": { \"id\": " + Constant.TEST + " }         }      } }";
     when(restUtil.newGetMethod(anyString())).thenReturn(responseJson);
     when(service.findByEmail(anyString())).thenReturn(null);
     when(service.findByGalaxyId(anyString())).thenReturn(null);
