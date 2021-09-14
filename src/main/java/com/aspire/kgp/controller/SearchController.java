@@ -157,13 +157,13 @@ public class SearchController {
   @Operation(summary = "Get Search Info Details")
   @GetMapping("/searches/{searchId}")
   @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK",
-      content = @Content(mediaType = "application/json", schema = @Schema(type = "ContactDTO",
-          example = "{\"id\": \"string\",\"country\": \"string\",\"currentJobTitle\": \"string\",\"company\": {\"id\": \"string\",\"name\": \"string\"}}")))})
+      content = @Content(mediaType = "application/json", schema = @Schema(type = "SearchDTO",
+          example = "{\"id\": \"string\",\"jobTitle\": \"string\",\"company\": {\"id\": \"string\",\"name\": \"string\"},\"city\": \"string\",\"state\": \"string\"}")))})
   public MappingJacksonValue getCompanyDetails(@PathVariable("searchId") String searchId) {
     SearchDTO searchDTO = searchUtil.getsearchDetails(searchId);
 
     SimpleBeanPropertyFilter companyFilter =
-        SimpleBeanPropertyFilter.filterOutAllExcept("id", "name");
+        SimpleBeanPropertyFilter.filterOutAllExcept(Constant.ID, "name");
     SimpleBeanPropertyFilter searchFilter = SimpleBeanPropertyFilter.filterOutAllExcept(Constant.ID,
         "jobTitle", "company", "city", "state");
     FilterProvider filters = new SimpleFilterProvider().addFilter("searchFilter", searchFilter)
