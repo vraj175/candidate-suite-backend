@@ -50,7 +50,6 @@ public class UserController {
   @Autowired
   RestUtil restUtil;
 
-  @Operation(summary = "Invite User as Candidates")
   @PostMapping(value = Constant.PUBLIC_API_URL + "/user/invite")
   public ResponseEntity<Object> inviteUser(@Valid @RequestBody InviteDTO invite,
       HttpServletRequest request) {
@@ -109,6 +108,9 @@ public class UserController {
   }
 
   @Operation(summary = "Forgot password for candidate")
+  @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK",
+      content = @Content(mediaType = "application/json", schema = @Schema(
+          example = "{\"timestamp\": \"string\",\"status\": \"string\",\"message\": \"string\"}")))})
   @PostMapping(value = Constant.PUBLIC_API_URL + "/user/forgotPassword")
   public ResponseEntity<Object> forgotUserPassword(@RequestBody String email,
       HttpServletRequest request) {
@@ -124,7 +126,6 @@ public class UserController {
     throw new APIException("Something went wrong");
   }
 
-  @Operation(summary = "Reset Password for User")
   @PostMapping(value = Constant.PUBLIC_API_URL + "/user/resetPassword")
   public ResponseEntity<Object> resetUserPassword(
       @Valid @RequestBody ResetPasswordDTO resetPassword, HttpServletRequest request) {
