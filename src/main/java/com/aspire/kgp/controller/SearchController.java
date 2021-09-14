@@ -42,7 +42,7 @@ public class SearchController {
       content = @Content(mediaType = "application/json", schema = @Schema(
           type = "List<CandidateDTO>",
           example = "[{\"id\": \"string\",\"search\": {\"id\": \"string\",\"jobTitle\": \"string\",\"jobNumber\": \"string\",\"stage\": \"string\",\"company\": {\"id\": \"string\",\"name\": \"string\"}}}]")))})
-  public MappingJacksonValue getCompanyList(HttpServletRequest request,
+  public MappingJacksonValue getSearchList(HttpServletRequest request,
       @PathVariable("stage") String stage) {
     User user = (User) request.getAttribute("user");
     List<CandidateDTO> candidateList = searchUtil.getSearchListForUser(user, stage);
@@ -68,7 +68,7 @@ public class SearchController {
   @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK",
       content = @Content(mediaType = "application/json", schema = @Schema(type = "List<SearchDTO>",
           example = "[{\"id\": \"string\",\"jobTitle\": \"string\",\"jobNumber\": \"string\",\"stage\": \"string\",\"company\": {\"id\": \"string\",\"name\": \"string\"}}]")))})
-  public MappingJacksonValue getCompanyList(@PathVariable("companyId") String companyId,
+  public MappingJacksonValue getSearchList(@PathVariable("companyId") String companyId,
       @PathVariable("stage") String stage) {
     return searchUtil.applySearchFilter(searchUtil.getSearchList(companyId, stage));
   }

@@ -44,4 +44,9 @@ public class UserSearchServiceImpl implements UserSearchService {
     return repository.findByUserAndIsDeletedFalse(user);
   }
 
+  @Override
+  public List<UserSearch> findByIsDeletedFalse() {
+    return repository.findByIsDeletedFalse();
+  }
+
 }
