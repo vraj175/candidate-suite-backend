@@ -136,6 +136,10 @@ public class SearchUtil {
   }
 
   public List<CandidateDTO> getCandidateList(String searchId) {
+    List<UserSearch> searches = searchService.findByIsDeletedFalse();
+    if (searches.isEmpty()) {
+      return Collections.emptyList();
+    }
 
     ContactDTO contact = null;
     CandidateDTO candidate;
@@ -168,7 +172,7 @@ public class SearchUtil {
       candidate.setContact(contact);
       listCandidate.add(candidate);
     }
-    return listCandidate;
+    return getInvitedCandidatesFromAllCandidates(listCandidate, searches);
   }
 
   public PositionProfileDTO getPositionProfileDetails(String searchId) {
@@ -219,6 +223,20 @@ public class SearchUtil {
         .filter(two -> listTwo.stream()
             // there is an element that has the same name and school as this element,
             .anyMatch(one -> one.getSearchId().equals(two.getId())))
+        // and collect all matching elements from the first list into a new list.
+        .collect(Collectors.toList());
+    // We return the collected list.
+  }
+  
+  public List<CandidateDTO> getInvitedCandidatesFromAllCandidates(List<CandidateDTO> allCandidates,
+      List<UserSearch> invitedCandidates) {
+    // We create a stream of elements from the first list.
+    return allCandidates.stream()
+        // We select any elements such that in the stream of elements from the second
+        // list
+        .filter(two -> invitedCandidates.stream()
+            // there is an element that has the same name and school as this element,
+            .anyMatch(one -> one.getCandidateId().equals(two.getId())))
         // and collect all matching elements from the first list into a new list.
         .collect(Collectors.toList());
     // We return the collected list.
