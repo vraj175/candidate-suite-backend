@@ -13,4 +13,6 @@ public interface UserSearchRepository extends JpaRepository<UserSearch, Long> {
   UserSearch findByCandidateIdAndIsDeletedFalse(String candidateId);
 
   List<UserSearch> findByUserAndIsDeletedFalse(User user);
+  
+  List<UserSearch> findByIsDeletedFalse();
 }

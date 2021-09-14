@@ -15,4 +15,6 @@ public interface UserSearchService {
   UserSearch deleteUserSearch(UserSearch userSearch);
   
   List<UserSearch> findByUser(User user);
+  
+  List<UserSearch> findByIsDeletedFalse();
 }

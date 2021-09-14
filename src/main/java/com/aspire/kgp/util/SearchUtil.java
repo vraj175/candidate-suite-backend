@@ -43,11 +43,15 @@ public class SearchUtil {
   UserSearchService searchService;
 
   public final List<SearchDTO> getSearchList(String companyId, String stage) {
-
+    List<UserSearch> searches = searchService.findByIsDeletedFalse();
+    if (searches.isEmpty()) {
+      return Collections.emptyList();
+    }
     String searchListResponse =
         restUtil.newGetMethod(Constant.SEARCHES_LIST_BY_COMAPNY.replace("{companyId}", companyId));
 
-    return getSearchListFromJsonResponse(searchListResponse, stage);
+    List<SearchDTO> searchDTOs= getSearchListFromJsonResponse(searchListResponse, stage);
+    return createSharedListViaStream(searchDTOs, searches);
   }
 
   public final List<CandidateDTO> getSearchListForUser(User user, String stage) {
@@ -204,5 +208,19 @@ public class SearchUtil {
     } catch (JsonSyntaxException e) {
       throw new APIException(Constant.JSON_PROCESSING_EXCEPTION + e.getMessage());
     }
+  }
+  
+  public List<SearchDTO> createSharedListViaStream(List<SearchDTO> listOne,
+      List<UserSearch> listTwo) {
+    // We create a stream of elements from the first list.
+    return listOne.stream()
+        // We select any elements such that in the stream of elements from the second
+        // list
+        .filter(two -> listTwo.stream()
+            // there is an element that has the same name and school as this element,
+            .anyMatch(one -> one.getSearchId().equals(two.getId())))
+        // and collect all matching elements from the first list into a new list.
+        .collect(Collectors.toList());
+    // We return the collected list.
   }
 }
