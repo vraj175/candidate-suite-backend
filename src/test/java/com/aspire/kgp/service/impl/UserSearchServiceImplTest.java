@@ -89,5 +89,16 @@ class UserSearchServiceImplTest {
     assertNotNull(result);
     assertEquals(userSearches.size(), result.size());
   }
+  
+  @Test
+  void testfindByIsDeletedFalse() {
+    List<UserSearch> userSearches = CustomTestData.getUserSearches();
+    when(repository.findByIsDeletedFalse()).thenReturn(userSearches);
+
+    List<UserSearch> result = service.findByIsDeletedFalse();
+
+    assertNotNull(result);
+    assertEquals(userSearches.size(), result.size());
+  }
 
 }
