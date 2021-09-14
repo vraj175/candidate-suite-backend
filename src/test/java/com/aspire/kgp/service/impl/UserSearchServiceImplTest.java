@@ -41,6 +41,7 @@ class UserSearchServiceImplTest {
     UserSearch result = service.findByUserAndCandidateId(CustomTestData.getUser(), Constant.TEST);
 
     assertNotNull(result);
+    assertEquals(userSearch.getCompanyId(), result.getCompanyId());
     assertEquals(userSearch.getSearchId(), result.getSearchId());
     assertEquals(userSearch.getCandidateId(), result.getCandidateId());
     assertEquals(userSearch.getUser(), result.getUser());
@@ -84,6 +85,17 @@ class UserSearchServiceImplTest {
     when(repository.findByUserAndIsDeletedFalse(any())).thenReturn(userSearches);
 
     List<UserSearch> result = service.findByUser(CustomTestData.getUser());
+
+    assertNotNull(result);
+    assertEquals(userSearches.size(), result.size());
+  }
+  
+  @Test
+  void testfindByIsDeletedFalse() {
+    List<UserSearch> userSearches = CustomTestData.getUserSearches();
+    when(repository.findByIsDeletedFalse()).thenReturn(userSearches);
+
+    List<UserSearch> result = service.findByIsDeletedFalse();
 
     assertNotNull(result);
     assertEquals(userSearches.size(), result.size());
