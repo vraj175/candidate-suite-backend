@@ -25,7 +25,7 @@ public class CompanyUtil {
 
   @Autowired
   RestUtil restUtil;
-  
+
   @Autowired
   UserSearchService searchService;
 
@@ -38,19 +38,20 @@ public class CompanyUtil {
     String companyListResponse =
         restUtil.newGetMethod(Constant.COMPANY_LIST.replace("{STAGE}", stage));
     try {
-      List<CompanyDTO> allCompanies = new Gson().fromJson(companyListResponse, new TypeToken<List<CompanyDTO>>() {
+      List<CompanyDTO> allCompanies =
+          new Gson().fromJson(companyListResponse, new TypeToken<List<CompanyDTO>>() {
 
-        /**
-         * 
-         */
-        private static final long serialVersionUID = 1L;
-      }.getType());
+            /**
+             * 
+             */
+            private static final long serialVersionUID = 1L;
+          }.getType());
       return getInvitedCompaniesFromAllCompanies(allCompanies, invitedCompanies);
     } catch (JsonSyntaxException e) {
       throw new APIException(Constant.JSON_PROCESSING_EXCEPTION + e.getMessage());
     }
-    
-    
+
+
   }
 
   public ContactDTO getCompanyDetails(String candidateId) {
@@ -121,21 +122,22 @@ public class CompanyUtil {
   }
 
   private CandidateDTO mergeName(CandidateDTO candidateDTO) {
-    for (int i = 0; i < candidateDTO.getInterviews().size(); i++) {
+    for (int i = candidateDTO.getInterviews().size() - 1; i >= 0; i--) {
       if (candidateDTO.getInterviews().get(i).getInterviewDate() != null
           && !candidateDTO.getInterviews().get(i).getInterviewDate().isEmpty()) {
         if (candidateDTO.getInterviews().get(i).getClient() != null
-            || candidateDTO.getInterviews().get(i).getClient().getFirstName() != null
-                && !candidateDTO.getInterviews().get(i).getClient().getFirstName().isEmpty()
-            || candidateDTO.getInterviews().get(i).getClient().getLastName() != null
-                && !candidateDTO.getInterviews().get(i).getClient().getLastName().isEmpty()) {
+            && candidateDTO.getInterviews().get(i).getClient().getFirstName() != null
+            && !candidateDTO.getInterviews().get(i).getClient().getFirstName().isEmpty()
+            && candidateDTO.getInterviews().get(i).getClient().getLastName() != null
+            && !candidateDTO.getInterviews().get(i).getClient().getLastName().isEmpty()) {
           candidateDTO.getInterviews().get(i).getClient()
               .setName(candidateDTO.getInterviews().get(i).getClient().getFirstName() + " "
                   + candidateDTO.getInterviews().get(i).getClient().getLastName());
+        } else {
+          candidateDTO.getInterviews().remove(i);
         }
       } else {
         candidateDTO.getInterviews().remove(i);
-        i--;
       }
     }
     return candidateDTO;
@@ -156,7 +158,7 @@ public class CompanyUtil {
       throw new APIException(Constant.JSON_PROCESSING_EXCEPTION + e.getMessage());
     }
   }
-  
+
   public List<CompanyDTO> getInvitedCompaniesFromAllCompanies(List<CompanyDTO> allCompanies,
       List<UserSearch> invitedCompanies) {
     // We create a stream of elements from the first list.
