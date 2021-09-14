@@ -104,17 +104,27 @@ public class CompanyUtil {
       candidateDTO.setContactId(candidateContactDTO.getId());
       candidateDTO.setAthenaCompleted(Boolean.TRUE);
     }
-
     return candidateDTO;
   }
 
   private CandidateDTO mergeName(CandidateDTO candidateDTO) {
-    if (candidateDTO.getInterviews() != null && !candidateDTO.getInterviews().isEmpty())
-      for (InterviewDTO interviewDetails : candidateDTO.getInterviews()) {
-        if (interviewDetails.getClient() != null)
-          interviewDetails.getClient().setName(interviewDetails.getClient().getFirstName() + " "
-              + interviewDetails.getClient().getLastName());
+    for (int i = 0; i < candidateDTO.getInterviews().size(); i++) {
+      if (candidateDTO.getInterviews().get(i).getInterviewDate() != null
+          && !candidateDTO.getInterviews().get(i).getInterviewDate().isEmpty()) {
+        if (candidateDTO.getInterviews().get(i).getClient() != null
+            || candidateDTO.getInterviews().get(i).getClient().getFirstName() != null
+                && !candidateDTO.getInterviews().get(i).getClient().getFirstName().isEmpty()
+            || candidateDTO.getInterviews().get(i).getClient().getLastName() != null
+                && !candidateDTO.getInterviews().get(i).getClient().getLastName().isEmpty()) {
+          candidateDTO.getInterviews().get(i).getClient()
+              .setName(candidateDTO.getInterviews().get(i).getClient().getFirstName() + " "
+                  + candidateDTO.getInterviews().get(i).getClient().getLastName());
+        }
+      } else {
+        candidateDTO.getInterviews().remove(i);
+        i--;
       }
+    }
     return candidateDTO;
   }
 
