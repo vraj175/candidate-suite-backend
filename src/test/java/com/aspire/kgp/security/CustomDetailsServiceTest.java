@@ -15,7 +15,6 @@ import org.mockito.MockitoAnnotations;
 import com.aspire.kgp.CustomTestData;
 import com.aspire.kgp.constant.Constant;
 import com.aspire.kgp.exception.UnauthorizedAccessException;
-import com.aspire.kgp.exception.ValidateException;
 
 class CustomDetailsServiceTest {
 
@@ -45,8 +44,8 @@ class CustomDetailsServiceTest {
   void testLoadUserByUsername_UnauthorizedAccessException() {
     when(oauthDao.getUserDetails(anyString())).thenReturn(null);
 
-    Exception e =
-        assertThrows(UnauthorizedAccessException.class, () -> service.loadUserByUsername(Constant.TEST));
+    Exception e = assertThrows(UnauthorizedAccessException.class,
+        () -> service.loadUserByUsername(Constant.TEST));
     assertEquals(Constant.INVALID_AUTHENTICATION, e.getMessage());
   }
 
