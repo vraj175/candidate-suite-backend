@@ -129,6 +129,7 @@ class RequestFilterTest {
     UserDTO userDTO = CustomTestData.getUserDTO();
     when(service.getContactDetails(anyString())).thenReturn(userDTO);
     when(service.findByEmail(anyString())).thenReturn(user);
+    request.removeHeader(Constant.AUTHORIZATION);
     request.addHeader(Constant.AUTHORIZATION, "Bearer " + Constant.TEST);
     filter.doFilterInternal(request, response, filterChain);
     verify(service, times(1)).saveOrUpdatePartner(Constant.TEST, Constant.TEST);
