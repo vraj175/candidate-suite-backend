@@ -61,6 +61,26 @@ class RequestFilterTest {
     when(request.getRequestURL()).thenReturn(new StringBuffer("/bpi/"));
     filter.doFilterInternal(request, response, filterChain);
     verify(service, times(1)).saveOrUpdatePartner(null, null);
+    
+    when(request.getRequestURL()).thenReturn(new StringBuffer("/api/initialize"));
+    filter.doFilterInternal(request, response, filterChain);
+    verify(service, times(1)).saveOrUpdatePartner(null, null);
+    
+    when(request.getRequestURL()).thenReturn(new StringBuffer("/api/user/invite"));
+    filter.doFilterInternal(request, response, filterChain);
+    verify(service, times(1)).saveOrUpdatePartner(null, null);
+    
+    when(request.getRequestURL()).thenReturn(new StringBuffer("/api/user/forgotPassword"));
+    filter.doFilterInternal(request, response, filterChain);
+    verify(service, times(1)).saveOrUpdatePartner(null, null);
+    
+    when(request.getRequestURL()).thenReturn(new StringBuffer("/api/user/resetPassword"));
+    filter.doFilterInternal(request, response, filterChain);
+    verify(service, times(1)).saveOrUpdatePartner(null, null);
+    
+    when(request.getRequestURL()).thenReturn(new StringBuffer("/api/user/verify/recaptcha"));
+    filter.doFilterInternal(request, response, filterChain);
+    verify(service, times(1)).saveOrUpdatePartner(null, null);
   }
 
 }
