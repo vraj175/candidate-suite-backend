@@ -11,7 +11,6 @@ import com.aspire.kgp.constant.Constant;
 import com.aspire.kgp.dto.CandidateDTO;
 import com.aspire.kgp.dto.CompanyDTO;
 import com.aspire.kgp.dto.ContactDTO;
-import com.aspire.kgp.dto.InterviewDTO;
 import com.aspire.kgp.exception.APIException;
 import com.aspire.kgp.model.UserSearch;
 import com.aspire.kgp.service.UserSearchService;
@@ -26,7 +25,7 @@ public class CompanyUtil {
 
   @Autowired
   RestUtil restUtil;
-  
+
   @Autowired
   UserSearchService searchService;
 
@@ -39,19 +38,20 @@ public class CompanyUtil {
     String companyListResponse =
         restUtil.newGetMethod(Constant.COMPANY_LIST.replace("{STAGE}", stage));
     try {
-      List<CompanyDTO> allCompanies = new Gson().fromJson(companyListResponse, new TypeToken<List<CompanyDTO>>() {
+      List<CompanyDTO> allCompanies =
+          new Gson().fromJson(companyListResponse, new TypeToken<List<CompanyDTO>>() {
 
-        /**
-         * 
-         */
-        private static final long serialVersionUID = 1L;
-      }.getType());
+            /**
+             * 
+             */
+            private static final long serialVersionUID = 1L;
+          }.getType());
       return getInvitedCompaniesFromAllCompanies(allCompanies, invitedCompanies);
     } catch (JsonSyntaxException e) {
       throw new APIException(Constant.JSON_PROCESSING_EXCEPTION + e.getMessage());
     }
-    
-    
+
+
   }
 
   public ContactDTO getCompanyDetails(String candidateId) {
@@ -118,17 +118,28 @@ public class CompanyUtil {
       candidateDTO.setContactId(candidateContactDTO.getId());
       candidateDTO.setAthenaCompleted(Boolean.TRUE);
     }
-
     return candidateDTO;
   }
 
   private CandidateDTO mergeName(CandidateDTO candidateDTO) {
-    if (candidateDTO.getInterviews() != null && !candidateDTO.getInterviews().isEmpty())
-      for (InterviewDTO interviewDetails : candidateDTO.getInterviews()) {
-        if (interviewDetails.getClient() != null)
-          interviewDetails.getClient().setName(interviewDetails.getClient().getFirstName() + " "
-              + interviewDetails.getClient().getLastName());
+    for (int i = candidateDTO.getInterviews().size() - 1; i >= 0; i--) {
+      if (candidateDTO.getInterviews().get(i).getInterviewDate() != null
+          && !candidateDTO.getInterviews().get(i).getInterviewDate().isEmpty()) {
+        if (candidateDTO.getInterviews().get(i).getClient() != null
+            && candidateDTO.getInterviews().get(i).getClient().getFirstName() != null
+            && !candidateDTO.getInterviews().get(i).getClient().getFirstName().isEmpty()
+            && candidateDTO.getInterviews().get(i).getClient().getLastName() != null
+            && !candidateDTO.getInterviews().get(i).getClient().getLastName().isEmpty()) {
+          candidateDTO.getInterviews().get(i).getClient()
+              .setName(candidateDTO.getInterviews().get(i).getClient().getFirstName() + " "
+                  + candidateDTO.getInterviews().get(i).getClient().getLastName());
+        } else {
+          candidateDTO.getInterviews().remove(i);
+        }
+      } else {
+        candidateDTO.getInterviews().remove(i);
       }
+    }
     return candidateDTO;
   }
 
@@ -147,7 +158,7 @@ public class CompanyUtil {
       throw new APIException(Constant.JSON_PROCESSING_EXCEPTION + e.getMessage());
     }
   }
-  
+
   public List<CompanyDTO> getInvitedCompaniesFromAllCompanies(List<CompanyDTO> allCompanies,
       List<UserSearch> invitedCompanies) {
     // We create a stream of elements from the first list.
