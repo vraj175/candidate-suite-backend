@@ -6,6 +6,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.HashSet;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -17,10 +19,16 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.security.authentication.AbstractAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.oauth2.provider.OAuth2Authentication;
+import org.springframework.security.oauth2.provider.OAuth2Request;
+import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import com.aspire.kgp.CustomTestData;
 import com.aspire.kgp.constant.Constant;
+import com.aspire.kgp.dto.UserDTO;
 import com.aspire.kgp.model.User;
 import com.aspire.kgp.service.UserService;
 
@@ -34,6 +42,9 @@ class RequestFilterTest {
 
   @Mock
   UserService service;
+
+  @Mock
+  private JwtTokenStore jwtTokenStore;
 
   @BeforeEach
   void setUp() throws Exception {
@@ -88,7 +99,36 @@ class RequestFilterTest {
         "$2a$10$f3GPt8/.hwBGRNOUzxuHLe5/MfSIrK5L/tubjn2tSq33gxtPklZLu");
     filter.doFilterInternal(request, response, filterChain);
     verify(service, times(1)).saveOrUpdatePartner(Constant.TEST, Constant.TEST);
+
+    request.addHeader(Constant.AUTHORIZATION, Constant.TEST);
+    filter.doFilterInternal(request, response, filterChain);
+    verify(service, times(1)).saveOrUpdatePartner(Constant.TEST, Constant.TEST);
+
+//    OAuth2Request storedRequest = new OAuth2Request(new HashMap<>(), Constant.TEST,
+//        CustomTestData.getUserEntity().getGrantedAuthoritiesList(), Boolean.TRUE, new HashSet<>(),
+//        new HashSet<>(), Constant.TEST, new HashSet<>(), new HashMap<>());
+//
+//    Authentication userAuthentication = new AbstractAuthenticationToken(
+//        CustomTestData.getUserEntity().getGrantedAuthoritiesList()) {
+//
+//      @Override
+//      public Object getPrincipal() {
+//        // TODO Auto-generated method stub
+//        return null;
+//      }
+//
+//      @Override
+//      public Object getCredentials() {
+//        // TODO Auto-generated method stub
+//        return null;
+//      }
+//    };
+//    OAuth2Authentication authentication =
+//        new OAuth2Authentication(storedRequest, userAuthentication);
     
+    UserDTO userDTO = CustomTestData.getUserDTO();
+    when(service.getContactDetails(anyString())).thenReturn(userDTO);
+    when(service.findByEmail(anyString())).thenReturn(user);
     request.addHeader(Constant.AUTHORIZATION, "Bearer " + Constant.TEST);
     filter.doFilterInternal(request, response, filterChain);
     verify(service, times(1)).saveOrUpdatePartner(Constant.TEST, Constant.TEST);
