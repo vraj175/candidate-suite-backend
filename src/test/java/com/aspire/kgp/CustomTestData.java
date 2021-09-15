@@ -16,6 +16,7 @@ import com.aspire.kgp.model.Language;
 import com.aspire.kgp.model.Role;
 import com.aspire.kgp.model.User;
 import com.aspire.kgp.model.UserSearch;
+import com.aspire.kgp.security.UserEntity;
 import com.aspire.kgp.util.CommonUtil;
 
 public class CustomTestData {
@@ -147,5 +148,12 @@ public class CustomTestData {
     resetPasswordDTO.setOldPassword(Constant.TEST);
     resetPasswordDTO.setNewPassword(Constant.TEST);
     return resetPasswordDTO;
+  }
+  
+  public static UserEntity getUserEntity() {
+    UserEntity user = new UserEntity();
+    user.setUsername(Constant.TEST);
+    user.setPassword(Constant.TEST);
+    return user;
   }
 }
