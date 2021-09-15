@@ -86,6 +86,9 @@ class RequestFilterTest {
     request.removeHeader(Constant.API_KEY);
     request.addHeader(Constant.API_KEY,
         "$2a$10$f3GPt8/.hwBGRNOUzxuHLe5/MfSIrK5L/tubjn2tSq33gxtPklZLu");
+    filter.doFilterInternal(request, response, filterChain);
+    verify(service, times(1)).saveOrUpdatePartner(Constant.TEST, Constant.TEST);
+    
     request.addHeader(Constant.AUTHORIZATION, "Bearer " + Constant.TEST);
     filter.doFilterInternal(request, response, filterChain);
     verify(service, times(1)).saveOrUpdatePartner(Constant.TEST, Constant.TEST);
