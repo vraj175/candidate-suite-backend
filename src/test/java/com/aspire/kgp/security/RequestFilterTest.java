@@ -81,6 +81,10 @@ class RequestFilterTest {
     when(request.getRequestURL()).thenReturn(new StringBuffer("/api/user/verify/recaptcha"));
     filter.doFilterInternal(request, response, filterChain);
     verify(service, times(1)).saveOrUpdatePartner(null, null);
+    
+    when(request.getRequestURL()).thenReturn(new StringBuffer("/api/user/profile"));
+    filter.doFilterInternal(request, response, filterChain);
+    verify(service, times(1)).saveOrUpdatePartner(null, null);
   }
 
 }
