@@ -16,6 +16,7 @@ import com.aspire.kgp.exception.APIException;
 import com.aspire.kgp.exception.AppExceptionHandler;
 import com.aspire.kgp.exception.MissingAuthTokenException;
 import com.aspire.kgp.exception.NotFoundException;
+import com.aspire.kgp.exception.UnauthorizedAccessException;
 import com.aspire.kgp.exception.ValidateException;
 
 class AppExceptionHandlerTest {
@@ -43,6 +44,13 @@ class AppExceptionHandlerTest {
     ResponseEntity<Object> responseEntity = appExceptionHandler.handleMissingAuthToken(
         new MissingAuthTokenException(Constant.MISSING_REQUEST_HEADER), webRequest);
     assertEquals(HttpStatus.BAD_REQUEST, responseEntity.getStatusCode());
+  }
+  
+  @Test
+  void testHandleUnauthorizedAccessException() {
+    ResponseEntity<Object> responseEntity = appExceptionHandler.handleUnauthorizedAccessException(
+        new UnauthorizedAccessException(), webRequest);
+    assertEquals(HttpStatus.UNAUTHORIZED, responseEntity.getStatusCode());
   }
 
   @Test
