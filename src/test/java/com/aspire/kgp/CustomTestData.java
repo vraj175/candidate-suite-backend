@@ -16,6 +16,7 @@ import com.aspire.kgp.model.Language;
 import com.aspire.kgp.model.Role;
 import com.aspire.kgp.model.User;
 import com.aspire.kgp.model.UserSearch;
+import com.aspire.kgp.model.UserVideo;
 import com.aspire.kgp.security.UserEntity;
 import com.aspire.kgp.util.CommonUtil;
 
@@ -155,5 +156,19 @@ public class CustomTestData {
     user.setUsername(Constant.TEST);
     user.setPassword(Constant.TEST);
     return user;
+  }
+  
+  public static UserVideo getUserVideo() {
+    UserVideo userVideo = new UserVideo();
+    userVideo.setFileToken(Constant.TEST);
+    userVideo.setDeleted(Boolean.FALSE);
+    userVideo.setUserSearch(getUserSearch());
+    return userVideo;
+  }
+  
+  public static List<UserVideo> getUserVideos() {
+    List<UserVideo> userVideos = new ArrayList<>();
+    userVideos.add(getUserVideo());
+    return userVideos;
   }
 }
