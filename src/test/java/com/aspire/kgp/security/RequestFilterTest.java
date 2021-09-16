@@ -203,6 +203,60 @@ class RequestFilterTest {
     when(jwtTokenStore.readAccessToken(anyString())).thenReturn(accessToken);
     filter.doFilterInternal(request, response, filterChain);
     verify(service, times(1)).saveOrUpdatePartner(Constant.TEST, Constant.TEST);
+    
+    accessToken = new OAuth2AccessToken() {
+      
+      @Override
+      public boolean isExpired() {
+        // TODO Auto-generated method stub
+        return false;
+      }
+      
+      @Override
+      public String getValue() {
+        // TODO Auto-generated method stub
+        return null;
+      }
+      
+      @Override
+      public String getTokenType() {
+        // TODO Auto-generated method stub
+        return null;
+      }
+      
+      @Override
+      public Set<String> getScope() {
+        // TODO Auto-generated method stub
+        return null;
+      }
+      
+      @Override
+      public OAuth2RefreshToken getRefreshToken() {
+        // TODO Auto-generated method stub
+        return null;
+      }
+      
+      @Override
+      public int getExpiresIn() {
+        // TODO Auto-generated method stub
+        return Integer.MAX_VALUE;
+      }
+      
+      @Override
+      public Date getExpiration() {
+        // TODO Auto-generated method stub
+        return null;
+      }
+      
+      @Override
+      public Map<String, Object> getAdditionalInformation() {
+        // TODO Auto-generated method stub
+        return null;
+      }
+    }; 
+    when(jwtTokenStore.readAccessToken(anyString())).thenReturn(accessToken);
+    filter.doFilterInternal(request, response, filterChain);
+    verify(service, times(1)).saveOrUpdatePartner(Constant.TEST, Constant.TEST);
   }
   
   
