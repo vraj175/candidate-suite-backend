@@ -50,9 +50,9 @@ public class MailServiceImpl implements MailService {
       mimeMessageHelper.setBcc(mailBcc);
     }
     mimeMessageHelper.setText(mailContent, Boolean.TRUE);
-    // if (attachments != null && !attachments.isEmpty()) {
-    // mimeMessageHelper.set
-    // }
+    if (attachments != null && !attachments.isEmpty()) {
+      // mimeMessageHelper.set
+    }
 
     mailSender.send(mimeMessageHelper.getMimeMessage());
   }
