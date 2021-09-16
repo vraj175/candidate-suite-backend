@@ -82,7 +82,6 @@ public class ContactUtil {
       fos.write(multipartFile.getBytes());
       fos.close();
     } catch (IOException e1) {
-      e1.printStackTrace();
       throw new APIException(Constant.FILE_UPLOAD_ERROR);
     }
 
@@ -96,7 +95,6 @@ public class ContactUtil {
         return Constant.FILE_UPLOADED_SUCCESSFULLY;
       }
     } catch (Exception e) {
-      e.printStackTrace();
       throw new APIException(Constant.FILE_UPLOAD_ERROR);
     }
     return Constant.FILE_UPLOAD_ERROR;

@@ -104,28 +104,6 @@ class RequestFilterTest {
     filter.doFilterInternal(request, response, filterChain);
     verify(service, times(1)).saveOrUpdatePartner(Constant.TEST, Constant.TEST);
 
-//    OAuth2Request storedRequest = new OAuth2Request(new HashMap<>(), Constant.TEST,
-//        CustomTestData.getUserEntity().getGrantedAuthoritiesList(), Boolean.TRUE, new HashSet<>(),
-//        new HashSet<>(), Constant.TEST, new HashSet<>(), new HashMap<>());
-//
-//    Authentication userAuthentication = new AbstractAuthenticationToken(
-//        CustomTestData.getUserEntity().getGrantedAuthoritiesList()) {
-//
-//      @Override
-//      public Object getPrincipal() {
-//        // TODO Auto-generated method stub
-//        return null;
-//      }
-//
-//      @Override
-//      public Object getCredentials() {
-//        // TODO Auto-generated method stub
-//        return null;
-//      }
-//    };
-//    OAuth2Authentication authentication =
-//        new OAuth2Authentication(storedRequest, userAuthentication);
-    
     UserDTO userDTO = CustomTestData.getUserDTO();
     when(service.getContactDetails(anyString())).thenReturn(userDTO);
     when(service.findByEmail(anyString())).thenReturn(user);
@@ -133,6 +111,31 @@ class RequestFilterTest {
     request.addHeader(Constant.AUTHORIZATION, "Bearer " + Constant.TEST);
     filter.doFilterInternal(request, response, filterChain);
     verify(service, times(1)).saveOrUpdatePartner(Constant.TEST, Constant.TEST);
+    
+    OAuth2Request storedRequest = new OAuth2Request(new HashMap<>(), Constant.TEST,
+        CustomTestData.getUserEntity().getGrantedAuthoritiesList(), Boolean.TRUE, new HashSet<>(),
+        new HashSet<>(), Constant.TEST, new HashSet<>(), new HashMap<>());
+    OAuth2Authentication authentication =
+        new OAuth2Authentication(storedRequest, null);
+    when(jwtTokenStore.readAuthentication(anyString())).thenReturn(authentication);
+    filter.doFilterInternal(request, response, filterChain);
+    verify(service, times(1)).saveOrUpdatePartner(Constant.TEST, Constant.TEST);
+
+    Authentication userAuthentication = new AbstractAuthenticationToken(
+        CustomTestData.getUserEntity().getGrantedAuthoritiesList()) {
+
+      @Override
+      public Object getPrincipal() {
+        // TODO Auto-generated method stub
+        return null;
+      }
+
+      @Override
+      public Object getCredentials() {
+        // TODO Auto-generated method stub
+        return null;
+      }
+    };
   }
 
 }
