@@ -263,6 +263,11 @@ class RequestFilterTest {
     when(service.getGalaxyUserDetails(anyString())).thenReturn(userDTO);
     filter.doFilterInternal(request, response, filterChain);
     verify(service, times(1)).saveOrUpdatePartner(Constant.TEST, Constant.TEST); 
+    
+    userDTO.setFirstName(null);
+    when(service.getGalaxyUserDetails(anyString())).thenReturn(userDTO);
+    filter.doFilterInternal(request, response, filterChain);
+    verify(service, times(1)).saveOrUpdatePartner(Constant.TEST, Constant.TEST); 
   }
   
   
