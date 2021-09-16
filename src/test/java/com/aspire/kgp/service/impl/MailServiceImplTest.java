@@ -1,7 +1,7 @@
 package com.aspire.kgp.service.impl;
 
-import static org.mockito.ArgumentMatchers.any;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
@@ -12,7 +12,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mock.web.MockHttpServletRequest;
 
 import com.aspire.kgp.CustomTestData;
@@ -29,9 +28,6 @@ class MailServiceImplTest {
   MailServiceImpl service;
 
   @Mock
-  JavaMailSender mailSender;
-
-  @Mock
   Configuration configuration;
 
   @BeforeEach
@@ -45,7 +41,7 @@ class MailServiceImplTest {
     UserDTO user = CustomTestData.getUserDTO();
     Template template = new Template(Constant.TEST, Constant.TEST, null);
     when(configuration.getTemplate(any())).thenReturn(template);
-    
+
     String result = service.getEmailContent(request, user, new HashMap<>(), Constant.TEST);
 
     assertNotNull(result);

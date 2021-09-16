@@ -39,29 +39,22 @@ public class MailServiceImpl implements MailService {
 
   @Override
   public void sendEmail(String mailTo, String[] mailBcc, String mailSubject, String mailContent,
-      List<Object> attachments) {
+      List<Object> attachments) throws MessagingException, UnsupportedEncodingException {
     MimeMessage mimeMessage = mailSender.createMimeMessage();
-    try {
-      MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, true);
+    MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, true);
 
-      mimeMessageHelper.setSubject(mailSubject);
-      mimeMessageHelper.setFrom(new InternetAddress(Constant.FROM_MAIL, Constant.SENDER_NAME));
-      mimeMessageHelper.setTo(mailTo);
-      if (mailBcc != null && mailBcc.length > 0) {
-        mimeMessageHelper.setBcc(mailBcc);
-      }
-      mimeMessageHelper.setText(mailContent, Boolean.TRUE);
-      if (attachments != null && !attachments.isEmpty()) {
-        // mimeMessageHelper.set
-      }
-
-      mailSender.send(mimeMessageHelper.getMimeMessage());
-
-    } catch (MessagingException e) {
-      log.info("MessagingException::");
-    } catch (UnsupportedEncodingException e) {
-      log.info("UnsupportedEncodingException::");
+    mimeMessageHelper.setSubject(mailSubject);
+    mimeMessageHelper.setFrom(new InternetAddress(Constant.FROM_MAIL, Constant.SENDER_NAME));
+    mimeMessageHelper.setTo(mailTo);
+    if (mailBcc != null && mailBcc.length > 0) {
+      mimeMessageHelper.setBcc(mailBcc);
     }
+    mimeMessageHelper.setText(mailContent, Boolean.TRUE);
+    // if (attachments != null && !attachments.isEmpty()) {
+    // mimeMessageHelper.set
+    // }
+
+    mailSender.send(mimeMessageHelper.getMimeMessage());
   }
 
   @Override
