@@ -257,6 +257,12 @@ class RequestFilterTest {
     when(jwtTokenStore.readAccessToken(anyString())).thenReturn(accessToken);
     filter.doFilterInternal(request, response, filterChain);
     verify(service, times(1)).saveOrUpdatePartner(Constant.TEST, Constant.TEST);
+    
+    user.getRole().setName(Constant.PARTNER);
+    when(service.findByEmail(anyString())).thenReturn(user);
+    when(service.getGalaxyUserDetails(anyString())).thenReturn(userDTO);
+    filter.doFilterInternal(request, response, filterChain);
+    verify(service, times(1)).saveOrUpdatePartner(Constant.TEST, Constant.TEST); 
   }
   
   
