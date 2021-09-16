@@ -6,8 +6,11 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -21,6 +24,8 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.oauth2.common.OAuth2AccessToken;
+import org.springframework.security.oauth2.common.OAuth2RefreshToken;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.OAuth2Request;
 import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
@@ -124,6 +129,11 @@ class RequestFilterTest {
     Authentication userAuthentication = new AbstractAuthenticationToken(
         CustomTestData.getUserEntity().getGrantedAuthoritiesList()) {
 
+      /**
+           * 
+           */
+          private static final long serialVersionUID = 1L;
+
       @Override
       public Object getPrincipal() {
         // TODO Auto-generated method stub
@@ -136,6 +146,65 @@ class RequestFilterTest {
         return null;
       }
     };
+    
+    authentication =
+        new OAuth2Authentication(storedRequest, userAuthentication);
+    when(jwtTokenStore.readAuthentication(anyString())).thenReturn(authentication);
+    OAuth2AccessToken accessToken = new OAuth2AccessToken() {
+      
+      @Override
+      public boolean isExpired() {
+        // TODO Auto-generated method stub
+        return false;
+      }
+      
+      @Override
+      public String getValue() {
+        // TODO Auto-generated method stub
+        return null;
+      }
+      
+      @Override
+      public String getTokenType() {
+        // TODO Auto-generated method stub
+        return null;
+      }
+      
+      @Override
+      public Set<String> getScope() {
+        // TODO Auto-generated method stub
+        return null;
+      }
+      
+      @Override
+      public OAuth2RefreshToken getRefreshToken() {
+        // TODO Auto-generated method stub
+        return null;
+      }
+      
+      @Override
+      public int getExpiresIn() {
+        // TODO Auto-generated method stub
+        return 0;
+      }
+      
+      @Override
+      public Date getExpiration() {
+        // TODO Auto-generated method stub
+        return null;
+      }
+      
+      @Override
+      public Map<String, Object> getAdditionalInformation() {
+        // TODO Auto-generated method stub
+        return null;
+      }
+    }; 
+    when(jwtTokenStore.readAccessToken(anyString())).thenReturn(accessToken);
+    filter.doFilterInternal(request, response, filterChain);
+    verify(service, times(1)).saveOrUpdatePartner(Constant.TEST, Constant.TEST);
   }
+  
+  
 
 }
