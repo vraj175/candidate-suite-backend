@@ -51,13 +51,15 @@ public class ContactController {
   public MappingJacksonValue getCandidateDetails(@PathVariable("contactId") String contactId) {
     ContactDTO contactDTO = contactUtil.getContactDetails(contactId);
     SimpleBeanPropertyFilter contactFilter = SimpleBeanPropertyFilter.filterOutAllExcept(
-        "currentJobTitle", "company", "mobilePhone", "homePhone", "workEmail", "email",
-        "linkedinUrl", "baseSalary", "targetBonusValue", "equity", "compensationExpectation",
-        "compensationNotes", "jobHistory", "educationDetails", "boardDetails");
+        Constant.CURRENT_JOB_TITLE, Constant.COMPANY, Constant.MOBILE_PHONE, "homePhone",
+        Constant.WORK_EMAIL, Constant.EMAIL, Constant.LINKEDIN_URL, "baseSalary",
+        "targetBonusValue", "equity", "compensationExpectation", "compensationNotes", "jobHistory",
+        "educationDetails", "boardDetails");
     SimpleBeanPropertyFilter companyFilter =
         SimpleBeanPropertyFilter.filterOutAllExcept("id", "name");
-    FilterProvider filters = new SimpleFilterProvider().addFilter("contactFilter", contactFilter)
-        .addFilter("companyFilter", companyFilter);
+    FilterProvider filters =
+        new SimpleFilterProvider().addFilter(Constant.CONTACT_FILTER, contactFilter)
+            .addFilter(Constant.COMPANY_FILTER, companyFilter);
 
     MappingJacksonValue mapping = new MappingJacksonValue(contactDTO);
     mapping.setFilters(filters);
@@ -89,12 +91,14 @@ public class ContactController {
     SimpleBeanPropertyFilter contactReferenceFilter =
         SimpleBeanPropertyFilter.filterOutAllExcept("id", "searchId", "relationship", "contact");
     SimpleBeanPropertyFilter contactFilter = SimpleBeanPropertyFilter.filterOutAllExcept(
-        "firstName", "lastName", "currentJobTitle", "mobilePhone", "company", "email", "workEmail");
+        Constant.FIRST_NAME, Constant.LAST_NAME, Constant.CURRENT_JOB_TITLE, Constant.MOBILE_PHONE,
+        Constant.COMPANY, Constant.EMAIL, Constant.WORK_EMAIL);
     SimpleBeanPropertyFilter companyFilter =
         SimpleBeanPropertyFilter.filterOutAllExcept("id", "name");
     FilterProvider filters =
         new SimpleFilterProvider().addFilter("contactReferenceFilter", contactReferenceFilter)
-            .addFilter("contactFilter", contactFilter).addFilter("companyFilter", companyFilter);
+            .addFilter(Constant.CONTACT_FILTER, contactFilter)
+            .addFilter(Constant.COMPANY_FILTER, companyFilter);
 
     MappingJacksonValue mapping = new MappingJacksonValue(contactReferenceDTO);
     mapping.setFilters(filters);
@@ -136,14 +140,15 @@ public class ContactController {
   public MappingJacksonValue getListOfContactSearches(@PathVariable("contactId") String contactId) {
     List<SearchDTO> searchDTO = contactUtil.getListOfContactSearches(contactId);
 
-    SimpleBeanPropertyFilter searchFilter =
-        SimpleBeanPropertyFilter.filterOutAllExcept("id", "jobTitle", "company", "jobNumber");
+    SimpleBeanPropertyFilter searchFilter = SimpleBeanPropertyFilter.filterOutAllExcept(Constant.ID,
+        Constant.JOB_TITLE, Constant.COMPANY, Constant.JOB_NUMBER);
 
     SimpleBeanPropertyFilter companyFilter =
-        SimpleBeanPropertyFilter.filterOutAllExcept("id", "name");
+        SimpleBeanPropertyFilter.filterOutAllExcept(Constant.ID, "name");
 
-    FilterProvider filters = new SimpleFilterProvider().addFilter("searchFilter", searchFilter)
-        .addFilter("companyFilter", companyFilter);
+    FilterProvider filters =
+        new SimpleFilterProvider().addFilter(Constant.SEARCH_FILTER, searchFilter)
+            .addFilter(Constant.COMPANY_FILTER, companyFilter);
 
     MappingJacksonValue mapping = new MappingJacksonValue(searchDTO);
     mapping.setFilters(filters);
@@ -156,16 +161,20 @@ public class ContactController {
   @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK",
       content = @Content(mediaType = "application/json", schema = @Schema(type = "List<ContactDTO>",
           example = "[{\"id\": \"string\",\"firstName\": \"string\",\"lastName\": \"string\",\"workEmail\": \"string\",\"email\": \"string\",\"mobilePhone\": \"string\",\"workPhone\": \"string\",\"currentJobTitle\": \"string\",\"company\": {\"name\": \"string\"}}]")))})
-  public MappingJacksonValue getListOfContactByName(@RequestParam(name = "name") String contactName) {
+  public MappingJacksonValue getListOfContactByName(
+      @RequestParam(name = "name") String contactName) {
     List<ContactDTO> contactDTO = contactUtil.getListOfContactByName(contactName);
 
-    SimpleBeanPropertyFilter contactFilter = SimpleBeanPropertyFilter.filterOutAllExcept("id",
-        "firstName", "lastName", "currentJobTitle", "company","workEmail","email","mobilePhone","workPhone");
+    SimpleBeanPropertyFilter contactFilter =
+        SimpleBeanPropertyFilter.filterOutAllExcept(Constant.ID, Constant.FIRST_NAME,
+            Constant.LAST_NAME, Constant.CURRENT_JOB_TITLE, Constant.COMPANY, Constant.WORK_EMAIL,
+            Constant.EMAIL, Constant.MOBILE_PHONE, Constant.WORK_PHONE);
 
     SimpleBeanPropertyFilter companyFilter = SimpleBeanPropertyFilter.filterOutAllExcept("name");
 
-    FilterProvider filters = new SimpleFilterProvider().addFilter("contactFilter", contactFilter)
-        .addFilter("companyFilter", companyFilter);
+    FilterProvider filters =
+        new SimpleFilterProvider().addFilter(Constant.CONTACT_FILTER, contactFilter)
+            .addFilter(Constant.COMPANY_FILTER, companyFilter);
 
     MappingJacksonValue mapping = new MappingJacksonValue(contactDTO);
     mapping.setFilters(filters);
