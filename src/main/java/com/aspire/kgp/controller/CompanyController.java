@@ -106,7 +106,7 @@ public class CompanyController {
     return mapping;
   }
 
-  @Operation(summary = "Get all matchiing companies")
+  @Operation(summary = "Get all matching companies")
   @GetMapping("/companyName/{companyName}")
   @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK",
       content = @Content(mediaType = "application/json", schema = @Schema(type = "List<CompanyDTO>",

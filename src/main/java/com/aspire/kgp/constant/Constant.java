@@ -86,6 +86,10 @@ public class Constant {
   public static final String SEARCH_INFO_URL = "/searches/{SEARCHID}";
   public static final String EDUCATION_DEGREE_PICKLIST_URL = "/picklists/educations/degrees";
   public static final String CONTACT_REFERENCE_URL = "/contact/{CONTACTID}/references";
+  public static final String CONTACT_SEARCHES_URL =
+      "/picklists/searches?searchValue=&contactId={CONTACTID}&stage=Open";
+  public static final String GET_CONTACT_LIST_BY_NAME_URL =
+      "/picklists/contacts?name={CONTACTNAME}";
 
   public static final String RESUME_URL = "/contact/{contactId}/resumes";
   public static final String CONTACT_ID = "{contactId}";
@@ -145,6 +149,8 @@ public class Constant {
   public static final String MOBILE_PHONE = "mobilePhone";
   public static final String WORK_PHONE = "workPhone";
   public static final String PUBLISHED_BIO = "publishedBio";
+  public static final String WORK_EMAIL = "workEmail";
+  
 
   // google capcha
   public static final String GOOGLE_CAPTCHA_SECRET_KEY = "6LfPQ10aAAAAAHP7HDxskU_c1c8oBVSpf5SZdZ4C";
@@ -155,6 +161,8 @@ public class Constant {
   // Json Filter Name
   public static final String COMPANY_FILTER = "companyFilter";
   public static final String LOCATION_FILTER = "locationFilter";
+  public static final String CONTACT_FILTER = "contactFilter";
+  public static final String SEARCH_FILTER = "searchFilter";
 
   // messages
   public static final String DATA_SAVED = "Data saved successfully";

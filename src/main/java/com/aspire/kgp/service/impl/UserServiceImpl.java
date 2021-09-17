@@ -1,6 +1,5 @@
 package com.aspire.kgp.service.impl;
 
-import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.sql.Timestamp;
 import java.util.Base64;
@@ -41,7 +40,6 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
-import freemarker.template.TemplateException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 
@@ -229,7 +227,7 @@ public class UserServiceImpl implements UserService {
        */
       private static final long serialVersionUID = 1L;
     }.getType());
-    if (userDTO.getId() ==null) {
+    if (userDTO.getId() == null) {
       throw new APIException("Invalid contactId");
     }
     return userDTO;
@@ -246,7 +244,7 @@ public class UserServiceImpl implements UserService {
        */
       private static final long serialVersionUID = 1L;
     }.getType());
-    if (userDTO.getId() ==null) {
+    if (userDTO.getId() == null) {
       throw new APIException("Invalid userId");
     }
     return userDTO;
@@ -305,7 +303,7 @@ public class UserServiceImpl implements UserService {
       mailService.sendEmail(email, null, mailSubject, mailService.getEmailContent(request, userDTO,
           staticContentsMap, Constant.FORGOT_EMAIL_TEMPLATE), null);
       response = true;
-    } catch (IOException | TemplateException e) {
+    } catch (Exception e) {
       throw new APIException("Error in send Email");
     }
 
