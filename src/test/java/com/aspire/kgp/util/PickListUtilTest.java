@@ -13,6 +13,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import com.aspire.kgp.CustomTestData;
+import com.aspire.kgp.exception.APIException;
 
 class PickListUtilTest {
   
@@ -37,6 +38,16 @@ class PickListUtilTest {
     
     assertNotNull(result);
     assertEquals(strings.size(), result.size());
+  }
+  
+  @Test
+  void testGetEducationDegrees_APIException() {
+    String response = "{";
+    when(restUtil.newGetMethod(anyString())).thenReturn(response);
+    
+    Exception e = assertThrows(APIException.class, () -> util.getEducationDegrees());
+    assertNotNull(e);
+    
   }
 
 }
