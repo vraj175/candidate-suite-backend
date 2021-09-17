@@ -171,4 +171,10 @@ public class CustomTestData {
     userVideos.add(getUserVideo());
     return userVideos;
   }
+  
+  public static List<String> getStrings() {
+    List<String> strings = new ArrayList<>();
+    strings.add(Constant.TEST);
+    return strings;
+  }
 }
