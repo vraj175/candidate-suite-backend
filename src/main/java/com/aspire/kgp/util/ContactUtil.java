@@ -6,6 +6,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -23,10 +24,14 @@ import com.aspire.kgp.constant.Constant;
 import com.aspire.kgp.dto.ContactDTO;
 import com.aspire.kgp.dto.ContactReferencesDTO;
 import com.aspire.kgp.dto.DocumentDTO;
+import com.aspire.kgp.dto.SearchDTO;
 import com.aspire.kgp.exception.APIException;
+import com.aspire.kgp.exception.NotFoundException;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 
 
@@ -149,6 +154,61 @@ public class ContactUtil {
 
     try {
       return new Gson().fromJson(apiResponse, new TypeToken<List<ContactReferencesDTO>>() {
+
+        /**
+         * 
+         */
+        private static final long serialVersionUID = 1L;
+      }.getType());
+    } catch (JsonSyntaxException e) {
+      throw new APIException(Constant.JSON_PROCESSING_EXCEPTION + e.getMessage());
+    }
+  }
+
+  public final List<SearchDTO> getListOfContactSearches(String contactId) {
+    String apiResponse =
+        restUtil.newGetMethod(Constant.CONTACT_SEARCHES_URL.replace("{CONTACTID}", contactId));
+    List<SearchDTO> listSearch = new ArrayList<>();
+    if (CommonUtil.checkNullString(apiResponse)) {
+      log.error("Error while fetching contact search.");
+      return listSearch;
+    }
+    JsonObject jsonObjects = (JsonObject) JsonParser.parseString(apiResponse);
+    JsonArray jsonArray = jsonObjects.getAsJsonArray("data");
+
+    if (jsonArray == null) {
+      throw new NotFoundException("Invalid Contact Id");
+    }
+    try {
+      return new Gson().fromJson(jsonArray, new TypeToken<List<SearchDTO>>() {
+
+        /**
+         * 
+         */
+        private static final long serialVersionUID = 1L;
+      }.getType());
+    } catch (JsonSyntaxException e) {
+      throw new APIException(Constant.JSON_PROCESSING_EXCEPTION + e.getMessage());
+    }
+  }
+
+  public final List<ContactDTO> getListOfContactByName(String contactName) {
+    String apiResponse = restUtil
+        .newGetMethod(Constant.GET_CONTACT_LIST_BY_NAME_URL.replace("{CONTACTNAME}", contactName));
+
+    List<ContactDTO> listContact = new ArrayList<>();
+    if (CommonUtil.checkNullString(apiResponse)) {
+      log.error("Error while fetching contact.");
+      return listContact;
+    }
+    JsonObject jsonObjects = (JsonObject) JsonParser.parseString(apiResponse);
+    JsonArray jsonArray = jsonObjects.getAsJsonArray("data");
+
+    if (jsonArray == null) {
+      throw new NotFoundException("Invalid Contact Id");
+    }
+    try {
+      return new Gson().fromJson(jsonArray, new TypeToken<List<ContactDTO>>() {
 
         /**
          * 
