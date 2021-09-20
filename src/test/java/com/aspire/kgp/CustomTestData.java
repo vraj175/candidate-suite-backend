@@ -9,8 +9,10 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import com.aspire.kgp.constant.Constant;
+import com.aspire.kgp.dto.CandidateDTO;
 import com.aspire.kgp.dto.InviteDTO;
 import com.aspire.kgp.dto.ResetPasswordDTO;
+import com.aspire.kgp.dto.SearchDTO;
 import com.aspire.kgp.dto.UserDTO;
 import com.aspire.kgp.model.Language;
 import com.aspire.kgp.model.Role;
@@ -176,5 +178,31 @@ public class CustomTestData {
     List<String> strings = new ArrayList<>();
     strings.add(Constant.TEST);
     return strings;
+  }
+  
+  public static SearchDTO getsearchDTO() {
+    SearchDTO searchDTO = new SearchDTO();
+    searchDTO.setId(Constant.TEST);
+    searchDTO.setStage(Constant.TEST);
+    return searchDTO;
+  }
+  
+  public static List<SearchDTO> getSearchDTOs() {
+    List<SearchDTO> searchDTOs = new ArrayList<>();
+    searchDTOs.add(getsearchDTO());
+    return searchDTOs;
+  }
+  
+  public static CandidateDTO getCandidateDTO() {
+    CandidateDTO candidateDTO = new CandidateDTO();
+    candidateDTO.setId(Constant.TEST);
+    
+    return candidateDTO;
+  }
+  
+  public static List<CandidateDTO> getCandidateDTOs() {
+    List<CandidateDTO> candidateDTOs = new ArrayList<>();
+    candidateDTOs.add(getCandidateDTO());
+    return candidateDTOs;
   }
 }
