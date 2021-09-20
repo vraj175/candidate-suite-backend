@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.aspire.kgp.dto.PickListDTO;
 import com.aspire.kgp.util.PickListUtil;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -27,5 +28,12 @@ public class PickListController {
   @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK")})
   public List<String> getEducationDegrees() {
     return pickListUtil.getEducationDegrees();
+  }
+
+  @Operation(summary = "Get Reference type List")
+  @GetMapping("/picklists/reference-types")
+  @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK")})
+  public List<PickListDTO> getReferencesType() {
+    return pickListUtil.getReferencesType();
   }
 }
