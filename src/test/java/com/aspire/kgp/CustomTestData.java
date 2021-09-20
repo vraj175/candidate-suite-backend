@@ -139,6 +139,22 @@ public class CustomTestData {
     return userSearch;
   }
   
+  public static UserSearch getUserSearch2() {
+    Timestamp t1 = new Timestamp(System.currentTimeMillis());
+
+    UserSearch userSearch = new UserSearch();
+    userSearch.setId(Long.MAX_VALUE);
+    userSearch.setCreatedDate(t1);
+    userSearch.setModifyDate(t1);
+    userSearch.setDeleted(Boolean.FALSE);
+    userSearch.setCandidateId(Constant.TEST);
+    userSearch.setInvitedBy(getUser());
+    userSearch.setSearchId(Constant.TEST);
+    userSearch.setCompanyId(Constant.TEST);
+    
+    return userSearch;
+  }
+  
   public static List<UserSearch> getUserSearches() {
     List<UserSearch> userSearches = new ArrayList<>();
     userSearches.add(getUserSearch());
