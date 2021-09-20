@@ -91,6 +91,7 @@ class SearchUtilTest {
     assertTrue(result.isEmpty());
 
     List<UserSearch> userSearchs = CustomTestData.getUserSearches();
+    userSearchs.add(CustomTestData.getUserSearch2());
     when(searchService.findByUser(any())).thenReturn(userSearchs);
 
     String element =
