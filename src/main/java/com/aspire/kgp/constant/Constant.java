@@ -85,9 +85,9 @@ public class Constant {
       "/clientsuite/candidate/resumes/{attachmentId}/download";
   public static final String SEARCH_INFO_URL = "/searches/{SEARCHID}";
   public static final String EDUCATION_DEGREE_PICKLIST_URL = "/picklists/educations/degrees";
-  public static final String CONTACT_REFERENCE_URL = "/contact/{CONTACTID}/references";
+  public static final String CONTACT_REFERENCE_URL = "/contact/{contactId}/references";
   public static final String CONTACT_SEARCHES_URL =
-      "/picklists/searches?searchValue=&contactId={CONTACTID}&stage=Open";
+      "/picklists/searches?searchValue=&contactId={contactId}&stage=Open";
   public static final String GET_CONTACT_LIST_BY_NAME_URL =
       "/picklists/contacts?name={CONTACTNAME}";
   public static final String REFERENCE_TYPE_PICKLIST_URL = "/picklists/reference-types";

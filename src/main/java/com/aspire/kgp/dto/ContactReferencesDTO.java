@@ -13,6 +13,9 @@ public class ContactReferencesDTO {
   private ContactDTO contact;
   private String type;
   private String source;
+  @SerializedName("ref_contact_id")
+  private String refContactId;
+  private SearchDTO search;
 
   public String getId() {
     return id;
@@ -62,5 +65,20 @@ public class ContactReferencesDTO {
     this.source = source;
   }
 
+  public String getRefContactId() {
+    return refContactId;
+  }
+
+  public void setRefContactId(String refContactId) {
+    this.refContactId = refContactId;
+  }
+
+  public SearchDTO getSearch() {
+    return search;
+  }
+
+  public void setSearch(SearchDTO search) {
+    this.search = search;
+  }
 
 }

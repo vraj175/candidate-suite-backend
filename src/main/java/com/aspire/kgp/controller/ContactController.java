@@ -88,17 +88,20 @@ public class ContactController {
           example = "[{\"id\": \"string\",\"searchId\": \"string\",\"relationship\": \"string\",\"contact\": {\"firstName\": \"string\",\"lastName\": \"string\",\"workEmail\": \"string\",\"email\": \"string\",\"mobilePhone\": \"string\",\"currentJobTitle\": \"string\",\"company\": {\"id\": \"string\",\"name\": \"string\"}}}]")))})
   public MappingJacksonValue getListOfReferences(@PathVariable("contactId") String contactId) {
     List<ContactReferencesDTO> contactReferenceDTO = contactUtil.getListOfReferences(contactId);
-    SimpleBeanPropertyFilter contactReferenceFilter = SimpleBeanPropertyFilter
-        .filterOutAllExcept("id", "searchId", "relationship", "contact", "source", "type");
+    SimpleBeanPropertyFilter contactReferenceFilter = SimpleBeanPropertyFilter.filterOutAllExcept(
+        "id", "searchId", "relationship", "contact", "source", "type", "refContactId", "search");
     SimpleBeanPropertyFilter contactFilter = SimpleBeanPropertyFilter.filterOutAllExcept(
         Constant.FIRST_NAME, Constant.LAST_NAME, Constant.CURRENT_JOB_TITLE, Constant.MOBILE_PHONE,
         Constant.COMPANY, Constant.EMAIL, Constant.WORK_EMAIL);
     SimpleBeanPropertyFilter companyFilter =
         SimpleBeanPropertyFilter.filterOutAllExcept("id", "name");
+    SimpleBeanPropertyFilter searchFilter =
+        SimpleBeanPropertyFilter.filterOutAllExcept("id", "jobTitle");
     FilterProvider filters =
         new SimpleFilterProvider().addFilter("contactReferenceFilter", contactReferenceFilter)
             .addFilter(Constant.CONTACT_FILTER, contactFilter)
-            .addFilter(Constant.COMPANY_FILTER, companyFilter);
+            .addFilter(Constant.COMPANY_FILTER, companyFilter)
+            .addFilter(Constant.SEARCH_FILTER, searchFilter);
 
     MappingJacksonValue mapping = new MappingJacksonValue(contactReferenceDTO);
     mapping.setFilters(filters);
@@ -180,5 +183,12 @@ public class ContactController {
     mapping.setFilters(filters);
 
     return mapping;
+  }
+
+  @Operation(summary = "Add Contact Reference")
+  @PostMapping("/contact/{contactId}/references")
+  public String addContactReference(@PathVariable("contactId") String contactId,
+      @RequestBody String referenceData) {
+    return contactUtil.addContactReference(contactId, referenceData);
   }
 }
