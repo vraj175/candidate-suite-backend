@@ -23,7 +23,9 @@ import org.mockito.MockitoAnnotations;
 import com.aspire.kgp.CustomTestData;
 import com.aspire.kgp.constant.Constant;
 import com.aspire.kgp.dto.CandidateDTO;
+import com.aspire.kgp.dto.ContactDTO;
 import com.aspire.kgp.dto.SearchDTO;
+import com.aspire.kgp.dto.UserDTO;
 import com.aspire.kgp.exception.APIException;
 import com.aspire.kgp.model.User;
 import com.aspire.kgp.model.UserSearch;
@@ -110,4 +112,33 @@ class SearchUtilTest {
     assertFalse(result.isEmpty());
   }
 
+  @Test
+  void testgetCandidateList() {
+    when(searchService.findByIsDeletedFalse()).thenReturn(new ArrayList<>());
+    List<CandidateDTO> result = util.getCandidateList(Constant.TEST);
+    assertNotNull(result);
+    assertTrue(result.isEmpty());
+    
+    List<UserSearch> searches = CustomTestData.getUserSearches();
+    when(searchService.findByIsDeletedFalse()).thenReturn(searches);
+    when(restUtil.newGetMethod(anyString())).thenReturn(null);
+    result = util.getCandidateList(Constant.TEST);
+    assertNotNull(result);
+    assertTrue(result.isEmpty());
+    
+    UserDTO userdto = CustomTestData.getUserDTO();
+    String element =
+        new Gson().toJson(userdto, new TypeToken<UserDTO>() {
+
+          /**
+           * 
+           */
+          private static final long serialVersionUID = 1L;
+        }.getType());
+    String response = "{\"data\":[{\"id\":\"" + Constant.TEST + "\", \"contact\":"+element+"}]}";
+    when(restUtil.newGetMethod(anyString())).thenReturn(response);
+    result= util.getCandidateList(Constant.TEST);
+    assertNotNull(result);
+    assertFalse(result.isEmpty());
+  }
 }
