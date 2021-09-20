@@ -90,6 +90,7 @@ public class Constant {
       "/picklists/searches?searchValue=&contactId={CONTACTID}&stage=Open";
   public static final String GET_CONTACT_LIST_BY_NAME_URL =
       "/picklists/contacts?name={CONTACTNAME}";
+  public static final String REFERENCE_TYPE_PICKLIST_URL = "/picklists/reference-types";
 
   public static final String RESUME_URL = "/contact/{contactId}/resumes";
   public static final String CONTACT_ID = "{contactId}";
