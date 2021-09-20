@@ -9,6 +9,7 @@ import org.springframework.http.converter.json.MappingJacksonValue;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.aspire.kgp.constant.Constant;
@@ -55,7 +56,8 @@ public class CompanyController {
     SimpleBeanPropertyFilter companyFilter =
         SimpleBeanPropertyFilter.filterOutAllExcept("id", "name");
 
-    FilterProvider filters = new SimpleFilterProvider().addFilter(Constant.COMPANY_FILTER, companyFilter);
+    FilterProvider filters =
+        new SimpleFilterProvider().addFilter(Constant.COMPANY_FILTER, companyFilter);
     MappingJacksonValue mapping = new MappingJacksonValue(companyList);
     mapping.setFilters(filters);
 
@@ -111,11 +113,12 @@ public class CompanyController {
   @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK",
       content = @Content(mediaType = "application/json", schema = @Schema(type = "List<CompanyDTO>",
           example = "[{\"id\": \"string\",\"name\": \"string\"}]")))})
-  public MappingJacksonValue getListOfCompany(@PathVariable("companyName") String companyName) {
+  public MappingJacksonValue getListOfCompany(@RequestParam(name = "name") String companyName) {
     List<CompanyDTO> companyDTO = companyUtil.getListOfCompany(companyName);
     SimpleBeanPropertyFilter companyFilter =
         SimpleBeanPropertyFilter.filterOutAllExcept(Constant.ID, "name");
-    FilterProvider filters = new SimpleFilterProvider().addFilter(Constant.COMPANY_FILTER, companyFilter);
+    FilterProvider filters =
+        new SimpleFilterProvider().addFilter(Constant.COMPANY_FILTER, companyFilter);
     MappingJacksonValue mapping = new MappingJacksonValue(companyDTO);
     mapping.setFilters(filters);
 
