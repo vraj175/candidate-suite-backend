@@ -109,7 +109,7 @@ public class CompanyController {
   }
 
   @Operation(summary = "Get all matching companies")
-  @GetMapping("/companyName/{companyName}")
+  @GetMapping("/companyName")
   @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK",
       content = @Content(mediaType = "application/json", schema = @Schema(type = "List<CompanyDTO>",
           example = "[{\"id\": \"string\",\"name\": \"string\"}]")))})
