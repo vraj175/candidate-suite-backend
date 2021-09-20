@@ -88,8 +88,8 @@ public class ContactController {
           example = "[{\"id\": \"string\",\"searchId\": \"string\",\"relationship\": \"string\",\"contact\": {\"firstName\": \"string\",\"lastName\": \"string\",\"workEmail\": \"string\",\"email\": \"string\",\"mobilePhone\": \"string\",\"currentJobTitle\": \"string\",\"company\": {\"id\": \"string\",\"name\": \"string\"}}}]")))})
   public MappingJacksonValue getListOfReferences(@PathVariable("contactId") String contactId) {
     List<ContactReferencesDTO> contactReferenceDTO = contactUtil.getListOfReferences(contactId);
-    SimpleBeanPropertyFilter contactReferenceFilter =
-        SimpleBeanPropertyFilter.filterOutAllExcept("id", "searchId", "relationship", "contact");
+    SimpleBeanPropertyFilter contactReferenceFilter = SimpleBeanPropertyFilter
+        .filterOutAllExcept("id", "searchId", "relationship", "contact", "source", "type");
     SimpleBeanPropertyFilter contactFilter = SimpleBeanPropertyFilter.filterOutAllExcept(
         Constant.FIRST_NAME, Constant.LAST_NAME, Constant.CURRENT_JOB_TITLE, Constant.MOBILE_PHONE,
         Constant.COMPANY, Constant.EMAIL, Constant.WORK_EMAIL);
