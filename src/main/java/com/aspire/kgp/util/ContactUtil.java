@@ -69,6 +69,12 @@ public class ContactUtil {
     return restUtil.putMethod(Constant.CONTACT_URL.replace("{contactId}", contactId), contactData);
   }
 
+  public final String addContactReference(String contactId, String referenceData) {
+    return restUtil.postMethod(
+        Constant.CONTACT_REFERENCE_URL.replace(Constant.CONTACT_ID, contactId), referenceData,
+        null);
+  }
+
   public String uploadCandidateResume(MultipartFile multipartFile, String contactId) {
     JsonObject paramJSON = new JsonObject();
     paramJSON.addProperty("description", "");
@@ -149,8 +155,8 @@ public class ContactUtil {
   }
 
   public final List<ContactReferencesDTO> getListOfReferences(String contactId) {
-    String apiResponse =
-        restUtil.newGetMethod(Constant.CONTACT_REFERENCE_URL.replace("{CONTACTID}", contactId));
+    String apiResponse = restUtil
+        .newGetMethod(Constant.CONTACT_REFERENCE_URL.replace(Constant.CONTACT_ID, contactId));
 
     try {
       return new Gson().fromJson(apiResponse, new TypeToken<List<ContactReferencesDTO>>() {
@@ -166,8 +172,8 @@ public class ContactUtil {
   }
 
   public final List<SearchDTO> getListOfContactSearches(String contactId) {
-    String apiResponse =
-        restUtil.newGetMethod(Constant.CONTACT_SEARCHES_URL.replace("{CONTACTID}", contactId));
+    String apiResponse = restUtil
+        .newGetMethod(Constant.CONTACT_SEARCHES_URL.replace(Constant.CONTACT_ID, contactId));
     List<SearchDTO> listSearch = new ArrayList<>();
     if (CommonUtil.checkNullString(apiResponse)) {
       log.error("Error while fetching contact search.");
