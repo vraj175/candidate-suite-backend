@@ -8,7 +8,6 @@ import java.util.stream.Collectors;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.converter.json.MappingJacksonValue;
 import org.springframework.stereotype.Component;
 
 import com.aspire.kgp.constant.Constant;
@@ -21,9 +20,6 @@ import com.aspire.kgp.exception.NotFoundException;
 import com.aspire.kgp.model.User;
 import com.aspire.kgp.model.UserSearch;
 import com.aspire.kgp.service.UserSearchService;
-import com.fasterxml.jackson.databind.ser.FilterProvider;
-import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
-import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
@@ -50,7 +46,7 @@ public class SearchUtil {
     String searchListResponse =
         restUtil.newGetMethod(Constant.SEARCHES_LIST_BY_COMAPNY.replace("{companyId}", companyId));
 
-    List<SearchDTO> searchDTOs= getSearchListFromJsonResponse(searchListResponse, stage);
+    List<SearchDTO> searchDTOs = getSearchListFromJsonResponse(searchListResponse, stage);
     return createSharedListViaStream(searchDTOs, searches);
   }
 
@@ -119,20 +115,6 @@ public class SearchUtil {
     }
     return searchList.stream().filter(s -> stage.equalsIgnoreCase(s.getStage()))
         .collect(Collectors.toList());
-  }
-
-  public MappingJacksonValue applySearchFilter(List<SearchDTO> searchDTOs) {
-    SimpleBeanPropertyFilter filter = SimpleBeanPropertyFilter.filterOutAllExcept("id", "jobTitle",
-        "jobNumber", "stage", "company");
-
-    SimpleBeanPropertyFilter companyFilter =
-        SimpleBeanPropertyFilter.filterOutAllExcept("id", "name");
-
-    FilterProvider filters = new SimpleFilterProvider().addFilter("searchFilter", filter)
-        .addFilter("companyFilter", companyFilter);
-    MappingJacksonValue mapping = new MappingJacksonValue(searchDTOs);
-    mapping.setFilters(filters);
-    return mapping;
   }
 
   public List<CandidateDTO> getCandidateList(String searchId) {
@@ -213,7 +195,7 @@ public class SearchUtil {
       throw new APIException(Constant.JSON_PROCESSING_EXCEPTION + e.getMessage());
     }
   }
-  
+
   public List<SearchDTO> createSharedListViaStream(List<SearchDTO> listOne,
       List<UserSearch> listTwo) {
     // We create a stream of elements from the first list.
@@ -227,7 +209,7 @@ public class SearchUtil {
         .collect(Collectors.toList());
     // We return the collected list.
   }
-  
+
   public List<CandidateDTO> getInvitedCandidatesFromAllCandidates(List<CandidateDTO> allCandidates,
       List<UserSearch> invitedCandidates) {
     // We create a stream of elements from the first list.
