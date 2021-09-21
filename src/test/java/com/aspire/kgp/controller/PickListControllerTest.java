@@ -12,6 +12,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import com.aspire.kgp.CustomTestData;
+import com.aspire.kgp.dto.PickListDTO;
 import com.aspire.kgp.util.PickListUtil;
 
 class PickListControllerTest {
@@ -38,4 +39,14 @@ class PickListControllerTest {
     assertEquals(strings.size(), result.size());
   }
 
+  @Test
+  void testGetReferencesType() {
+    List<PickListDTO> pickListDTOs = CustomTestData.getPickListDTOs();
+    when(pickListUtil.getReferencesType()).thenReturn(pickListDTOs);
+    
+    List<PickListDTO> result = controller.getReferencesType();
+    
+    assertNotNull(result);
+    assertEquals(pickListDTOs.size(), result.size());
+  }
 }
