@@ -11,6 +11,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import com.aspire.kgp.constant.Constant;
 import com.aspire.kgp.dto.CandidateDTO;
 import com.aspire.kgp.dto.InviteDTO;
+import com.aspire.kgp.dto.PickListDTO;
 import com.aspire.kgp.dto.ResetPasswordDTO;
 import com.aspire.kgp.dto.SearchDTO;
 import com.aspire.kgp.dto.UserDTO;
@@ -220,5 +221,18 @@ public class CustomTestData {
     List<CandidateDTO> candidateDTOs = new ArrayList<>();
     candidateDTOs.add(getCandidateDTO());
     return candidateDTOs;
+  }
+  
+  public static PickListDTO getPickListDTO() {
+    PickListDTO pickListDTO = new PickListDTO();
+    pickListDTO.setName(Constant.TEST);
+    
+    return pickListDTO;
+  }
+  
+  public static List<PickListDTO> getPickListDTOs() {
+    List<PickListDTO> pickListDTOs = new ArrayList<>();
+    pickListDTOs.add(getPickListDTO());
+    return pickListDTOs;
   }
 }
