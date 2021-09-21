@@ -109,5 +109,4 @@ class SearchUtilTest {
     assertNotNull(result);
     assertFalse(result.isEmpty());
   }
-
 }

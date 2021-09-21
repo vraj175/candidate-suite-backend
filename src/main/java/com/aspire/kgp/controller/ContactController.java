@@ -191,4 +191,11 @@ public class ContactController {
       @RequestBody String referenceData) {
     return contactUtil.addContactReference(contactId, referenceData);
   }
+
+  @Operation(summary = "Update Contact Reference")
+  @PutMapping("/contact/reference/{referenceId}")
+  public String updateContactReference(@PathVariable("referenceId") String referenceId,
+      @RequestBody String referenceData) throws UnsupportedEncodingException {
+    return contactUtil.updateContactReference(referenceId, referenceData);
+  }
 }
