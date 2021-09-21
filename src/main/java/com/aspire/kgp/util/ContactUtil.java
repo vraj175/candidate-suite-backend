@@ -69,6 +69,12 @@ public class ContactUtil {
     return restUtil.putMethod(Constant.CONTACT_URL.replace("{contactId}", contactId), contactData);
   }
 
+  public final String updateContactReference(String referenceId, String referenceData)
+      throws UnsupportedEncodingException {
+    return restUtil.putMethod(
+        Constant.UPDATE_CONTACT_REFERENCE_URL.replace("{referenceId}", referenceId), referenceData);
+  }
+
   public final String addContactReference(String contactId, String referenceData) {
     return restUtil.postMethod(
         Constant.CONTACT_REFERENCE_URL.replace(Constant.CONTACT_ID, contactId), referenceData,
@@ -225,4 +231,5 @@ public class ContactUtil {
       throw new APIException(Constant.JSON_PROCESSING_EXCEPTION + e.getMessage());
     }
   }
+
 }
