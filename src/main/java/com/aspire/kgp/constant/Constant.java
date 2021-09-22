@@ -165,6 +165,7 @@ public class Constant {
   public static final String LOCATION_FILTER = "locationFilter";
   public static final String CONTACT_FILTER = "contactFilter";
   public static final String SEARCH_FILTER = "searchFilter";
+  public static final String CANDIDATE_FILTER = "candidateFilter";
 
   // messages
   public static final String DATA_SAVED = "Data saved successfully";
