@@ -1,5 +1,7 @@
 package com.aspire.kgp.controller;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.json.MappingJacksonValue;
@@ -10,6 +12,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.aspire.kgp.constant.Constant;
 import com.aspire.kgp.dto.CandidateDTO;
+import com.aspire.kgp.exception.APIException;
+import com.aspire.kgp.model.User;
+import com.aspire.kgp.model.UserSearch;
+import com.aspire.kgp.service.UserSearchService;
 import com.aspire.kgp.util.CandidateUtil;
 import com.fasterxml.jackson.databind.ser.FilterProvider;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
@@ -29,6 +35,30 @@ public class CandidateController {
 
   @Autowired
   CandidateUtil candidateUtil;
+
+  @Autowired
+  UserSearchService userSearchService;
+
+  @Operation(summary = "Get Candidate Details By Search")
+  @GetMapping("/candidates/{searchId}")
+  @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK",
+      content = @Content(mediaType = "application/json", schema = @Schema(type = "CandidateDTO",
+          example = "\"{\"contact\":{\"id\":\"string\",\"firstName\":\"string\",\"lastName\":\"string\"},\"search\":{\"id\":\"string\",\"jobTitle\":\"string\",\"jobNumber\":\"string\",\"company\":{\"id\":\"string\",\"name\":\"string\"},\"partners\":[{\"id\":\"string\",\"firstName\":\"string\",\"lastName\":\"string\"}],\"recruiters\":[{\"id\":\"string\",\"firstName\":\"string\",\"lastName\":\"string\"}],\"researchers\":[{\"id\":\"string\",\"firstName\":\"string\",\"lastName\":\"string\"}],\"eas\":[{\"id\":\"string\",\"firstName\":\"string\",\"lastName\":\"string\"}]}}\"")))})
+  public MappingJacksonValue getCandidateDetailsBySearch(@PathVariable("searchId") String searchId,
+      HttpServletRequest request) {
+    User user = (User) request.getAttribute("user");
+    String role = user.getRole().getName();
+    if (Constant.PARTNER.equalsIgnoreCase(role)) {
+      throw new APIException("This API is only valid for candidate login");
+    }
+
+    UserSearch userSearch = userSearchService.findByUserAndSearchId(user, searchId);
+    if (userSearch == null) {
+      throw new APIException("Invalid Search Id");
+    }
+
+    return getCandidateDetails(userSearch.getCandidateId());
+  }
 
   @Operation(summary = "Get Candidate Details")
   @GetMapping("/candidates/{candidateId}")
