@@ -9,8 +9,13 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import com.aspire.kgp.constant.Constant;
+import com.aspire.kgp.dto.BoardDetailsDTO;
 import com.aspire.kgp.dto.CandidateDTO;
+import com.aspire.kgp.dto.CompanyDTO;
+import com.aspire.kgp.dto.ContactDTO;
+import com.aspire.kgp.dto.EducationDTO;
 import com.aspire.kgp.dto.InviteDTO;
+import com.aspire.kgp.dto.JobHistoryDTO;
 import com.aspire.kgp.dto.PickListDTO;
 import com.aspire.kgp.dto.ResetPasswordDTO;
 import com.aspire.kgp.dto.SearchDTO;
@@ -36,7 +41,7 @@ public class CustomTestData {
 
     Language language = new Language();
     language.setId(Long.MIN_VALUE);
-    language.setName(Constant.TEST);
+    language.setName(Constant.ENGLISH_CODE);
     language.setCreatedDate(t1);
     language.setModifyDate(t1);
 
@@ -234,5 +239,101 @@ public class CustomTestData {
     List<PickListDTO> pickListDTOs = new ArrayList<>();
     pickListDTOs.add(getPickListDTO());
     return pickListDTOs;
+  }
+  
+  public static CompanyDTO getCompanyDTO() {
+    CompanyDTO companyDTO = new CompanyDTO();
+    companyDTO.setId(Constant.TEST);
+    companyDTO.setName(Constant.TEST);
+    companyDTO.setDescription(Constant.TEST);
+    companyDTO.setWebsite(Constant.TEST);
+    return companyDTO;
+  }
+  
+  public static BoardDetailsDTO getBoardDetailsDTO() {
+    BoardDetailsDTO boardDetailsDTO = new BoardDetailsDTO();
+    boardDetailsDTO.setCommittee(Constant.TEST);
+    boardDetailsDTO.setEndYear(Constant.TEST);
+    boardDetailsDTO.setId(Constant.TEST);
+    boardDetailsDTO.setPosition(Constant.TEST);
+    boardDetailsDTO.setStartYear(Constant.TEST);
+    boardDetailsDTO.setTitle(Constant.TEST);
+    boardDetailsDTO.setCompany(getCompanyDTO());
+    return boardDetailsDTO;
+  }
+  
+  public static List<BoardDetailsDTO> getBoardDetailsDTOs() {
+    List<BoardDetailsDTO> boardDetailsDTOs = new ArrayList<>();
+    boardDetailsDTOs.add(getBoardDetailsDTO());
+    return boardDetailsDTOs;
+  }
+  
+  public static EducationDTO getEducationDTO() {
+    EducationDTO educationDTO = new EducationDTO();
+    educationDTO.setId(Constant.TEST);
+    educationDTO.setDegreeName(Constant.TEST);
+    educationDTO.setDegreeYear(Constant.TEST);
+    educationDTO.setMajor(Constant.TEST);
+    educationDTO.setPosition(Constant.TEST);
+    educationDTO.setSchoolName(Constant.TEST);
+    return educationDTO;
+  }
+  
+  public static List<EducationDTO> getEducationDTOs() {
+    List<EducationDTO> educationDTOs = new ArrayList<>();
+    educationDTOs.add(getEducationDTO());
+    return educationDTOs;
+  }
+  
+  public static JobHistoryDTO getJobHistoryDTO() {
+    JobHistoryDTO jobHistoryDTO = new JobHistoryDTO();
+    jobHistoryDTO.setId(Constant.TEST);
+    jobHistoryDTO.setCompany(getCompanyDTO());
+    jobHistoryDTO.setEndYear(Constant.TEST);
+    jobHistoryDTO.setPosition(Constant.TEST);
+    jobHistoryDTO.setStartYear(Constant.TEST);
+    jobHistoryDTO.setTitle(Constant.TEST);
+    
+    return jobHistoryDTO;
+  }
+  
+  public static List<JobHistoryDTO> getJobHistoryDTOs() {
+    List<JobHistoryDTO> jobHistoryDTOs = new ArrayList<>();
+    jobHistoryDTOs.add(getJobHistoryDTO());
+    return jobHistoryDTOs;
+  }
+  
+  public static ContactDTO getContactDTO() {
+    ContactDTO contactDTO = new ContactDTO();
+    contactDTO.setBaseSalary(Constant.TEST);
+    contactDTO.setBio(Constant.TEST);
+    contactDTO.setWorkPhone(Constant.TEST);
+    contactDTO.setCurrentJobTitle(Constant.TEST);
+    contactDTO.setCompensationExpectation(Constant.TEST);
+    contactDTO.setCompensationNotes(Constant.TEST);
+    contactDTO.setCountry(Constant.TEST);
+    contactDTO.setEmail(Constant.TEST);
+    contactDTO.setEquity(Constant.TEST);
+    contactDTO.setFirstName(Constant.TEST);
+    contactDTO.setLastName(Constant.TEST);
+    contactDTO.setHomePhone(Constant.TEST);
+    contactDTO.setId(Constant.TEST);
+    contactDTO.setLinkedinUrl(Constant.TEST);
+    contactDTO.setBoardDetails(getBoardDetailsDTOs());
+    contactDTO.setCompany(getCompanyDTO());
+    contactDTO.setMobilePhone(Constant.TEST);
+    contactDTO.setPasswordReset(Boolean.FALSE);
+    contactDTO.setWorkPhone(Constant.TEST);
+    contactDTO.setWorkEmail(Constant.TEST);
+    contactDTO.setToken(Constant.TEST);
+    contactDTO.setTitle(Constant.TEST);
+    contactDTO.setTargetBonusValue(Constant.TEST);
+    contactDTO.setRole(Constant.TEST);
+    contactDTO.setPublishedBio(Constant.TEST);
+    contactDTO.setName(Constant.TEST);
+    contactDTO.setEducationDetails(getEducationDTOs());
+    contactDTO.setJobHistory(getJobHistoryDTOs());
+    
+    return contactDTO;
   }
 }
