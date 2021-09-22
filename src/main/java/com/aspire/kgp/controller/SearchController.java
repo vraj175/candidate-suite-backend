@@ -15,7 +15,11 @@ import com.aspire.kgp.constant.Constant;
 import com.aspire.kgp.dto.CandidateDTO;
 import com.aspire.kgp.dto.PositionProfileDTO;
 import com.aspire.kgp.dto.SearchDTO;
+import com.aspire.kgp.exception.APIException;
 import com.aspire.kgp.model.User;
+import com.aspire.kgp.model.UserSearch;
+import com.aspire.kgp.service.UserSearchService;
+import com.aspire.kgp.util.CandidateUtil;
 import com.aspire.kgp.util.SearchUtil;
 import com.fasterxml.jackson.databind.ser.FilterProvider;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
@@ -35,6 +39,12 @@ public class SearchController {
 
   @Autowired
   SearchUtil searchUtil;
+  
+  @Autowired
+  CandidateUtil candidateUtil;
+  
+  @Autowired
+  UserSearchService userSearchService;
 
   @Operation(summary = "Get Search list for user")
   @GetMapping("/searches/stage/{stage}")
@@ -57,7 +67,7 @@ public class SearchController {
 
     FilterProvider filters = new SimpleFilterProvider().addFilter(Constant.SEARCH_FILTER, searchFilter)
         .addFilter(Constant.COMPANY_FILTER, companyFilter)
-        .addFilter("candidateFilter", candidateFilter);
+        .addFilter(Constant.CANDIDATE_FILTER, candidateFilter);
     MappingJacksonValue mapping = new MappingJacksonValue(candidateList);
     mapping.setFilters(filters);
     return mapping;
@@ -93,7 +103,7 @@ public class SearchController {
 
     FilterProvider filters = new SimpleFilterProvider().addFilter("contactFilter", contactFilter)
         .addFilter(Constant.COMPANY_FILTER, companyFilter)
-        .addFilter("candidateFilter", candidateFilter);
+        .addFilter(Constant.CANDIDATE_FILTER, candidateFilter);
 
     MappingJacksonValue mapping = new MappingJacksonValue(listCandidate);
     mapping.setFilters(filters);
@@ -123,6 +133,50 @@ public class SearchController {
 
     MappingJacksonValue mapping = new MappingJacksonValue(positionProfile);
     mapping.setFilters(filters);
+    return mapping;
+  }
+  
+  @Operation(summary = "Get Candidate Details for Search")
+  @GetMapping("/searches/{searchId}/candidate")
+  @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK",
+      content = @Content(mediaType = "application/json", schema = @Schema(type = "CandidateDTO",
+          example = "\"{\"contact\":{\"id\":\"string\",\"firstName\":\"string\",\"lastName\":\"string\"},\"search\":{\"id\":\"string\",\"jobTitle\":\"string\",\"jobNumber\":\"string\",\"company\":{\"id\":\"string\",\"name\":\"string\"},\"partners\":[{\"id\":\"string\",\"firstName\":\"string\",\"lastName\":\"string\"}],\"recruiters\":[{\"id\":\"string\",\"firstName\":\"string\",\"lastName\":\"string\"}],\"researchers\":[{\"id\":\"string\",\"firstName\":\"string\",\"lastName\":\"string\"}],\"eas\":[{\"id\":\"string\",\"firstName\":\"string\",\"lastName\":\"string\"}]}}\"")))})
+  public MappingJacksonValue getCandidateDetailsBySearch(@PathVariable("searchId") String searchId,
+      HttpServletRequest request) {
+    User user = (User) request.getAttribute("user");
+    String role = user.getRole().getName();
+    if (Constant.PARTNER.equalsIgnoreCase(role)) {
+      throw new APIException("This API is only valid for candidate login");
+    }
+
+    UserSearch userSearch = userSearchService.findByUserAndSearchId(user, searchId);
+    if (userSearch == null) {
+      throw new APIException("Invalid Search Id");
+    }
+
+    CandidateDTO candidateDTO = candidateUtil.getCandidateDetails(userSearch.getCandidateId());
+
+    SimpleBeanPropertyFilter candidateFilter =
+        SimpleBeanPropertyFilter.filterOutAllExcept(Constant.CONTACT, Constant.SEARCH);
+
+    SimpleBeanPropertyFilter companyFilter =
+        SimpleBeanPropertyFilter.filterOutAllExcept("id", "name");
+
+    SimpleBeanPropertyFilter userAndContactFilter = SimpleBeanPropertyFilter
+        .filterOutAllExcept(Constant.ID, Constant.FIRST_NAME, Constant.LAST_NAME);
+
+    SimpleBeanPropertyFilter searchFilter = SimpleBeanPropertyFilter.filterOutAllExcept(Constant.ID,
+        Constant.JOB_TITLE, Constant.JOB_NUMBER, Constant.COMPANY, Constant.PARTNERS,
+        Constant.RECRUITERS, Constant.RESEARCHERS, Constant.EAS);
+
+    FilterProvider filters = new SimpleFilterProvider()
+        .addFilter(Constant.CANDIDATE_FILTER, candidateFilter).addFilter("userFilter", userAndContactFilter)
+        .addFilter("searchFilter", searchFilter).addFilter("contactFilter", userAndContactFilter)
+        .addFilter(Constant.COMPANY_FILTER, companyFilter);
+
+    MappingJacksonValue mapping = new MappingJacksonValue(candidateDTO);
+    mapping.setFilters(filters);
+
     return mapping;
   }
 
