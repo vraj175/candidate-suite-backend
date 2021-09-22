@@ -69,7 +69,7 @@ class ContactUtilTest {
     assertEquals(contactDTO.getWorkPhone(), response.getWorkPhone());
     assertEquals(contactDTO.getJobHistory().size(), response.getJobHistory().size());
     assertEquals(contactDTO.getBoardDetails().size(), response.getBoardDetails().size());
-
+    assertEquals(contactDTO.getCompany().getId(), response.getCompany().getId());
   }
 
 }
