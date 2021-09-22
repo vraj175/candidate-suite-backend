@@ -23,6 +23,7 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import com.amazonaws.services.cognitoidp.model.AuthenticationResultType;
 import com.aspire.kgp.CustomTestData;
 import com.aspire.kgp.constant.Constant;
+import com.aspire.kgp.dto.CandidateDTO;
 import com.aspire.kgp.dto.ResetPasswordDTO;
 import com.aspire.kgp.dto.UserDTO;
 import com.aspire.kgp.exception.APIException;
@@ -36,6 +37,8 @@ import com.aspire.kgp.service.MailService;
 import com.aspire.kgp.service.RoleService;
 import com.aspire.kgp.service.UserSearchService;
 import com.aspire.kgp.util.RestUtil;
+import com.google.common.reflect.TypeToken;
+import com.google.gson.Gson;
 
 import freemarker.template.TemplateException;
 
@@ -203,11 +206,16 @@ class UserServiceImplTest {
   void testInviteUser() {
     User user = CustomTestData.getUser();
     UserSearch userSearch = CustomTestData.getUserSearch();
+    CandidateDTO candidateDTO = CustomTestData.getCandidateDTO();
+    String element = new Gson().toJson(candidateDTO, new TypeToken<CandidateDTO>() {
+
+      /**
+       * 
+       */
+      private static final long serialVersionUID = 1L;
+    }.getType());
     String responseJson =
-        "{" + "    \"candidate\": {" + "        \"contact\": {" + "            \"id\": "
-            + Constant.TEST + "," + "            \"first_name\": " + Constant.TEST
-            + ", \"last_name\": " + Constant.TEST + "         }, " + "        \"search\": {\"id\": "
-            + Constant.TEST + ", \"company\": { \"id\": " + Constant.TEST + " }         }      } }";
+        "{  \"candidate\": "+element+ "}";
     when(restUtil.newGetMethod(anyString())).thenReturn(responseJson);
     when(service.findByEmail(anyString())).thenReturn(null);
     when(service.findByGalaxyId(anyString())).thenReturn(null);
@@ -229,7 +237,7 @@ class UserServiceImplTest {
 
     user.setPasswordReset(Boolean.TRUE);
     when(searchService.findByUserAndCandidateId(any(), anyString())).thenReturn(userSearch);
-    result = service.inviteUser(Constant.TEST, Constant.TEST, Constant.TEST, new String[] {}, user,
+    result = service.inviteUser(Constant.TEST, Constant.ENGLISH_CODE, Constant.TEST, new String[] {}, user,
         Boolean.TRUE, CustomTestData.getRequest());
 
     assertTrue(result);

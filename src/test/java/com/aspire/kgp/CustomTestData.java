@@ -202,23 +202,25 @@ public class CustomTestData {
     return strings;
   }
   
-  public static SearchDTO getsearchDTO() {
+  public static SearchDTO getSearchDTO() {
     SearchDTO searchDTO = new SearchDTO();
     searchDTO.setId(Constant.TEST);
     searchDTO.setStage(Constant.TEST);
+    searchDTO.setCompany(getCompanyDTO());
     return searchDTO;
   }
   
   public static List<SearchDTO> getSearchDTOs() {
     List<SearchDTO> searchDTOs = new ArrayList<>();
-    searchDTOs.add(getsearchDTO());
+    searchDTOs.add(getSearchDTO());
     return searchDTOs;
   }
   
   public static CandidateDTO getCandidateDTO() {
     CandidateDTO candidateDTO = new CandidateDTO();
     candidateDTO.setId(Constant.TEST);
-    
+    candidateDTO.setContact(getUserDTO());
+    candidateDTO.setSearch(getSearchDTO());
     return candidateDTO;
   }
   
