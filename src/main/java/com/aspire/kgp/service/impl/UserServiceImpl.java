@@ -91,7 +91,7 @@ public class UserServiceImpl implements UserService {
     user.setEmail(email);
     user.setPassword(CommonUtil.hash(password));
     user.setGalaxyId(galaxyId);
-    user.setLanguage(languageService.findByName(Constant.ENGLISH));
+    user.setLanguage(languageService.findByName(Constant.ENGLISH_CODE));
     if (isLastLogin) {
       user.setLastLogin(new Timestamp(System.currentTimeMillis()));
     }
@@ -159,9 +159,8 @@ public class UserServiceImpl implements UserService {
       if (user.isPasswordReset()) {
         // mail for add user or mail for invite
         log.info("mail for add user or mail for invite");
-        String languageCode = CommonUtil.getLanguageCode(language);
         Map<String, String> staticContentsMap = StaticContentsMultiLanguageUtil
-            .getStaticContentsMap(languageCode, Constant.EMAILS_CONTENT_MAP);
+            .getStaticContentsMap(language, Constant.EMAILS_CONTENT_MAP);
         String mailSubject = staticContentsMap.get("candidate.suite.invitation.email.subject");
         mailService.sendEmail(email, bcc, mailSubject, mailService.getEmailContent(request, userDTO,
             staticContentsMap, Constant.CANDIDATE_INVITE_EMAIL_TEMPLATE), null);
@@ -295,9 +294,8 @@ public class UserServiceImpl implements UserService {
     userDTO.setToken(generateJwtToken(email, email));
     userDTO.setEmail(email);
     log.info("staring email sending...");
-    String languageCode = CommonUtil.getLanguageCode(user.getLanguage().getName());
     Map<String, String> staticContentsMap = StaticContentsMultiLanguageUtil
-        .getStaticContentsMap(languageCode, Constant.EMAILS_CONTENT_MAP);
+        .getStaticContentsMap(user.getLanguage().getName(), Constant.EMAILS_CONTENT_MAP);
     String mailSubject = staticContentsMap.get("candidate.suite.forgot.email.subject");
     try {
       mailService.sendEmail(email, null, mailSubject, mailService.getEmailContent(request, userDTO,

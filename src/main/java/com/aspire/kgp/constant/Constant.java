@@ -93,6 +93,7 @@ public class Constant {
   public static final String REFERENCE_TYPE_PICKLIST_URL = "/picklists/reference-types";
 
   public static final String RESUME_URL = "/contact/{contactId}/resumes";
+  public static final String UPDATE_CONTACT_REFERENCE_URL = "/contact/references/{referenceId}";
   public static final String CONTACT_ID = "{contactId}";
 
   // Queries parameter
