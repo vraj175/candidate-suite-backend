@@ -67,6 +67,8 @@ class ContactUtilTest {
     assertEquals(contactDTO.getToken(), response.getToken());
     assertEquals(contactDTO.getWorkEmail(), response.getWorkEmail());
     assertEquals(contactDTO.getWorkPhone(), response.getWorkPhone());
+    assertEquals(contactDTO.getCompany(), response.getCompany());
+    assertEquals(contactDTO.getJobHistory(), response.getJobHistory());
 
   }
 
