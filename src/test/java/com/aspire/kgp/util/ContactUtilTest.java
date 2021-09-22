@@ -45,30 +45,17 @@ class ContactUtilTest {
     ContactDTO response = util.getContactDetails(Constant.TEST);
 
     assertNotNull(response);
-    assertEquals(contactDTO.getId(), response.getId());
     assertEquals(contactDTO.getBaseSalary(), response.getBaseSalary());
-    assertEquals(contactDTO.getBio(), response.getBio());
     assertEquals(contactDTO.getCompensationExpectation(), response.getCompensationExpectation());
     assertEquals(contactDTO.getCompensationNotes(), response.getCompensationNotes());
-    assertEquals(contactDTO.getCountry(), response.getCountry());
     assertEquals(contactDTO.getCurrentJobTitle(), response.getCurrentJobTitle());
-    assertEquals(contactDTO.getEmail(), response.getEmail());
     assertEquals(contactDTO.getEquity(), response.getEquity());
-    assertEquals(contactDTO.getFirstName(), response.getFirstName());
-    assertEquals(contactDTO.getLastName(), response.getLastName());
     assertEquals(contactDTO.getHomePhone(), response.getHomePhone());
-    assertEquals(contactDTO.getLinkedinUrl(), response.getLinkedinUrl());
-    assertEquals(contactDTO.getMobilePhone(), response.getMobilePhone());
-    assertEquals(contactDTO.getName(), response.getName());
     assertEquals(contactDTO.getPublishedBio(), response.getPublishedBio());
-    assertEquals(contactDTO.getRole(), response.getRole());
     assertEquals(contactDTO.getTargetBonusValue(), response.getTargetBonusValue());
-    assertEquals(contactDTO.getTitle(), response.getTitle());
-    assertEquals(contactDTO.getToken(), response.getToken());
-    assertEquals(contactDTO.getWorkEmail(), response.getWorkEmail());
-    assertEquals(contactDTO.getWorkPhone(), response.getWorkPhone());
     assertEquals(contactDTO.getJobHistory().size(), response.getJobHistory().size());
     assertEquals(contactDTO.getBoardDetails().size(), response.getBoardDetails().size());
+    assertEquals(contactDTO.getEducationDetails().size(), response.getEducationDetails().size());
     assertEquals(contactDTO.getCompany().getId(), response.getCompany().getId());
   }
 
