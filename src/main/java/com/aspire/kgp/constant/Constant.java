@@ -61,6 +61,7 @@ public class Constant {
   public static final String JSON_PROCESSING_EXCEPTION = "JsonProcessingException : ";
   public static final String INVALID_CANDIDATE_ID = "Invalid Candidate Id";
   public static final String FILE_UPLOAD_ERROR = "Error in upload file";
+  public static final String CONVERT_JSON_ERROR = "Error in coverting json to object";
 
   public static final String EMPTY_STRING = "";
   public static final String ASC = "ASC";
@@ -152,7 +153,7 @@ public class Constant {
   public static final String WORK_PHONE = "workPhone";
   public static final String PUBLISHED_BIO = "publishedBio";
   public static final String WORK_EMAIL = "workEmail";
-  
+
 
   // google capcha
   public static final String GOOGLE_CAPTCHA_SECRET_KEY = "6LfPQ10aAAAAAHP7HDxskU_c1c8oBVSpf5SZdZ4C";

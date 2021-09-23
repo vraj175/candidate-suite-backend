@@ -39,45 +39,44 @@ public class SearchController {
 
   @Autowired
   SearchUtil searchUtil;
-  
+
   @Autowired
   CandidateUtil candidateUtil;
-  
+
   @Autowired
   UserSearchService userSearchService;
 
   @Operation(summary = "Get Search list for user")
   @GetMapping("/searches/stage/{stage}")
   @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK",
-      content = @Content(mediaType = "application/json", schema = @Schema(
-          type = "List<CandidateDTO>",
-          example = "[{\"id\": \"string\",\"search\": {\"id\": \"string\",\"jobTitle\": \"string\",\"jobNumber\": \"string\",\"stage\": \"string\",\"company\": {\"id\": \"string\",\"name\": \"string\"}}}]")))})
+      content = @Content(mediaType = "application/json", schema = @Schema(type = "List<SearchDTO>",
+          example = "[{\"id\": \"string\",\"jobTitle\": \"string\",\"jobNumber\": \"string\",\"stage\": \"string\",\"company\": {\"id\": \"string\",\"name\": \"string\"}}]")))})
   public MappingJacksonValue getSearchList(HttpServletRequest request,
       @PathVariable("stage") String stage) {
     User user = (User) request.getAttribute("user");
-    List<CandidateDTO> candidateList = searchUtil.getSearchListForUser(user, stage);
+    List<SearchDTO> searchList = searchUtil.getSearchListForUser(user, stage);
 
     SimpleBeanPropertyFilter companyFilter =
         SimpleBeanPropertyFilter.filterOutAllExcept("id", "name");
 
     SimpleBeanPropertyFilter searchFilter = SimpleBeanPropertyFilter.filterOutAllExcept("id",
         Constant.JOB_TITLE, "jobNumber", "stage", Constant.COMPANY);
-    SimpleBeanPropertyFilter candidateFilter =
-        SimpleBeanPropertyFilter.filterOutAllExcept("id", "search");
 
-    FilterProvider filters = new SimpleFilterProvider().addFilter(Constant.SEARCH_FILTER, searchFilter)
-        .addFilter(Constant.COMPANY_FILTER, companyFilter)
-        .addFilter(Constant.CANDIDATE_FILTER, candidateFilter);
-    MappingJacksonValue mapping = new MappingJacksonValue(candidateList);
+    FilterProvider filters =
+        new SimpleFilterProvider().addFilter(Constant.SEARCH_FILTER, searchFilter)
+            .addFilter(Constant.COMPANY_FILTER, companyFilter);
+    MappingJacksonValue mapping = new MappingJacksonValue(searchList);
     mapping.setFilters(filters);
     return mapping;
   }
 
   @Operation(summary = "Get Search list for company")
   @GetMapping("/searches/companies/{companyId}/stage/{stage}")
-  @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK",
-      content = @Content(mediaType = "application/json", schema = @Schema(type = "List<SearchDTO>",
-          example = "[{\"id\": \"string\","+Constant.JOB_TITLE+": \"string\",\"jobNumber\": \"string\",\"stage\": \"string\",\"company\": {\"id\": \"string\",\"name\": \"string\"}}]")))})
+  @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK", content = @Content(
+      mediaType = "application/json",
+      schema = @Schema(type = "List<SearchDTO>", example = "[{\"id\": \"string\","
+          + Constant.JOB_TITLE
+          + ": \"string\",\"jobNumber\": \"string\",\"stage\": \"string\",\"company\": {\"id\": \"string\",\"name\": \"string\"}}]")))})
   public MappingJacksonValue getSearchList(@PathVariable("companyId") String companyId,
       @PathVariable("stage") String stage) {
     return applySearchFilter(searchUtil.getSearchList(companyId, stage));
@@ -135,7 +134,7 @@ public class SearchController {
     mapping.setFilters(filters);
     return mapping;
   }
-  
+
   @Operation(summary = "Get Candidate Details for Search")
   @GetMapping("/searches/{searchId}/candidate")
   @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK",
@@ -157,7 +156,7 @@ public class SearchController {
     CandidateDTO candidateDTO = candidateUtil.getCandidateDetails(userSearch.getCandidateId());
 
     SimpleBeanPropertyFilter candidateFilter =
-        SimpleBeanPropertyFilter.filterOutAllExcept(Constant.ID,Constant.CONTACT, Constant.SEARCH);
+        SimpleBeanPropertyFilter.filterOutAllExcept(Constant.ID, Constant.CONTACT, Constant.SEARCH);
 
     SimpleBeanPropertyFilter companyFilter =
         SimpleBeanPropertyFilter.filterOutAllExcept(Constant.ID, "name");
@@ -169,10 +168,11 @@ public class SearchController {
         Constant.JOB_TITLE, Constant.JOB_NUMBER, Constant.COMPANY, Constant.PARTNERS,
         Constant.RECRUITERS, Constant.RESEARCHERS, Constant.EAS);
 
-    FilterProvider filters = new SimpleFilterProvider()
-        .addFilter(Constant.CANDIDATE_FILTER, candidateFilter).addFilter("userFilter", userAndContactFilter)
-        .addFilter("searchFilter", searchFilter).addFilter("contactFilter", userAndContactFilter)
-        .addFilter(Constant.COMPANY_FILTER, companyFilter);
+    FilterProvider filters =
+        new SimpleFilterProvider().addFilter(Constant.CANDIDATE_FILTER, candidateFilter)
+            .addFilter("userFilter", userAndContactFilter).addFilter("searchFilter", searchFilter)
+            .addFilter("contactFilter", userAndContactFilter)
+            .addFilter(Constant.COMPANY_FILTER, companyFilter);
 
     MappingJacksonValue mapping = new MappingJacksonValue(candidateDTO);
     mapping.setFilters(filters);
@@ -210,9 +210,10 @@ public class SearchController {
 
   @Operation(summary = "Get Search Info Details")
   @GetMapping("/searches/{searchId}")
-  @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK",
-      content = @Content(mediaType = "application/json", schema = @Schema(type = "SearchDTO",
-          example = "{\"id\": \"string\","+Constant.JOB_TITLE+": \"string\",\"company\": {\"id\": \"string\",\"name\": \"string\"},\"city\": \"string\",\"state\": \"string\"}")))})
+  @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK", content = @Content(
+      mediaType = "application/json",
+      schema = @Schema(type = "SearchDTO", example = "{\"id\": \"string\"," + Constant.JOB_TITLE
+          + ": \"string\",\"company\": {\"id\": \"string\",\"name\": \"string\"},\"city\": \"string\",\"state\": \"string\"}")))})
   public MappingJacksonValue getCompanyDetails(@PathVariable("searchId") String searchId) {
     SearchDTO searchDTO = searchUtil.getsearchDetails(searchId);
 
@@ -220,8 +221,8 @@ public class SearchController {
         SimpleBeanPropertyFilter.filterOutAllExcept(Constant.ID, "name");
     SimpleBeanPropertyFilter searchFilter = SimpleBeanPropertyFilter.filterOutAllExcept(Constant.ID,
         "jobTitle", "company", "city", "state");
-    FilterProvider filters = new SimpleFilterProvider().addFilter(Constant.SEARCH_FILTER, searchFilter)
-        .addFilter("companyFilter", companyFilter);
+    FilterProvider filters = new SimpleFilterProvider()
+        .addFilter(Constant.SEARCH_FILTER, searchFilter).addFilter("companyFilter", companyFilter);
     MappingJacksonValue mapping = new MappingJacksonValue(searchDTO);
     mapping.setFilters(filters);
 
@@ -229,8 +230,8 @@ public class SearchController {
   }
 
   public MappingJacksonValue applySearchFilter(List<SearchDTO> searchDTOs) {
-    SimpleBeanPropertyFilter filter = SimpleBeanPropertyFilter.filterOutAllExcept("id", Constant.JOB_TITLE,
-        "jobNumber", "stage", "company");
+    SimpleBeanPropertyFilter filter = SimpleBeanPropertyFilter.filterOutAllExcept("id",
+        Constant.JOB_TITLE, "jobNumber", "stage", "company");
 
     SimpleBeanPropertyFilter companyFilter =
         SimpleBeanPropertyFilter.filterOutAllExcept("id", "name");
