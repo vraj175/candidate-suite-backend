@@ -23,7 +23,7 @@ import com.aspire.kgp.dto.ContactDTO;
 import com.aspire.kgp.dto.ContactReferencesDTO;
 import com.aspire.kgp.dto.DocumentDTO;
 import com.aspire.kgp.dto.SearchDTO;
-import com.aspire.kgp.util.ContactUtil;
+import com.aspire.kgp.service.ContactService;
 import com.fasterxml.jackson.databind.ser.FilterProvider;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
@@ -41,7 +41,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 public class ContactController {
 
   @Autowired
-  ContactUtil contactUtil;
+  ContactService service;
 
   @Operation(summary = "Get Contact Details")
   @GetMapping("/contact/{contactId}")
@@ -49,7 +49,7 @@ public class ContactController {
       content = @Content(mediaType = "application/json", schema = @Schema(type = "ContactDTO",
           example = "{\"workEmail\": \"string\",\"email\": \"string\",\"linkedinUrl\": \"string\",\"mobilePhone\": \"string\",\"currentJobTitle\": \"string\",\"company\": {\"id\": \"string\",\"name\": \"string\"},\"homePhone\": \"string\",\"baseSalary\": \"string\",\"targetBonusValue\": \"string\",\"equity\": \"string\",\"compensationExpectation\": \"string\",\"compensationNotes\": \"string\",\"jobHistory\": [{\"id\": \"string\",\"title\": \"string\",\"start_year\": \"string\",\"end_year\": \"string\",\"position\": \"string\",\"company\": {\"id\": \"string\",\"name\": \"string\"}}],\"educationDetails\": [{\"id\": \"string\",\"school_name\": \"string\",\"degree_name\": \"string\",\"major\": \"string\",\"degree_year\": \"string\",\"position\": \"string\"}], \"boardDetails\": [{\"id\": \"string\",\"title\": \"string\",\"startYear\": \"string\",\"endYear\": \"string\",\"position\": \"0\",\"company\": {\"id\": \"string\",\"name\": \"string\"},\"committee\": \"string\"}]}")))})
   public MappingJacksonValue getCandidateDetails(@PathVariable("contactId") String contactId) {
-    ContactDTO contactDTO = contactUtil.getContactDetails(contactId);
+    ContactDTO contactDTO = service.getContactDetails(contactId);
     SimpleBeanPropertyFilter contactFilter = SimpleBeanPropertyFilter.filterOutAllExcept(
         Constant.CURRENT_JOB_TITLE, Constant.COMPANY, Constant.MOBILE_PHONE, "homePhone",
         Constant.WORK_EMAIL, Constant.EMAIL, Constant.LINKEDIN_URL, "baseSalary",
@@ -70,18 +70,17 @@ public class ContactController {
   @Operation(summary = "Get contact profile image")
   @GetMapping("/contact/{contactId}/profile-image")
   @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK",
-  content = @Content(mediaType = "application/json", schema = @Schema(
-      type = "byte",
-      example = "string")))})
+      content = @Content(mediaType = "application/json",
+          schema = @Schema(type = "byte", example = "string")))})
   public byte[] getContactImage(@PathVariable("contactId") String contactId) {
-    return contactUtil.getContactImage(contactId);
+    return service.getContactImage(contactId);
   }
 
   @Operation(summary = "Update Contact Details")
   @PutMapping("/contact/{contactId}")
   public String updateContactDetails(@PathVariable("contactId") String contactId,
       @RequestBody String contactData) throws UnsupportedEncodingException {
-    return contactUtil.updateContactDetails(contactId, contactData);
+    return service.updateContactDetails(contactId, contactData);
   }
 
   @Operation(summary = "Get List of contact references")
@@ -91,7 +90,7 @@ public class ContactController {
           type = "List<ContactReferencesDTO>",
           example = "[{\"id\": \"string\",\"searchId\": \"string\",\"relationship\": \"string\",\"contact\": {\"firstName\": \"string\",\"lastName\": \"string\",\"workEmail\": \"string\",\"email\": \"string\",\"mobilePhone\": \"string\",\"currentJobTitle\": \"string\",\"company\": {\"id\": \"string\",\"name\": \"string\"}}}]")))})
   public MappingJacksonValue getListOfReferences(@PathVariable("contactId") String contactId) {
-    List<ContactReferencesDTO> contactReferenceDTO = contactUtil.getListOfReferences(contactId);
+    List<ContactReferencesDTO> contactReferenceDTO = service.getListOfReferences(contactId);
     SimpleBeanPropertyFilter contactReferenceFilter = SimpleBeanPropertyFilter.filterOutAllExcept(
         "id", "searchId", "relationship", "contact", "source", "type", "refContactId", "search");
     SimpleBeanPropertyFilter contactFilter = SimpleBeanPropertyFilter.filterOutAllExcept(
@@ -119,7 +118,7 @@ public class ContactController {
       @ApiResponse(responseCode = "200", description = Constant.FILE_UPLOADED_SUCCESSFULLY)})
   public String uploadResume(@PathVariable("contactId") String contactId,
       @RequestParam("file") MultipartFile file) {
-    return contactUtil.uploadCandidateResume(file, contactId);
+    return service.uploadCandidateResume(file, contactId);
   }
 
   @Operation(summary = "Get contact Resumes")
@@ -128,7 +127,7 @@ public class ContactController {
       content = @Content(mediaType = "application/json", schema = @Schema(type = "Resume",
           example = "{ \"id\": \"string\",\"fileName\": \"string\",\"createdAt\": \"string\" }")))})
   public DocumentDTO getResumeDetails(@PathVariable("contactId") String contactId) {
-    return contactUtil.getContactResumes(contactId);
+    return service.getContactResumes(contactId);
   }
 
   @Operation(summary = "Download Documents")
@@ -136,7 +135,7 @@ public class ContactController {
   @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK")})
   public void downloadDocument(@PathVariable("attachmentId") String attachmentId,
       @RequestParam String documentName, HttpServletResponse response) {
-    contactUtil.downloadDocument(documentName, attachmentId, response);
+    service.downloadDocument(documentName, attachmentId, response);
   }
 
   @Operation(summary = "Get contact searches")
@@ -145,7 +144,7 @@ public class ContactController {
       content = @Content(mediaType = "application/json", schema = @Schema(type = "List<SearchDTO>",
           example = "[{\"id\": \"string\",\"jobTitle\": \"string\",\"jobNumber\": \"string\",\"company\": {\"id\": \"string\",\"name\": \"string\"}}]")))})
   public MappingJacksonValue getListOfContactSearches(@PathVariable("contactId") String contactId) {
-    List<SearchDTO> searchDTO = contactUtil.getListOfContactSearches(contactId);
+    List<SearchDTO> searchDTO = service.getListOfContactSearches(contactId);
 
     SimpleBeanPropertyFilter searchFilter = SimpleBeanPropertyFilter.filterOutAllExcept(Constant.ID,
         Constant.JOB_TITLE, Constant.COMPANY, Constant.JOB_NUMBER);
@@ -170,7 +169,7 @@ public class ContactController {
           example = "[{\"id\": \"string\",\"firstName\": \"string\",\"lastName\": \"string\",\"workEmail\": \"string\",\"email\": \"string\",\"mobilePhone\": \"string\",\"workPhone\": \"string\",\"currentJobTitle\": \"string\",\"company\": {\"name\": \"string\"}}]")))})
   public MappingJacksonValue getListOfContactByName(
       @RequestParam(name = "name") String contactName) {
-    List<ContactDTO> contactDTO = contactUtil.getListOfContactByName(contactName);
+    List<ContactDTO> contactDTO = service.getListOfContactByName(contactName);
 
     SimpleBeanPropertyFilter contactFilter =
         SimpleBeanPropertyFilter.filterOutAllExcept(Constant.ID, Constant.FIRST_NAME,
@@ -193,13 +192,13 @@ public class ContactController {
   @PostMapping("/contact/{contactId}/references")
   public String addContactReference(@PathVariable("contactId") String contactId,
       @RequestBody String referenceData) {
-    return contactUtil.addContactReference(contactId, referenceData);
+    return service.addContactReference(contactId, referenceData);
   }
 
   @Operation(summary = "Update Contact Reference")
   @PutMapping("/contact/reference/{referenceId}")
   public String updateContactReference(@PathVariable("referenceId") String referenceId,
       @RequestBody String referenceData) throws UnsupportedEncodingException {
-    return contactUtil.updateContactReference(referenceId, referenceData);
+    return service.updateContactReference(referenceId, referenceData);
   }
 }
