@@ -56,12 +56,16 @@ class ContactControllerTest {
     assertEquals(contactDTO.getCompany().getName(), response.getCompany().getName());
     assertEquals(contactDTO.getJobHistory().get(0).getId(),
         response.getJobHistory().get(0).getId());
+    assertEquals(contactDTO.getJobHistory().get(0).getStartYear(),
+        response.getJobHistory().get(0).getStartYear());
     assertEquals(contactDTO.getJobHistory().get(0).getTitle(),
         response.getJobHistory().get(0).getTitle());
     assertEquals(contactDTO.getJobHistory().get(0).getEndYear(),
         response.getJobHistory().get(0).getEndYear());
     assertEquals(contactDTO.getJobHistory().get(0).getPosition(),
         response.getJobHistory().get(0).getPosition());
+    assertEquals(contactDTO.getJobHistory().get(0).getCompany(),
+        response.getJobHistory().get(0).getCompany());
     assertEquals(contactDTO.getJobHistory().get(0).getCompany(),
         response.getJobHistory().get(0).getCompany());
   }
