@@ -22,7 +22,6 @@ import org.mockito.MockitoAnnotations;
 
 import com.aspire.kgp.CustomTestData;
 import com.aspire.kgp.constant.Constant;
-import com.aspire.kgp.dto.CandidateDTO;
 import com.aspire.kgp.dto.SearchDTO;
 import com.aspire.kgp.exception.APIException;
 import com.aspire.kgp.model.User;
@@ -86,7 +85,7 @@ class SearchUtilTest {
   void testgetSearchListForUser() throws JSONException {
     User user = CustomTestData.getUser();
     when(searchService.findByUser(any())).thenReturn(new ArrayList<>());
-    List<CandidateDTO> result = util.getSearchListForUser(user, Constant.TEST);
+    List<SearchDTO> result = util.getSearchListForUser(user, Constant.TEST);
     assertNotNull(result);
     assertTrue(result.isEmpty());
 

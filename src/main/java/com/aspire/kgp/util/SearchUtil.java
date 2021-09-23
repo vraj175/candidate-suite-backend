@@ -1,6 +1,5 @@
 package com.aspire.kgp.util;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -45,7 +44,7 @@ public class SearchUtil {
     return createSharedListViaStream(searchDTOs, searches);
   }
 
-  public final List<CandidateDTO> getSearchListForUser(User user, String stage) {
+  public final List<SearchDTO> getSearchListForUser(User user, String stage) {
     List<UserSearch> searches = searchService.findByUser(user);
 
     if (searches.isEmpty()) {
@@ -79,20 +78,7 @@ public class SearchUtil {
 
     String searchListResponse =
         restUtil.postMethod(Constant.SEARCHES_LIST_BY_IDS, paramJSON.toString(), null);
-    List<SearchDTO> searchList = getSearchListFromJsonResponse(searchListResponse, stage);
-    List<CandidateDTO> candidateList = new ArrayList<>();
-    for (SearchDTO search : searchList) {
-
-      searches.forEach(userSearch -> {
-        if (userSearch.getSearchId().equals(search.getId())) {
-          CandidateDTO candidate = new CandidateDTO();
-          candidate.setId(userSearch.getCandidateId());
-          candidate.setSearch(search);
-          candidateList.add(candidate);
-        }
-      });
-    }
-    return candidateList;
+    return getSearchListFromJsonResponse(searchListResponse, stage);
   }
 
   private List<SearchDTO> getSearchListFromJsonResponse(String searchListResponse, String stage) {
@@ -106,7 +92,7 @@ public class SearchUtil {
         private static final long serialVersionUID = 1L;
       }.getType());
     } catch (JsonSyntaxException e) {
-      throw new APIException("Error in coverting json to object");
+      throw new APIException(Constant.CONVERT_JSON_ERROR);
     }
     return searchList.stream().filter(s -> stage.equalsIgnoreCase(s.getStage()))
         .collect(Collectors.toList());
@@ -142,7 +128,7 @@ public class SearchUtil {
         private static final long serialVersionUID = 1L;
       }.getType());
     } catch (JsonSyntaxException e) {
-      throw new APIException("Error in coverting json to object");
+      throw new APIException(Constant.CONVERT_JSON_ERROR);
     }
     return candidateList;
   }
@@ -160,7 +146,7 @@ public class SearchUtil {
         private static final long serialVersionUID = 1L;
       }.getType());
     } catch (Exception e) {
-      throw new APIException("Error in coverting json to object");
+      throw new APIException(Constant.CONVERT_JSON_ERROR);
     }
 
     if (positionProfile == null || positionProfile.getIsYearsOfExperienceMandatory() == null) {
