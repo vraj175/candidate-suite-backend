@@ -2,6 +2,7 @@ package com.aspire.kgp.util;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 
@@ -14,6 +15,7 @@ import org.mockito.MockitoAnnotations;
 import com.aspire.kgp.CustomTestData;
 import com.aspire.kgp.constant.Constant;
 import com.aspire.kgp.dto.ContactDTO;
+import com.aspire.kgp.exception.APIException;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 
@@ -57,6 +59,13 @@ class ContactUtilTest {
     assertEquals(contactDTO.getBoardDetails().size(), response.getBoardDetails().size());
     assertEquals(contactDTO.getEducationDetails().size(), response.getEducationDetails().size());
     assertEquals(contactDTO.getCompany().getId(), response.getCompany().getId());
+  }
+  
+  @Test
+  void testGetContactDetails_APIException() {
+    when(restUtil.newGetMethod(anyString())).thenReturn("{");
+    Exception e = assertThrows(APIException.class, () -> util.getContactDetails(Constant.TEST));
+    assertNotNull(e);
   }
 
 }
