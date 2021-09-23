@@ -219,7 +219,7 @@ public class CustomTestData {
   public static CandidateDTO getCandidateDTO() {
     CandidateDTO candidateDTO = new CandidateDTO();
     candidateDTO.setId(Constant.TEST);
-    candidateDTO.setContact(getUserDTO());
+    candidateDTO.setContact(getContactDTO());
     candidateDTO.setSearch(getSearchDTO());
     return candidateDTO;
   }
