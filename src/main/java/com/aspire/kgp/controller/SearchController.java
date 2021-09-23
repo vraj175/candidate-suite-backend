@@ -157,10 +157,10 @@ public class SearchController {
     CandidateDTO candidateDTO = candidateUtil.getCandidateDetails(userSearch.getCandidateId());
 
     SimpleBeanPropertyFilter candidateFilter =
-        SimpleBeanPropertyFilter.filterOutAllExcept(Constant.CONTACT, Constant.SEARCH);
+        SimpleBeanPropertyFilter.filterOutAllExcept(Constant.ID,Constant.CONTACT, Constant.SEARCH);
 
     SimpleBeanPropertyFilter companyFilter =
-        SimpleBeanPropertyFilter.filterOutAllExcept("id", "name");
+        SimpleBeanPropertyFilter.filterOutAllExcept(Constant.ID, "name");
 
     SimpleBeanPropertyFilter userAndContactFilter = SimpleBeanPropertyFilter
         .filterOutAllExcept(Constant.ID, Constant.FIRST_NAME, Constant.LAST_NAME);
