@@ -34,7 +34,7 @@ public class CandidateController {
   @GetMapping("/candidates/{candidateId}")
   @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK",
       content = @Content(mediaType = "application/json", schema = @Schema(type = "CandidateDTO",
-          example = "\"{\"contact\":{\"id\":\"string\",\"firstName\":\"string\",\"lastName\":\"string\"},\"search\":{\"id\":\"string\",\"jobTitle\":\"string\",\"jobNumber\":\"string\",\"company\":{\"id\":\"string\",\"name\":\"string\"},\"partners\":[{\"id\":\"string\",\"firstName\":\"string\",\"lastName\":\"string\"}],\"recruiters\":[{\"id\":\"string\",\"firstName\":\"string\",\"lastName\":\"string\"}],\"researchers\":[{\"id\":\"string\",\"firstName\":\"string\",\"lastName\":\"string\"}],\"eas\":[{\"id\":\"string\",\"firstName\":\"string\",\"lastName\":\"string\"}]}}\"")))})
+          example = "{\"contact\": {\"id\": \"string\",\"firstName\": \"string\",\"lastName\": \"string\"},\"search\": {\"id\": \"string\",\"jobTitle\": \"string\",\"jobNumber\": \"string\",\"company\": {\"id\": \"string\",\"name\": \"string\"},\"partners\": [{\"id\": \"string\",\"firstName\": \"string\",\"lastName\": \"string\"}],\"recruiters\": [],\"researchers\": [],\"eas\": []}}")))})
   public MappingJacksonValue getCandidateDetails(@PathVariable("candidateId") String candidateId) {
     CandidateDTO candidateDTO = candidateUtil.getCandidateDetails(candidateId);
 
@@ -51,10 +51,12 @@ public class CandidateController {
         Constant.JOB_TITLE, Constant.JOB_NUMBER, Constant.COMPANY, Constant.PARTNERS,
         Constant.RECRUITERS, Constant.RESEARCHERS, Constant.EAS);
 
-    FilterProvider filters = new SimpleFilterProvider()
-        .addFilter("candidateFilter", candidateFilter).addFilter("userFilter", userAndContactFilter)
-        .addFilter("searchFilter", searchFilter).addFilter("contactFilter", userAndContactFilter)
-        .addFilter("companyFilter", companyFilter);
+    FilterProvider filters =
+        new SimpleFilterProvider().addFilter(Constant.CANDIDATE_FILTER, candidateFilter)
+            .addFilter("userFilter", userAndContactFilter)
+            .addFilter(Constant.SEARCH_FILTER, searchFilter)
+            .addFilter(Constant.CONTACT_FILTER, userAndContactFilter)
+            .addFilter(Constant.COMPANY_FILTER, companyFilter);
 
     MappingJacksonValue mapping = new MappingJacksonValue(candidateDTO);
     mapping.setFilters(filters);
@@ -66,7 +68,7 @@ public class CandidateController {
   @GetMapping(value = {"/candidates/{candidateId}/team-members"})
   @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK",
       content = @Content(mediaType = "application/json", schema = @Schema(type = "CandidateDTO",
-          example = "\"{\"search\":{\"partners\":[{\"id\":\"string\",\"firstName\":\"string\",\"lastName\":\"string\",\"email\":\"string\",\"title\":\"string\",\"country\":\"string\",\"linkedinUrl\":\"string\",\"bio\":\"string\",\"mobilePhone\":\"string\",\"workPhone\":\"string\"}],\"recruiters\":[{\"id\":\"string\",\"firstName\":\"string\",\"lastName\":\"string\",\"email\":\"string\",\"title\":\"string\",\"country\":\"string\",\"linkedinUrl\":\"string\",\"bio\":\"string\",\"mobilePhone\":\"string\",\"workPhone\":\"string\"}],\"researchers\":[{\"id\":\"string\",\"firstName\":\"string\",\"lastName\":\"string\",\"email\":\"string\",\"title\":\"string\",\"country\":\"string\",\"linkedinUrl\":\"string\",\"bio\":\"string\",\"mobilePhone\":\"string\",\"workPhone\":\"string\"}],\"eas\":[{\"id\":\"string\",\"firstName\":\"string\",\"lastName\":\"string\",\"email\":\"string\",\"title\":\"string\",\"country\":\"string\",\"linkedinUrl\":\"string\",\"bio\":\"string\",\"mobilePhone\":\"string\",\"workPhone\":\"string\"}],\"clienTeam\":[{\"id\":\"string\",\"contact\":{\"id\":\"string\",\"firstName\":\"string\",\"lastName\":\"string\",\"country\":\"string\",\"linkedinUrl\":\"string\",\"mobilePhone\":\"string\",\"currentJobTitle\":\"string\",\"company\":{\"id\":\"string\",\"name\":\"string\"},\"publishedBio\":\"string\"}}]}}\"")))})
+          example = "{\"search\": {\"partners\": [{\"id\": \"string\",\"firstName\": \"string\",\"lastName\": \"string\",\"email\": \"string\",\"title\": \"string\",\"country\": \"string\",\"linkedinUrl\": \"string\",\"bio\": \"string\",\"mobilePhone\": \"string\",\"workPhone\": \"string\"}],\"recruiters\": [{\"id\": \"string\",\"firstName\": \"string\",\"lastName\": \"string\",\"email\": \"string\",\"title\": \"string\",\"country\": \"string\",\"linkedinUrl\": \"string\",\"bio\": \"string\",\"mobilePhone\": \"string\",\"workPhone\": \"string\"}],\"researchers\": [{\"id\": \"string\",\"firstName\": \"string\",\"lastName\": \"string\",\"email\": \"string\",\"title\": \"string\",\"country\": \"string\",\"linkedinUrl\": \"string\",\"bio\": \"string\",\"mobilePhone\": \"string\",\"workPhone\": \"string\"}],\"eas\": [{\"id\": \"string\",\"firstName\": \"string\",\"lastName\": \"string\",\"email\": \"string\",\"title\": \"string\",\"country\": \"string\",\"linkedinUrl\": \"string\",\"bio\": \"string\",\"mobilePhone\": \"string\",\"workPhone\": \"string\"}],\"clienTeam\": [{\"id\": \"string\",\"contact\": {\"id\": \"string\",\"firstName\": \"string\",\"lastName\": \"string\",\"country\": \"string\",\"linkedinUrl\": \"string\",\"mobilePhone\": \"string\",\"currentJobTitle\": \"string\",\"company\": {\"id\": \"string\",\"name\": \"string\"},\"publishedBio\": \"string\"}}]}}")))})
   public MappingJacksonValue getBiosDetails(@PathVariable("candidateId") String candidateId) {
     CandidateDTO candidateDTO = candidateUtil.getCandidateDetails(candidateId);
     SimpleBeanPropertyFilter candidateFilter =
@@ -84,17 +86,19 @@ public class CandidateController {
         SimpleBeanPropertyFilter.filterOutAllExcept(Constant.ID, Constant.CONTACT);
 
     SimpleBeanPropertyFilter companyFilter =
-        SimpleBeanPropertyFilter.filterOutAllExcept("id", "name");
+        SimpleBeanPropertyFilter.filterOutAllExcept(Constant.ID, "name");
 
     SimpleBeanPropertyFilter contactFilter =
         SimpleBeanPropertyFilter.filterOutAllExcept(Constant.ID, Constant.FIRST_NAME,
             Constant.LAST_NAME, Constant.CURRENT_JOB_TITLE, Constant.MOBILE_PHONE,
             Constant.PUBLISHED_BIO, Constant.COMPANY, Constant.LINKEDIN_URL, Constant.COUNTRY);
 
-    FilterProvider filters = new SimpleFilterProvider()
-        .addFilter("candidateFilter", candidateFilter).addFilter("searchFilter", searchFilter)
-        .addFilter("userFilter", userFilter).addFilter("clientTeamFilter", clientTeamFilter)
-        .addFilter("contactFilter", contactFilter).addFilter("companyFilter", companyFilter);
+    FilterProvider filters =
+        new SimpleFilterProvider().addFilter(Constant.CANDIDATE_FILTER, candidateFilter)
+            .addFilter(Constant.SEARCH_FILTER, searchFilter).addFilter("userFilter", userFilter)
+            .addFilter("clientTeamFilter", clientTeamFilter)
+            .addFilter(Constant.CONTACT_FILTER, contactFilter)
+            .addFilter(Constant.COMPANY_FILTER, companyFilter);
 
     MappingJacksonValue mapping = new MappingJacksonValue(candidateDTO);
     mapping.setFilters(filters);
