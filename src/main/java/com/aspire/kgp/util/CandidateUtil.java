@@ -56,6 +56,7 @@ public class CandidateUtil {
     if (candidateDTO == null) {
       throw new APIException("Invalid Candidate Id");
     }
+    candidateDTO.setId(candidateId);
     candidateDTO.getSearch().setPartners(addJsonArraytoList(json, "partners"));
     candidateDTO.getSearch().setRecruiters(addJsonArraytoList(json, "recruiters"));
     candidateDTO.getSearch().setResearchers(addJsonArraytoList(json, "researchers"));
