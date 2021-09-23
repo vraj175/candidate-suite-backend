@@ -10,7 +10,6 @@ import org.springframework.stereotype.Component;
 import com.aspire.kgp.constant.Constant;
 import com.aspire.kgp.dto.CandidateDTO;
 import com.aspire.kgp.dto.CompanyDTO;
-import com.aspire.kgp.dto.ContactDTO;
 import com.aspire.kgp.exception.APIException;
 import com.aspire.kgp.model.UserSearch;
 import com.aspire.kgp.service.UserSearchService;
@@ -52,29 +51,6 @@ public class CompanyUtil {
     }
 
 
-  }
-
-  public ContactDTO getCompanyDetails(String candidateId) {
-    String apiResponse =
-        restUtil.newGetMethod(Constant.CANDIDATE_URL.replace("{candidateId}", candidateId));
-    JsonObject json = (JsonObject) JsonParser.parseString(apiResponse);
-    ContactDTO contactDTO;
-    try {
-      contactDTO =
-          new Gson().fromJson(json.getAsJsonObject("contact"), new TypeToken<ContactDTO>() {
-
-            /**
-             * 
-             */
-            private static final long serialVersionUID = 1L;
-          }.getType());
-      if (contactDTO == null) {
-        throw new APIException(Constant.INVALID_CANDIDATE_ID);
-      }
-    } catch (JsonSyntaxException e) {
-      throw new APIException(Constant.JSON_PROCESSING_EXCEPTION + e.getMessage());
-    }
-    return contactDTO;
   }
 
   public CandidateDTO getCompanyInfoDetails(String candidateId) {

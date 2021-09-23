@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.aspire.kgp.constant.Constant;
 import com.aspire.kgp.dto.CandidateDTO;
 import com.aspire.kgp.dto.CompanyDTO;
-import com.aspire.kgp.dto.ContactDTO;
 import com.aspire.kgp.exception.NotFoundException;
 import com.aspire.kgp.model.User;
 import com.aspire.kgp.util.CompanyUtil;
@@ -59,26 +58,6 @@ public class CompanyController {
     FilterProvider filters =
         new SimpleFilterProvider().addFilter(Constant.COMPANY_FILTER, companyFilter);
     MappingJacksonValue mapping = new MappingJacksonValue(companyList);
-    mapping.setFilters(filters);
-
-    return mapping;
-  }
-
-  @Operation(summary = "Get Company Info Details")
-  @GetMapping("/company/{candidateId}")
-  @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK",
-      content = @Content(mediaType = "application/json", schema = @Schema(type = "ContactDTO",
-          example = "{\"id\": \"string\",\"country\": \"string\",\"currentJobTitle\": \"string\",\"company\": {\"id\": \"string\",\"name\": \"string\"}}")))})
-  public MappingJacksonValue getCompanyDetails(@PathVariable("candidateId") String candidateId) {
-    ContactDTO contactDTO = companyUtil.getCompanyDetails(candidateId);
-
-    SimpleBeanPropertyFilter companyFilter =
-        SimpleBeanPropertyFilter.filterOutAllExcept("id", "name");
-    SimpleBeanPropertyFilter contactFilter = SimpleBeanPropertyFilter
-        .filterOutAllExcept(Constant.ID, Constant.CURRENT_JOB_TITLE, "company", Constant.COUNTRY);
-    FilterProvider filters = new SimpleFilterProvider().addFilter("contactFilter", contactFilter)
-        .addFilter(Constant.COMPANY_FILTER, companyFilter);
-    MappingJacksonValue mapping = new MappingJacksonValue(contactDTO);
     mapping.setFilters(filters);
 
     return mapping;

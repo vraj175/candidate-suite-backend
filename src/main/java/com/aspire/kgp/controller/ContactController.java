@@ -69,6 +69,10 @@ public class ContactController {
 
   @Operation(summary = "Get contact profile image")
   @GetMapping("/contact/{contactId}/profile-image")
+  @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK",
+  content = @Content(mediaType = "application/json", schema = @Schema(
+      type = "byte",
+      example = "string")))})
   public byte[] getContactImage(@PathVariable("contactId") String contactId) {
     return contactUtil.getContactImage(contactId);
   }
