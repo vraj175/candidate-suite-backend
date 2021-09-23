@@ -10,7 +10,7 @@ import com.google.gson.annotations.SerializedName;
 public class CandidateDTO {
   private String id;
   boolean resumeUploaded;
-  private UserDTO contact;
+  private ContactDTO contact;
   private SearchDTO search;
   @SerializedName("kgp_interview_date1")
   private String kgpInterviewDate1;
@@ -74,13 +74,11 @@ public class CandidateDTO {
     this.offerPresented = offerPresented;
   }
 
-
-
-  public UserDTO getContact() {
+  public ContactDTO getContact() {
     return contact;
   }
 
-  public void setContact(UserDTO contact) {
+  public void setContact(ContactDTO contact) {
     this.contact = contact;
   }
 
