@@ -1,18 +1,14 @@
 package com.aspire.kgp.util;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.aspire.kgp.constant.Constant;
 import com.aspire.kgp.dto.CandidateDTO;
-import com.aspire.kgp.dto.ContactDTO;
 import com.aspire.kgp.dto.PositionProfileDTO;
 import com.aspire.kgp.dto.SearchDTO;
 import com.aspire.kgp.exception.APIException;
@@ -23,14 +19,12 @@ import com.aspire.kgp.service.UserSearchService;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 
 @Component
 public class SearchUtil {
-  private static final Log log = LogFactory.getLog(SearchUtil.class);
 
   @Autowired
   RestUtil restUtil;
@@ -50,7 +44,7 @@ public class SearchUtil {
     return createSharedListViaStream(searchDTOs, searches);
   }
 
-  public final List<CandidateDTO> getSearchListForUser(User user, String stage) {
+  public final List<SearchDTO> getSearchListForUser(User user, String stage) {
     List<UserSearch> searches = searchService.findByUser(user);
 
     if (searches.isEmpty()) {
@@ -84,20 +78,7 @@ public class SearchUtil {
 
     String searchListResponse =
         restUtil.postMethod(Constant.SEARCHES_LIST_BY_IDS, paramJSON.toString(), null);
-    List<SearchDTO> searchList = getSearchListFromJsonResponse(searchListResponse, stage);
-    List<CandidateDTO> candidateList = new ArrayList<>();
-    for (SearchDTO search : searchList) {
-
-      searches.forEach(userSearch -> {
-        if (userSearch.getSearchId().equals(search.getId())) {
-          CandidateDTO candidate = new CandidateDTO();
-          candidate.setId(userSearch.getCandidateId());
-          candidate.setSearch(search);
-          candidateList.add(candidate);
-        }
-      });
-    }
-    return candidateList;
+    return getSearchListFromJsonResponse(searchListResponse, stage);
   }
 
   private List<SearchDTO> getSearchListFromJsonResponse(String searchListResponse, String stage) {
@@ -111,7 +92,7 @@ public class SearchUtil {
         private static final long serialVersionUID = 1L;
       }.getType());
     } catch (JsonSyntaxException e) {
-      throw new APIException("Error in coverting json to object");
+      throw new APIException(Constant.CONVERT_JSON_ERROR);
     }
     return searchList.stream().filter(s -> stage.equalsIgnoreCase(s.getStage()))
         .collect(Collectors.toList());
@@ -123,16 +104,8 @@ public class SearchUtil {
       return Collections.emptyList();
     }
 
-    ContactDTO contact = null;
-    CandidateDTO candidate;
-    List<CandidateDTO> listCandidate = new ArrayList<>();
-
     String apiResponse =
         restUtil.newGetMethod(Constant.CANDIDATE_LIST_URL.replace("{searchId}", searchId));
-    if (CommonUtil.checkNullString(apiResponse)) {
-      log.error("Error while fetching candidate list from Galaxy.");
-      return listCandidate;
-    }
 
     JsonObject jsonObjects = (JsonObject) JsonParser.parseString(apiResponse);
     JsonArray jsonArray = jsonObjects.getAsJsonArray("data");
@@ -140,21 +113,24 @@ public class SearchUtil {
     if (jsonArray == null) {
       throw new NotFoundException("Invalid Search Id");
     }
-    Gson gson = new Gson();
-    for (JsonElement jsonElement : jsonArray) {
-      contact =
-          gson.fromJson(jsonElement.getAsJsonObject().get("contact"), new TypeToken<ContactDTO>() {
-            /**
-            *
-            */
-            private static final long serialVersionUID = 1L;
-          }.getType());
-      candidate = new CandidateDTO();
-      candidate.setId(jsonElement.getAsJsonObject().get("id").getAsString());
-      candidate.setContact(contact);
-      listCandidate.add(candidate);
+    List<CandidateDTO> candidateList = getCandidateListFromJsonResponse(jsonArray);
+    return getInvitedCandidatesFromAllCandidates(candidateList, searches);
+  }
+
+  private List<CandidateDTO> getCandidateListFromJsonResponse(JsonArray jsonArray) {
+    List<CandidateDTO> candidateList;
+    try {
+      candidateList = new Gson().fromJson(jsonArray, new TypeToken<List<CandidateDTO>>() {
+
+        /**
+         * 
+         */
+        private static final long serialVersionUID = 1L;
+      }.getType());
+    } catch (JsonSyntaxException e) {
+      throw new APIException(Constant.CONVERT_JSON_ERROR);
     }
-    return getInvitedCandidatesFromAllCandidates(listCandidate, searches);
+    return candidateList;
   }
 
   public PositionProfileDTO getPositionProfileDetails(String searchId) {
@@ -170,7 +146,7 @@ public class SearchUtil {
         private static final long serialVersionUID = 1L;
       }.getType());
     } catch (Exception e) {
-      throw new APIException("Error in coverting json to object");
+      throw new APIException(Constant.CONVERT_JSON_ERROR);
     }
 
     if (positionProfile == null || positionProfile.getIsYearsOfExperienceMandatory() == null) {

@@ -49,27 +49,23 @@ public class SearchController {
   @Operation(summary = "Get Search list for user")
   @GetMapping("/searches/stage/{stage}")
   @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK",
-      content = @Content(mediaType = "application/json", schema = @Schema(
-          type = "List<CandidateDTO>",
-          example = "[{\"id\": \"string\",\"search\": {\"id\": \"string\",\"jobTitle\": \"string\",\"jobNumber\": \"string\",\"stage\": \"string\",\"company\": {\"id\": \"string\",\"name\": \"string\"}}}]")))})
+      content = @Content(mediaType = "application/json", schema = @Schema(type = "List<SearchDTO>",
+          example = "[{\"id\": \"string\",\"jobTitle\": \"string\",\"jobNumber\": \"string\",\"stage\": \"string\",\"company\": {\"id\": \"string\",\"name\": \"string\"}}]")))})
   public MappingJacksonValue getSearchList(HttpServletRequest request,
       @PathVariable("stage") String stage) {
     User user = (User) request.getAttribute("user");
-    List<CandidateDTO> candidateList = searchUtil.getSearchListForUser(user, stage);
+    List<SearchDTO> searchList = searchUtil.getSearchListForUser(user, stage);
 
     SimpleBeanPropertyFilter companyFilter =
         SimpleBeanPropertyFilter.filterOutAllExcept("id", "name");
 
     SimpleBeanPropertyFilter searchFilter = SimpleBeanPropertyFilter.filterOutAllExcept("id",
         Constant.JOB_TITLE, "jobNumber", "stage", Constant.COMPANY);
-    SimpleBeanPropertyFilter candidateFilter =
-        SimpleBeanPropertyFilter.filterOutAllExcept("id", "search");
 
     FilterProvider filters =
         new SimpleFilterProvider().addFilter(Constant.SEARCH_FILTER, searchFilter)
-            .addFilter(Constant.COMPANY_FILTER, companyFilter)
-            .addFilter(Constant.CANDIDATE_FILTER, candidateFilter);
-    MappingJacksonValue mapping = new MappingJacksonValue(candidateList);
+            .addFilter(Constant.COMPANY_FILTER, companyFilter);
+    MappingJacksonValue mapping = new MappingJacksonValue(searchList);
     mapping.setFilters(filters);
     return mapping;
   }
@@ -160,10 +156,10 @@ public class SearchController {
     CandidateDTO candidateDTO = candidateUtil.getCandidateDetails(userSearch.getCandidateId());
 
     SimpleBeanPropertyFilter candidateFilter =
-        SimpleBeanPropertyFilter.filterOutAllExcept(Constant.CONTACT, Constant.SEARCH);
+        SimpleBeanPropertyFilter.filterOutAllExcept(Constant.ID, Constant.CONTACT, Constant.SEARCH);
 
     SimpleBeanPropertyFilter companyFilter =
-        SimpleBeanPropertyFilter.filterOutAllExcept("id", "name");
+        SimpleBeanPropertyFilter.filterOutAllExcept(Constant.ID, "name");
 
     SimpleBeanPropertyFilter userAndContactFilter = SimpleBeanPropertyFilter
         .filterOutAllExcept(Constant.ID, Constant.FIRST_NAME, Constant.LAST_NAME);
