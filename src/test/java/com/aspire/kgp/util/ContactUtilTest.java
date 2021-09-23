@@ -3,7 +3,7 @@ package com.aspire.kgp.util;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -56,11 +56,12 @@ class ContactUtilTest {
     assertEquals(contactDTO.getPublishedBio(), response.getPublishedBio());
     assertEquals(contactDTO.getTargetBonusValue(), response.getTargetBonusValue());
     assertEquals(contactDTO.getJobHistory().size(), response.getJobHistory().size());
-    assertEquals(contactDTO.getBoardDetails().size(), response.getBoardDetails().size());
+    assertEquals(contactDTO.getBoardDetails().get(0).getCommittee(),
+        response.getBoardDetails().get(0).getCommittee());
     assertEquals(contactDTO.getEducationDetails().size(), response.getEducationDetails().size());
     assertEquals(contactDTO.getCompany().getId(), response.getCompany().getId());
   }
-  
+
   @Test
   void testGetContactDetails_APIException() {
     when(restUtil.newGetMethod(anyString())).thenReturn("{");
