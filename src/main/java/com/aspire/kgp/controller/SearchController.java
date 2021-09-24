@@ -141,7 +141,7 @@ public class SearchController {
   @GetMapping("/searches/{searchId}/candidate")
   @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK",
       content = @Content(mediaType = "application/json", schema = @Schema(type = "CandidateDTO",
-          example = "{\"contact\":{\"id\":\"string\",\"firstName\":\"string\",\"lastName\":\"string\"},\"search\":{\"id\":\"string\",\"jobTitle\":\"string\",\"jobNumber\":\"string\",\"company\":{\"id\":\"string\",\"name\":\"string\"},\"partners\":[{\"id\":\"string\",\"firstName\":\"string\",\"lastName\":\"string\"}],\"recruiters\":[{\"id\":\"string\",\"firstName\":\"string\",\"lastName\":\"string\"}],\"researchers\":[{\"id\":\"string\",\"firstName\":\"string\",\"lastName\":\"string\"}],\"eas\":[{\"id\":\"string\",\"firstName\":\"string\",\"lastName\":\"string\"}]}}\"")))})
+          example = "{\"id\": \"string\",\"contact\":{\"id\": \"string\",\"firstName\": \"string\",\"lastName\": \"string\"},\"search\": {\"id\": \"string\",\"jobTitle\": \"string\",\"jobNumber\": \"string\",\"company\": {\"id\": \"string\",\"name\": \"string\"},\"partners\": [{\"id\": \"string\",\"firstName\": \"string\",\"lastName\": \"string\"}],\"recruiters\": [{\"id\": \"string\",\"firstName\": \"string\",\"lastName\": \"string\"}],\"researchers\": [{\"id\": \"string\",\"firstName\": \"string\",\"lastName\": \"string\"}],\"eas\": [{\"id\": \"string\",\"firstName\": \"string\",\"lastName\": \"string\"}]}}")))})
   public MappingJacksonValue getCandidateDetailsBySearch(@PathVariable("searchId") String searchId,
       HttpServletRequest request) {
     User user = (User) request.getAttribute("user");
