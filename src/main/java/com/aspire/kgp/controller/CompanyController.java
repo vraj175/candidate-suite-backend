@@ -4,6 +4,8 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.converter.json.MappingJacksonValue;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -33,6 +35,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @RequestMapping("/api/v1.0")
 @Tag(name = "Company", description = "Rest API For Company")
 public class CompanyController {
+  static Log log = LogFactory.getLog(CompanyController.class.getName());
 
   @Autowired
   CompanyUtil companyUtil;
@@ -45,6 +48,8 @@ public class CompanyController {
   public MappingJacksonValue getCompanyList(HttpServletRequest request,
       @PathVariable("stage") String stage) {
     User user = (User) request.getAttribute("user");
+    log.info("Get Client list API call, Request Param stage: " + stage + "User is galaxy Id "
+        + user.getGalaxyId());
     List<CompanyDTO> companyList;
     if (Constant.PARTNER.equalsIgnoreCase(user.getRole().getName())) {
       companyList = companyUtil.getCompanyList(stage);
@@ -59,7 +64,8 @@ public class CompanyController {
         new SimpleFilterProvider().addFilter(Constant.COMPANY_FILTER, companyFilter);
     MappingJacksonValue mapping = new MappingJacksonValue(companyList);
     mapping.setFilters(filters);
-
+    log.info("Successfully send Client list " + companyList.size());
+    log.debug("Get Client list API Response : " + mapping.getValue());
     return mapping;
   }
 
@@ -70,6 +76,7 @@ public class CompanyController {
           example = "{\"id\": \"string\",\"kgpInterviewDate1\": \"string\",\"kgpInterviewDate2\": \"string\",\"kgpInterviewDate3\": \"string\",\"interviews\": [{\"id\": \"string\",\"method\": \"string\",\"comments\": \"string\",\"position\": 0,\"interviewDate\": \"string\",\"client\": {\"id\": \"string\",\"name\": \"string\"}}],\"degreeVerification\": true,\"offerPresented\": true,\"athenaCompleted\": true,\"conatctId\": \"string\"}")))})
   public MappingJacksonValue getCompanyInfoDetails(
       @PathVariable("candidateId") String candidateId) {
+    log.info("Get candidate Details API call, Request Param CandidateId : " + candidateId);
     CandidateDTO candidateDTO = companyUtil.getCompanyInfoDetails(candidateId);
     SimpleBeanPropertyFilter candidateFilter = SimpleBeanPropertyFilter.filterOutAllExcept(
         Constant.ID, "contactId", "kgpInterviewDate1", "kgpInterviewDate2", "kgpInterviewDate3",
@@ -83,7 +90,8 @@ public class CompanyController {
             .addFilter("interviewFilter", interviewFilter).addFilter("userFilter", userFilter);
     MappingJacksonValue mapping = new MappingJacksonValue(candidateDTO);
     mapping.setFilters(filters);
-
+    log.info("Successfully send candidate Details");
+    log.debug("Get candidate Details API Response : " + mapping.getValue());
     return mapping;
   }
 
@@ -93,6 +101,7 @@ public class CompanyController {
       content = @Content(mediaType = "application/json", schema = @Schema(type = "List<CompanyDTO>",
           example = "[{\"id\": \"string\",\"name\": \"string\"}]")))})
   public MappingJacksonValue getListOfCompany(@RequestParam(name = "name") String companyName) {
+    log.info("Get all matching companies API call, Request Param companyName : " + companyName);
     List<CompanyDTO> companyDTO = companyUtil.getListOfCompany(companyName);
     SimpleBeanPropertyFilter companyFilter =
         SimpleBeanPropertyFilter.filterOutAllExcept(Constant.ID, "name");
@@ -100,7 +109,8 @@ public class CompanyController {
         new SimpleFilterProvider().addFilter(Constant.COMPANY_FILTER, companyFilter);
     MappingJacksonValue mapping = new MappingJacksonValue(companyDTO);
     mapping.setFilters(filters);
-
+    log.info("Successfully send all matching companies");
+    log.debug("Get all matching companies API Response : " + mapping.getValue());
     return mapping;
   }
 }

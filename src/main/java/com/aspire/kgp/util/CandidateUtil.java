@@ -132,7 +132,7 @@ public class CandidateUtil {
         os.write(buffer, 0, count);
       }
     } catch (Exception e) {
-      throw new APIException("Error While creating PDF");
+      throw new APIException("Error While Downloading PDF from bytes");
     }
     return os.toByteArray();
   }

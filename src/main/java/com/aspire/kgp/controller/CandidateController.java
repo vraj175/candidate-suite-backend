@@ -1,5 +1,7 @@
 package com.aspire.kgp.controller;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.json.MappingJacksonValue;
@@ -26,6 +28,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @RequestMapping("/api/v1.0")
 @Tag(name = "Candidate", description = "REST API for Candidate")
 public class CandidateController {
+  static Log log = LogFactory.getLog(CandidateController.class.getName());
 
   @Autowired
   CandidateUtil candidateUtil;
@@ -36,6 +39,7 @@ public class CandidateController {
       content = @Content(mediaType = "application/json", schema = @Schema(type = "CandidateDTO",
           example = "{\"contact\": {\"id\": \"string\",\"firstName\": \"string\",\"lastName\": \"string\"},\"search\": {\"id\": \"string\",\"jobTitle\": \"string\",\"jobNumber\": \"string\",\"company\": {\"id\": \"string\",\"name\": \"string\"},\"partners\": [{\"id\": \"string\",\"firstName\": \"string\",\"lastName\": \"string\"}],\"recruiters\": [{\"id\": \"string\",\"firstName\": \"string\",\"lastName\": \"string\"}],\"researchers\": [{\"id\": \"string\",\"firstName\": \"string\",\"lastName\": \"string\"}],\"eas\": [{\"id\": \"string\",\"firstName\": \"string\",\"lastName\": \"string\"}]}}")))})
   public MappingJacksonValue getCandidateDetails(@PathVariable("candidateId") String candidateId) {
+    log.info("Get Candidate Details API call, Request Param CandidateId : " + candidateId);
     CandidateDTO candidateDTO = candidateUtil.getCandidateDetails(candidateId);
 
     SimpleBeanPropertyFilter candidateFilter =
@@ -60,7 +64,8 @@ public class CandidateController {
 
     MappingJacksonValue mapping = new MappingJacksonValue(candidateDTO);
     mapping.setFilters(filters);
-
+    log.info("Successfully send Candidate Details");
+    log.debug("Get Candidate Details API Response : " + mapping.getValue());
     return mapping;
   }
 
@@ -70,6 +75,7 @@ public class CandidateController {
       content = @Content(mediaType = "application/json", schema = @Schema(type = "CandidateDTO",
           example = "{\"search\": {\"partners\": [{\"id\": \"string\",\"firstName\": \"string\",\"lastName\": \"string\",\"email\": \"string\",\"title\": \"string\",\"country\": \"string\",\"linkedinUrl\": \"string\",\"bio\": \"string\",\"mobilePhone\": \"string\",\"workPhone\": \"string\"}],\"recruiters\": [{\"id\": \"string\",\"firstName\": \"string\",\"lastName\": \"string\",\"email\": \"string\",\"title\": \"string\",\"country\": \"string\",\"linkedinUrl\": \"string\",\"bio\": \"string\",\"mobilePhone\": \"string\",\"workPhone\": \"string\"}],\"researchers\": [{\"id\": \"string\",\"firstName\": \"string\",\"lastName\": \"string\",\"email\": \"string\",\"title\": \"string\",\"country\": \"string\",\"linkedinUrl\": \"string\",\"bio\": \"string\",\"mobilePhone\": \"string\",\"workPhone\": \"string\"}],\"eas\": [{\"id\": \"string\",\"firstName\": \"string\",\"lastName\": \"string\",\"email\": \"string\",\"title\": \"string\",\"country\": \"string\",\"linkedinUrl\": \"string\",\"bio\": \"string\",\"mobilePhone\": \"string\",\"workPhone\": \"string\"}],\"clienTeam\": [{\"id\": \"string\",\"contact\": {\"id\": \"string\",\"firstName\": \"string\",\"lastName\": \"string\",\"country\": \"string\",\"linkedinUrl\": \"string\",\"mobilePhone\": \"string\",\"currentJobTitle\": \"string\",\"company\": {\"id\": \"string\",\"name\": \"string\"},\"publishedBio\": \"string\"}}]}}")))})
   public MappingJacksonValue getBiosDetails(@PathVariable("candidateId") String candidateId) {
+    log.info("Get Team Member Details API call, Request Param CandidateId : " + candidateId);
     CandidateDTO candidateDTO = candidateUtil.getCandidateDetails(candidateId);
     SimpleBeanPropertyFilter candidateFilter =
         SimpleBeanPropertyFilter.filterOutAllExcept(Constant.SEARCH);
@@ -102,7 +108,8 @@ public class CandidateController {
 
     MappingJacksonValue mapping = new MappingJacksonValue(candidateDTO);
     mapping.setFilters(filters);
-
+    log.info("Successfully send Team Member Details");
+    log.debug("Get Team Member Details API Response : " + mapping.getValue());
     return mapping;
   }
 
@@ -110,6 +117,8 @@ public class CandidateController {
   @GetMapping(value = {"candidates/AthenaReport/{pageSize}/{locale}/{contactId}"})
   public ResponseEntity<byte[]> getAthenaReport(@PathVariable("pageSize") String pageSize,
       @PathVariable("locale") String locale, @PathVariable("contactId") String contactId) {
+    log.info("Download Athena Report API call, Request Param pageSize: " + pageSize + " locale: "
+        + locale + " contactId: " + contactId);
     return candidateUtil.getAthenaReport(pageSize, locale, contactId);
   }
 }
