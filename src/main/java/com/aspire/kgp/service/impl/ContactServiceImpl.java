@@ -1,4 +1,4 @@
-package com.aspire.kgp.util;
+package com.aspire.kgp.service.impl;
 
 
 import java.io.File;
@@ -17,7 +17,7 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpHeaders;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.aspire.kgp.constant.Constant;
@@ -27,6 +27,9 @@ import com.aspire.kgp.dto.DocumentDTO;
 import com.aspire.kgp.dto.SearchDTO;
 import com.aspire.kgp.exception.APIException;
 import com.aspire.kgp.exception.NotFoundException;
+import com.aspire.kgp.service.ContactService;
+import com.aspire.kgp.util.CommonUtil;
+import com.aspire.kgp.util.RestUtil;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
@@ -34,15 +37,15 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 
-
-@Component
-public class ContactUtil {
-  static Log log = LogFactory.getLog(ContactUtil.class.getName());
+@Service
+public class ContactServiceImpl implements ContactService {
+  static Log log = LogFactory.getLog(ContactServiceImpl.class.getName());
 
   @Autowired
   RestUtil restUtil;
 
-  public final ContactDTO getContactDetails(String contactId) {
+  @Override
+  public ContactDTO getContactDetails(String contactId) {
     String apiResponse =
         restUtil.newGetMethod(Constant.CONTACT_URL.replace(Constant.CONTACT_ID, contactId));
 
@@ -59,28 +62,33 @@ public class ContactUtil {
     }
   }
 
-  public final byte[] getContactImage(String contactId) {
+  @Override
+  public byte[] getContactImage(String contactId) {
     return restUtil
         .newGetImage(Constant.CONTACT_PROFILE_IMAGE_URL.replace(Constant.CONTACT_ID, contactId));
   }
 
-  public final String updateContactDetails(String contactId, String contactData)
+  @Override
+  public String updateContactDetails(String contactId, String contactData)
       throws UnsupportedEncodingException {
     return restUtil.putMethod(Constant.CONTACT_URL.replace("{contactId}", contactId), contactData);
   }
 
-  public final String updateContactReference(String referenceId, String referenceData)
+  @Override
+  public String updateContactReference(String referenceId, String referenceData)
       throws UnsupportedEncodingException {
     return restUtil.putMethod(
         Constant.UPDATE_CONTACT_REFERENCE_URL.replace("{referenceId}", referenceId), referenceData);
   }
 
+  @Override
   public final String addContactReference(String contactId, String referenceData) {
     return restUtil.postMethod(
         Constant.CONTACT_REFERENCE_URL.replace(Constant.CONTACT_ID, contactId), referenceData,
         null);
   }
 
+  @Override
   public String uploadCandidateResume(MultipartFile multipartFile, String contactId) {
     JsonObject paramJSON = new JsonObject();
     paramJSON.addProperty("description", "");
@@ -117,6 +125,7 @@ public class ContactUtil {
     return Constant.FILE_UPLOAD_ERROR;
   }
 
+  @Override
   public final DocumentDTO getContactResumes(String contactId) {
     List<DocumentDTO> documentList = null;
     String apiResponse =
@@ -140,6 +149,7 @@ public class ContactUtil {
     return documentList.get(0);
   }
 
+  @Override
   public void downloadDocument(String documentName, String attachmentId,
       HttpServletResponse response) {
     try {
@@ -160,7 +170,8 @@ public class ContactUtil {
     }
   }
 
-  public final List<ContactReferencesDTO> getListOfReferences(String contactId) {
+  @Override
+  public List<ContactReferencesDTO> getListOfReferences(String contactId) {
     String apiResponse = restUtil
         .newGetMethod(Constant.CONTACT_REFERENCE_URL.replace(Constant.CONTACT_ID, contactId));
 
@@ -177,7 +188,8 @@ public class ContactUtil {
     }
   }
 
-  public final List<SearchDTO> getListOfContactSearches(String contactId) {
+  @Override
+  public List<SearchDTO> getListOfContactSearches(String contactId) {
     String apiResponse = restUtil
         .newGetMethod(Constant.CONTACT_SEARCHES_URL.replace(Constant.CONTACT_ID, contactId));
     List<SearchDTO> listSearch = new ArrayList<>();
@@ -204,6 +216,7 @@ public class ContactUtil {
     }
   }
 
+  @Override
   public final List<ContactDTO> getListOfContactByName(String contactName) {
     String apiResponse = restUtil
         .newGetMethod(Constant.GET_CONTACT_LIST_BY_NAME_URL.replace("{CONTACTNAME}", contactName));

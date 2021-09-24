@@ -46,7 +46,8 @@ public class SearchController {
   @Autowired
   UserSearchService userSearchService;
 
-  @Operation(summary = "Get Search list for user")
+  @Operation(summary = "Get Search list for user",
+      description = "Stage = Open / Closed - Placed / On Hold / Closed")
   @GetMapping("/searches/stage/{stage}")
   @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK",
       content = @Content(mediaType = "application/json", schema = @Schema(type = "List<SearchDTO>",
@@ -70,7 +71,8 @@ public class SearchController {
     return mapping;
   }
 
-  @Operation(summary = "Get Search list for company")
+  @Operation(summary = "Get Search list for company",
+      description = "Stage = Open / Closed - Placed / On Hold / Closed")
   @GetMapping("/searches/companies/{companyId}/stage/{stage}")
   @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK", content = @Content(
       mediaType = "application/json",
@@ -139,7 +141,7 @@ public class SearchController {
   @GetMapping("/searches/{searchId}/candidate")
   @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK",
       content = @Content(mediaType = "application/json", schema = @Schema(type = "CandidateDTO",
-          example = "{\"contact\":{\"id\":\"string\",\"firstName\":\"string\",\"lastName\":\"string\"},\"search\":{\"id\":\"string\",\"jobTitle\":\"string\",\"jobNumber\":\"string\",\"company\":{\"id\":\"string\",\"name\":\"string\"},\"partners\":[{\"id\":\"string\",\"firstName\":\"string\",\"lastName\":\"string\"}],\"recruiters\":[{\"id\":\"string\",\"firstName\":\"string\",\"lastName\":\"string\"}],\"researchers\":[{\"id\":\"string\",\"firstName\":\"string\",\"lastName\":\"string\"}],\"eas\":[{\"id\":\"string\",\"firstName\":\"string\",\"lastName\":\"string\"}]}}\"")))})
+          example = "{\"id\": \"string\",\"contact\":{\"id\": \"string\",\"firstName\": \"string\",\"lastName\": \"string\"},\"search\": {\"id\": \"string\",\"jobTitle\": \"string\",\"jobNumber\": \"string\",\"company\": {\"id\": \"string\",\"name\": \"string\"},\"partners\": [{\"id\": \"string\",\"firstName\": \"string\",\"lastName\": \"string\"}],\"recruiters\": [{\"id\": \"string\",\"firstName\": \"string\",\"lastName\": \"string\"}],\"researchers\": [{\"id\": \"string\",\"firstName\": \"string\",\"lastName\": \"string\"}],\"eas\": [{\"id\": \"string\",\"firstName\": \"string\",\"lastName\": \"string\"}]}}")))})
   public MappingJacksonValue getCandidateDetailsBySearch(@PathVariable("searchId") String searchId,
       HttpServletRequest request) {
     User user = (User) request.getAttribute("user");

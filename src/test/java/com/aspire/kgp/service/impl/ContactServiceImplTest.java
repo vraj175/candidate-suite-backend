@@ -1,4 +1,4 @@
-package com.aspire.kgp.util;
+package com.aspire.kgp.service.impl;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -16,13 +16,14 @@ import com.aspire.kgp.CustomTestData;
 import com.aspire.kgp.constant.Constant;
 import com.aspire.kgp.dto.ContactDTO;
 import com.aspire.kgp.exception.APIException;
+import com.aspire.kgp.util.RestUtil;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 
-class ContactUtilTest {
+class ContactServiceImplTest {
 
   @InjectMocks
-  ContactUtil util;
+  ContactServiceImpl service;
 
   @Mock
   RestUtil restUtil;
@@ -44,7 +45,7 @@ class ContactUtilTest {
     }.getType());
     when(restUtil.newGetMethod(anyString())).thenReturn(element);
 
-    ContactDTO response = util.getContactDetails(Constant.TEST);
+    ContactDTO response = service.getContactDetails(Constant.TEST);
 
     assertNotNull(response);
     assertEquals(contactDTO.getBaseSalary(), response.getBaseSalary());
@@ -65,7 +66,7 @@ class ContactUtilTest {
   @Test
   void testGetContactDetails_APIException() {
     when(restUtil.newGetMethod(anyString())).thenReturn("{");
-    Exception e = assertThrows(APIException.class, () -> util.getContactDetails(Constant.TEST));
+    Exception e = assertThrows(APIException.class, () -> service.getContactDetails(Constant.TEST));
     assertNotNull(e);
   }
 

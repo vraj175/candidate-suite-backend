@@ -13,6 +13,10 @@ import com.aspire.kgp.model.Role;
 import com.aspire.kgp.service.RoleService;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
@@ -31,6 +35,9 @@ public class RoleController {
 
   @Operation(summary = "Get list of Roles")
   @GetMapping(value = "/roles")
+  @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK",
+      content = @Content(mediaType = "application/json", schema = @Schema(type = "List<Role>",
+          example = "[{\"id\": 0,\"createdDate\": \"string\",\"modifyDate\": \"string\",\"name\": \"string\"}]")))})
   public List<Role> getRoles() {
     return service.findAll();
   }
