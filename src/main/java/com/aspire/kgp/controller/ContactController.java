@@ -139,6 +139,8 @@ public class ContactController {
       @ApiResponse(responseCode = "200", description = Constant.IMAGE_UPLOADED_SUCCESSFULLY)})
   public String uploadContactProfileImage(@PathVariable("contactId") String contactId,
       @RequestParam("profile") MultipartFile profile) {
+    log.info("Upload Profile Image For Contact API call, Request Param contactId: " + contactId
+        + " MultipartFile: " + profile.getName());
     return service.uploadContactImage(profile, contactId);
   }
 
