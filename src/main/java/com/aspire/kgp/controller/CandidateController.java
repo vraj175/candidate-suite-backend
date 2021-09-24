@@ -112,8 +112,9 @@ public class CandidateController {
     log.debug("Get Team Member Details API Response : " + mapping.getValue());
     return mapping;
   }
-
-  @Operation(summary = "Download Athena Report")
+  
+  @Operation(summary = "Download Athena Report",
+      description = "Page Size = USLetter / A4 <br> Locale = en_US / es_ES / pt_BR ")
   @GetMapping(value = {"candidates/AthenaReport/{pageSize}/{locale}/{contactId}"})
   public ResponseEntity<byte[]> getAthenaReport(@PathVariable("pageSize") String pageSize,
       @PathVariable("locale") String locale, @PathVariable("contactId") String contactId) {

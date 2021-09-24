@@ -133,6 +133,15 @@ public class ContactController {
     return service.uploadCandidateResume(file, contactId);
   }
 
+  @Operation(summary = "Upload Profile Image For Contact")
+  @PostMapping("/contact/{contactId}/profile-image")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", description = Constant.IMAGE_UPLOADED_SUCCESSFULLY)})
+  public String uploadContactProfileImage(@PathVariable("contactId") String contactId,
+      @RequestParam("profile") MultipartFile profile) {
+    return service.uploadContactImage(profile, contactId);
+  }
+
   @Operation(summary = "Get contact Resumes")
   @GetMapping(value = {"/contact/{contactId}/resumes"})
   @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK",

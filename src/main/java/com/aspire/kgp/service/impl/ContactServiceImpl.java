@@ -126,6 +126,43 @@ public class ContactServiceImpl implements ContactService {
   }
 
   @Override
+  public String uploadContactImage(MultipartFile multipartFile, String contactId) {
+    JsonObject paramJSON = new JsonObject();
+
+    File image;
+    try {
+      String imageName = multipartFile.getOriginalFilename();
+      if (imageName == null) {
+        throw new APIException(Constant.IMAGE_UPLOAD_ERROR);
+      }
+      String extension = imageName.substring(imageName.lastIndexOf("."));
+      log.info(extension);
+      image =
+          File.createTempFile(imageName.substring(0, imageName.lastIndexOf(".") - 1), extension);
+      FileOutputStream fos = new FileOutputStream(image);
+      fos.write(multipartFile.getBytes());
+      fos.close();
+    } catch (IOException e1) {
+      throw new APIException(Constant.IMAGE_UPLOAD_ERROR);
+    }
+
+    String response =
+        restUtil.postMethod(Constant.IMAGE_UPLOAD_URL.replace(Constant.CONTACT_ID, contactId),
+            paramJSON.toString(), image);
+    log.info(response);
+    JsonObject responseJson = new Gson().fromJson(response, JsonObject.class);
+
+    try {
+      if (responseJson.get("imageId").getAsString() != null) {
+        return Constant.IMAGE_UPLOADED_SUCCESSFULLY;
+      }
+    } catch (Exception e) {
+      throw new APIException(Constant.IMAGE_UPLOAD_ERROR);
+    }
+    return Constant.IMAGE_UPLOAD_ERROR;
+  }
+
+  @Override
   public final DocumentDTO getContactResumes(String contactId) {
     List<DocumentDTO> documentList = null;
     String apiResponse =
