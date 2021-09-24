@@ -54,6 +54,7 @@ public class Constant {
   public static final String INVITE_SUBJECT = "Welcome to Kingsley Gate Partners Portal!";
   public static final String FORGOT_PASSWORD_SUBJECT = "Forgot Password";
   public static final String FILE_UPLOADED_SUCCESSFULLY = "File uploaded successfully";
+  public static final String IMAGE_UPLOADED_SUCCESSFULLY = "Profile image uploaded successfully";
 
   public static final String CLIENT_SUITE_PROD_SERVER_URL = "https://clients.kingsleygate.com";
   public static final String PARSING_ERROR = "Exception while parsing";
@@ -61,6 +62,7 @@ public class Constant {
   public static final String JSON_PROCESSING_EXCEPTION = "JsonProcessingException : ";
   public static final String INVALID_CANDIDATE_ID = "Invalid Candidate Id";
   public static final String FILE_UPLOAD_ERROR = "Error in upload file";
+  public static final String IMAGE_UPLOAD_ERROR = "Error in upload profile image";
   public static final String CONVERT_JSON_ERROR = "Error in coverting json to object";
 
   public static final String EMPTY_STRING = "";
@@ -94,6 +96,7 @@ public class Constant {
   public static final String REFERENCE_TYPE_PICKLIST_URL = "/picklists/reference-types";
 
   public static final String RESUME_URL = "/contact/{contactId}/resumes";
+  public static final String IMAGE_UPLOAD_URL = "/contacts/{contactId}/image";
   public static final String UPDATE_CONTACT_REFERENCE_URL = "/contact/references/{referenceId}";
   public static final String CONTACT_ID = "{contactId}";
 
