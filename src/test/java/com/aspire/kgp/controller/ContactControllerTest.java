@@ -5,6 +5,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
+import java.io.UnsupportedEncodingException;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -68,6 +70,25 @@ class ContactControllerTest {
         response.getJobHistory().get(0).getCompany());
     assertEquals(contactDTO.getJobHistory().get(0).getCompany(),
         response.getJobHistory().get(0).getCompany());
+  }
+  
+  @Test
+  void testGetContactImage() {
+    byte[] bs= new byte[5];
+    when(service.getContactImage(anyString())).thenReturn(bs);
+   
+    byte[] response = controller.getContactImage(Constant.TEST);
+    assertNotNull(response);
+    assertEquals(bs, response);
+  }
+  
+  @Test
+  void testUpdateContactDetails() throws UnsupportedEncodingException {
+    when(service.updateContactDetails(anyString(), anyString())).thenReturn(Constant.TEST);
+    
+    String response = controller.updateContactDetails(Constant.TEST, Constant.TEST);
+    assertNotNull(response);
+    assertEquals(Constant.TEST, response);
   }
 
 }
