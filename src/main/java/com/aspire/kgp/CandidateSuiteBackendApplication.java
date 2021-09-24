@@ -98,9 +98,9 @@ public class CandidateSuiteBackendApplication {
             new SecurityScheme().type(SecurityScheme.Type.APIKEY).in(SecurityScheme.In.HEADER)
                 .name(Constant.API_KEY)))
         .path(Constant.BASE_API_URL + Constant.PUBLIC_API_URL + "/user/invite",
-            getPathItem(getInviteSchema(), "User", "Invite User as Candidates"))
+            getPathItem(getInviteSchema(), "User", "Invite User as Candidates","Language Should be en_US / es_ES / pt_BR"))
         .path(Constant.BASE_API_URL + Constant.PUBLIC_API_URL + "/user/resetPassword",
-            getPathItem(getResetPasswordSchema(), "User", "Reset Password for User"))
+            getPathItem(getResetPasswordSchema(), "User", "Reset Password for User", ""))
         .addSecurityItem(new SecurityRequirement().addList(Constant.API_KEY));
   }
 
@@ -148,7 +148,7 @@ public class CandidateSuiteBackendApplication {
   }
 
 
-  private PathItem getPathItem(Schema<?> schema, String tagItem, String summary) {
+  private PathItem getPathItem(Schema<?> schema, String tagItem, String summary,String description) {
     PathItem pathItem = new PathItem();
     RequestBody requestBody = new RequestBody();
 
@@ -157,7 +157,7 @@ public class CandidateSuiteBackendApplication {
     pathItem.setPost(new Operation().requestBody(requestBody)
         .responses(new ApiResponses().addApiResponse("200",
             new ApiResponse().description("OK").content(getResponseContent())))
-        .addTagsItem(tagItem).summary(summary));
+        .addTagsItem(tagItem).summary(summary).description(description));
     return pathItem;
   }
 
