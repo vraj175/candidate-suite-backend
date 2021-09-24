@@ -11,6 +11,8 @@ import com.aspire.kgp.dto.PickListDTO;
 import com.aspire.kgp.util.PickListUtil;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -32,7 +34,9 @@ public class PickListController {
 
   @Operation(summary = "Get Reference type List")
   @GetMapping("/picklists/reference-types")
-  @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK")})
+  @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK",
+      content = @Content(mediaType = "application/json",
+          schema = @Schema(type = "List<PickListDTO>", example = "[{\"name\": \"string\"}]")))})
   public List<PickListDTO> getReferencesType() {
     return pickListUtil.getReferencesType();
   }
