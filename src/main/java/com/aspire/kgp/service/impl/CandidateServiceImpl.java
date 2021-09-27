@@ -45,7 +45,7 @@ public class CandidateServiceImpl implements CandidateService {
   private String clientsuiteUrl;
 
   @Override
-  public final CandidateDTO getCandidateDetails(String candidateId) {
+  public CandidateDTO getCandidateDetails(String candidateId) {
     String apiResponse =
         restUtil.newGetMethod(Constant.CONDIDATE_URL.replace("{candidateId}", candidateId));
     JsonObject json = (JsonObject) JsonParser.parseString(apiResponse);

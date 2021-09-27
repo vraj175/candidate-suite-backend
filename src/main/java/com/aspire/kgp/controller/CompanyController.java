@@ -19,7 +19,7 @@ import com.aspire.kgp.dto.CandidateDTO;
 import com.aspire.kgp.dto.CompanyDTO;
 import com.aspire.kgp.exception.NotFoundException;
 import com.aspire.kgp.model.User;
-import com.aspire.kgp.util.CompanyUtil;
+import com.aspire.kgp.service.CompanyService;
 import com.fasterxml.jackson.databind.ser.FilterProvider;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
@@ -38,7 +38,7 @@ public class CompanyController {
   static Log log = LogFactory.getLog(CompanyController.class.getName());
 
   @Autowired
-  CompanyUtil companyUtil;
+  CompanyService service;
 
   @Operation(summary = "Get Client list")
   @GetMapping("/companies/{stage}")
@@ -52,7 +52,7 @@ public class CompanyController {
         + user.getGalaxyId());
     List<CompanyDTO> companyList;
     if (Constant.PARTNER.equalsIgnoreCase(user.getRole().getName())) {
-      companyList = companyUtil.getCompanyList(stage);
+      companyList = service.getCompanyList(stage);
     } else {
       throw new NotFoundException("Partner Not Found");
     }
@@ -77,7 +77,7 @@ public class CompanyController {
   public MappingJacksonValue getCompanyInfoDetails(
       @PathVariable("candidateId") String candidateId) {
     log.info("Get candidate Details API call, Request Param CandidateId : " + candidateId);
-    CandidateDTO candidateDTO = companyUtil.getCompanyInfoDetails(candidateId);
+    CandidateDTO candidateDTO = service.getCompanyInfoDetails(candidateId);
     SimpleBeanPropertyFilter candidateFilter = SimpleBeanPropertyFilter.filterOutAllExcept(
         Constant.ID, "contactId", "kgpInterviewDate1", "kgpInterviewDate2", "kgpInterviewDate3",
         "interviews", "degreeVerification", "offerPresented", "athenaCompleted");
@@ -102,7 +102,7 @@ public class CompanyController {
           example = "[{\"id\": \"string\",\"name\": \"string\"}]")))})
   public MappingJacksonValue getListOfCompany(@RequestParam(name = "name") String companyName) {
     log.info("Get all matching companies API call, Request Param companyName : " + companyName);
-    List<CompanyDTO> companyDTO = companyUtil.getListOfCompany(companyName);
+    List<CompanyDTO> companyDTO = service.getListOfCompany(companyName);
     SimpleBeanPropertyFilter companyFilter =
         SimpleBeanPropertyFilter.filterOutAllExcept(Constant.ID, "name");
     FilterProvider filters =
