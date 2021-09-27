@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.aspire.kgp.constant.Constant;
 import com.aspire.kgp.dto.CandidateDTO;
-import com.aspire.kgp.util.CandidateUtil;
+import com.aspire.kgp.service.CandidateService;
 import com.fasterxml.jackson.databind.ser.FilterProvider;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
@@ -31,7 +31,7 @@ public class CandidateController {
   static Log log = LogFactory.getLog(CandidateController.class.getName());
 
   @Autowired
-  CandidateUtil candidateUtil;
+  CandidateService service;
 
   @Operation(summary = "Get Candidate Details")
   @GetMapping("/candidates/{candidateId}")
@@ -40,7 +40,7 @@ public class CandidateController {
           example = "{\"contact\": {\"id\": \"string\",\"firstName\": \"string\",\"lastName\": \"string\"},\"search\": {\"id\": \"string\",\"jobTitle\": \"string\",\"jobNumber\": \"string\",\"company\": {\"id\": \"string\",\"name\": \"string\"},\"partners\": [{\"id\": \"string\",\"firstName\": \"string\",\"lastName\": \"string\"}],\"recruiters\": [{\"id\": \"string\",\"firstName\": \"string\",\"lastName\": \"string\"}],\"researchers\": [{\"id\": \"string\",\"firstName\": \"string\",\"lastName\": \"string\"}],\"eas\": [{\"id\": \"string\",\"firstName\": \"string\",\"lastName\": \"string\"}]}}")))})
   public MappingJacksonValue getCandidateDetails(@PathVariable("candidateId") String candidateId) {
     log.info("Get Candidate Details API call, Request Param CandidateId : " + candidateId);
-    CandidateDTO candidateDTO = candidateUtil.getCandidateDetails(candidateId);
+    CandidateDTO candidateDTO = service.getCandidateDetails(candidateId);
 
     SimpleBeanPropertyFilter candidateFilter =
         SimpleBeanPropertyFilter.filterOutAllExcept(Constant.CONTACT, Constant.SEARCH);
@@ -76,7 +76,7 @@ public class CandidateController {
           example = "{\"search\": {\"partners\": [{\"id\": \"string\",\"firstName\": \"string\",\"lastName\": \"string\",\"email\": \"string\",\"title\": \"string\",\"country\": \"string\",\"linkedinUrl\": \"string\",\"bio\": \"string\",\"mobilePhone\": \"string\",\"workPhone\": \"string\"}],\"recruiters\": [{\"id\": \"string\",\"firstName\": \"string\",\"lastName\": \"string\",\"email\": \"string\",\"title\": \"string\",\"country\": \"string\",\"linkedinUrl\": \"string\",\"bio\": \"string\",\"mobilePhone\": \"string\",\"workPhone\": \"string\"}],\"researchers\": [{\"id\": \"string\",\"firstName\": \"string\",\"lastName\": \"string\",\"email\": \"string\",\"title\": \"string\",\"country\": \"string\",\"linkedinUrl\": \"string\",\"bio\": \"string\",\"mobilePhone\": \"string\",\"workPhone\": \"string\"}],\"eas\": [{\"id\": \"string\",\"firstName\": \"string\",\"lastName\": \"string\",\"email\": \"string\",\"title\": \"string\",\"country\": \"string\",\"linkedinUrl\": \"string\",\"bio\": \"string\",\"mobilePhone\": \"string\",\"workPhone\": \"string\"}],\"clienTeam\": [{\"id\": \"string\",\"contact\": {\"id\": \"string\",\"firstName\": \"string\",\"lastName\": \"string\",\"country\": \"string\",\"linkedinUrl\": \"string\",\"mobilePhone\": \"string\",\"currentJobTitle\": \"string\",\"company\": {\"id\": \"string\",\"name\": \"string\"},\"publishedBio\": \"string\"}}]}}")))})
   public MappingJacksonValue getBiosDetails(@PathVariable("candidateId") String candidateId) {
     log.info("Get Team Member Details API call, Request Param CandidateId : " + candidateId);
-    CandidateDTO candidateDTO = candidateUtil.getCandidateDetails(candidateId);
+    CandidateDTO candidateDTO = service.getCandidateDetails(candidateId);
     SimpleBeanPropertyFilter candidateFilter =
         SimpleBeanPropertyFilter.filterOutAllExcept(Constant.SEARCH);
 
@@ -112,7 +112,7 @@ public class CandidateController {
     log.debug("Get Team Member Details API Response : " + mapping.getValue());
     return mapping;
   }
-  
+
   @Operation(summary = "Download Athena Report",
       description = "Page Size = USLetter / A4 <br> Locale = en_US / es_ES / pt_BR ")
   @GetMapping(value = {"candidates/AthenaReport/{pageSize}/{locale}/{contactId}"})
@@ -120,6 +120,6 @@ public class CandidateController {
       @PathVariable("locale") String locale, @PathVariable("contactId") String contactId) {
     log.info("Download Athena Report API call, Request Param pageSize: " + pageSize + " locale: "
         + locale + " contactId: " + contactId);
-    return candidateUtil.getAthenaReport(pageSize, locale, contactId);
+    return service.getAthenaReport(pageSize, locale, contactId);
   }
 }

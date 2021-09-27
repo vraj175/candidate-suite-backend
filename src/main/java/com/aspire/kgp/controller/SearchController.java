@@ -18,8 +18,8 @@ import com.aspire.kgp.dto.SearchDTO;
 import com.aspire.kgp.exception.APIException;
 import com.aspire.kgp.model.User;
 import com.aspire.kgp.model.UserSearch;
+import com.aspire.kgp.service.CandidateService;
 import com.aspire.kgp.service.UserSearchService;
-import com.aspire.kgp.util.CandidateUtil;
 import com.aspire.kgp.util.SearchUtil;
 import com.fasterxml.jackson.databind.ser.FilterProvider;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
@@ -41,7 +41,7 @@ public class SearchController {
   SearchUtil searchUtil;
 
   @Autowired
-  CandidateUtil candidateUtil;
+  CandidateService candidateService;
 
   @Autowired
   UserSearchService userSearchService;
@@ -155,7 +155,7 @@ public class SearchController {
       throw new APIException("Invalid Search Id");
     }
 
-    CandidateDTO candidateDTO = candidateUtil.getCandidateDetails(userSearch.getCandidateId());
+    CandidateDTO candidateDTO = candidateService.getCandidateDetails(userSearch.getCandidateId());
 
     SimpleBeanPropertyFilter candidateFilter =
         SimpleBeanPropertyFilter.filterOutAllExcept(Constant.ID, Constant.CONTACT, Constant.SEARCH);
