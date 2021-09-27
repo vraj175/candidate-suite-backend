@@ -1,23 +1,26 @@
-package com.aspire.kgp.util;
+package com.aspire.kgp.service.impl;
 
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import com.aspire.kgp.constant.Constant;
 import com.aspire.kgp.dto.PickListDTO;
 import com.aspire.kgp.exception.APIException;
+import com.aspire.kgp.service.PickListService;
+import com.aspire.kgp.util.RestUtil;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 
-@Component
-public class PickListUtil {
+@Service
+public class PickListServiceImpl implements PickListService {
 
   @Autowired
   RestUtil restUtil;
 
+  @Override
   public List<String> getEducationDegrees() {
     String apiResponse = restUtil.newGetMethod(Constant.EDUCATION_DEGREE_PICKLIST_URL);
     try {
@@ -33,6 +36,7 @@ public class PickListUtil {
     }
   }
 
+  @Override
   public List<PickListDTO> getReferencesType() {
     String apiResponse = restUtil.newGetMethod(Constant.REFERENCE_TYPE_PICKLIST_URL);
     try {
