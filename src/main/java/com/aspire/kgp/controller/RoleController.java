@@ -2,6 +2,8 @@ package com.aspire.kgp.controller;
 
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -23,6 +25,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @RequestMapping("/api/v1.0")
 @Tag(name = "Role", description = "REST API for Role")
 public class RoleController {
+  static Log log = LogFactory.getLog(RoleController.class.getName());
 
   @Autowired
   RoleService service;
@@ -30,7 +33,11 @@ public class RoleController {
   @Operation(summary = "Initialize Roles")
   @PostMapping(value = Constant.PUBLIC_API_URL + "/roles/initialize")
   public String initializeRoles() {
-    return service.initializeData();
+    log.info("Initialize Roles API call");
+    String roles = service.initializeData();
+    log.info("Successfully Initialize Roles");
+    log.debug("Initialize Roles List API Response: " + roles);
+    return roles;
   }
 
   @Operation(summary = "Get list of Roles")
@@ -39,7 +46,11 @@ public class RoleController {
       content = @Content(mediaType = "application/json", schema = @Schema(type = "List<Role>",
           example = "[{\"id\": 0,\"createdDate\": \"string\",\"modifyDate\": \"string\",\"name\": \"string\"}]")))})
   public List<Role> getRoles() {
-    return service.findAll();
+    log.info("Get list of Roles API call");
+    List<Role> roleList = service.findAll();
+    log.info("Successfully send list of Roles " + roleList.size());
+    log.debug("Get list of Roles API Response: " + roleList);
+    return roleList;
   }
 
 }
