@@ -19,8 +19,8 @@ import com.aspire.kgp.exception.APIException;
 import com.aspire.kgp.model.User;
 import com.aspire.kgp.model.UserSearch;
 import com.aspire.kgp.service.CandidateService;
+import com.aspire.kgp.service.SearchService;
 import com.aspire.kgp.service.UserSearchService;
-import com.aspire.kgp.util.SearchUtil;
 import com.fasterxml.jackson.databind.ser.FilterProvider;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
@@ -36,9 +36,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @RequestMapping("/api/v1.0")
 @Tag(name = "Search", description = "Rest API For Search")
 public class SearchController {
-
+  
   @Autowired
-  SearchUtil searchUtil;
+  SearchService service;
 
   @Autowired
   CandidateService candidateService;
@@ -55,7 +55,7 @@ public class SearchController {
   public MappingJacksonValue getSearchList(HttpServletRequest request,
       @PathVariable("stage") String stage) {
     User user = (User) request.getAttribute("user");
-    List<SearchDTO> searchList = searchUtil.getSearchListForUser(user, stage);
+    List<SearchDTO> searchList = service.getSearchListForUser(user, stage);
 
     SimpleBeanPropertyFilter companyFilter =
         SimpleBeanPropertyFilter.filterOutAllExcept("id", "name");
@@ -81,7 +81,7 @@ public class SearchController {
           + ": \"string\",\"jobNumber\": \"string\",\"stage\": \"string\",\"company\": {\"id\": \"string\",\"name\": \"string\"}}]")))})
   public MappingJacksonValue getSearchList(@PathVariable("companyId") String companyId,
       @PathVariable("stage") String stage) {
-    return applySearchFilter(searchUtil.getSearchList(companyId, stage));
+    return applySearchFilter(service.getSearchList(companyId, stage));
   }
 
   @Operation(summary = "Get Candidate list")
@@ -91,7 +91,7 @@ public class SearchController {
           type = "List<CandidateDTO>",
           example = "[{\"id\": \"string\",\"contact\": {\"id\": \"string\",\"firstName\": \"string\",\"lastName\": \"string\",\"workEmail\": \"string\",\"currentJobTitle\": \"string\",\"company\": {\"id\": \"string\",\"name\": \"string\"}}}]")))})
   public MappingJacksonValue getCandidateList(@PathVariable("searchId") String searchId) {
-    List<CandidateDTO> listCandidate = searchUtil.getCandidateList(searchId);
+    List<CandidateDTO> listCandidate = service.getCandidateList(searchId);
 
     SimpleBeanPropertyFilter companyFilter =
         SimpleBeanPropertyFilter.filterOutAllExcept("id", "name");
@@ -118,7 +118,7 @@ public class SearchController {
           type = "PositionProfileDTO",
           example = "{\"isDegreeMandatory\": true,\"isApprovedByPartner\": true,\"isYearsOfExperienceMandatory\": true,\"positionOverview\": \"string\",\"productsServicesOverview\": \"string\",\"professionalExperience\": \"string\",\"yearsOfExperience\": \"string\",\"degreeName\": \"string\",\"certifications\": \"string\",\"company\": {\"description\": \"string\",\"website\": \"string\"}}")))})
   public MappingJacksonValue getPositionProfile(@PathVariable("searchId") String searchId) {
-    PositionProfileDTO positionProfile = searchUtil.getPositionProfileDetails(searchId);
+    PositionProfileDTO positionProfile = service.getPositionProfileDetails(searchId);
 
     SimpleBeanPropertyFilter companyFilter =
         SimpleBeanPropertyFilter.filterOutAllExcept("description", "website");
@@ -193,7 +193,7 @@ public class SearchController {
               + "{\"title\": \"string\",\"description\": \"string\",\"websiteUrl\": \"string\",\"position\": \"string\"}],\"realestate\": [\r\n"
               + "{\"title\": \"string\",\"description\": \"string\",\"websiteUrl\": \"string\",\"position\": \"string\"}]}")))})
   public MappingJacksonValue getLocationInfo(@PathVariable("searchId") String searchId) {
-    PositionProfileDTO positionProfile = searchUtil.getPositionProfileDetails(searchId);
+    PositionProfileDTO positionProfile = service.getPositionProfileDetails(searchId);
 
     SimpleBeanPropertyFilter locationFilter = SimpleBeanPropertyFilter.filterOutAllExcept("title",
         "description", "websiteUrl", "position");
@@ -217,7 +217,7 @@ public class SearchController {
       schema = @Schema(type = "SearchDTO", example = "{\"id\": \"string\"," + Constant.JOB_TITLE
           + ": \"string\",\"company\": {\"id\": \"string\",\"name\": \"string\"},\"city\": \"string\",\"state\": \"string\"}")))})
   public MappingJacksonValue getCompanyDetails(@PathVariable("searchId") String searchId) {
-    SearchDTO searchDTO = searchUtil.getsearchDetails(searchId);
+    SearchDTO searchDTO = service.getsearchDetails(searchId);
 
     SimpleBeanPropertyFilter companyFilter =
         SimpleBeanPropertyFilter.filterOutAllExcept(Constant.ID, "name");
