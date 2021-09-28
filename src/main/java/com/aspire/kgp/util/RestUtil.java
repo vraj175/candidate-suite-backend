@@ -243,7 +243,7 @@ public class RestUtil {
       }
 
       new HttpClient().executeMethod(post);
-      if (post.getStatusCode() == HttpStatus.SC_OK) {
+      if (post.getStatusCode() == HttpStatus.SC_OK || post.getStatusCode() == HttpStatus.SC_CREATED) {
         responseString = post.getResponseBodyAsString();
       }
     } catch (Exception e) {
