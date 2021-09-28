@@ -89,7 +89,7 @@ public class ContactServiceImpl implements ContactService {
   }
 
   @Override
-  public String uploadCandidateResume(MultipartFile multipartFile, String contactId) {
+  public String uploadCandidateResume(MultipartFile multipartFile, String contactId, String type) {
     JsonObject paramJSON = new JsonObject();
     paramJSON.addProperty("description", "");
     paramJSON.addProperty("show_in_clientsuite", false);
@@ -109,9 +109,14 @@ public class ContactServiceImpl implements ContactService {
     } catch (IOException e1) {
       throw new APIException(Constant.FILE_UPLOAD_ERROR);
     }
-
-    String response = restUtil.postMethod(
-        Constant.RESUME_URL.replace(Constant.CONTACT_ID, contactId), paramJSON.toString(), file);
+    String response = "";
+    if(Constant.RESUME.equalsIgnoreCase(type)) {      
+      response = restUtil.postMethod(
+          Constant.RESUME_URL.replace(Constant.CONTACT_ID, contactId), paramJSON.toString(), file);
+    }else {
+      response = restUtil.postMethod(
+          Constant.ATTECHMENT_URL.replace(Constant.CONTACT_ID, contactId), paramJSON.toString(), file);
+    }
     log.info(response);
     JsonObject responseJson = new Gson().fromJson(response, JsonObject.class);
 
