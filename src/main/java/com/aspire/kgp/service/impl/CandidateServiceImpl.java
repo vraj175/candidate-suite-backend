@@ -1,4 +1,4 @@
-package com.aspire.kgp.util;
+package com.aspire.kgp.service.impl;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
@@ -18,22 +18,25 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import com.aspire.kgp.constant.Constant;
 import com.aspire.kgp.dto.CandidateDTO;
 import com.aspire.kgp.dto.UserDTO;
 import com.aspire.kgp.exception.APIException;
 import com.aspire.kgp.exception.NotFoundException;
+import com.aspire.kgp.service.CandidateService;
+import com.aspire.kgp.util.CommonUtil;
+import com.aspire.kgp.util.RestUtil;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
-@Component
-public class CandidateUtil {
-  static Log log = LogFactory.getLog(CandidateUtil.class.getName());
+@Service
+public class CandidateServiceImpl implements CandidateService {
+  static Log log = LogFactory.getLog(CandidateServiceImpl.class.getName());
 
   @Autowired
   RestUtil restUtil;
@@ -41,7 +44,8 @@ public class CandidateUtil {
   @Value("${clientsuite.url}")
   private String clientsuiteUrl;
 
-  public final CandidateDTO getCandidateDetails(String candidateId) {
+  @Override
+  public CandidateDTO getCandidateDetails(String candidateId) {
     String apiResponse =
         restUtil.newGetMethod(Constant.CONDIDATE_URL.replace("{candidateId}", candidateId));
     JsonObject json = (JsonObject) JsonParser.parseString(apiResponse);
@@ -80,6 +84,7 @@ public class CandidateUtil {
     return partnerList;
   }
 
+  @Override
   public ResponseEntity<byte[]> getAthenaReport(String pageSize, String locale, String contactId) {
     byte[] byteContent = new byte[1024];
     int contentLength = 0;
@@ -132,7 +137,7 @@ public class CandidateUtil {
         os.write(buffer, 0, count);
       }
     } catch (Exception e) {
-      throw new APIException("Error While creating PDF");
+      throw new APIException("Error While Downloading PDF from bytes");
     }
     return os.toByteArray();
   }

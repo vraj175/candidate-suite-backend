@@ -41,4 +41,10 @@ public class CompanyDTO {
     this.name = name;
   }
 
+  @Override
+  public String toString() {
+    return "CompanyDTO [id=" + id + ", name=" + name + ", description=" + description + ", website="
+        + website + "]";
+  }
+
 }

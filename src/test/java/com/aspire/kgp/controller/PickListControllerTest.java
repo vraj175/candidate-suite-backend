@@ -1,6 +1,7 @@
 package com.aspire.kgp.controller;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
@@ -13,15 +14,15 @@ import org.mockito.MockitoAnnotations;
 
 import com.aspire.kgp.CustomTestData;
 import com.aspire.kgp.dto.PickListDTO;
-import com.aspire.kgp.util.PickListUtil;
+import com.aspire.kgp.service.PickListService;
 
 class PickListControllerTest {
-  
+
   @InjectMocks
   PickListController controller;
-  
+
   @Mock
-  PickListUtil pickListUtil;
+  PickListService service;
 
   @BeforeEach
   void setUp() throws Exception {
@@ -31,10 +32,10 @@ class PickListControllerTest {
   @Test
   void testGetEducationDegrees() {
     List<String> strings = CustomTestData.getStrings();
-    when(pickListUtil.getEducationDegrees()).thenReturn(strings);
-    
+    when(service.getEducationDegrees()).thenReturn(strings);
+
     List<String> result = controller.getEducationDegrees();
-    
+
     assertNotNull(result);
     assertEquals(strings.size(), result.size());
   }
@@ -42,10 +43,10 @@ class PickListControllerTest {
   @Test
   void testGetReferencesType() {
     List<PickListDTO> pickListDTOs = CustomTestData.getPickListDTOs();
-    when(pickListUtil.getReferencesType()).thenReturn(pickListDTOs);
-    
+    when(service.getReferencesType()).thenReturn(pickListDTOs);
+
     List<PickListDTO> result = controller.getReferencesType();
-    
+
     assertNotNull(result);
     assertEquals(pickListDTOs.size(), result.size());
   }

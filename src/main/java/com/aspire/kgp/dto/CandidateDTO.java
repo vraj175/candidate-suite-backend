@@ -130,4 +130,14 @@ public class CandidateDTO {
     this.athenaCompleted = athenaCompleted;
   }
 
+  @Override
+  public String toString() {
+    return "CandidateDTO [id=" + id + ", resumeUploaded=" + resumeUploaded + ", contact=" + contact
+        + ", search=" + search + ", kgpInterviewDate1=" + kgpInterviewDate1 + ", kgpInterviewDate2="
+        + kgpInterviewDate2 + ", kgpInterviewDate3=" + kgpInterviewDate3 + ", interviews="
+        + interviews + ", degreeVerification=" + degreeVerification + ", offerPresented="
+        + offerPresented + ", athenaCompleted=" + athenaCompleted + ", athenaStatus=" + athenaStatus
+        + ", contactId=" + contactId + "]";
+  }
+
 }

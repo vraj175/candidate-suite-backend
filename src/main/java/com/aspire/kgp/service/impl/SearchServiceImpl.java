@@ -1,11 +1,11 @@
-package com.aspire.kgp.util;
+package com.aspire.kgp.service.impl;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import com.aspire.kgp.constant.Constant;
 import com.aspire.kgp.dto.CandidateDTO;
@@ -15,7 +15,9 @@ import com.aspire.kgp.exception.APIException;
 import com.aspire.kgp.exception.NotFoundException;
 import com.aspire.kgp.model.User;
 import com.aspire.kgp.model.UserSearch;
+import com.aspire.kgp.service.SearchService;
 import com.aspire.kgp.service.UserSearchService;
+import com.aspire.kgp.util.RestUtil;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
@@ -23,29 +25,18 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 
-@Component
-public class SearchUtil {
+@Service
+public class SearchServiceImpl implements SearchService {
 
   @Autowired
   RestUtil restUtil;
 
   @Autowired
-  UserSearchService searchService;
+  UserSearchService userSearchService;
 
-  public final List<SearchDTO> getSearchList(String companyId, String stage) {
-    List<UserSearch> searches = searchService.findByIsDeletedFalse();
-    if (searches.isEmpty()) {
-      return Collections.emptyList();
-    }
-    String searchListResponse =
-        restUtil.newGetMethod(Constant.SEARCHES_LIST_BY_COMAPNY.replace("{companyId}", companyId));
-
-    List<SearchDTO> searchDTOs = getSearchListFromJsonResponse(searchListResponse, stage);
-    return createSharedListViaStream(searchDTOs, searches);
-  }
-
+  @Override
   public final List<SearchDTO> getSearchListForUser(User user, String stage) {
-    List<UserSearch> searches = searchService.findByUser(user);
+    List<UserSearch> searches = userSearchService.findByUser(user);
 
     if (searches.isEmpty()) {
       return Collections.emptyList();
@@ -98,8 +89,36 @@ public class SearchUtil {
         .collect(Collectors.toList());
   }
 
+  @Override
+  public List<SearchDTO> getSearchList(String companyId, String stage) {
+    List<UserSearch> searches = userSearchService.findByIsDeletedFalse();
+    if (searches.isEmpty()) {
+      return Collections.emptyList();
+    }
+    String searchListResponse =
+        restUtil.newGetMethod(Constant.SEARCHES_LIST_BY_COMAPNY.replace("{companyId}", companyId));
+
+    List<SearchDTO> searchDTOs = getSearchListFromJsonResponse(searchListResponse, stage);
+    return createSharedListViaStream(searchDTOs, searches);
+  }
+
+  public List<SearchDTO> createSharedListViaStream(List<SearchDTO> listOne,
+      List<UserSearch> listTwo) {
+    // We create a stream of elements from the first list.
+    return listOne.stream()
+        // We select any elements such that in the stream of elements from the second
+        // list
+        .filter(two -> listTwo.stream()
+            // there is an element that has the same name and school as this element,
+            .anyMatch(one -> one.getSearchId().equals(two.getId())))
+        // and collect all matching elements from the first list into a new list.
+        .collect(Collectors.toList());
+    // We return the collected list.
+  }
+
+  @Override
   public List<CandidateDTO> getCandidateList(String searchId) {
-    List<UserSearch> searches = searchService.findByIsDeletedFalse();
+    List<UserSearch> searches = userSearchService.findByIsDeletedFalse();
     if (searches.isEmpty()) {
       return Collections.emptyList();
     }
@@ -133,6 +152,21 @@ public class SearchUtil {
     return candidateList;
   }
 
+  public List<CandidateDTO> getInvitedCandidatesFromAllCandidates(List<CandidateDTO> allCandidates,
+      List<UserSearch> invitedCandidates) {
+    // We create a stream of elements from the first list.
+    return allCandidates.stream()
+        // We select any elements such that in the stream of elements from the second
+        // list
+        .filter(two -> invitedCandidates.stream()
+            // there is an element that has the same name and school as this element,
+            .anyMatch(one -> one.getCandidateId().equals(two.getId())))
+        // and collect all matching elements from the first list into a new list.
+        .collect(Collectors.toList());
+    // We return the collected list.
+  }
+
+  @Override
   public PositionProfileDTO getPositionProfileDetails(String searchId) {
     PositionProfileDTO positionProfile;
     String apiResponse =
@@ -154,7 +188,8 @@ public class SearchUtil {
     }
     return positionProfile;
   }
-
+  
+  @Override
   public SearchDTO getsearchDetails(String searchId) {
     String apiResponse =
         restUtil.newGetMethod(Constant.SEARCH_INFO_URL.replace("{SEARCHID}", searchId));
@@ -170,33 +205,5 @@ public class SearchUtil {
     } catch (JsonSyntaxException e) {
       throw new APIException(Constant.JSON_PROCESSING_EXCEPTION + e.getMessage());
     }
-  }
-
-  public List<SearchDTO> createSharedListViaStream(List<SearchDTO> listOne,
-      List<UserSearch> listTwo) {
-    // We create a stream of elements from the first list.
-    return listOne.stream()
-        // We select any elements such that in the stream of elements from the second
-        // list
-        .filter(two -> listTwo.stream()
-            // there is an element that has the same name and school as this element,
-            .anyMatch(one -> one.getSearchId().equals(two.getId())))
-        // and collect all matching elements from the first list into a new list.
-        .collect(Collectors.toList());
-    // We return the collected list.
-  }
-
-  public List<CandidateDTO> getInvitedCandidatesFromAllCandidates(List<CandidateDTO> allCandidates,
-      List<UserSearch> invitedCandidates) {
-    // We create a stream of elements from the first list.
-    return allCandidates.stream()
-        // We select any elements such that in the stream of elements from the second
-        // list
-        .filter(two -> invitedCandidates.stream()
-            // there is an element that has the same name and school as this element,
-            .anyMatch(one -> one.getCandidateId().equals(two.getId())))
-        // and collect all matching elements from the first list into a new list.
-        .collect(Collectors.toList());
-    // We return the collected list.
   }
 }

@@ -1,33 +1,35 @@
-package com.aspire.kgp.util;
+package com.aspire.kgp.service.impl;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import com.aspire.kgp.constant.Constant;
 import com.aspire.kgp.dto.CandidateDTO;
 import com.aspire.kgp.dto.CompanyDTO;
 import com.aspire.kgp.exception.APIException;
 import com.aspire.kgp.model.UserSearch;
+import com.aspire.kgp.service.CompanyService;
 import com.aspire.kgp.service.UserSearchService;
+import com.aspire.kgp.util.RestUtil;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 
-@Component
-public class CompanyUtil {
-
+@Service
+public class CompanyServiceImpl implements CompanyService {
   @Autowired
   RestUtil restUtil;
 
   @Autowired
   UserSearchService searchService;
 
+  @Override
   public final List<CompanyDTO> getCompanyList(String stage) {
     List<UserSearch> invitedCompanies = searchService.findByIsDeletedFalse();
     if (invitedCompanies.isEmpty()) {
@@ -49,10 +51,23 @@ public class CompanyUtil {
     } catch (JsonSyntaxException e) {
       throw new APIException(Constant.JSON_PROCESSING_EXCEPTION + e.getMessage());
     }
-
-
   }
 
+  public List<CompanyDTO> getInvitedCompaniesFromAllCompanies(List<CompanyDTO> allCompanies,
+      List<UserSearch> invitedCompanies) {
+    // We create a stream of elements from the first list.
+    return allCompanies.stream()
+        // We select any elements such that in the stream of elements from the second
+        // list
+        .filter(two -> invitedCompanies.stream()
+            // there is an element that has the same name and school as this element,
+            .anyMatch(one -> one.getCompanyId().equals(two.getId())))
+        // and collect all matching elements from the first list into a new list.
+        .collect(Collectors.toList());
+    // We return the collected list.
+  }
+
+  @Override
   public CandidateDTO getCompanyInfoDetails(String candidateId) {
     String apiResponse =
         restUtil.newGetMethod(Constant.CANDIDATE_URL.replace("{candidateId}", candidateId));
@@ -120,6 +135,7 @@ public class CompanyUtil {
     return candidateDTO;
   }
 
+  @Override
   public List<CompanyDTO> getListOfCompany(String companyName) {
     String apiResponse =
         restUtil.newGetMethod(Constant.GET_COMPANY_LIST_URL.replace("{COMPANYNAME}", companyName));
@@ -134,19 +150,5 @@ public class CompanyUtil {
     } catch (JsonSyntaxException e) {
       throw new APIException(Constant.JSON_PROCESSING_EXCEPTION + e.getMessage());
     }
-  }
-
-  public List<CompanyDTO> getInvitedCompaniesFromAllCompanies(List<CompanyDTO> allCompanies,
-      List<UserSearch> invitedCompanies) {
-    // We create a stream of elements from the first list.
-    return allCompanies.stream()
-        // We select any elements such that in the stream of elements from the second
-        // list
-        .filter(two -> invitedCompanies.stream()
-            // there is an element that has the same name and school as this element,
-            .anyMatch(one -> one.getCompanyId().equals(two.getId())))
-        // and collect all matching elements from the first list into a new list.
-        .collect(Collectors.toList());
-    // We return the collected list.
   }
 }

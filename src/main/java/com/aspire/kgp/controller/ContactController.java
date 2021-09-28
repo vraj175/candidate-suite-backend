@@ -6,6 +6,8 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.converter.json.MappingJacksonValue;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -39,6 +41,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @RequestMapping("/api/v1.0")
 @Tag(name = "Contact", description = "Rest API For Contact")
 public class ContactController {
+  static Log log = LogFactory.getLog(ContactController.class.getName());
 
   @Autowired
   ContactService service;
@@ -49,6 +52,7 @@ public class ContactController {
       content = @Content(mediaType = "application/json", schema = @Schema(type = "ContactDTO",
           example = "{\"workEmail\": \"string\",\"email\": \"string\",\"linkedinUrl\": \"string\",\"mobilePhone\": \"string\",\"currentJobTitle\": \"string\",\"company\": {\"id\": \"string\",\"name\": \"string\"},\"homePhone\": \"string\",\"baseSalary\": \"string\",\"targetBonusValue\": \"string\",\"equity\": \"string\",\"compensationExpectation\": \"string\",\"compensationNotes\": \"string\",\"jobHistory\": [{\"id\": \"string\",\"title\": \"string\",\"start_year\": \"string\",\"end_year\": \"string\",\"position\": \"string\",\"company\": {\"id\": \"string\",\"name\": \"string\"}}],\"educationDetails\": [{\"id\": \"string\",\"school_name\": \"string\",\"degree_name\": \"string\",\"major\": \"string\",\"degree_year\": \"string\",\"position\": \"string\"}], \"boardDetails\": [{\"id\": \"string\",\"title\": \"string\",\"startYear\": \"string\",\"endYear\": \"string\",\"position\": \"0\",\"company\": {\"id\": \"string\",\"name\": \"string\"},\"committee\": \"string\"}]}")))})
   public MappingJacksonValue getCandidateDetails(@PathVariable("contactId") String contactId) {
+    log.info("Get Contact Details API call, Request Param contactId: " + contactId);
     ContactDTO contactDTO = service.getContactDetails(contactId);
     SimpleBeanPropertyFilter contactFilter = SimpleBeanPropertyFilter.filterOutAllExcept(
         Constant.CURRENT_JOB_TITLE, Constant.COMPANY, Constant.MOBILE_PHONE, "homePhone",
@@ -63,7 +67,8 @@ public class ContactController {
 
     MappingJacksonValue mapping = new MappingJacksonValue(contactDTO);
     mapping.setFilters(filters);
-
+    log.info("Successfully send Contact Details");
+    log.debug("Get Contact Details API Response : " + mapping.getValue());
     return mapping;
   }
 
@@ -73,6 +78,7 @@ public class ContactController {
       content = @Content(mediaType = "application/json",
           schema = @Schema(type = "byte", example = "string")))})
   public byte[] getContactImage(@PathVariable("contactId") String contactId) {
+    log.info("Get contact profile image API call, Request Param contactId: " + contactId);
     return service.getContactImage(contactId);
   }
 
@@ -80,6 +86,8 @@ public class ContactController {
   @PutMapping("/contact/{contactId}")
   public String updateContactDetails(@PathVariable("contactId") String contactId,
       @RequestBody String contactData) throws UnsupportedEncodingException {
+    log.info("Update Contact Details API call, Request Param contactId: " + contactId
+        + " Contact Data: " + contactData);
     return service.updateContactDetails(contactId, contactData);
   }
 
@@ -90,6 +98,7 @@ public class ContactController {
           type = "List<ContactReferencesDTO>",
           example = "[{\"id\": \"string\",\"searchId\": \"string\",\"relationship\": \"string\",\"contact\": {\"firstName\": \"string\",\"lastName\": \"string\",\"workEmail\": \"string\",\"email\": \"string\",\"mobilePhone\": \"string\",\"currentJobTitle\": \"string\",\"company\": {\"id\": \"string\",\"name\": \"string\"}}}]")))})
   public MappingJacksonValue getListOfReferences(@PathVariable("contactId") String contactId) {
+    log.info("Get List of contact references API call, Request Param contactId: " + contactId);
     List<ContactReferencesDTO> contactReferenceDTO = service.getListOfReferences(contactId);
     SimpleBeanPropertyFilter contactReferenceFilter = SimpleBeanPropertyFilter.filterOutAllExcept(
         "id", "searchId", "relationship", "contact", "source", "type", "refContactId", "search");
@@ -107,8 +116,9 @@ public class ContactController {
             .addFilter(Constant.SEARCH_FILTER, searchFilter);
 
     MappingJacksonValue mapping = new MappingJacksonValue(contactReferenceDTO);
+    log.info("Successfully send List of contact references: " + contactReferenceDTO.size());
+    log.debug("Get List of contact references API Response : " + mapping.getValue());
     mapping.setFilters(filters);
-
     return mapping;
   }
 
@@ -118,6 +128,8 @@ public class ContactController {
       @ApiResponse(responseCode = "200", description = Constant.FILE_UPLOADED_SUCCESSFULLY)})
   public String uploadResume(@PathVariable("contactId") String contactId,
       @RequestParam("file") MultipartFile file) {
+    log.info("upload resume for contact API call, Request Param contactId: " + contactId + " File: "
+        + file.getName());
     return service.uploadCandidateResume(file, contactId);
   }
 
@@ -127,6 +139,8 @@ public class ContactController {
       @ApiResponse(responseCode = "200", description = Constant.IMAGE_UPLOADED_SUCCESSFULLY)})
   public String uploadContactProfileImage(@PathVariable("contactId") String contactId,
       @RequestParam("profile") MultipartFile profile) {
+    log.info("Upload Profile Image For Contact API call, Request Param contactId: " + contactId
+        + " MultipartFile: " + profile.getName());
     return service.uploadContactImage(profile, contactId);
   }
 
@@ -136,6 +150,7 @@ public class ContactController {
       content = @Content(mediaType = "application/json", schema = @Schema(type = "Resume",
           example = "{ \"id\": \"string\",\"fileName\": \"string\",\"createdAt\": \"string\" }")))})
   public DocumentDTO getResumeDetails(@PathVariable("contactId") String contactId) {
+    log.info("Get contact Resumes API call, Request Param contactId: " + contactId);
     return service.getContactResumes(contactId);
   }
 
@@ -144,6 +159,8 @@ public class ContactController {
   @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK")})
   public void downloadDocument(@PathVariable("attachmentId") String attachmentId,
       @RequestParam String documentName, HttpServletResponse response) {
+    log.info("Download Documents API call, Request Param attachmentId: " + attachmentId
+        + " documentName: " + documentName);
     service.downloadDocument(documentName, attachmentId, response);
   }
 
@@ -153,6 +170,7 @@ public class ContactController {
       content = @Content(mediaType = "application/json", schema = @Schema(type = "List<SearchDTO>",
           example = "[{\"id\": \"string\",\"jobTitle\": \"string\",\"jobNumber\": \"string\",\"company\": {\"id\": \"string\",\"name\": \"string\"}}]")))})
   public MappingJacksonValue getListOfContactSearches(@PathVariable("contactId") String contactId) {
+    log.info("Get contact searches API call, Request Param contactId: " + contactId);
     List<SearchDTO> searchDTO = service.getListOfContactSearches(contactId);
 
     SimpleBeanPropertyFilter searchFilter = SimpleBeanPropertyFilter.filterOutAllExcept(Constant.ID,
@@ -166,6 +184,8 @@ public class ContactController {
             .addFilter(Constant.COMPANY_FILTER, companyFilter);
 
     MappingJacksonValue mapping = new MappingJacksonValue(searchDTO);
+    log.info("Successfully send List of contact searches " + searchDTO.size());
+    log.debug("Get contact searches API Response : " + mapping.getValue());
     mapping.setFilters(filters);
 
     return mapping;
@@ -178,6 +198,7 @@ public class ContactController {
           example = "[{\"id\": \"string\",\"firstName\": \"string\",\"lastName\": \"string\",\"workEmail\": \"string\",\"email\": \"string\",\"mobilePhone\": \"string\",\"workPhone\": \"string\",\"currentJobTitle\": \"string\",\"company\": {\"name\": \"string\"}}]")))})
   public MappingJacksonValue getListOfContactByName(
       @RequestParam(name = "name") String contactName) {
+    log.info("Get all matching contacts API call, Request Param contactName: " + contactName);
     List<ContactDTO> contactDTO = service.getListOfContactByName(contactName);
 
     SimpleBeanPropertyFilter contactFilter =
@@ -193,7 +214,8 @@ public class ContactController {
 
     MappingJacksonValue mapping = new MappingJacksonValue(contactDTO);
     mapping.setFilters(filters);
-
+    log.info("Successfully send all contacts matching " + contactDTO.size());
+    log.debug("Get all matching contacts API Response : " + mapping.getValue());
     return mapping;
   }
 
@@ -201,6 +223,8 @@ public class ContactController {
   @PostMapping("/contact/{contactId}/references")
   public String addContactReference(@PathVariable("contactId") String contactId,
       @RequestBody String referenceData) {
+    log.info("Add Contact Reference API call, Request Param contactId: " + contactId
+        + " referenceData: " + referenceData);
     return service.addContactReference(contactId, referenceData);
   }
 
@@ -208,6 +232,8 @@ public class ContactController {
   @PutMapping("/contact/reference/{referenceId}")
   public String updateContactReference(@PathVariable("referenceId") String referenceId,
       @RequestBody String referenceData) throws UnsupportedEncodingException {
+    log.info("Update Contact Reference API call, Request Param referenceId: " + referenceId
+        + " referenceData: " + referenceData);
     return service.updateContactReference(referenceId, referenceData);
   }
 }
