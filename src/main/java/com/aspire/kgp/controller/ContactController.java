@@ -236,4 +236,13 @@ public class ContactController {
         + " referenceData: " + referenceData);
     return service.updateContactReference(referenceId, referenceData);
   }
+
+  @Operation(summary = "Add New Contact")
+  @PostMapping("/contact")
+  @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK",
+      content = @Content(mediaType = "application/json", schema = @Schema(type = "ContactDTO",
+          example = "{\"id\": \"string\"}")))})
+  public String addNewContact(@RequestBody String contactData) {
+    return service.addNewContact(contactData);
+  }
 }
