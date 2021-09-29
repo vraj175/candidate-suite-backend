@@ -95,6 +95,7 @@ public class Constant {
       "/picklists/contacts?name={CONTACTNAME}";
   public static final String REFERENCE_TYPE_PICKLIST_URL = "/picklists/reference-types";
   public static final String COUNTRIES_PICKLIST_URL = "/picklists/countries";
+  public static final String INDUSTRES_PICKLIST_URL = "/synclink/picklists/industries";
   public static final String CONTACT_SAVE_URL = "/contacts";
 
   public static final String RESUME_URL = "/contact/{contactId}/resumes";

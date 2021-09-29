@@ -56,12 +56,27 @@ public class PickListController {
   @GetMapping("/picklists/countries")
   @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK",
       content = @Content(mediaType = "application/json",
-          schema = @Schema(type = "List<PickListDTO>", example = "[{\"id\": \"string\",\"name\": \"string\"}]")))})
+          schema = @Schema(type = "List<PickListDTO>",
+              example = "[{\"id\": \"string\",\"name\": \"string\"}]")))})
   public List<PickListDTO> getCountries() {
     log.info("Get Countries List API call");
     List<PickListDTO> countriesList = service.getCountries();
     log.info("Successfully send Countries List " + countriesList.size());
     log.debug("Get Countries List API Response: " + countriesList);
     return countriesList;
+  }
+
+  @Operation(summary = "Get Industries")
+  @GetMapping("/picklists/industries")
+  @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK",
+      content = @Content(mediaType = "application/json",
+          schema = @Schema(type = "List<PickListDTO>",
+              example = "[{\"id\": \"string\",\"name\": \"string\"}]")))})
+  public List<PickListDTO> getListOfIndustries() {
+    log.info("Get industries List API call");
+    List<PickListDTO> industriesList = service.getListOfIndustries();
+    log.info("Successfully send industries List " + industriesList.size());
+    log.debug("Get Countries List API Response: " + industriesList);
+    return industriesList;
   }
 }

@@ -67,4 +67,20 @@ public class PickListServiceImpl implements PickListService {
       throw new APIException(Constant.JSON_PROCESSING_EXCEPTION + e.getMessage());
     }
   }
+
+  @Override
+  public List<PickListDTO> getListOfIndustries() {
+    String apiResponse = restUtil.newGetMethod(Constant.INDUSTRES_PICKLIST_URL);
+    try {
+      return new Gson().fromJson(apiResponse, new TypeToken<List<PickListDTO>>() {
+
+        /**
+         * 
+         */
+        private static final long serialVersionUID = 1L;
+      }.getType());
+    } catch (JsonSyntaxException e) {
+      throw new APIException(Constant.JSON_PROCESSING_EXCEPTION + e.getMessage());
+    }
+  }
 }
