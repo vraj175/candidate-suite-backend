@@ -97,6 +97,7 @@ public class Constant {
   public static final String CONTACT_SAVE_URL = "/contacts";
 
   public static final String RESUME_URL = "/contact/{contactId}/resumes";
+  public static final String ATTECHMENT_URL = "/contact/{contactId}/attachments";
   public static final String IMAGE_UPLOAD_URL = "/contacts/{contactId}/image";
   public static final String UPDATE_CONTACT_REFERENCE_URL = "/contact/references/{referenceId}";
   public static final String CONTACT_ID = "{contactId}";
@@ -157,6 +158,7 @@ public class Constant {
   public static final String WORK_PHONE = "workPhone";
   public static final String PUBLISHED_BIO = "publishedBio";
   public static final String WORK_EMAIL = "workEmail";
+  public static final String RESUME = "Resume";
 
 
   // google capcha

@@ -122,15 +122,15 @@ public class ContactController {
     return mapping;
   }
 
-  @Operation(summary = "upload resume for contact")
+  @Operation(summary = "upload resume for contact", description = "Document Type = Resume / Attechment")
   @PostMapping("/contact/{contactId}/resumes")
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = Constant.FILE_UPLOADED_SUCCESSFULLY)})
   public String uploadResume(@PathVariable("contactId") String contactId,
-      @RequestParam("file") MultipartFile file) {
-    log.info("upload resume for contact API call, Request Param contactId: " + contactId + " File: "
-        + file.getName());
-    return service.uploadCandidateResume(file, contactId);
+      @RequestParam("file") MultipartFile file, @RequestParam("documentType") String type) {
+    log.info("upload document for contact API call, Request Param contactId: " + contactId
+        + " File: " + file.getName() + " documentType : " + type);
+    return service.uploadCandidateResume(file, contactId, type);
   }
 
   @Operation(summary = "Upload Profile Image For Contact")
