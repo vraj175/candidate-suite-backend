@@ -150,4 +150,9 @@ public class CompanyServiceImpl implements CompanyService {
       throw new APIException(Constant.JSON_PROCESSING_EXCEPTION + e.getMessage());
     }
   }
+
+  @Override
+  public String addNewCompany(String companyData) {
+    return restUtil.postMethod(Constant.COMPANY_SAVE_URL, companyData, null);
+  }
 }

@@ -97,6 +97,7 @@ public class Constant {
   public static final String COUNTRIES_PICKLIST_URL = "/picklists/countries";
   public static final String INDUSTRES_PICKLIST_URL = "/synclink/picklists/industries";
   public static final String CONTACT_SAVE_URL = "/contacts";
+  public static final String COMPANY_SAVE_URL = "/companies";
 
   public static final String RESUME_URL = "/contact/{contactId}/resumes";
   public static final String ATTECHMENT_URL = "/contact/{contactId}/attachments";
