@@ -9,4 +9,6 @@ public interface PickListService {
   public List<String> getEducationDegrees();
   
   public List<PickListDTO> getReferencesType();
+  
+  public List<PickListDTO> getCountries();
 }
