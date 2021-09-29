@@ -259,7 +259,7 @@ public class ContactServiceImpl implements ContactService {
   }
 
   @Override
-  public final List<ContactDTO> getListOfContactByName(String contactName) {
+  public List<ContactDTO> getListOfContactByName(String contactName) {
     String apiResponse = restUtil
         .newGetMethod(Constant.GET_CONTACT_LIST_BY_NAME_URL.replace("{CONTACTNAME}", contactName));
 
@@ -285,6 +285,11 @@ public class ContactServiceImpl implements ContactService {
     } catch (JsonSyntaxException e) {
       throw new APIException(Constant.JSON_PROCESSING_EXCEPTION + e.getMessage());
     }
+  }
+
+  @Override
+  public String addNewContact(String contactData) {
+    return restUtil.postMethod(Constant.CONTACT_SAVE_URL, contactData, null);
   }
 
 }
