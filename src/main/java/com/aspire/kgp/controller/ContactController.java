@@ -123,7 +123,7 @@ public class ContactController {
   }
 
   @Operation(summary = "upload resume for contact", description = "Document Type = Resume / Attechment")
-  @PostMapping("/contact/{contactId}/resumes")
+  @PostMapping("/contact/{contactId}/upload-resumes")
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = Constant.FILE_UPLOADED_SUCCESSFULLY)})
   public String uploadResume(@PathVariable("contactId") String contactId,
@@ -134,7 +134,7 @@ public class ContactController {
   }
 
   @Operation(summary = "Upload Profile Image For Contact")
-  @PostMapping("/contact/{contactId}/profile-image")
+  @PostMapping("/contact/{contactId}/upload-profile-image")
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = Constant.IMAGE_UPLOADED_SUCCESSFULLY)})
   public String uploadContactProfileImage(@PathVariable("contactId") String contactId,
