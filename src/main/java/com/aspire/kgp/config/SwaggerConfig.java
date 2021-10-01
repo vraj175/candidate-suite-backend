@@ -54,7 +54,7 @@ public class SwaggerConfig {
             "/api/v1.0/companies/**", "/api/v1.0/company/**", "/api/v1.0/companyInfo/**",
             "/api/v1.0/languages/**", "/api/v1.0/roles/**", "/api/v1.0/profile/**",
             "/api/v1.0/user/**", "/api/v1.0/video/**", "/api/v1.0/picklists/**",
-            "/api/v1.0/companyName/**", "/api/v1.0/contactName/**")
+            "/api/v1.0/notification/**", "/api/v1.0/companyName/**", "/api/v1.0/contactName/**")
         .addOpenApiCustomiser(defaultAPIConfig()).build();
   }
 
@@ -107,7 +107,7 @@ public class SwaggerConfig {
             getPathItem(getInviteSchema(), "User", "Invite User as Candidates",
                 "Language Should be en_US / es_ES / pt_BR"))
         .path(Constant.BASE_API_URL + Constant.PUBLIC_API_URL + "/user/resetPassword",
-            getPathItem(getResetPasswordSchema(), "User", "Reset Password for User",""))
+            getPathItem(getResetPasswordSchema(), "User", "Reset Password for User", ""))
         .addSecurityItem(new SecurityRequirement().addList(Constant.API_KEY));
   }
 
@@ -115,7 +115,8 @@ public class SwaggerConfig {
    * Generic methods to get PathItem object(For Post API we have to add schemas). For Schema input
    * parameter create schema for particular request and pass it
    */
-  private PathItem getPathItem(Schema<?> schema, String tagItem, String summary,String description) {
+  private PathItem getPathItem(Schema<?> schema, String tagItem, String summary,
+      String description) {
     PathItem pathItem = new PathItem();
     RequestBody requestBody = new RequestBody();
 
