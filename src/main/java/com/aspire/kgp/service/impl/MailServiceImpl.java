@@ -74,4 +74,27 @@ public class MailServiceImpl implements MailService {
     log.info("ending getEmailContent");
     return stringWriter.getBuffer().toString();
   }
+
+  @Override
+  public String getFeedbackEmailContent(HttpServletRequest request, UserDTO userDTO,
+      Map<String, String> staticContentsMap, String templateName)
+      throws IOException, TemplateException {
+    log.info("starting getEmailContent for feedback");
+    StringWriter stringWriter = new StringWriter();
+    Map<String, Object> model = new HashMap<>();
+    model.put("serverUrl", CommonUtil.getServerUrl(request) + request.getContextPath());
+    model.put("clientName", "Pratik Patel");
+    model.put("partnerName", "Poorav Solanki");
+    model.put("searchName", "Full Stack Developer & Analyzer");
+    model.put("clientContactName", "Abhishek's ");
+    model.put("candidateName", "Abhishek Jaiswal");
+    model.put("companyName", "zAspire Software Solutions");
+    model.put("comment", " Feedback added By Abhishek Jaiswal");
+    model.put("staticContentsMap", staticContentsMap);
+    model.put("isReplyAdded", "true");
+    model.put("reply", "Hi THere Replying here.");
+    configuration.getTemplate(templateName).process(model, stringWriter);
+    log.info("ending getEmailContent for feedback");
+    return stringWriter.getBuffer().toString();
+  }
 }

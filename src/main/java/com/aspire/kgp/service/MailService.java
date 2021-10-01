@@ -20,4 +20,8 @@ public interface MailService {
       Map<String, String> staticContentsMap, String templateName)
       throws IOException, TemplateException;
 
+  public String getFeedbackEmailContent(HttpServletRequest request, UserDTO userDTO,
+      Map<String, String> staticContentsMap, String templateName)
+      throws IOException, TemplateException;
+
 }
