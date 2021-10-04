@@ -118,8 +118,7 @@ public class NotificationSchedulerServiceImpl implements NotificationSchedulerSe
   }
 
   private void sendNotification(String candidateId, String message) {
-    System.out.println("Hello " + candidateId + " " + message);
-
+    log.info("Hello " + candidateId + " " + message);
   }
 
   @EventListener({ContextRefreshedEvent.class})
