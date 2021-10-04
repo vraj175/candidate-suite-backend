@@ -20,8 +20,6 @@ import com.aspire.kgp.dto.NotificationSchedulerDTO;
 import com.aspire.kgp.exception.APIException;
 import com.aspire.kgp.service.impl.NotificationSchedulerServiceImpl;
 
-import io.swagger.v3.oas.annotations.Operation;
-
 @RestController
 @RequestMapping("/api/v1.0")
 public class NotificationController {
@@ -29,7 +27,6 @@ public class NotificationController {
   @Autowired
   private NotificationSchedulerServiceImpl notificationSchedulerServiceImpl;
 
-  @Operation(summary = "Set Interview notification Schedule")
   @PostMapping("/notification")
   public ResponseEntity<Object> setNotification(
       @Valid @RequestBody NotificationSchedulerDTO notificationDTO, HttpServletRequest request) {

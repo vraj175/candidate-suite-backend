@@ -10,6 +10,7 @@ import org.springframework.context.annotation.Configuration;
 
 import com.aspire.kgp.constant.Constant;
 import com.aspire.kgp.dto.InviteDTO;
+import com.aspire.kgp.dto.NotificationSchedulerDTO;
 import com.aspire.kgp.dto.ResetPasswordDTO;
 
 import io.swagger.v3.oas.models.Components;
@@ -90,6 +91,9 @@ public class SwaggerConfig {
             .addSecuritySchemes(Constant.AUTHORIZATION,
                 new SecurityScheme().type(SecurityScheme.Type.APIKEY).in(SecurityScheme.In.HEADER)
                     .name(Constant.AUTHORIZATION)))
+        .path(Constant.BASE_API_URL + "/notification",
+            getPathItem(getNotificationSchedulerSchema(), "Notification",
+                "Set Interview notification Schedule", ""))
         .addSecurityItem(
             new SecurityRequirement().addList(Constant.API_KEY).addList(Constant.AUTHORIZATION));
   }
@@ -158,6 +162,20 @@ public class SwaggerConfig {
     resetPassword.setNewPassword(Constant.STRING);
     resetPasswordSchema.addEnumItemObject(resetPassword);
     return resetPasswordSchema;
+  }
+
+  /*
+   * Schema For Send Interview Notification Scheduler API
+   */
+  private Schema<NotificationSchedulerDTO> getNotificationSchedulerSchema() {
+    Schema<NotificationSchedulerDTO> notificationSchedulerSchema = new Schema<>();
+    NotificationSchedulerDTO notificationScheduler = new NotificationSchedulerDTO();
+    notificationScheduler.setCandidateId(Constant.STRING);
+    notificationScheduler.setScheduleId(Constant.STRING);
+    notificationScheduler.setDate(Constant.STRING);
+    notificationScheduler.setMessage(Constant.STRING);
+    notificationSchedulerSchema.addEnumItemObject(notificationScheduler);
+    return notificationSchedulerSchema;
   }
 
   /*

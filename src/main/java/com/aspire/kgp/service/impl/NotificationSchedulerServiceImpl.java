@@ -74,7 +74,6 @@ public class NotificationSchedulerServiceImpl implements NotificationSchedulerSe
   }
 
   private Runnable excuteNotification(String candidateId, String message, String scheduledId) {
-    log.info("Excute Notification..");
     return () -> {
       Date currentDate =
           Date.from(LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant());
@@ -132,7 +131,7 @@ public class NotificationSchedulerServiceImpl implements NotificationSchedulerSe
       Runnable task = excuteNotification(notificationSchedule.getCandidateId(),
           notificationSchedule.getMessage(), notificationSchedule.getScheduleId());
       scheduler.schedule(task, notificationSchedule.getDate());
-      log.info("From database Interview notification scheduled for "
+      log.info("Interview notification scheduled for database pending task "
           + notificationSchedule.getCandidateId() + " On " + notificationSchedule.getDate()
           + " And Type: " + notificationSchedule.getTaskType());
     }
