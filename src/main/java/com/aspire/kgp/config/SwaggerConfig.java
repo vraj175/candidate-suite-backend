@@ -10,6 +10,7 @@ import org.springframework.context.annotation.Configuration;
 
 import com.aspire.kgp.constant.Constant;
 import com.aspire.kgp.dto.InviteDTO;
+import com.aspire.kgp.dto.NotificationSchedulerDTO;
 import com.aspire.kgp.dto.ResetPasswordDTO;
 
 import io.swagger.v3.oas.models.Components;
@@ -54,7 +55,7 @@ public class SwaggerConfig {
             "/api/v1.0/companies/**", "/api/v1.0/company/**", "/api/v1.0/companyInfo/**",
             "/api/v1.0/languages/**", "/api/v1.0/roles/**", "/api/v1.0/profile/**",
             "/api/v1.0/user/**", "/api/v1.0/video/**", "/api/v1.0/picklists/**",
-            "/api/v1.0/companyName/**", "/api/v1.0/contactName/**")
+            "/api/v1.0/notification/**", "/api/v1.0/companyName/**", "/api/v1.0/contactName/**")
         .addOpenApiCustomiser(defaultAPIConfig()).build();
   }
 
@@ -90,6 +91,9 @@ public class SwaggerConfig {
             .addSecuritySchemes(Constant.AUTHORIZATION,
                 new SecurityScheme().type(SecurityScheme.Type.APIKEY).in(SecurityScheme.In.HEADER)
                     .name(Constant.AUTHORIZATION)))
+        .path(Constant.BASE_API_URL + "/notification",
+            getPathItem(getNotificationSchedulerSchema(), "Notification",
+                "Set Interview notification Schedule", ""))
         .addSecurityItem(
             new SecurityRequirement().addList(Constant.API_KEY).addList(Constant.AUTHORIZATION));
   }
@@ -107,7 +111,7 @@ public class SwaggerConfig {
             getPathItem(getInviteSchema(), "User", "Invite User as Candidates",
                 "Language Should be en_US / es_ES / pt_BR"))
         .path(Constant.BASE_API_URL + Constant.PUBLIC_API_URL + "/user/resetPassword",
-            getPathItem(getResetPasswordSchema(), "User", "Reset Password for User",""))
+            getPathItem(getResetPasswordSchema(), "User", "Reset Password for User", ""))
         .addSecurityItem(new SecurityRequirement().addList(Constant.API_KEY));
   }
 
@@ -115,7 +119,8 @@ public class SwaggerConfig {
    * Generic methods to get PathItem object(For Post API we have to add schemas). For Schema input
    * parameter create schema for particular request and pass it
    */
-  private PathItem getPathItem(Schema<?> schema, String tagItem, String summary,String description) {
+  private PathItem getPathItem(Schema<?> schema, String tagItem, String summary,
+      String description) {
     PathItem pathItem = new PathItem();
     RequestBody requestBody = new RequestBody();
 
@@ -157,6 +162,20 @@ public class SwaggerConfig {
     resetPassword.setNewPassword(Constant.STRING);
     resetPasswordSchema.addEnumItemObject(resetPassword);
     return resetPasswordSchema;
+  }
+
+  /*
+   * Schema For Send Interview Notification Scheduler API
+   */
+  private Schema<NotificationSchedulerDTO> getNotificationSchedulerSchema() {
+    Schema<NotificationSchedulerDTO> notificationSchedulerSchema = new Schema<>();
+    NotificationSchedulerDTO notificationScheduler = new NotificationSchedulerDTO();
+    notificationScheduler.setCandidateId(Constant.STRING);
+    notificationScheduler.setScheduleId(Constant.STRING);
+    notificationScheduler.setDate(Constant.STRING);
+    notificationScheduler.setMessage(Constant.STRING);
+    notificationSchedulerSchema.addEnumItemObject(notificationScheduler);
+    return notificationSchedulerSchema;
   }
 
   /*
