@@ -1,6 +1,5 @@
 package com.aspire.kgp.controller;
 
-<<<<<<< HEAD
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
