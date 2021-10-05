@@ -149,4 +149,14 @@ public class UserDTO {
   public void setPasswordReset(boolean passwordReset) {
     this.passwordReset = passwordReset;
   }
+
+  @Override
+  public String toString() {
+    return "UserDTO [id=" + id + ", firstName=" + firstName + ", lastName=" + lastName
+        + ", workEmail=" + workEmail + ", email=" + email + ", role=" + role + ", token=" + token
+        + ", title=" + title + ", country=" + country + ", linkedinUrl=" + linkedinUrl + ", bio="
+        + bio + ", passwordReset=" + passwordReset + ", mobilePhone=" + mobilePhone + ", workPhone="
+        + workPhone + ", name=" + name + "]";
+  }
+
 }
