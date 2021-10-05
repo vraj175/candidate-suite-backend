@@ -1,12 +1,16 @@
 package com.aspire.kgp.model;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Entity
-public class Notification extends SuperSub {
+public class Notification extends SuperBase {
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "user", referencedColumnName = "id", insertable = true, nullable = false,
@@ -14,6 +18,9 @@ public class Notification extends SuperSub {
   private User user;
 
   private boolean status;
+
+  private String description;
+
 
   public User getUser() {
     return user;
@@ -29,5 +36,13 @@ public class Notification extends SuperSub {
 
   public void setStatus(boolean status) {
     this.status = status;
+  }
+
+  public String getDescription() {
+    return description;
+  }
+
+  public void setDescription(String description) {
+    this.description = description;
   }
 }
