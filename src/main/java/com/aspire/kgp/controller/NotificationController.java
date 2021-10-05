@@ -48,7 +48,7 @@ public class NotificationController {
   private NotificationSchedulerServiceImpl notificationSchedulerServiceImpl;
  
   @Operation(summary = "Get list of Notifications")
-  @GetMapping(value = "/notification")
+  @GetMapping(value = "/notification/all")
   @ApiResponses(
       value = {
           @ApiResponse(responseCode = "200", description = "OK",
