@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.aspire.kgp.dto.NotificationDTO;
-import com.aspire.kgp.exception.APIException;
 import com.aspire.kgp.model.Notification;
 import com.aspire.kgp.model.User;
 import com.aspire.kgp.repository.NotificationRepository;
