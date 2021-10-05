@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.aspire.kgp.constant.Constant;
-import com.aspire.kgp.dto.NotificationDTO;
 import com.aspire.kgp.dto.NotificationSchedulerDTO;
 import com.aspire.kgp.dto.NotificationsDTO;
 import com.aspire.kgp.exception.APIException;

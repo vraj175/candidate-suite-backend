@@ -5,7 +5,6 @@ import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import com.aspire.kgp.dto.NotificationDTO;
 import com.aspire.kgp.model.Notification;
 import com.aspire.kgp.model.User;
 
