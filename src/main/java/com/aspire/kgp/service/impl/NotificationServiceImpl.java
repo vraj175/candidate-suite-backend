@@ -6,7 +6,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.aspire.kgp.dto.NotificationDTO;
+import com.aspire.kgp.dto.NotificationsDTO;
 import com.aspire.kgp.model.Notification;
 import com.aspire.kgp.model.User;
 import com.aspire.kgp.repository.NotificationRepository;
@@ -21,12 +21,12 @@ public class NotificationServiceImpl implements NotificationService {
   NotificationRepository repository;
 
   @Override
-  public List<NotificationDTO> findByUser(User user) {
-    List<NotificationDTO> notificationDTOList = new ArrayList<>();
+  public List<NotificationsDTO> findByUser(User user) {
+    List<NotificationsDTO> notificationDTOList = new ArrayList<>();
     List<Notification> notificationList = repository.findByUser(user);
     if (!notificationList.isEmpty()) {
       for (Notification notification : notificationList) {
-        NotificationDTO notificationDTO = new NotificationDTO();
+        NotificationsDTO notificationDTO = new NotificationsDTO();
         notificationDTO.setId(String.valueOf(notification.getId()));
         notificationDTO.setDescription(notification.getDescription());
         notificationDTO.setStatus(notification.isStatus());

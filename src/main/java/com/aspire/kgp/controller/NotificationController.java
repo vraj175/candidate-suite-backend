@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.aspire.kgp.constant.Constant;
 import com.aspire.kgp.dto.NotificationDTO;
 import com.aspire.kgp.dto.NotificationSchedulerDTO;
+import com.aspire.kgp.dto.NotificationsDTO;
 import com.aspire.kgp.exception.APIException;
 import com.aspire.kgp.model.User;
 import com.aspire.kgp.service.NotificationService;
@@ -56,13 +57,13 @@ public class NotificationController {
               content = @Content(mediaType = "application/json", schema = @Schema(
                   type = "List<NotificationDTO>",
                   example = "[{\"id\": \"String\",\"description\": \"String\",\"status\": false}]")))})
-  public List<NotificationDTO> getRoles(HttpServletRequest request) {
+  public List<NotificationsDTO> getRoles(HttpServletRequest request) {
     User user = (User) request.getAttribute("user");
     if (user == null) {
       throw new APIException("Invalid User Id");
     }
     log.info("Get list of Notification API call");
-    List<NotificationDTO> notificationList = service.findByUser(user);
+    List<NotificationsDTO> notificationList = service.findByUser(user);
     log.info("Successfully send list of Notification " + notificationList.size());
     log.debug("Get list of Notification API Response: " + notificationList);
     return notificationList;
