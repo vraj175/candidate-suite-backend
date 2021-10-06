@@ -9,7 +9,7 @@
 	<table style="background:#fcfcfc;font-family:calibre,arial; max-width:650px;margin: 0 auto; padding-bottom: 0px; table-layout: fixed; width: 650px; ">
       	<tr>
       		<td style="text-align:center">
-      			<img src="${serverUrl}/resources/images/client_suite_banner.png" style="max-width: 100%">
+      			<img src="${serverUrl}/resources/images/feedback.png" style="max-width: 100%">
       		</td>
       	</tr>
       	<tr>
