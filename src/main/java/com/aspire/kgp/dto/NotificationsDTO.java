@@ -1,10 +1,31 @@
 package com.aspire.kgp.dto;
 
+import java.sql.Timestamp;
+
 public class NotificationsDTO {
 
-  private String id;
-  private String description;
+  String id;
+  String description;
   boolean status;
+
+  public Timestamp getCreatedDate() {
+    return createdDate;
+  }
+
+  public void setCreatedDate(Timestamp createdDate) {
+    this.createdDate = createdDate;
+  }
+
+  public Timestamp getModifyDate() {
+    return modifyDate;
+  }
+
+  public void setModifyDate(Timestamp modifyDate) {
+    this.modifyDate = modifyDate;
+  }
+
+  Timestamp createdDate;
+  Timestamp modifyDate;
 
   public String getId() {
     return id;

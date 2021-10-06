@@ -1,8 +1,11 @@
 package com.aspire.kgp.service.impl;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,12 +19,14 @@ import com.aspire.kgp.service.NotificationService;
 
 @Service
 public class NotificationServiceImpl implements NotificationService {
+  static Log log = LogFactory.getLog(NotificationServiceImpl.class.getName());
 
   @Autowired
   NotificationRepository repository;
 
   @Override
   public List<NotificationsDTO> findByUser(User user) {
+    log.info("Get All Notifications...");
     List<NotificationsDTO> notificationDTOList = new ArrayList<>();
     List<Notification> notificationList = repository.findByUser(user);
     if (!notificationList.isEmpty()) {
@@ -30,10 +35,27 @@ public class NotificationServiceImpl implements NotificationService {
         notificationDTO.setId(String.valueOf(notification.getId()));
         notificationDTO.setDescription(notification.getDescription());
         notificationDTO.setStatus(notification.isStatus());
+        notificationDTO.setCreatedDate(notification.getCreatedDate());
+        notificationDTO.setModifyDate(notification.getModifyDate());
         notificationDTOList.add(notificationDTO);
       }
     }
     return notificationDTOList;
   }
 
+  @Override
+  public Notification addNotification(NotificationsDTO notificationDTO, User user) {
+    log.info("Add new Notification...");
+    Notification notification = new Notification();
+    notification.setModifyDate(new Timestamp(System.currentTimeMillis()));
+    notification.setCreatedDate(new Timestamp(System.currentTimeMillis()));
+    notification.setStatus(Boolean.FALSE);
+    notification.setDescription(notificationDTO.getDescription());
+    notification.setUser(user);
+    return saveorUpdate(notification);
+  }
+
+  public Notification saveorUpdate(Notification notification) {
+    return repository.save(notification);
+  }
 }

@@ -6,8 +6,17 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Base64;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.transaction.Transactional;
+import javax.transaction.Transactional.TxType;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -26,13 +35,19 @@ import com.aspire.kgp.dto.UserDTO;
 import com.aspire.kgp.exception.APIException;
 import com.aspire.kgp.exception.NotFoundException;
 import com.aspire.kgp.service.CandidateService;
+import com.aspire.kgp.service.MailService;
 import com.aspire.kgp.util.CommonUtil;
 import com.aspire.kgp.util.RestUtil;
+import com.aspire.kgp.util.StaticContentsMultiLanguageUtil;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+
+import freemarker.template.TemplateException;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 
 @Service
 public class CandidateServiceImpl implements CandidateService {
@@ -40,6 +55,9 @@ public class CandidateServiceImpl implements CandidateService {
 
   @Autowired
   RestUtil restUtil;
+
+  @Autowired
+  MailService mailService;
 
   @Value("${clientsuite.url}")
   private String clientsuiteUrl;
@@ -141,4 +159,104 @@ public class CandidateServiceImpl implements CandidateService {
     }
     return os.toByteArray();
   }
+
+  @Override
+  @Transactional(value = TxType.REQUIRES_NEW)
+  public ResponseEntity<Object> saveFeedbackAndSendmail(HttpServletRequest resourceRequest) {
+    log.info("Entring into saving feedback and sending email to candidate");
+    JsonObject params = new JsonObject();
+    String addOrUpdate = resourceRequest.getParameter("addUpdateaction");
+    log.info("action is :: " + addOrUpdate);
+    log.info("UserId : " + resourceRequest.getParameter("userId"));
+
+    if (CommonUtil.checkNullString(addOrUpdate))
+      addOrUpdate = "addNewFeedback";
+    if (addOrUpdate.equals("updateFeedback")) {
+      params.addProperty("clientId", resourceRequest.getParameter("clientId"));
+      params.addProperty("feedbackId", resourceRequest.getParameter("feedbackId"));
+    }
+    String clientId = resourceRequest.getParameter("clientId");
+    if (CommonUtil.checkNotNullString(clientId)) {
+      params.addProperty("clientId", resourceRequest.getParameter("clientId"));
+      params.addProperty("clientName", resourceRequest.getParameter("clientName"));
+    }
+    log.info("clientId  : " + clientId);
+    params.addProperty("addOrUpdate", addOrUpdate);
+    params.addProperty("userId", resourceRequest.getParameter("userId"));
+    params.addProperty("candidateId", resourceRequest.getParameter("candidateId"));
+    params.addProperty("candidateName", resourceRequest.getParameter("candidateName"));
+    params.addProperty("feedback", resourceRequest.getParameter("feedback"));
+    params.addProperty("searchId", resourceRequest.getParameter("searchId"));
+    params.addProperty("searchTitle", resourceRequest.getParameter("searchName"));
+    params.addProperty("jobNumber", resourceRequest.getParameter("searchNumber"));
+    params.addProperty("candidateType", resourceRequest.getParameter("candidateType"));
+    params.addProperty("companyName", resourceRequest.getParameter("companyName"));
+    params.addProperty("clientType", "contact");
+    saveGeneralComments(params.toString(), resourceRequest);
+    log.info("Exiting into saving feedback and sending email to candidate");
+    return null;
+  }
+
+  private String saveGeneralComments(String params, HttpServletRequest resourceRequest) {
+    log.info("saving client feedback");
+    JsonObject response = new JsonObject();
+    
+    // write save feedback code here
+
+    try {
+      sendClientFeedbackMail(params, resourceRequest);
+    } catch (Exception e) {
+      log.info(e);
+      throw new APIException("Error in send feedback email");
+    }
+    response.addProperty("success", "true");
+    response.addProperty("Message", "General Comments save succesfully");
+    log.info("Save or update feedback successfully!!");
+    return response.toString();
+  }
+
+  public void sendClientFeedbackMail(String params, HttpServletRequest resourceRequest)
+      throws IOException, TemplateException {
+    log.info("sending client feedback email");
+    String locate = "en_US";
+    String email = "abhishek.jaiswal@aspiresoftserv.com";
+    UserDTO userDTO = new UserDTO();
+    userDTO.setToken(generateJwtToken(email, email));
+    userDTO.setEmail(email);
+    userDTO.setFirstName("Abhishek");
+    userDTO.setLastName("Jaiswal");
+    try {
+      Map<String, String> staticContentsMap = StaticContentsMultiLanguageUtil
+          .getStaticContentsMap(locate, Constant.EMAILS_CONTENT_MAP);
+      String mailSubject = staticContentsMap.get("candidate.suite.feedback.email.subject");
+      mailService.sendEmail(email, null, mailSubject + " Abhishek Jaiswal",
+          mailService.getFeedbackEmailContent(resourceRequest, userDTO, staticContentsMap,
+              Constant.CANDIDATE_FEEDBACK_EMAIL_TEMPLATE),
+          null);
+    } catch (Exception e) {
+      log.info(e);
+      throw new APIException("Error in sending candidate feedback email");
+    }
+    log.info("Client Feedback Mail sent to all partners successfully.");
+
+  }
+
+  private String generateJwtToken(String userName, String password) {
+    log.info("generating Token for user...");
+    Date dt = new Date();
+    Calendar c = Calendar.getInstance();
+    c.setTime(dt);
+    c.add(Calendar.DATE, 1);
+    dt = c.getTime();
+
+    String auth = userName + ":" + password;
+    String token = Base64.getEncoder().encodeToString(auth.getBytes(StandardCharsets.UTF_8));
+
+    return Jwts.builder().setSubject("candidateSuite").setExpiration(dt)
+        .setIssuer(Constant.FROM_MAIL).claim("authentication", "Basic " + token)
+        .signWith(SignatureAlgorithm.HS512,
+            Base64.getEncoder().encodeToString("candidateSuite-secret-key".getBytes()))
+        .compact();
+  }
+
 }

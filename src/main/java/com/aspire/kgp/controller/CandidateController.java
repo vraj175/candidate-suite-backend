@@ -1,5 +1,7 @@
 package com.aspire.kgp.controller;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.json.MappingJacksonValue;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -121,5 +124,14 @@ public class CandidateController {
     log.info("Download Athena Report API call, Request Param pageSize: " + pageSize + " locale: "
         + locale + " contactId: " + contactId);
     return service.getAthenaReport(pageSize, locale, contactId);
+  }
+  
+  @Operation(summary = "send mail for feedback",
+      description = "")
+  @PostMapping(value = {"candidates/feedback/mail"})
+  public ResponseEntity<Object> saveFeedbackAndSendmail(HttpServletRequest resourceRequest) {
+    log.info("Send feeback mail API");
+    return service.saveFeedbackAndSendmail(resourceRequest);
+ 
   }
 }
