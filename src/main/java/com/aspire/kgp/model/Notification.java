@@ -6,7 +6,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
 @Entity
-public class Notification extends SuperSub {
+public class Notification extends SuperBase {
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "user", referencedColumnName = "id", insertable = true, nullable = false,
@@ -14,6 +14,9 @@ public class Notification extends SuperSub {
   private User user;
 
   private boolean status;
+
+  private String description;
+
 
   public User getUser() {
     return user;
@@ -29,5 +32,13 @@ public class Notification extends SuperSub {
 
   public void setStatus(boolean status) {
     this.status = status;
+  }
+
+  public String getDescription() {
+    return description;
+  }
+
+  public void setDescription(String description) {
+    this.description = description;
   }
 }
