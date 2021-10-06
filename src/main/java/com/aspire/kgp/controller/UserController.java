@@ -7,6 +7,8 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -43,6 +45,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @RequestMapping("/api/v1.0")
 @Tag(name = "User", description = "REST API for User")
 public class UserController {
+  static Log log = LogFactory.getLog(UserController.class.getName());
 
   @Autowired
   UserService service;
@@ -53,6 +56,7 @@ public class UserController {
   @PostMapping(value = Constant.PUBLIC_API_URL + "/user/invite")
   public ResponseEntity<Object> inviteUser(@Valid @RequestBody InviteDTO invite,
       HttpServletRequest request) {
+    log.info("Invite User as Candidates API call");
     User user = service.findByGalaxyId(invite.getPartnerId());
     if (user == null) {
       UserDTO userDTO = service.getGalaxyUserDetails(invite.getPartnerId());
@@ -72,18 +76,20 @@ public class UserController {
       body.put(Constant.TIMESTAMP, new Date());
       body.put(Constant.STATUS, HttpStatus.OK);
       body.put(Constant.MESSAGE, "User invited successfully");
+      log.info("User invited Successfully");
       return new ResponseEntity<>(body, HttpStatus.OK);
     }
     throw new APIException("Error in send invite");
   }
 
-  @Operation(summary = "get user profile details ")
+  @Operation(summary = "get user profile details")
   @GetMapping(value = "/user/profile")
   @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK",
       content = @Content(mediaType = "application/json", schema = @Schema(type = "UserDTO",
           example = "{\"id\": \"string\",\"firstName\": \"string\",\"lastName\": \"string\",\"email\": \"string\",\"role\": \"string\",\"passwordReset\": true}")))})
   public MappingJacksonValue getUserProfile(HttpServletRequest request) {
     User user = (User) request.getAttribute("user");
+    log.info("get user profile details API call from user: " + user.getGalaxyId());
     UserDTO userDTO = null;
     String role = user.getRole().getName();
     if (Constant.PARTNER.equalsIgnoreCase(role)) {
@@ -104,6 +110,8 @@ public class UserController {
     FilterProvider filters = new SimpleFilterProvider().addFilter("userFilter", filter);
     MappingJacksonValue mapping = new MappingJacksonValue(userDTO);
     mapping.setFilters(filters);
+    log.info("Successfully send user profile details");
+    log.debug("User profile details API Response: " + userDTO);
     return mapping;
   }
 
@@ -114,13 +122,14 @@ public class UserController {
   @PostMapping(value = Constant.PUBLIC_API_URL + "/user/forgotPassword")
   public ResponseEntity<Object> forgotUserPassword(@RequestBody String email,
       HttpServletRequest request) {
-
+    log.info("Forgot password for candidate API call for Email Id: " + email);
     boolean result = service.forgotPassword(request, email);
     if (result) {
       Map<String, Object> body = new LinkedHashMap<>();
       body.put(Constant.TIMESTAMP, new Date());
       body.put(Constant.STATUS, HttpStatus.OK);
       body.put(Constant.MESSAGE, "Forgot password e-mail is sent to the provided user.");
+      log.info("Successfully send Forgot password e-mail to provided user");
       return new ResponseEntity<>(body, HttpStatus.OK);
     }
     throw new APIException("Something went wrong");
@@ -129,12 +138,14 @@ public class UserController {
   @PostMapping(value = Constant.PUBLIC_API_URL + "/user/resetPassword")
   public ResponseEntity<Object> resetUserPassword(
       @Valid @RequestBody ResetPasswordDTO resetPassword, HttpServletRequest request) {
+    log.info("Reset password for User API call");
     boolean result = service.resetPassword(request, resetPassword);
     if (result) {
       Map<String, Object> body = new LinkedHashMap<>();
       body.put(Constant.TIMESTAMP, new Date());
       body.put(Constant.STATUS, HttpStatus.OK);
       body.put(Constant.MESSAGE, "User Password reset successfully.");
+      log.info("User Password reset successfully.");
       return new ResponseEntity<>(body, HttpStatus.OK);
     }
     throw new APIException("Something went wrong");
