@@ -187,9 +187,7 @@ public class SwaggerConfig {
   private Schema<NotificationsDTO> getNotificationDTOSchema() {
     Schema<NotificationsDTO> notificationDTOSchema = new Schema<>();
     NotificationsDTO notificationsDTO = new NotificationsDTO();
-    notificationsDTO.setId(Constant.STRING);
     notificationsDTO.setDescription(Constant.STRING);
-    notificationsDTO.setStatus(Boolean.FALSE);
     notificationDTOSchema.addEnumItemObject(notificationsDTO);
     return notificationDTOSchema;
   }

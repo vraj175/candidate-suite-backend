@@ -3,7 +3,6 @@ package com.aspire.kgp.service.impl;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -32,6 +31,8 @@ public class NotificationServiceImpl implements NotificationService {
         notificationDTO.setId(String.valueOf(notification.getId()));
         notificationDTO.setDescription(notification.getDescription());
         notificationDTO.setStatus(notification.isStatus());
+        notificationDTO.setCreatedDate(notification.getCreatedDate());
+        notificationDTO.setModifyDate(notification.getModifyDate());
         notificationDTOList.add(notificationDTO);
       }
     }
