@@ -15,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -22,6 +23,7 @@ import com.aspire.kgp.constant.Constant;
 import com.aspire.kgp.dto.NotificationSchedulerDTO;
 import com.aspire.kgp.dto.NotificationsDTO;
 import com.aspire.kgp.exception.APIException;
+import com.aspire.kgp.model.Notification;
 import com.aspire.kgp.model.User;
 import com.aspire.kgp.service.NotificationService;
 import com.aspire.kgp.service.impl.NotificationSchedulerServiceImpl;
@@ -29,7 +31,6 @@ import com.aspire.kgp.service.impl.NotificationSchedulerServiceImpl;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -43,19 +44,18 @@ public class NotificationController {
 
   @Autowired
   NotificationService service;
-  
+
   @Autowired
   private NotificationSchedulerServiceImpl notificationSchedulerServiceImpl;
- 
+
   @Operation(summary = "Get list of Notifications")
   @GetMapping(value = "/notification/all")
   @ApiResponses(
-      value = {
-          @ApiResponse(responseCode = "200", description = "OK",
-              content = @Content(mediaType = "application/json", schema = @Schema(
-                  type = "List<NotificationDTO>",
-                  example = "[{\"id\": \"String\",\"description\": \"String\",\"status\": false}]")))})
-  public List<NotificationsDTO> getRoles(HttpServletRequest request) {
+      value = {@ApiResponse(responseCode = "200", description = "OK",
+          content = @Content(mediaType = "application/json", schema = @Schema(
+              type = "List<NotificationDTO>",
+              example = "[{\"id\": \"String\",\"description\": \"String\",\"status\": false}]")))})
+  public List<NotificationsDTO> getNotification(HttpServletRequest request) {
     User user = (User) request.getAttribute("user");
     if (user == null) {
       throw new APIException("Invalid User Id");
@@ -80,6 +80,27 @@ public class NotificationController {
       return new ResponseEntity<>(body, HttpStatus.OK);
     }
     throw new APIException("Error in Set Notification Schedule");
+  }
+
+  @PostMapping(value = "/notification/add")
+  @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK",
+  content = @Content(mediaType = "application/json", schema = @Schema(type = "Json",
+      example = "{  \"timestamp\": \"2021-09-06T08:53:39.690+00:00\", \"status\": \"OK\", \"message\": \"Notification Added Successfully\" }")))})
+  public ResponseEntity<Object> addNotification(
+      @Valid @RequestBody NotificationsDTO notifications, HttpServletRequest request) {
+    User user = (User) request.getAttribute("user");
+    if (user == null) {
+      throw new APIException("Invalid User Id");
+    }
+    Notification result = service.addNotification(notifications, user);
+    if (result != null) {
+      Map<String, Object> body = new LinkedHashMap<>();
+      body.put(Constant.TIMESTAMP, new Date());
+      body.put(Constant.STATUS, HttpStatus.OK);
+      body.put(Constant.MESSAGE, "Notification Added Successfully");
+      return new ResponseEntity<>(body, HttpStatus.OK);
+    }
+    throw new APIException("Error in add new Notification");
   }
 }
 

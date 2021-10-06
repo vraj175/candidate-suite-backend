@@ -2,8 +2,8 @@ package com.aspire.kgp.dto;
 
 public class NotificationsDTO {
 
-  private String id;
-  private String description;
+  String id;
+  String description;
   boolean status;
 
   public String getId() {

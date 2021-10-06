@@ -1,7 +1,9 @@
 package com.aspire.kgp.service.impl;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -36,4 +38,18 @@ public class NotificationServiceImpl implements NotificationService {
     return notificationDTOList;
   }
 
+  @Override
+  public Notification addNotification(NotificationsDTO notificationDTO, User user) {
+    Notification notification = new Notification();
+    notification.setModifyDate(new Timestamp(System.currentTimeMillis()));
+    notification.setCreatedDate(new Timestamp(System.currentTimeMillis()));
+    notification.setStatus(Boolean.FALSE);
+    notification.setDescription(notificationDTO.getDescription());
+    notification.setUser(user);
+    return saveorUpdate(notification);
+  }
+
+  public Notification saveorUpdate(Notification notification) {
+    return repository.save(notification);
+  }
 }

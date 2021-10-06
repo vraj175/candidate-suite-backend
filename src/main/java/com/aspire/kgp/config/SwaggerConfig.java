@@ -11,6 +11,7 @@ import org.springframework.context.annotation.Configuration;
 import com.aspire.kgp.constant.Constant;
 import com.aspire.kgp.dto.InviteDTO;
 import com.aspire.kgp.dto.NotificationSchedulerDTO;
+import com.aspire.kgp.dto.NotificationsDTO;
 import com.aspire.kgp.dto.ResetPasswordDTO;
 
 import io.swagger.v3.oas.models.Components;
@@ -94,6 +95,9 @@ public class SwaggerConfig {
         .path(Constant.BASE_API_URL + "/notification",
             getPathItem(getNotificationSchedulerSchema(), "Notification",
                 "Set Interview notification Schedule", ""))
+        .path(Constant.BASE_API_URL + "/notification/add",
+            getPathItem(getNotificationDTOSchema(), "Notification", "Add New Notification",
+                ""))
         .addSecurityItem(
             new SecurityRequirement().addList(Constant.API_KEY).addList(Constant.AUTHORIZATION));
   }
@@ -176,6 +180,18 @@ public class SwaggerConfig {
     notificationScheduler.setMessage(Constant.STRING);
     notificationSchedulerSchema.addEnumItemObject(notificationScheduler);
     return notificationSchedulerSchema;
+  }
+
+  /* Schema For add new notification */
+
+  private Schema<NotificationsDTO> getNotificationDTOSchema() {
+    Schema<NotificationsDTO> notificationDTOSchema = new Schema<>();
+    NotificationsDTO notificationsDTO = new NotificationsDTO();
+    notificationsDTO.setId(Constant.STRING);
+    notificationsDTO.setDescription(Constant.STRING);
+    notificationsDTO.setStatus(Boolean.FALSE);
+    notificationDTOSchema.addEnumItemObject(notificationsDTO);
+    return notificationDTOSchema;
   }
 
   /*
