@@ -4,6 +4,8 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,12 +19,14 @@ import com.aspire.kgp.service.NotificationService;
 
 @Service
 public class NotificationServiceImpl implements NotificationService {
+  static Log log = LogFactory.getLog(NotificationServiceImpl.class.getName());
 
   @Autowired
   NotificationRepository repository;
 
   @Override
   public List<NotificationsDTO> findByUser(User user) {
+    log.info("Get All Notifications...");
     List<NotificationsDTO> notificationDTOList = new ArrayList<>();
     List<Notification> notificationList = repository.findByUser(user);
     if (!notificationList.isEmpty()) {
@@ -41,6 +45,7 @@ public class NotificationServiceImpl implements NotificationService {
 
   @Override
   public Notification addNotification(NotificationsDTO notificationDTO, User user) {
+    log.info("Add new Notification...");
     Notification notification = new Notification();
     notification.setModifyDate(new Timestamp(System.currentTimeMillis()));
     notification.setCreatedDate(new Timestamp(System.currentTimeMillis()));
