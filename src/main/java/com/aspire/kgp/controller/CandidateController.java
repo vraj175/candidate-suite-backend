@@ -1,6 +1,9 @@
 package com.aspire.kgp.controller;
 
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -10,11 +13,14 @@ import org.springframework.http.converter.json.MappingJacksonValue;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.aspire.kgp.constant.Constant;
 import com.aspire.kgp.dto.CandidateDTO;
+import com.aspire.kgp.dto.CandidateFeedbackDTO;
+import com.aspire.kgp.model.User;
 import com.aspire.kgp.service.CandidateService;
 import com.fasterxml.jackson.databind.ser.FilterProvider;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
@@ -125,13 +131,51 @@ public class CandidateController {
         + locale + " contactId: " + contactId);
     return service.getAthenaReport(pageSize, locale, contactId);
   }
-  
-  @Operation(summary = "send mail for feedback",
-      description = "")
+
+  @Operation(summary = "send mail for feedback", description = "")
   @PostMapping(value = {"candidates/feedback/mail"})
   public ResponseEntity<Object> saveFeedbackAndSendmail(HttpServletRequest resourceRequest) {
     log.info("Send feeback mail API");
     return service.saveFeedbackAndSendmail(resourceRequest);
- 
+  }
+
+  @Operation(summary = "Get Candidate Feedback")
+  @GetMapping(value = {"/candidates/{candidateId}/candidate-feedback"})
+  @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK",
+      content = @Content(mediaType = "application/json", schema = @Schema(type = "CandidateDTO",
+          example = "[{\"id\": \"string\",\"candidateId\": \"string\",\"comments\": \"string\",\"createdBy\": \"string\",\"createdAt\": \"string\",\"updatedAt\": \"string\",\"replies\": [{\"id\": \"string\",\"candidateId\": \"string\",\"commentId\": \"string\",\"reply\": \"string\",\"createdBy\":\"string\",\"createdAt\": \"string\",\"updatedAt\": \"string\"}]}]")))})
+  public MappingJacksonValue getCandidateFeedback(@PathVariable("candidateId") String candidateId) {
+    log.info("Get Candidate Feedback API call, Request Param CandidateId : " + candidateId);
+    List<CandidateFeedbackDTO> candidateFeedbackList = service.getCandidateFeedback(candidateId);
+
+    SimpleBeanPropertyFilter candidateFeedbackFilter = SimpleBeanPropertyFilter.filterOutAllExcept(
+        Constant.ID, "candidateId", "comments", "createdBy", "createdAt", "updatedAt", "replies");
+
+    SimpleBeanPropertyFilter candidateFeedbackRepliesFilter =
+        SimpleBeanPropertyFilter.filterOutAllExcept(Constant.ID, "candidateId", "commentId",
+            "reply", "createdBy", "createdAt", "updatedAt");
+
+    FilterProvider filters = new SimpleFilterProvider()
+        .addFilter(Constant.CANDIDATE_FEEDBACK_FILTER, candidateFeedbackFilter)
+        .addFilter(Constant.CANDIDATE_FEEDBACK_REPLY_FILTER, candidateFeedbackRepliesFilter);
+    MappingJacksonValue mapping = new MappingJacksonValue(candidateFeedbackList);
+    mapping.setFilters(filters);
+    log.info("Successfully send Candidate Feedback list " + candidateFeedbackList.size());
+    log.debug("Get Candidate Feedback API Response : " + mapping.getValue());
+    return mapping;
+  }
+
+  @PostMapping(value = {"/candidates/{candidateId}/candidate-feedback"})
+  @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK",
+      content = @Content(mediaType = "application/json",
+          schema = @Schema(type = "String", example = "{\"id\": \"string\"}")))})
+  public String addCandidateFeedback(@PathVariable("candidateId") String candidateId,
+      @Valid @RequestBody CandidateFeedbackDTO candidateFeedback, HttpServletRequest request) {
+    User user = (User) request.getAttribute("user");
+    log.info("Candidate Feedback SAVE API call, Request Param CandidateId : " + candidateId);
+    String id = service.addCandidateFeedback(candidateId, candidateFeedback.getComments(),
+        user.getGalaxyId());
+    log.info("Successfully ADD Candidate Feedback and it's id: " + id);
+    return id;
   }
 }

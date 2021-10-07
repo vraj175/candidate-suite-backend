@@ -31,6 +31,7 @@ import org.springframework.stereotype.Service;
 
 import com.aspire.kgp.constant.Constant;
 import com.aspire.kgp.dto.CandidateDTO;
+import com.aspire.kgp.dto.CandidateFeedbackDTO;
 import com.aspire.kgp.dto.UserDTO;
 import com.aspire.kgp.exception.APIException;
 import com.aspire.kgp.exception.NotFoundException;
@@ -44,6 +45,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.google.gson.JsonSyntaxException;
 
 import freemarker.template.TemplateException;
 import io.jsonwebtoken.Jwts;
@@ -200,7 +202,7 @@ public class CandidateServiceImpl implements CandidateService {
   private String saveGeneralComments(String params, HttpServletRequest resourceRequest) {
     log.info("saving client feedback");
     JsonObject response = new JsonObject();
-    
+
     // write save feedback code here
 
     try {
@@ -226,8 +228,8 @@ public class CandidateServiceImpl implements CandidateService {
     userDTO.setFirstName("Abhishek");
     userDTO.setLastName("Jaiswal");
     try {
-      Map<String, String> staticContentsMap = StaticContentsMultiLanguageUtil
-          .getStaticContentsMap(locate, Constant.EMAILS_CONTENT_MAP);
+      Map<String, String> staticContentsMap =
+          StaticContentsMultiLanguageUtil.getStaticContentsMap(locate, Constant.EMAILS_CONTENT_MAP);
       String mailSubject = staticContentsMap.get("candidate.suite.feedback.email.subject");
       mailService.sendEmail(email, null, mailSubject + " Abhishek Jaiswal",
           mailService.getFeedbackEmailContent(resourceRequest, userDTO, staticContentsMap,
@@ -257,6 +259,41 @@ public class CandidateServiceImpl implements CandidateService {
         .signWith(SignatureAlgorithm.HS512,
             Base64.getEncoder().encodeToString("candidateSuite-secret-key".getBytes()))
         .compact();
+  }
+
+  @Override
+  public String addCandidateFeedback(String candidateId, String comments, String galaxyId) {
+    JsonObject paramJSON = new JsonObject();
+    paramJSON.addProperty("createdBy", galaxyId);
+    paramJSON.addProperty("comments", comments);
+    return restUtil.postMethod(
+        Constant.CANDIDATE_FEEDBACK_URL.replace("{candidateId}", candidateId), paramJSON.toString(),
+        null);
+
+  }
+
+  @Override
+  public List<CandidateFeedbackDTO> getCandidateFeedback(String candidateId) {
+    String apiResponse = restUtil
+        .newGetMethod(Constant.CANDIDATE_FEEDBACK_URL.replace("{candidateId}", candidateId));
+    if (!apiResponse.contains("candidate_id")) {
+      throw new APIException("Invalid Candidate Id");
+    }
+    List<CandidateFeedbackDTO> candidateFeedbackList;
+    try {
+      candidateFeedbackList =
+          new Gson().fromJson(apiResponse, new TypeToken<List<CandidateFeedbackDTO>>() {
+
+            /**
+             * 
+             */
+            private static final long serialVersionUID = 1L;
+          }.getType());
+    } catch (JsonSyntaxException e) {
+      throw new APIException(Constant.CONVERT_JSON_ERROR);
+    }
+
+    return candidateFeedbackList;
   }
 
 }
