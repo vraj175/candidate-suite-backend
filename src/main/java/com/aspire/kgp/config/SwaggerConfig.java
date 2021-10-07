@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import com.aspire.kgp.constant.Constant;
+import com.aspire.kgp.dto.CandidateFeedbackDTO;
 import com.aspire.kgp.dto.InviteDTO;
 import com.aspire.kgp.dto.NotificationSchedulerDTO;
 import com.aspire.kgp.dto.NotificationsDTO;
@@ -94,10 +95,13 @@ public class SwaggerConfig {
                     .name(Constant.AUTHORIZATION)))
         .path(Constant.BASE_API_URL + "/notification",
             getPathItem(getNotificationSchedulerSchema(), "Notification",
-                "Set Interview notification Schedule", ""))
+                "Set Interview notification Schedule", "", getResponseContent()))
         .path(Constant.BASE_API_URL + "/notification/add",
-            getPathItem(getNotificationDTOSchema(), "Notification", "Add New Notification",
-                ""))
+            getPathItem(getNotificationDTOSchema(), "Notification", "Add New Notification", "",
+                getResponseContent()))
+        .path(Constant.BASE_API_URL + "/candidates/candidate-feedback",
+            getPathItem(getCandidateFeedbackDTOSchema(), "Candidate", "Add Candidate Feedback", "",
+                getCandidateFeedbackResponseContent()))
         .addSecurityItem(
             new SecurityRequirement().addList(Constant.API_KEY).addList(Constant.AUTHORIZATION));
   }
@@ -113,9 +117,10 @@ public class SwaggerConfig {
                 .name(Constant.API_KEY)))
         .path(Constant.BASE_API_URL + Constant.PUBLIC_API_URL + "/user/invite",
             getPathItem(getInviteSchema(), "User", "Invite User as Candidates",
-                "Language Should be en_US / es_ES / pt_BR"))
+                "Language Should be en_US / es_ES / pt_BR", getResponseContent()))
         .path(Constant.BASE_API_URL + Constant.PUBLIC_API_URL + "/user/resetPassword",
-            getPathItem(getResetPasswordSchema(), "User", "Reset Password for User", ""))
+            getPathItem(getResetPasswordSchema(), "User", "Reset Password for User", "",
+                getResponseContent()))
         .addSecurityItem(new SecurityRequirement().addList(Constant.API_KEY));
   }
 
@@ -123,8 +128,8 @@ public class SwaggerConfig {
    * Generic methods to get PathItem object(For Post API we have to add schemas). For Schema input
    * parameter create schema for particular request and pass it
    */
-  private PathItem getPathItem(Schema<?> schema, String tagItem, String summary,
-      String description) {
+  private PathItem getPathItem(Schema<?> schema, String tagItem, String summary, String description,
+      Content responseContent) {
     PathItem pathItem = new PathItem();
     RequestBody requestBody = new RequestBody();
 
@@ -132,7 +137,7 @@ public class SwaggerConfig {
 
     pathItem.setPost(new Operation().requestBody(requestBody)
         .responses(new ApiResponses().addApiResponse("200",
-            new ApiResponse().description("OK").content(getResponseContent())))
+            new ApiResponse().description("OK").content(responseContent)))
         .addTagsItem(tagItem).summary(summary).description(description));
     return pathItem;
   }
@@ -192,6 +197,16 @@ public class SwaggerConfig {
     return notificationDTOSchema;
   }
 
+  /* Schema For add candidate Feedback */
+  private Schema<?> getCandidateFeedbackDTOSchema() {
+    Schema<CandidateFeedbackDTO> candidateFeedbackSchema = new Schema<>();
+    CandidateFeedbackDTO feedback = new CandidateFeedbackDTO();
+    feedback.setComments(Constant.STRING);
+    feedback.setCandidateId(Constant.STRING);
+    candidateFeedbackSchema.addEnumItemObject(feedback);
+    return candidateFeedbackSchema;
+  }
+
   /*
    * Used for request content show on UI
    */
@@ -209,6 +224,15 @@ public class SwaggerConfig {
     return responseContent.addMediaType(Constant.CONTENT_TYPE_JSON,
         new MediaType().schema(new Schema<>().example(
             "{\"timestamp\": \"string\",\"status\": \"string\",\"message\": \"string\"}")));
+  }
+
+  /*
+   * Used For candidate Feedback response content show on UI
+   */
+  private Content getCandidateFeedbackResponseContent() {
+    Content responseContent = new Content();
+    return responseContent.addMediaType(Constant.CONTENT_TYPE_JSON,
+        new MediaType().schema(new Schema<>().example("{\"id\": \"string\"}")));
   }
 
   /*

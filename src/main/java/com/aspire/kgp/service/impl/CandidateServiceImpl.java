@@ -67,7 +67,7 @@ public class CandidateServiceImpl implements CandidateService {
   @Override
   public CandidateDTO getCandidateDetails(String candidateId) {
     String apiResponse =
-        restUtil.newGetMethod(Constant.CONDIDATE_URL.replace("{candidateId}", candidateId));
+        restUtil.newGetMethod(Constant.CONDIDATE_URL.replace(Constant.CANDIDATE_ID, candidateId));
     JsonObject json = (JsonObject) JsonParser.parseString(apiResponse);
     CandidateDTO candidateDTO =
         new Gson().fromJson(json.get("candidate"), new TypeToken<CandidateDTO>() {
@@ -267,15 +267,15 @@ public class CandidateServiceImpl implements CandidateService {
     paramJSON.addProperty("createdBy", galaxyId);
     paramJSON.addProperty("comments", comments);
     return restUtil.postMethod(
-        Constant.CANDIDATE_FEEDBACK_URL.replace("{candidateId}", candidateId), paramJSON.toString(),
-        null);
+        Constant.CANDIDATE_FEEDBACK_URL.replace(Constant.CANDIDATE_ID, candidateId),
+        paramJSON.toString(), null);
 
   }
 
   @Override
   public List<CandidateFeedbackDTO> getCandidateFeedback(String candidateId) {
     String apiResponse = restUtil
-        .newGetMethod(Constant.CANDIDATE_FEEDBACK_URL.replace("{candidateId}", candidateId));
+        .newGetMethod(Constant.CANDIDATE_FEEDBACK_URL.replace(Constant.CANDIDATE_ID, candidateId));
     if (!apiResponse.contains("candidate_id")) {
       throw new APIException("Invalid Candidate Id");
     }

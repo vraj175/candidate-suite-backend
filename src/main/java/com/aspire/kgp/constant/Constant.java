@@ -106,6 +106,7 @@ public class Constant {
   public static final String IMAGE_UPLOAD_URL = "/contacts/{contactId}/image";
   public static final String UPDATE_CONTACT_REFERENCE_URL = "/contact/references/{referenceId}";
   public static final String CONTACT_ID = "{contactId}";
+  public static final String CANDIDATE_ID = "{candidateId}";
 
   // Queries parameter
   public static final String INVALID_JSON_ERROR = "oops ! invalid json";

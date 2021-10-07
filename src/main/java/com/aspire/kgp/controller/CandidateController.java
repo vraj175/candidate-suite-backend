@@ -144,37 +144,27 @@ public class CandidateController {
   @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK",
       content = @Content(mediaType = "application/json", schema = @Schema(type = "CandidateDTO",
           example = "[{\"id\": \"string\",\"candidateId\": \"string\",\"comments\": \"string\",\"createdBy\": \"string\",\"createdAt\": \"string\",\"updatedAt\": \"string\",\"replies\": [{\"id\": \"string\",\"candidateId\": \"string\",\"commentId\": \"string\",\"reply\": \"string\",\"createdBy\":\"string\",\"createdAt\": \"string\",\"updatedAt\": \"string\"}]}]")))})
-  public MappingJacksonValue getCandidateFeedback(@PathVariable("candidateId") String candidateId) {
+  public List<CandidateFeedbackDTO> getCandidateFeedback(
+      @PathVariable("candidateId") String candidateId) {
     log.info("Get Candidate Feedback API call, Request Param CandidateId : " + candidateId);
     List<CandidateFeedbackDTO> candidateFeedbackList = service.getCandidateFeedback(candidateId);
 
-    SimpleBeanPropertyFilter candidateFeedbackFilter = SimpleBeanPropertyFilter.filterOutAllExcept(
-        Constant.ID, "candidateId", "comments", "createdBy", "createdAt", "updatedAt", "replies");
-
-    SimpleBeanPropertyFilter candidateFeedbackRepliesFilter =
-        SimpleBeanPropertyFilter.filterOutAllExcept(Constant.ID, "candidateId", "commentId",
-            "reply", "createdBy", "createdAt", "updatedAt");
-
-    FilterProvider filters = new SimpleFilterProvider()
-        .addFilter(Constant.CANDIDATE_FEEDBACK_FILTER, candidateFeedbackFilter)
-        .addFilter(Constant.CANDIDATE_FEEDBACK_REPLY_FILTER, candidateFeedbackRepliesFilter);
-    MappingJacksonValue mapping = new MappingJacksonValue(candidateFeedbackList);
-    mapping.setFilters(filters);
     log.info("Successfully send Candidate Feedback list " + candidateFeedbackList.size());
-    log.debug("Get Candidate Feedback API Response : " + mapping.getValue());
-    return mapping;
+    log.debug("Get Candidate Feedback API Response : " + candidateFeedbackList);
+    return candidateFeedbackList;
   }
 
-  @PostMapping(value = {"/candidates/{candidateId}/candidate-feedback"})
+  @PostMapping(value = {"/candidates/candidate-feedback"})
   @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK",
       content = @Content(mediaType = "application/json",
           schema = @Schema(type = "String", example = "{\"id\": \"string\"}")))})
-  public String addCandidateFeedback(@PathVariable("candidateId") String candidateId,
-      @Valid @RequestBody CandidateFeedbackDTO candidateFeedback, HttpServletRequest request) {
+  public String addCandidateFeedback(@Valid @RequestBody CandidateFeedbackDTO candidateFeedback,
+      HttpServletRequest request) {
     User user = (User) request.getAttribute("user");
-    log.info("Candidate Feedback SAVE API call, Request Param CandidateId : " + candidateId);
-    String id = service.addCandidateFeedback(candidateId, candidateFeedback.getComments(),
-        user.getGalaxyId());
+    log.info("Candidate Feedback SAVE API call, Request Param CandidateId : "
+        + candidateFeedback.getCandidateId());
+    String id = service.addCandidateFeedback(candidateFeedback.getCandidateId(),
+        candidateFeedback.getComments(), user.getGalaxyId());
     log.info("Successfully ADD Candidate Feedback and it's id: " + id);
     return id;
   }
