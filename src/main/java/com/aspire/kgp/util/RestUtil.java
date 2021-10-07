@@ -243,7 +243,8 @@ public class RestUtil {
       }
 
       new HttpClient().executeMethod(post);
-      if (post.getStatusCode() == HttpStatus.SC_OK || post.getStatusCode() == HttpStatus.SC_CREATED) {
+      if (post.getStatusCode() == HttpStatus.SC_OK || post.getStatusCode() == HttpStatus.SC_CREATED
+          || post.getStatusCode() == HttpStatus.SC_INTERNAL_SERVER_ERROR) {
         responseString = post.getResponseBodyAsString();
       }
     } catch (Exception e) {
