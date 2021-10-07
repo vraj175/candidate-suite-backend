@@ -58,7 +58,7 @@ public class CandidateController {
         SimpleBeanPropertyFilter.filterOutAllExcept("id", "name");
 
     SimpleBeanPropertyFilter userAndContactFilter = SimpleBeanPropertyFilter
-        .filterOutAllExcept(Constant.ID, Constant.FIRST_NAME, Constant.LAST_NAME);
+        .filterOutAllExcept(Constant.ID, Constant.FIRST_NAME, Constant.LAST_NAME, "title");
 
     SimpleBeanPropertyFilter searchFilter = SimpleBeanPropertyFilter.filterOutAllExcept(Constant.ID,
         Constant.JOB_TITLE, Constant.JOB_NUMBER, Constant.COMPANY, Constant.PARTNERS,
@@ -132,13 +132,6 @@ public class CandidateController {
     return service.getAthenaReport(pageSize, locale, contactId);
   }
 
-  @Operation(summary = "send mail for feedback", description = "")
-  @PostMapping(value = {"candidates/feedback/mail"})
-  public ResponseEntity<Object> saveFeedbackAndSendmail(HttpServletRequest resourceRequest) {
-    log.info("Send feeback mail API");
-    return service.saveFeedbackAndSendmail(resourceRequest);
-  }
-
   @Operation(summary = "Get Candidate Feedback")
   @GetMapping(value = {"/candidates/{candidateId}/candidate-feedback"})
   @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK",
@@ -164,7 +157,7 @@ public class CandidateController {
     log.info("Candidate Feedback SAVE API call, Request Param CandidateId : "
         + candidateFeedback.getCandidateId());
     String id = service.addCandidateFeedback(candidateFeedback.getCandidateId(),
-        candidateFeedback.getComments(), user.getGalaxyId());
+        candidateFeedback.getComments(), user.getGalaxyId(), request);
     log.info("Successfully ADD Candidate Feedback and it's id: " + id);
     return id;
   }

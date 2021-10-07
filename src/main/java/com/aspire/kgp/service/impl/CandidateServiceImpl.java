@@ -4,6 +4,7 @@ import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
@@ -11,12 +12,12 @@ import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.transaction.Transactional;
-import javax.transaction.Transactional.TxType;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -32,6 +33,7 @@ import org.springframework.stereotype.Service;
 import com.aspire.kgp.constant.Constant;
 import com.aspire.kgp.dto.CandidateDTO;
 import com.aspire.kgp.dto.CandidateFeedbackDTO;
+import com.aspire.kgp.dto.ContactDTO;
 import com.aspire.kgp.dto.UserDTO;
 import com.aspire.kgp.exception.APIException;
 import com.aspire.kgp.exception.NotFoundException;
@@ -43,6 +45,8 @@ import com.aspire.kgp.util.StaticContentsMultiLanguageUtil;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
@@ -163,65 +167,78 @@ public class CandidateServiceImpl implements CandidateService {
   }
 
   @Override
-  @Transactional(value = TxType.REQUIRES_NEW)
-  public ResponseEntity<Object> saveFeedbackAndSendmail(HttpServletRequest resourceRequest) {
-    log.info("Entring into saving feedback and sending email to candidate");
-    JsonObject params = new JsonObject();
-    String addOrUpdate = resourceRequest.getParameter("addUpdateaction");
-    log.info("action is :: " + addOrUpdate);
-    log.info("UserId : " + resourceRequest.getParameter("userId"));
-
-    if (CommonUtil.checkNullString(addOrUpdate))
-      addOrUpdate = "addNewFeedback";
-    if (addOrUpdate.equals("updateFeedback")) {
-      params.addProperty("clientId", resourceRequest.getParameter("clientId"));
-      params.addProperty("feedbackId", resourceRequest.getParameter("feedbackId"));
-    }
-    String clientId = resourceRequest.getParameter("clientId");
-    if (CommonUtil.checkNotNullString(clientId)) {
-      params.addProperty("clientId", resourceRequest.getParameter("clientId"));
-      params.addProperty("clientName", resourceRequest.getParameter("clientName"));
-    }
-    log.info("clientId  : " + clientId);
-    params.addProperty("addOrUpdate", addOrUpdate);
-    params.addProperty("userId", resourceRequest.getParameter("userId"));
-    params.addProperty("candidateId", resourceRequest.getParameter("candidateId"));
-    params.addProperty("candidateName", resourceRequest.getParameter("candidateName"));
-    params.addProperty("feedback", resourceRequest.getParameter("feedback"));
-    params.addProperty("searchId", resourceRequest.getParameter("searchId"));
-    params.addProperty("searchTitle", resourceRequest.getParameter("searchName"));
-    params.addProperty("jobNumber", resourceRequest.getParameter("searchNumber"));
-    params.addProperty("candidateType", resourceRequest.getParameter("candidateType"));
-    params.addProperty("companyName", resourceRequest.getParameter("companyName"));
-    params.addProperty("clientType", "contact");
-    saveGeneralComments(params.toString(), resourceRequest);
-    log.info("Exiting into saving feedback and sending email to candidate");
-    return null;
-  }
-
-  private String saveGeneralComments(String params, HttpServletRequest resourceRequest) {
-    log.info("saving client feedback");
-    JsonObject response = new JsonObject();
-
-    // write save feedback code here
-
+  public String addCandidateFeedback(String candidateId, String comments, String galaxyId,
+      HttpServletRequest request) {
+    JsonObject paramJSON = new JsonObject();
+    String feedbackId;
+    String feedback = "";
+    String candidateName = "";
+    String searchId = "";
+    String searchName = "";
+    String jobNumber = "";
+    String companyName = "";
+    paramJSON.addProperty("createdBy", galaxyId);
+    paramJSON.addProperty("comments", comments);
     try {
-      sendClientFeedbackMail(params, resourceRequest);
-    } catch (Exception e) {
-      log.info(e);
-      throw new APIException("Error in send feedback email");
+      feedbackId = restUtil.postMethod(
+          Constant.CANDIDATE_FEEDBACK_URL.replace(Constant.CANDIDATE_ID, candidateId),
+          paramJSON.toString(), null);
+    } catch (APIException e2) {
+      log.error("error while adding feedback" + e2);
+      throw new APIException("error while add feedback");
     }
-    response.addProperty("success", "true");
-    response.addProperty("Message", "General Comments save succesfully");
-    log.info("Save or update feedback successfully!!");
-    return response.toString();
+    if (feedbackId != null && !feedbackId.isEmpty()) {
+      CandidateDTO apiResponse = getCandidateDetails(candidateId);
+      Set<String> kgpPartnerEmailList = new HashSet<>();
+      try {
+        if (feedbackId.contains("id")) {
+          kgpPartnerEmailList =
+              teamMemberList(apiResponse.getSearch().getPartners(), kgpPartnerEmailList);
+          kgpPartnerEmailList =
+              teamMemberList(apiResponse.getSearch().getRecruiters(), kgpPartnerEmailList);
+          kgpPartnerEmailList =
+              teamMemberList(apiResponse.getSearch().getResearchers(), kgpPartnerEmailList);
+          kgpPartnerEmailList =
+              teamMemberList(apiResponse.getSearch().getEas(), kgpPartnerEmailList);
+
+          feedback = comments;
+          candidateName =
+              apiResponse.getContact().getFirstName() + apiResponse.getContact().getLastName();
+          searchId = apiResponse.getSearch().getId();
+          searchName = apiResponse.getSearch().getJobTitle();
+          jobNumber = apiResponse.getSearch().getJobNumber();
+          companyName = apiResponse.getSearch().getCompany().getName();
+        }
+      } catch (JsonSyntaxException e) {
+        log.error("oops ! invalid json");
+        throw new JsonSyntaxException("error while get team member");
+      } catch (APIException e1) {
+        log.error("error while get kgp team member.");
+        throw new APIException("error while get kgp team member");
+      }
+
+      try {
+        for (String kgpTeamMeberDetails : kgpPartnerEmailList) {
+          log.info("Partner Email : " + kgpTeamMeberDetails);
+          sendClientFeedbackMail(kgpTeamMeberDetails.split("##")[0],
+              kgpTeamMeberDetails.split("##")[1], feedback, candidateName, searchId, searchName,
+              jobNumber, companyName, request);
+        }
+      } catch (Exception e) {
+        log.info(e);
+        throw new APIException("Error in send feedback email");
+      }
+    }
+    return feedbackId;
+
   }
 
-  public void sendClientFeedbackMail(String params, HttpServletRequest resourceRequest)
-      throws IOException, TemplateException {
+  private void sendClientFeedbackMail(String email, String partnerName, String feedback,
+      String candidateName, String searchId, String searchName, String jobNumber,
+      String companyName, HttpServletRequest request) {
     log.info("sending client feedback email");
     String locate = "en_US";
-    String email = "abhishek.jaiswal@aspiresoftserv.com";
+    email = "abhishek.jaiswal@aspiresoftserv.com";
     UserDTO userDTO = new UserDTO();
     userDTO.setToken(generateJwtToken(email, email));
     userDTO.setEmail(email);
@@ -231,9 +248,10 @@ public class CandidateServiceImpl implements CandidateService {
       Map<String, String> staticContentsMap =
           StaticContentsMultiLanguageUtil.getStaticContentsMap(locate, Constant.EMAILS_CONTENT_MAP);
       String mailSubject = staticContentsMap.get("candidate.suite.feedback.email.subject");
-      mailService.sendEmail(email, null, mailSubject + " Abhishek Jaiswal",
-          mailService.getFeedbackEmailContent(resourceRequest, userDTO, staticContentsMap,
-              Constant.CANDIDATE_FEEDBACK_EMAIL_TEMPLATE),
+      mailService.sendEmail(email, null, mailSubject + " " + partnerName,
+          mailService.getFeedbackEmailContent(request, userDTO, staticContentsMap,
+              Constant.CANDIDATE_FEEDBACK_EMAIL_TEMPLATE, feedback, candidateName, searchId,
+              searchName, jobNumber, companyName, partnerName),
           null);
     } catch (Exception e) {
       log.info(e);
@@ -243,33 +261,34 @@ public class CandidateServiceImpl implements CandidateService {
 
   }
 
+  /**
+   * Create team user map from JSON string of record
+   * 
+   * @param recordList String
+   * @throws UnsupportedEncodingException
+   */
+  private Set<String> teamMemberList(List<UserDTO> users, Set<String> partnerEmailList) {
+    for (UserDTO user : users) {
+      if (user != null && CommonUtil.checkNotNullString(user.getId())) {
+        partnerEmailList.add(user.getEmail() + "##" + user.getName());
+      }
+    }
+    return partnerEmailList;
+  }
+
+
   private String generateJwtToken(String userName, String password) {
     log.info("generating Token for user...");
-    Date dt = new Date();
-    Calendar c = Calendar.getInstance();
-    c.setTime(dt);
-    c.add(Calendar.DATE, 1);
-    dt = c.getTime();
-
+    Calendar cal = Calendar.getInstance();
+    cal.add(Calendar.YEAR, 1); // to get previous year add -1
+    Date nextYear = cal.getTime();
     String auth = userName + ":" + password;
     String token = Base64.getEncoder().encodeToString(auth.getBytes(StandardCharsets.UTF_8));
-
-    return Jwts.builder().setSubject("candidateSuite").setExpiration(dt)
+    return Jwts.builder().setSubject("candidateSuite").setExpiration(nextYear)
         .setIssuer(Constant.FROM_MAIL).claim("authentication", "Basic " + token)
         .signWith(SignatureAlgorithm.HS512,
             Base64.getEncoder().encodeToString("candidateSuite-secret-key".getBytes()))
         .compact();
-  }
-
-  @Override
-  public String addCandidateFeedback(String candidateId, String comments, String galaxyId) {
-    JsonObject paramJSON = new JsonObject();
-    paramJSON.addProperty("createdBy", galaxyId);
-    paramJSON.addProperty("comments", comments);
-    return restUtil.postMethod(
-        Constant.CANDIDATE_FEEDBACK_URL.replace(Constant.CANDIDATE_ID, candidateId),
-        paramJSON.toString(), null);
-
   }
 
   @Override

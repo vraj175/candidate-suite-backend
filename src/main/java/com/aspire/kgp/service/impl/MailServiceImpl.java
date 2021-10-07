@@ -77,23 +77,23 @@ public class MailServiceImpl implements MailService {
 
   @Override
   public String getFeedbackEmailContent(HttpServletRequest request, UserDTO userDTO,
-      Map<String, String> staticContentsMap, String templateName)
-      throws IOException, TemplateException {
-    log.info("starting getEmailContent for feedback");
+      Map<String, String> staticContentsMap, String candidateFeedbackEmailTemplate, String feedback,
+      String candidateName, String searchId, String searchName, String jobNumber,
+      String companyName, String partnerName) throws IOException, TemplateException {
     StringWriter stringWriter = new StringWriter();
     Map<String, Object> model = new HashMap<>();
     model.put("serverUrl", CommonUtil.getServerUrl(request) + request.getContextPath());
     model.put("clientName", "Pratik Patel");
-    model.put("partnerName", "Poorav Solanki");
-    model.put("searchName", "Full Stack Developer & Analyzer");
+    model.put("partnerName", partnerName);
+    model.put("searchName", searchName);
     model.put("clientContactName", "Abhishek's ");
-    model.put("candidateName", "Abhishek Jaiswal");
-    model.put("companyName", "zAspire Software Solutions");
-    model.put("comment", " Feedback added By Abhishek Jaiswal");
+    model.put("candidateName", candidateName);
+    model.put("companyName", companyName);
+    model.put("comment", feedback);
     model.put("staticContentsMap", staticContentsMap);
-    model.put("isReplyAdded", "true");
-    model.put("reply", "Hi THere Replying here.");
-    configuration.getTemplate(templateName).process(model, stringWriter);
+    model.put("replyButtonUrl", CommonUtil.getServerUrl(request)
+        + "/group/zaspire-software-solutions/live-search-metrics-new?feedback=" + userDTO.getToken());
+    configuration.getTemplate(candidateFeedbackEmailTemplate).process(model, stringWriter);
     log.info("ending getEmailContent for feedback");
     return stringWriter.getBuffer().toString();
   }

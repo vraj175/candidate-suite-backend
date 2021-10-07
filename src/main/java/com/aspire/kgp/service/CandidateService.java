@@ -15,9 +15,7 @@ public interface CandidateService {
 
   public ResponseEntity<byte[]> getAthenaReport(String pageSize, String locale, String contactId);
 
-  public ResponseEntity<Object> saveFeedbackAndSendmail(HttpServletRequest resourceRequest);
-
-  public String addCandidateFeedback(String candidateId, String comments, String galaxyId);
+  public String addCandidateFeedback(String candidateId, String comments, String galaxyId, HttpServletRequest request);
 
   public List<CandidateFeedbackDTO> getCandidateFeedback(String candidateId);
 }
