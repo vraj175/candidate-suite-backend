@@ -80,6 +80,8 @@ public class Constant {
   public static final String CANDIDATE_LIST_URL = "/searches/{searchId}/candidates";
   public static final String POSITION_PROFILE_URL = "/searches/{searchId}/sfpa";
   public static final String CANDIDATE_URL = "/candidates/{candidateId}/activity";
+  public static final String CANDIDATE_FEEDBACK_URL =
+      "/candidate-suite/candidates/{candidateId}/candidate-feedback";
 
   public static final String CONTACT_PROFILE_IMAGE_URL =
       "/clientsuite/contacts/{contactId}/profile-image";
@@ -104,6 +106,7 @@ public class Constant {
   public static final String IMAGE_UPLOAD_URL = "/contacts/{contactId}/image";
   public static final String UPDATE_CONTACT_REFERENCE_URL = "/contact/references/{referenceId}";
   public static final String CONTACT_ID = "{contactId}";
+  public static final String CANDIDATE_ID = "{candidateId}";
 
   // Queries parameter
   public static final String INVALID_JSON_ERROR = "oops ! invalid json";
@@ -177,6 +180,8 @@ public class Constant {
   public static final String CONTACT_FILTER = "contactFilter";
   public static final String SEARCH_FILTER = "searchFilter";
   public static final String CANDIDATE_FILTER = "candidateFilter";
+  public static final String CANDIDATE_FEEDBACK_FILTER = "candidateFeedbackFilter";
+  public static final String CANDIDATE_FEEDBACK_REPLY_FILTER = "candidateFeedbackRepliesFilter";
 
   // messages
   public static final String DATA_SAVED = "Data saved successfully";
