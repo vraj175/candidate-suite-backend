@@ -106,7 +106,7 @@ public class CandidateController {
     SimpleBeanPropertyFilter contactFilter =
         SimpleBeanPropertyFilter.filterOutAllExcept(Constant.ID, Constant.FIRST_NAME,
             Constant.LAST_NAME, Constant.CURRENT_JOB_TITLE, Constant.MOBILE_PHONE,
-            Constant.PUBLISHED_BIO, Constant.COMPANY, Constant.LINKEDIN_URL, Constant.COUNTRY);
+            Constant.PUBLISHED_BIO, Constant.COMPANY, Constant.LINKEDIN_URL, Constant.COUNTRY, "state",  "city");
 
     FilterProvider filters =
         new SimpleFilterProvider().addFilter(Constant.CANDIDATE_FILTER, candidateFilter)
