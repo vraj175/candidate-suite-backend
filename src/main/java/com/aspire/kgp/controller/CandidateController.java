@@ -46,7 +46,13 @@ public class CandidateController {
   @GetMapping("/candidates/{candidateId}")
   @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK",
       content = @Content(mediaType = "application/json", schema = @Schema(type = "CandidateDTO",
-          example = "{\"contact\": {\"id\": \"string\",\"firstName\": \"string\",\"lastName\": \"string\"},\"search\": {\"id\": \"string\",\"jobTitle\": \"string\",\"jobNumber\": \"string\",\"company\": {\"id\": \"string\",\"name\": \"string\"},\"partners\": [{\"id\": \"string\",\"firstName\": \"string\",\"lastName\": \"string\"}],\"recruiters\": [{\"id\": \"string\",\"firstName\": \"string\",\"lastName\": \"string\"}],\"researchers\": [{\"id\": \"string\",\"firstName\": \"string\",\"lastName\": \"string\"}],\"eas\": [{\"id\": \"string\",\"firstName\": \"string\",\"lastName\": \"string\"}]}}")))})
+          example = "{\"contact\": {\"id\": \"string\",\"firstName\": \"string\",\"lastName\": \"string\"}"
+              + ",\"search\": {\"id\": \"string\",\"jobTitle\": \"string\",\"jobNumber\": \"string\","
+              + "\"company\": {\"id\": \"string\",\"name\": \"string\"},"
+              + "\"partners\": [{\"id\": \"string\",\"firstName\": \"string\",\"lastName\": \"string\",\"title\": \"string\"}],"
+              + "\"recruiters\": [{\"id\": \"string\",\"firstName\": \"string\",\"lastName\": \"string\",\"title\": \"string\"}],"
+              + "\"researchers\": [{\"id\": \"string\",\"firstName\": \"string\",\"lastName\": \"string\",\"title\": \"string\"}],"
+              + "\"eas\": [{\"id\": \"string\",\"firstName\": \"string\",\"lastName\": \"string\",\"title\": \"string\"}]}}")))})
   public MappingJacksonValue getCandidateDetails(@PathVariable("candidateId") String candidateId) {
     log.info("Get Candidate Details API call, Request Param CandidateId : " + candidateId);
     CandidateDTO candidateDTO = service.getCandidateDetails(candidateId);

@@ -80,6 +80,7 @@ public class MailServiceImpl implements MailService {
       Map<String, String> staticContentsMap, String candidateFeedbackEmailTemplate, String feedback,
       String candidateName, String searchId, String searchName, String jobNumber,
       String companyName, String partnerName) throws IOException, TemplateException {
+    log.info("starting getEmailContent for Email feedback");
     StringWriter stringWriter = new StringWriter();
     Map<String, Object> model = new HashMap<>();
     model.put("serverUrl", CommonUtil.getServerUrl(request) + request.getContextPath());
@@ -91,10 +92,12 @@ public class MailServiceImpl implements MailService {
     model.put("companyName", companyName);
     model.put("comment", feedback);
     model.put("staticContentsMap", staticContentsMap);
-    model.put("replyButtonUrl", CommonUtil.getServerUrl(request)
-        + "/group/zaspire-software-solutions/live-search-metrics-new?feedback=" + userDTO.getToken());
+    model.put("replyButtonUrl",
+        CommonUtil.getServerUrl(request)
+            + "/group/zaspire-software-solutions/live-search-metrics-new?feedback="
+            + userDTO.getToken());
     configuration.getTemplate(candidateFeedbackEmailTemplate).process(model, stringWriter);
-    log.info("ending getEmailContent for feedback");
+    log.info("ending getEmailContent for Email feedback");
     return stringWriter.getBuffer().toString();
   }
 }

@@ -216,7 +216,6 @@ public class CandidateServiceImpl implements CandidateService {
         log.error("error while get kgp team member.");
         throw new APIException("error while get kgp team member");
       }
-
       try {
         for (String kgpTeamMeberDetails : kgpPartnerEmailList) {
           log.info("Partner Email : " + kgpTeamMeberDetails);
@@ -230,7 +229,6 @@ public class CandidateServiceImpl implements CandidateService {
       }
     }
     return feedbackId;
-
   }
 
   private void sendClientFeedbackMail(String email, String partnerName, String feedback,
@@ -263,7 +261,6 @@ public class CandidateServiceImpl implements CandidateService {
 
   /**
    * Create team user map from JSON string of record
-   * 
    * @param recordList String
    * @throws UnsupportedEncodingException
    */
