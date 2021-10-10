@@ -1,8 +1,10 @@
 package com.aspire.kgp.dto;
 
+import com.fasterxml.jackson.annotation.JsonFilter;
 import com.google.gson.annotations.SerializedName;
 
-public class CandidateFeedbackBaseDTO {
+@JsonFilter("candidateFeedbackReplyFilter")
+public class CandidateFeedbackReplyDTO {
   private String id;
   @SerializedName("candidate_id")
   private String candidateId;
@@ -12,6 +14,18 @@ public class CandidateFeedbackBaseDTO {
   private String createdAt;
   @SerializedName("updated_at")
   private String updatedAt;
+  @SerializedName("comment_id")
+  private String commentId;
+  private String reply;
+  private String replyId;
+
+  public String getReplyId() {
+    return replyId;
+  }
+
+  public void setReplyId(String replyId) {
+    this.replyId = replyId;
+  }
 
   public String getId() {
     return id;
@@ -51,6 +65,29 @@ public class CandidateFeedbackBaseDTO {
 
   public void setUpdatedAt(String updatedAt) {
     this.updatedAt = updatedAt;
+  }
+
+  public String getCommentId() {
+    return commentId;
+  }
+
+  public void setCommentId(String commentId) {
+    this.commentId = commentId;
+  }
+
+  public String getReply() {
+    return reply;
+  }
+
+  public void setReply(String reply) {
+    this.reply = reply;
+  }
+
+  @Override
+  public String toString() {
+    return "CandidateFeedbackReplyDTO [id=" + id + ", candidateId=" + candidateId + ", createdBy="
+        + createdBy + ", createdAt=" + createdAt + ", updatedAt=" + updatedAt + ", commentId="
+        + commentId + ", reply=" + reply + ", replyId=" + replyId + "]";
   }
 
 }
