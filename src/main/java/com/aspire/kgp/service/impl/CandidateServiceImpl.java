@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -37,6 +38,7 @@ import com.aspire.kgp.dto.ContactDTO;
 import com.aspire.kgp.dto.UserDTO;
 import com.aspire.kgp.exception.APIException;
 import com.aspire.kgp.exception.NotFoundException;
+import com.aspire.kgp.model.User;
 import com.aspire.kgp.service.CandidateService;
 import com.aspire.kgp.service.MailService;
 import com.aspire.kgp.util.CommonUtil;
@@ -169,14 +171,16 @@ public class CandidateServiceImpl implements CandidateService {
   @Override
   public String addCandidateFeedback(String candidateId, String comments, String galaxyId,
       HttpServletRequest request) {
+    log.info("Saving new feedback");
     JsonObject paramJSON = new JsonObject();
+    HashMap<String, String> paramRequest = new HashMap<>();
     String feedbackId;
     String feedback = "";
     String candidateName = "";
     String searchId = "";
     String searchName = "";
-    String jobNumber = "";
     String companyName = "";
+    String contactId = "";
     paramJSON.addProperty("createdBy", galaxyId);
     paramJSON.addProperty("comments", comments);
     try {
@@ -191,6 +195,7 @@ public class CandidateServiceImpl implements CandidateService {
       CandidateDTO apiResponse = getCandidateDetails(candidateId);
       Set<String> kgpPartnerEmailList = new HashSet<>();
       try {
+        log.info("Feedback added succefully with commentId:- " + feedbackId);
         if (feedbackId.contains("id")) {
           kgpPartnerEmailList =
               teamMemberList(apiResponse.getSearch().getPartners(), kgpPartnerEmailList);
@@ -206,8 +211,17 @@ public class CandidateServiceImpl implements CandidateService {
               apiResponse.getContact().getFirstName() + apiResponse.getContact().getLastName();
           searchId = apiResponse.getSearch().getId();
           searchName = apiResponse.getSearch().getJobTitle();
-          jobNumber = apiResponse.getSearch().getJobNumber();
           companyName = apiResponse.getSearch().getCompany().getName();
+          contactId = apiResponse.getContactId();
+          paramRequest.put(feedback, comments);
+          paramRequest.put(candidateName,
+              apiResponse.getContact().getFirstName() + apiResponse.getContact().getLastName());
+          paramRequest.put(searchId, comments);
+          paramRequest.put(searchName, comments);
+          paramRequest.put(companyName, comments);
+          paramRequest.put(contactId, comments);
+          paramRequest.put("candidateId", candidateId);
+          paramRequest.put("commentId", feedbackId);
         }
       } catch (JsonSyntaxException e) {
         log.error("oops ! invalid json");
@@ -220,8 +234,7 @@ public class CandidateServiceImpl implements CandidateService {
         for (String kgpTeamMeberDetails : kgpPartnerEmailList) {
           log.info("Partner Email : " + kgpTeamMeberDetails);
           sendClientFeedbackMail(kgpTeamMeberDetails.split("##")[0],
-              kgpTeamMeberDetails.split("##")[1], feedback, candidateName, searchId, searchName,
-              jobNumber, companyName, request);
+              kgpTeamMeberDetails.split("##")[1], paramRequest, request);
         }
       } catch (Exception e) {
         log.info(e);
@@ -231,40 +244,40 @@ public class CandidateServiceImpl implements CandidateService {
     return feedbackId;
   }
 
-  private void sendClientFeedbackMail(String email, String partnerName, String feedback,
-      String candidateName, String searchId, String searchName, String jobNumber,
-      String companyName, HttpServletRequest request) {
+
+  private void sendClientFeedbackMail(String email, String partnerName,
+      HashMap<String, String> paramRequest, HttpServletRequest request) {
     log.info("sending client feedback email");
     String locate = "en_US";
     email = "abhishek.jaiswal@aspiresoftserv.com";
+//    User user = (User) request.getAttribute("user");
     UserDTO userDTO = new UserDTO();
     userDTO.setToken(generateJwtToken(email, email));
     userDTO.setEmail(email);
-    userDTO.setFirstName("Abhishek");
-    userDTO.setLastName("Jaiswal");
+//    userDTO.setFirstName(user.get);
     try {
       Map<String, String> staticContentsMap =
           StaticContentsMultiLanguageUtil.getStaticContentsMap(locate, Constant.EMAILS_CONTENT_MAP);
       String mailSubject = staticContentsMap.get("candidate.suite.feedback.email.subject");
       mailService.sendEmail(email, null, mailSubject + " " + partnerName,
           mailService.getFeedbackEmailContent(request, userDTO, staticContentsMap,
-              Constant.CANDIDATE_FEEDBACK_EMAIL_TEMPLATE, feedback, candidateName, searchId,
-              searchName, jobNumber, companyName, partnerName),
+              Constant.CANDIDATE_FEEDBACK_EMAIL_TEMPLATE, partnerName, paramRequest),
           null);
     } catch (Exception e) {
       log.info(e);
       throw new APIException("Error in sending candidate feedback email");
     }
     log.info("Client Feedback Mail sent to all partners successfully.");
-
   }
 
   /**
    * Create team user map from JSON string of record
-   * @param recordList String
+   * 
+   * @param partnerEmailList Set<String>
    * @throws UnsupportedEncodingException
    */
   private Set<String> teamMemberList(List<UserDTO> users, Set<String> partnerEmailList) {
+    log.info("Creating Team member email and name set");
     for (UserDTO user : users) {
       if (user != null && CommonUtil.checkNotNullString(user.getId())) {
         partnerEmailList.add(user.getEmail() + "##" + user.getName());
