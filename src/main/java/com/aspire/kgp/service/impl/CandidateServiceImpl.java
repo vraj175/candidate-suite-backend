@@ -34,11 +34,10 @@ import org.springframework.stereotype.Service;
 import com.aspire.kgp.constant.Constant;
 import com.aspire.kgp.dto.CandidateDTO;
 import com.aspire.kgp.dto.CandidateFeedbackDTO;
-import com.aspire.kgp.dto.ContactDTO;
+import com.aspire.kgp.dto.CandidateFeedbackReplyDTO;
 import com.aspire.kgp.dto.UserDTO;
 import com.aspire.kgp.exception.APIException;
 import com.aspire.kgp.exception.NotFoundException;
-import com.aspire.kgp.model.User;
 import com.aspire.kgp.service.CandidateService;
 import com.aspire.kgp.service.MailService;
 import com.aspire.kgp.util.CommonUtil;
@@ -47,13 +46,10 @@ import com.aspire.kgp.util.StaticContentsMultiLanguageUtil;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 
-import freemarker.template.TemplateException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 
@@ -325,4 +321,40 @@ public class CandidateServiceImpl implements CandidateService {
     return candidateFeedbackList;
   }
 
+  @Override
+  public CandidateFeedbackDTO addCandidateFeedbackReply(String candidateId, String commentId,
+      String reply, String galaxyId) {
+    List<CandidateFeedbackReplyDTO> candidateFeedbackReply = new ArrayList<>();
+    JsonObject paramJSON = new JsonObject();
+    paramJSON.addProperty("reply", reply);
+    paramJSON.addProperty("created_by", galaxyId);
+
+    String jsonString =
+        restUtil.postMethod(Constant.CANDIDATE_FEEDBACK_REPLY_URL.replace("{commentId}", commentId)
+            .replace(Constant.CANDIDATE_ID, candidateId), paramJSON.toString(), null);
+    log.debug("Json String response after add candidate Feedback reply " + jsonString);
+    if (jsonString.contains("invalid")) {
+      throw new APIException("Invalid candidateId or commentId");
+    }
+
+
+    String replyId = new Gson().fromJson(jsonString, CandidateFeedbackDTO.class).getId();
+    CandidateFeedbackDTO candidateFeedbackDTO =
+        getCandidateFeedbackByCommentId(candidateId, commentId);
+
+    CandidateFeedbackReplyDTO candidateFeedbackReplyDTO = candidateFeedbackDTO.getReplies().stream()
+        .filter(e -> e.getId().equals(replyId)).findFirst().orElse(new CandidateFeedbackReplyDTO());
+
+    candidateFeedbackReply.add(candidateFeedbackReplyDTO);
+    candidateFeedbackDTO.setReplies(candidateFeedbackReply);
+    return candidateFeedbackDTO;
+  }
+
+  @Override
+  public CandidateFeedbackDTO getCandidateFeedbackByCommentId(String candidateId,
+      String commentId) {
+    List<CandidateFeedbackDTO> candidateFeedbackList = getCandidateFeedback(candidateId);
+    return candidateFeedbackList.stream().filter(e -> e.getId().equals(commentId)).findFirst()
+        .orElse(new CandidateFeedbackDTO());
+  }
 }

@@ -82,6 +82,8 @@ public class Constant {
   public static final String CANDIDATE_URL = "/candidates/{candidateId}/activity";
   public static final String CANDIDATE_FEEDBACK_URL =
       "/candidate-suite/candidates/{candidateId}/candidate-feedback";
+  public static final String CANDIDATE_FEEDBACK_REPLY_URL =
+      "/candidate-suite/candidate-feedback/{commentId}/{candidateId}/reply";
 
   public static final String CONTACT_PROFILE_IMAGE_URL =
       "/clientsuite/contacts/{contactId}/profile-image";
@@ -166,6 +168,12 @@ public class Constant {
   public static final String PUBLISHED_BIO = "publishedBio";
   public static final String WORK_EMAIL = "workEmail";
   public static final String RESUME = "Resume";
+  public static final String COMMENTS = "comments";
+  public static final String CREATED_BY = "createdBy";
+  public static final String CREATED_AT = "createdAt";
+  public static final String UPDATED_AT = "updatedAt";
+  public static final String REPLY = "reply";
+  public static final String REPLIES = "replies";
 
 
   // google capcha
@@ -181,7 +189,7 @@ public class Constant {
   public static final String SEARCH_FILTER = "searchFilter";
   public static final String CANDIDATE_FILTER = "candidateFilter";
   public static final String CANDIDATE_FEEDBACK_FILTER = "candidateFeedbackFilter";
-  public static final String CANDIDATE_FEEDBACK_REPLY_FILTER = "candidateFeedbackRepliesFilter";
+  public static final String CANDIDATE_FEEDBACK_REPLY_FILTER = "candidateFeedbackReplyFilter";
 
   // messages
   public static final String DATA_SAVED = "Data saved successfully";

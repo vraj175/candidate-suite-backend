@@ -18,4 +18,9 @@ public interface CandidateService {
   public String addCandidateFeedback(String candidateId, String comments, String galaxyId, HttpServletRequest request);
 
   public List<CandidateFeedbackDTO> getCandidateFeedback(String candidateId);
+
+  public CandidateFeedbackDTO addCandidateFeedbackReply(String candidateId, String commentId,
+      String reply, String galaxyId);
+
+  public CandidateFeedbackDTO getCandidateFeedbackByCommentId(String candidateId, String commentId);
 }

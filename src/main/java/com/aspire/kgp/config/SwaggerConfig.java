@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import com.aspire.kgp.constant.Constant;
-import com.aspire.kgp.dto.CandidateFeedbackDTO;
+import com.aspire.kgp.dto.CandidateFeedbackRequestDTO;
 import com.aspire.kgp.dto.InviteDTO;
 import com.aspire.kgp.dto.NotificationSchedulerDTO;
 import com.aspire.kgp.dto.NotificationsDTO;
@@ -102,6 +102,9 @@ public class SwaggerConfig {
         .path(Constant.BASE_API_URL + "/candidates/candidate-feedback",
             getPathItem(getCandidateFeedbackDTOSchema(), "Candidate", "Add Candidate Feedback", "",
                 getCandidateFeedbackResponseContent()))
+        .path(Constant.BASE_API_URL + "/candidates/candidate-feedback/reply",
+            getPathItem(getCandidateFeedbackReplyDTOSchema(), "Candidate",
+                "Add Candidate Feedback Reply", "", getCandidateFeedbackReplyResponseContent()))
         .addSecurityItem(
             new SecurityRequirement().addList(Constant.API_KEY).addList(Constant.AUTHORIZATION));
   }
@@ -199,12 +202,23 @@ public class SwaggerConfig {
 
   /* Schema For add candidate Feedback */
   private Schema<?> getCandidateFeedbackDTOSchema() {
-    Schema<CandidateFeedbackDTO> candidateFeedbackSchema = new Schema<>();
-    CandidateFeedbackDTO feedback = new CandidateFeedbackDTO();
+    Schema<CandidateFeedbackRequestDTO> candidateFeedbackRequestSchema = new Schema<>();
+    CandidateFeedbackRequestDTO feedback = new CandidateFeedbackRequestDTO();
     feedback.setComments(Constant.STRING);
     feedback.setCandidateId(Constant.STRING);
-    candidateFeedbackSchema.addEnumItemObject(feedback);
-    return candidateFeedbackSchema;
+    candidateFeedbackRequestSchema.addEnumItemObject(feedback);
+    return candidateFeedbackRequestSchema;
+  }
+
+  /* Schema For add candidate Feedback Reply */
+  private Schema<?> getCandidateFeedbackReplyDTOSchema() {
+    Schema<CandidateFeedbackRequestDTO> candidateFeedbackRequestSchema = new Schema<>();
+    CandidateFeedbackRequestDTO feedbackReply = new CandidateFeedbackRequestDTO();
+    feedbackReply.setCandidateId(Constant.STRING);
+    feedbackReply.setCommentId(Constant.STRING);
+    feedbackReply.setReply(Constant.STRING);
+    candidateFeedbackRequestSchema.addEnumItemObject(feedbackReply);
+    return candidateFeedbackRequestSchema;
   }
 
   /*
@@ -233,6 +247,16 @@ public class SwaggerConfig {
     Content responseContent = new Content();
     return responseContent.addMediaType(Constant.CONTENT_TYPE_JSON,
         new MediaType().schema(new Schema<>().example("{\"id\": \"string\"}")));
+  }
+
+  /*
+   * Used For candidate Feedback response content show on UI
+   */
+  private Content getCandidateFeedbackReplyResponseContent() {
+    Content responseContent = new Content();
+    return responseContent.addMediaType(Constant.CONTENT_TYPE_JSON,
+        new MediaType().schema(new Schema<>().example(
+            "{\"id\": \"string\",\"candidateId\": \"string\",\"comments\": \"string\",\"createdBy\": \"string\",\"createdAt\": \"string\",\"updatedAt\": \"string\",\"replies\": [{\"id\": \"string\",\"candidateId\": \"string\",\"commentId\": \"string\",\"reply\": \"string\",\"createdBy\": \"string\",\"createdAt\": \"string\",\"updatedAt\": \"string\"}]}")));
   }
 
   /*
