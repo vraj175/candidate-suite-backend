@@ -2,10 +2,13 @@ package com.aspire.kgp.dto;
 
 import java.util.List;
 
-public class CandidateFeedbackDTO extends CandidateFeedbackBaseDTO {
+import com.fasterxml.jackson.annotation.JsonFilter;
+
+@JsonFilter("candidateFeedbackFilter")
+public class CandidateFeedbackDTO extends CandidateFeedbackReplyDTO {
 
   private String comments;
-  private List<CandidateFeedbackRepliesDTO> replies;
+  private List<CandidateFeedbackReplyDTO> replies;
 
   public String getComments() {
     return comments;
@@ -15,18 +18,20 @@ public class CandidateFeedbackDTO extends CandidateFeedbackBaseDTO {
     this.comments = comments;
   }
 
-  public List<CandidateFeedbackRepliesDTO> getReplies() {
+  public List<CandidateFeedbackReplyDTO> getReplies() {
     return replies;
   }
 
-  public void setReplies(List<CandidateFeedbackRepliesDTO> replies) {
+  public void setReplies(List<CandidateFeedbackReplyDTO> replies) {
     this.replies = replies;
   }
 
   @Override
   public String toString() {
-    return "CandidateFeedbackDTO [comments=" + comments + ", replies=" + replies + ", getId()="
-        + getId() + ", getCandidateId()=" + getCandidateId() + ", getCreatedBy()=" + getCreatedBy()
-        + ", getCreatedAt()=" + getCreatedAt() + ", getUpdatedAt()=" + getUpdatedAt() + "]";
+    return "CandidateFeedbackDTO [comments=" + comments + ", replies=" + replies + ", getReplyId()="
+        + getReplyId() + ", getId()=" + getId() + ", getCandidateId()=" + getCandidateId()
+        + ", getCreatedBy()=" + getCreatedBy() + ", getCreatedAt()=" + getCreatedAt()
+        + ", getUpdatedAt()=" + getUpdatedAt() + ", getCommentId()=" + getCommentId()
+        + ", getReply()=" + getReply() + "]";
   }
 }
