@@ -23,7 +23,7 @@ public interface MailService {
 
   public String getFeedbackEmailContent(HttpServletRequest request, UserDTO userDTO,
       Map<String, String> staticContentsMap, String candidateFeedbackEmailTemplate,
-      String partnerName, Map<String, String> paramRequest)
+      String partnerName, Map<String, String> paramRequest, Boolean isReplyFeedback)
       throws IOException, TemplateException;
 
 }

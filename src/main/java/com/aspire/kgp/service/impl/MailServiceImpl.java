@@ -77,7 +77,8 @@ public class MailServiceImpl implements MailService {
   @Override
   public String getFeedbackEmailContent(HttpServletRequest request, UserDTO userDTO,
       Map<String, String> staticContentsMap, String candidateFeedbackEmailTemplate,
-      String partnerName, Map<String, String> paramRequest) throws IOException, TemplateException {
+      String partnerName, Map<String, String> paramRequest, Boolean isReplyFeedback)
+      throws IOException, TemplateException {
     log.info("starting getEmailContent for Email feedback");
     StringWriter stringWriter = new StringWriter();
     Map<String, Object> model = new HashMap<>();
@@ -90,12 +91,12 @@ public class MailServiceImpl implements MailService {
     model.put("companyName", paramRequest.get("companyName"));
     model.put("comment", paramRequest.get("feedback"));
     model.put("staticContentsMap", staticContentsMap);
-    model.put("isReply", Boolean.TRUE);
-    model.put("reply", "Testing");
+    model.put("isReply", isReplyFeedback);
+    model.put("reply", paramRequest.get("reply"));
     model.put("replyButtonUrl",
         CommonUtil.getServerUrl(request) + request.getContextPath() + "/candidate-status/"
-            + paramRequest.get("candidateId ") + "/" + paramRequest.get("searchId") + "/"
-            + paramRequest.get("searchName ") + "/" + paramRequest.get("contactId") + "/" + "true"
+            + paramRequest.get("candidateId") + "/" + paramRequest.get("searchId") + "/"
+            + paramRequest.get("searchName") + "/" + paramRequest.get("contactId") + "/" + "true"
             + "/" + paramRequest.get("commentId"));
     configuration.getTemplate(candidateFeedbackEmailTemplate).process(model, stringWriter);
     log.info("ending getEmailContent for Email feedback");

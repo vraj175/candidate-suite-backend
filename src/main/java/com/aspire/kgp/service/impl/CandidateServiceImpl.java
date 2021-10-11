@@ -24,6 +24,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.configurationprocessor.json.JSONException;
+import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -170,94 +172,98 @@ public class CandidateServiceImpl implements CandidateService {
     log.info("Saving new feedback");
     JsonObject paramJSON = new JsonObject();
     HashMap<String, String> paramRequest = new HashMap<>();
-    String feedbackId;
-    String feedback = "";
-    String candidateName = "";
-    String searchId = "";
-    String searchName = "";
-    String companyName = "";
-    String contactId = "";
+    String feedbackId = "";
+    String reply = "";
+    boolean isReplyFeedback = Boolean.FALSE;
     paramJSON.addProperty("createdBy", galaxyId);
     paramJSON.addProperty("comments", comments);
+    Set<String> kgpPartnerEmailList = new HashSet<>();
+    CandidateDTO apiResponse = getCandidateDetails(candidateId);
     try {
+      kgpPartnerEmailList =
+          teamMemberList(apiResponse.getSearch().getPartners(), kgpPartnerEmailList);
+      kgpPartnerEmailList =
+          teamMemberList(apiResponse.getSearch().getRecruiters(), kgpPartnerEmailList);
+      kgpPartnerEmailList =
+          teamMemberList(apiResponse.getSearch().getResearchers(), kgpPartnerEmailList);
+      kgpPartnerEmailList = teamMemberList(apiResponse.getSearch().getEas(), kgpPartnerEmailList);
+      paramRequest.put("feedback", comments);
+      paramRequest.put("candidateName",
+          apiResponse.getContact().getFirstName() + " " + apiResponse.getContact().getLastName());
+      paramRequest.put("searchId", apiResponse.getSearch().getId());
+      paramRequest.put("searchName", apiResponse.getSearch().getJobTitle());
+      paramRequest.put("companyName", apiResponse.getSearch().getCompany().getName());
+      paramRequest.put("contactId", "c4ca9165-75de-404d-83f9-20698cf71369");
+      paramRequest.put("candidateId", candidateId);
+      if (CommonUtil.checkNullString(comments)
+          || CommonUtil.checkNullString(paramRequest.get("candidateName"))
+          || CommonUtil.checkNullString(paramRequest.get("searchId"))
+          || CommonUtil.checkNullString(paramRequest.get("searchName"))
+          || CommonUtil.checkNullString(paramRequest.get("companyName"))
+          || CommonUtil.checkNullString(paramRequest.get("contactId"))
+          || CommonUtil.checkNullString(paramRequest.get("candidateId"))) {
+        return "parameters are not valid to sent feedback mail";
+      }
       feedbackId = restUtil.postMethod(
           Constant.CANDIDATE_FEEDBACK_URL.replace(Constant.CANDIDATE_ID, candidateId),
           paramJSON.toString(), null);
+      if (feedbackId != null && feedbackId.contains("id")) {
+        log.info("Feedback added succefully with commentId:- " + feedbackId);
+        if (feedbackId.contains("id")) {
+          JSONObject jsonObject = new JSONObject(feedbackId);
+          paramRequest.put("commentId", jsonObject.get("id").toString());
+          CandidateFeedbackDTO candidateFeedbackDTO = null;
+          candidateFeedbackDTO =
+              getCandidateFeedbackByCommentId(candidateId, paramRequest.get("commentId"));
+          if (candidateFeedbackDTO != null) {
+            reply = candidateFeedbackDTO.getComments();
+            isReplyFeedback = Boolean.TRUE;
+          }
+          paramRequest.put("reply", reply);
+        }
+      }
     } catch (APIException e2) {
       log.error("error while adding feedback" + e2);
       throw new APIException("error while add feedback");
+    } catch (JsonSyntaxException e) {
+      log.error("oops ! invalid json");
+      throw new JsonSyntaxException("error while get team member");
+    } catch (JSONException e) {
+      log.error("oops ! invalid json");
+      throw new JsonSyntaxException("error while Parsing JSON");
     }
-    if (feedbackId != null && !feedbackId.isEmpty()) {
-      CandidateDTO apiResponse = getCandidateDetails(candidateId);
-      Set<String> kgpPartnerEmailList = new HashSet<>();
-      try {
-        log.info("Feedback added succefully with commentId:- " + feedbackId);
-        if (feedbackId.contains("id")) {
-          kgpPartnerEmailList =
-              teamMemberList(apiResponse.getSearch().getPartners(), kgpPartnerEmailList);
-          kgpPartnerEmailList =
-              teamMemberList(apiResponse.getSearch().getRecruiters(), kgpPartnerEmailList);
-          kgpPartnerEmailList =
-              teamMemberList(apiResponse.getSearch().getResearchers(), kgpPartnerEmailList);
-          kgpPartnerEmailList =
-              teamMemberList(apiResponse.getSearch().getEas(), kgpPartnerEmailList);
-
-          feedback = comments;
-          candidateName =
-              apiResponse.getContact().getFirstName() + apiResponse.getContact().getLastName();
-          searchId = apiResponse.getSearch().getId();
-          searchName = apiResponse.getSearch().getJobTitle();
-          companyName = apiResponse.getSearch().getCompany().getName();
-          contactId = apiResponse.getContactId();
-          paramRequest.put(feedback, comments);
-          paramRequest.put(candidateName,
-              apiResponse.getContact().getFirstName() + apiResponse.getContact().getLastName());
-          paramRequest.put(searchId, comments);
-          paramRequest.put(searchName, comments);
-          paramRequest.put(companyName, comments);
-          paramRequest.put(contactId, comments);
-          paramRequest.put("candidateId", candidateId);
-          paramRequest.put("commentId", feedbackId);
-        }
-      } catch (JsonSyntaxException e) {
-        log.error("oops ! invalid json");
-        throw new JsonSyntaxException("error while get team member");
-      } catch (APIException e1) {
-        log.error("error while get kgp team member.");
-        throw new APIException("error while get kgp team member");
+    try {
+      for (String kgpTeamMeberDetails : kgpPartnerEmailList) {
+        log.info("Partner Email : " + kgpTeamMeberDetails);
+        sendClientFeedbackMail(kgpTeamMeberDetails.split("##")[0],
+            kgpTeamMeberDetails.split("##")[1], paramRequest, request, isReplyFeedback);
       }
-      try {
-        for (String kgpTeamMeberDetails : kgpPartnerEmailList) {
-          log.info("Partner Email : " + kgpTeamMeberDetails);
-          sendClientFeedbackMail(kgpTeamMeberDetails.split("##")[0],
-              kgpTeamMeberDetails.split("##")[1], paramRequest, request);
-        }
-      } catch (Exception e) {
-        log.info(e);
-        throw new APIException("Error in send feedback email");
-      }
+    } catch (Exception e) {
+      log.info(e);
+      throw new APIException("Error in send feedback email");
     }
     return feedbackId;
   }
 
 
   private void sendClientFeedbackMail(String email, String partnerName,
-      HashMap<String, String> paramRequest, HttpServletRequest request) {
+      HashMap<String, String> paramRequest, HttpServletRequest request, Boolean isReplyFeedback) {
     log.info("sending client feedback email");
     String locate = "en_US";
     email = "abhishek.jaiswal@aspiresoftserv.com";
-//    User user = (User) request.getAttribute("user");
+    // User user = (User) request.getAttribute("user");
     UserDTO userDTO = new UserDTO();
     userDTO.setToken(generateJwtToken(email, email));
     userDTO.setEmail(email);
-//    userDTO.setFirstName(user.get);
+    // userDTO.setFirstName(user.get);
     try {
       Map<String, String> staticContentsMap =
           StaticContentsMultiLanguageUtil.getStaticContentsMap(locate, Constant.EMAILS_CONTENT_MAP);
       String mailSubject = staticContentsMap.get("candidate.suite.feedback.email.subject");
       mailService.sendEmail(email, null, mailSubject + " " + partnerName,
           mailService.getFeedbackEmailContent(request, userDTO, staticContentsMap,
-              Constant.CANDIDATE_FEEDBACK_EMAIL_TEMPLATE, partnerName, paramRequest),
+              Constant.CANDIDATE_FEEDBACK_EMAIL_TEMPLATE, partnerName, paramRequest,
+              isReplyFeedback),
           null);
     } catch (Exception e) {
       log.info(e);
