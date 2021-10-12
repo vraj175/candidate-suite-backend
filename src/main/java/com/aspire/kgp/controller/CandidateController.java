@@ -1,4 +1,4 @@
-package com.aspire.kgp.controller;
+ackage com.aspire.kgp.controller;
 
 import java.util.List;
 
@@ -49,13 +49,7 @@ public class CandidateController {
   @GetMapping("/candidates/{candidateId}")
   @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK",
       content = @Content(mediaType = "application/json", schema = @Schema(type = "CandidateDTO",
-          example = "{\"contact\": {\"id\": \"string\",\"firstName\": \"string\",\"lastName\": \"string\"}"
-              + ",\"search\": {\"id\": \"string\",\"jobTitle\": \"string\",\"jobNumber\": \"string\","
-              + "\"company\": {\"id\": \"string\",\"name\": \"string\"},"
-              + "\"partners\": [{\"id\": \"string\",\"firstName\": \"string\",\"lastName\": \"string\",\"title\": \"string\"}],"
-              + "\"recruiters\": [{\"id\": \"string\",\"firstName\": \"string\",\"lastName\": \"string\",\"title\": \"string\"}],"
-              + "\"researchers\": [{\"id\": \"string\",\"firstName\": \"string\",\"lastName\": \"string\",\"title\": \"string\"}],"
-              + "\"eas\": [{\"id\": \"string\",\"firstName\": \"string\",\"lastName\": \"string\",\"title\": \"string\"}]}}")))})
+          example = "{\"contact\": {\"id\": \"string\",\"firstName\": \"string\",\"lastName\": \"string\"},\"search\": {\"id\": \"string\",\"jobTitle\": \"string\",\"jobNumber\": \"string\",\"company\": {\"id\": \"string\",\"name\": \"string\"},\"partners\": [{\"id\": \"string\",\"firstName\": \"string\",\"lastName\": \"string\"}],\"recruiters\": [{\"id\": \"string\",\"firstName\": \"string\",\"lastName\": \"string\"}],\"researchers\": [{\"id\": \"string\",\"firstName\": \"string\",\"lastName\": \"string\"}],\"eas\": [{\"id\": \"string\",\"firstName\": \"string\",\"lastName\": \"string\"}]}}")))})
   public MappingJacksonValue getCandidateDetails(@PathVariable("candidateId") String candidateId) {
     log.info("Get Candidate Details API call, Request Param CandidateId : " + candidateId);
     CandidateDTO candidateDTO = service.getCandidateDetails(candidateId);
@@ -112,10 +106,10 @@ public class CandidateController {
     SimpleBeanPropertyFilter companyFilter =
         SimpleBeanPropertyFilter.filterOutAllExcept(Constant.ID, "name");
 
-    SimpleBeanPropertyFilter contactFilter =
-        SimpleBeanPropertyFilter.filterOutAllExcept(Constant.ID, Constant.FIRST_NAME,
-            Constant.LAST_NAME, Constant.CURRENT_JOB_TITLE, Constant.MOBILE_PHONE,
-            Constant.PUBLISHED_BIO, Constant.COMPANY, Constant.LINKEDIN_URL, Constant.COUNTRY);
+    SimpleBeanPropertyFilter contactFilter = SimpleBeanPropertyFilter.filterOutAllExcept(
+        Constant.ID, Constant.FIRST_NAME, Constant.LAST_NAME, Constant.CURRENT_JOB_TITLE,
+        Constant.MOBILE_PHONE, Constant.PUBLISHED_BIO, Constant.COMPANY, Constant.LINKEDIN_URL,
+        Constant.COUNTRY, "state", "city");
 
     FilterProvider filters =
         new SimpleFilterProvider().addFilter(Constant.CANDIDATE_FILTER, candidateFilter)
@@ -151,11 +145,11 @@ public class CandidateController {
     List<CandidateFeedbackDTO> candidateFeedbackList = service.getCandidateFeedback(candidateId);
 
 
-    SimpleBeanPropertyFilter candidateFeedbackFilter =
-        SimpleBeanPropertyFilter.filterOutAllExcept(Constant.ID, "candidateId", Constant.COMMENTS,
-            Constant.CREATED_BY, Constant.CREATED_AT, Constant.UPDATED_AT, Constant.REPLIES);
+    SimpleBeanPropertyFilter candidateFeedbackFilter = SimpleBeanPropertyFilter.filterOutAllExcept(
+        Constant.ID, Constant.CANDIDATE_ID, Constant.COMMENTS, Constant.CREATED_BY,
+        Constant.CREATED_AT, Constant.UPDATED_AT, Constant.REPLIES);
     SimpleBeanPropertyFilter candidateFeedbackReplyFilter =
-        SimpleBeanPropertyFilter.filterOutAllExcept(Constant.ID, "candidateId", "commentId",
+        SimpleBeanPropertyFilter.filterOutAllExcept(Constant.ID, Constant.CANDIDATE_ID, "commentId",
             Constant.REPLY, Constant.CREATED_BY, Constant.CREATED_AT, Constant.UPDATED_AT);
 
     FilterProvider filters = new SimpleFilterProvider()
@@ -176,9 +170,8 @@ public class CandidateController {
     User user = (User) request.getAttribute("user");
     log.info("Candidate Feedback SAVE API call, Request Param CandidateId : "
         + candidateFeedback.getCandidateId());
-    boolean isReplyFeedback = Boolean.FALSE;
     String id = service.addCandidateFeedback(candidateFeedback.getCandidateId(),
-        candidateFeedback.getComments(), user.getGalaxyId(), request, isReplyFeedback, null);
+        candidateFeedback.getComments(), user.getGalaxyId(), request, false, null);
     log.info("Successfully ADD Candidate Feedback and it's id: " + id);
     return id;
   }
@@ -193,11 +186,11 @@ public class CandidateController {
     CandidateFeedbackDTO candidateFeedback = service.addCandidateFeedbackReply(
         candidateFeedReqback.getCandidateId(), candidateFeedReqback.getCommentId(),
         candidateFeedReqback.getReply(), user.getGalaxyId(), request);
-    SimpleBeanPropertyFilter candidateFeedbackFilter =
-        SimpleBeanPropertyFilter.filterOutAllExcept(Constant.ID, "candidateId", Constant.COMMENTS,
-            Constant.CREATED_BY, Constant.CREATED_AT, Constant.UPDATED_AT, Constant.REPLIES);
+    SimpleBeanPropertyFilter candidateFeedbackFilter = SimpleBeanPropertyFilter.filterOutAllExcept(
+        Constant.ID, Constant.CANDIDATE_ID, Constant.COMMENTS, Constant.CREATED_BY,
+        Constant.CREATED_AT, Constant.UPDATED_AT, Constant.REPLIES);
     SimpleBeanPropertyFilter candidateFeedbackReplyFilter =
-        SimpleBeanPropertyFilter.filterOutAllExcept(Constant.ID, "candidateId", "commentId",
+        SimpleBeanPropertyFilter.filterOutAllExcept(Constant.ID, Constant.CANDIDATE_ID, "commentId",
             Constant.REPLY, Constant.CREATED_BY, Constant.CREATED_AT, Constant.UPDATED_AT);
 
     FilterProvider filters = new SimpleFilterProvider()
@@ -208,4 +201,3 @@ public class CandidateController {
     mapping.setFilters(filters);
     return mapping;
   }
-}
