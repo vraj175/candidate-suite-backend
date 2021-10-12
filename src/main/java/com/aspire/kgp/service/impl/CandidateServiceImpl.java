@@ -67,8 +67,8 @@ public class CandidateServiceImpl implements CandidateService {
 
   @Override
   public CandidateDTO getCandidateDetails(String candidateId) {
-    String apiResponse =
-        restUtil.newGetMethod(Constant.CONDIDATE_URL.replace(Constant.CANDIDATE_ID, candidateId));
+    String apiResponse = restUtil
+        .newGetMethod(Constant.CONDIDATE_URL.replace(Constant.CANDIDATE_ID_BRACES, candidateId));
     JsonObject json = (JsonObject) JsonParser.parseString(apiResponse);
     CandidateDTO candidateDTO =
         new Gson().fromJson(json.get("candidate"), new TypeToken<CandidateDTO>() {
@@ -268,15 +268,15 @@ public class CandidateServiceImpl implements CandidateService {
     paramJSON.addProperty("createdBy", galaxyId);
     paramJSON.addProperty("comments", comments);
     return restUtil.postMethod(
-        Constant.CANDIDATE_FEEDBACK_URL.replace(Constant.CANDIDATE_ID, candidateId),
+        Constant.CANDIDATE_FEEDBACK_URL.replace(Constant.CANDIDATE_ID_BRACES, candidateId),
         paramJSON.toString(), null);
 
   }
 
   @Override
   public List<CandidateFeedbackDTO> getCandidateFeedback(String candidateId) {
-    String apiResponse = restUtil
-        .newGetMethod(Constant.CANDIDATE_FEEDBACK_URL.replace(Constant.CANDIDATE_ID, candidateId));
+    String apiResponse = restUtil.newGetMethod(
+        Constant.CANDIDATE_FEEDBACK_URL.replace(Constant.CANDIDATE_ID_BRACES, candidateId));
     if (!apiResponse.contains("candidate_id")) {
       throw new APIException("Invalid Candidate Id");
     }
@@ -307,7 +307,7 @@ public class CandidateServiceImpl implements CandidateService {
 
     String jsonString =
         restUtil.postMethod(Constant.CANDIDATE_FEEDBACK_REPLY_URL.replace("{commentId}", commentId)
-            .replace(Constant.CANDIDATE_ID, candidateId), paramJSON.toString(), null);
+            .replace(Constant.CANDIDATE_ID_BRACES, candidateId), paramJSON.toString(), null);
     log.debug("Json String response after add candidate Feedback reply " + jsonString);
     if (jsonString.contains("invalid")) {
       throw new APIException("Invalid candidateId or commentId");

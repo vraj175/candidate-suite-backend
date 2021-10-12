@@ -106,10 +106,10 @@ public class CandidateController {
     SimpleBeanPropertyFilter companyFilter =
         SimpleBeanPropertyFilter.filterOutAllExcept(Constant.ID, "name");
 
-    SimpleBeanPropertyFilter contactFilter =
-        SimpleBeanPropertyFilter.filterOutAllExcept(Constant.ID, Constant.FIRST_NAME,
-            Constant.LAST_NAME, Constant.CURRENT_JOB_TITLE, Constant.MOBILE_PHONE,
-            Constant.PUBLISHED_BIO, Constant.COMPANY, Constant.LINKEDIN_URL, Constant.COUNTRY, "state",  "city");
+    SimpleBeanPropertyFilter contactFilter = SimpleBeanPropertyFilter.filterOutAllExcept(
+        Constant.ID, Constant.FIRST_NAME, Constant.LAST_NAME, Constant.CURRENT_JOB_TITLE,
+        Constant.MOBILE_PHONE, Constant.PUBLISHED_BIO, Constant.COMPANY, Constant.LINKEDIN_URL,
+        Constant.COUNTRY, "state", "city");
 
     FilterProvider filters =
         new SimpleFilterProvider().addFilter(Constant.CANDIDATE_FILTER, candidateFilter)
@@ -152,11 +152,11 @@ public class CandidateController {
     List<CandidateFeedbackDTO> candidateFeedbackList = service.getCandidateFeedback(candidateId);
 
 
-    SimpleBeanPropertyFilter candidateFeedbackFilter =
-        SimpleBeanPropertyFilter.filterOutAllExcept(Constant.ID, "candidateId", Constant.COMMENTS,
-            Constant.CREATED_BY, Constant.CREATED_AT, Constant.UPDATED_AT, Constant.REPLIES);
+    SimpleBeanPropertyFilter candidateFeedbackFilter = SimpleBeanPropertyFilter.filterOutAllExcept(
+        Constant.ID, Constant.CANDIDATE_ID, Constant.COMMENTS, Constant.CREATED_BY,
+        Constant.CREATED_AT, Constant.UPDATED_AT, Constant.REPLIES);
     SimpleBeanPropertyFilter candidateFeedbackReplyFilter =
-        SimpleBeanPropertyFilter.filterOutAllExcept(Constant.ID, "candidateId", "commentId",
+        SimpleBeanPropertyFilter.filterOutAllExcept(Constant.ID, Constant.CANDIDATE_ID, "commentId",
             Constant.REPLY, Constant.CREATED_BY, Constant.CREATED_AT, Constant.UPDATED_AT);
 
     FilterProvider filters = new SimpleFilterProvider()
@@ -193,11 +193,11 @@ public class CandidateController {
     CandidateFeedbackDTO candidateFeedback = service.addCandidateFeedbackReply(
         candidateFeedReqback.getCandidateId(), candidateFeedReqback.getCommentId(),
         candidateFeedReqback.getReply(), user.getGalaxyId());
-    SimpleBeanPropertyFilter candidateFeedbackFilter =
-        SimpleBeanPropertyFilter.filterOutAllExcept(Constant.ID, "candidateId", Constant.COMMENTS,
-            Constant.CREATED_BY, Constant.CREATED_AT, Constant.UPDATED_AT, Constant.REPLIES);
+    SimpleBeanPropertyFilter candidateFeedbackFilter = SimpleBeanPropertyFilter.filterOutAllExcept(
+        Constant.ID, Constant.CANDIDATE_ID, Constant.COMMENTS, Constant.CREATED_BY,
+        Constant.CREATED_AT, Constant.UPDATED_AT, Constant.REPLIES);
     SimpleBeanPropertyFilter candidateFeedbackReplyFilter =
-        SimpleBeanPropertyFilter.filterOutAllExcept(Constant.ID, "candidateId", "commentId",
+        SimpleBeanPropertyFilter.filterOutAllExcept(Constant.ID, Constant.CANDIDATE_ID, "commentId",
             Constant.REPLY, Constant.CREATED_BY, Constant.CREATED_AT, Constant.UPDATED_AT);
 
     FilterProvider filters = new SimpleFilterProvider()
