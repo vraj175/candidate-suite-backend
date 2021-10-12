@@ -201,3 +201,4 @@ public class CandidateController {
     mapping.setFilters(filters);
     return mapping;
   }
+}
