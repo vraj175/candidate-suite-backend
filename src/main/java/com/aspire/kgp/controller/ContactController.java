@@ -50,11 +50,12 @@ public class ContactController {
   @GetMapping("/contact/{contactId}")
   @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK",
       content = @Content(mediaType = "application/json", schema = @Schema(type = "ContactDTO",
-          example = "{\"workEmail\": \"string\",\"email\": \"string\",\"linkedinUrl\": \"string\",\"mobilePhone\": \"string\",\"currentJobTitle\": \"string\",\"company\": {\"id\": \"string\",\"name\": \"string\"},\"homePhone\": \"string\",\"baseSalary\": \"string\",\"targetBonusValue\": \"string\",\"equity\": \"string\",\"compensationExpectation\": \"string\",\"compensationNotes\": \"string\",\"jobHistory\": [{\"id\": \"string\",\"title\": \"string\",\"start_year\": \"string\",\"end_year\": \"string\",\"position\": \"string\",\"company\": {\"id\": \"string\",\"name\": \"string\"}}],\"educationDetails\": [{\"id\": \"string\",\"school_name\": \"string\",\"degree_name\": \"string\",\"major\": \"string\",\"degree_year\": \"string\",\"position\": \"string\"}], \"boardDetails\": [{\"id\": \"string\",\"title\": \"string\",\"startYear\": \"string\",\"endYear\": \"string\",\"position\": \"0\",\"company\": {\"id\": \"string\",\"name\": \"string\"},\"committee\": \"string\"}]}")))})
+          example = "{\"firstName\": \"string\",\"lastName\": \"string\",\"city\": \"string\",\"state\": \"string\",\"workEmail\": \"string\",\"email\": \"string\",\"linkedinUrl\": \"string\",\"mobilePhone\": \"string\",\"currentJobTitle\": \"string\",\"company\": {\"id\": \"string\",\"name\": \"string\"},\"homePhone\": \"string\",\"baseSalary\": \"string\",\"targetBonusValue\": \"string\",\"equity\": \"string\",\"compensationExpectation\": \"string\",\"compensationNotes\": \"string\",\"jobHistory\": [{\"id\": \"string\",\"title\": \"string\",\"start_year\": \"string\",\"end_year\": \"string\",\"position\": \"string\",\"company\": {\"id\": \"string\",\"name\": \"string\"}}],\"educationDetails\": [{\"id\": \"string\",\"school_name\": \"string\",\"degree_name\": \"string\",\"major\": \"string\",\"degree_year\": \"string\",\"position\": \"string\"}], \"boardDetails\": [{\"id\": \"string\",\"title\": \"string\",\"startYear\": \"string\",\"endYear\": \"string\",\"position\": \"0\",\"company\": {\"id\": \"string\",\"name\": \"string\"},\"committee\": \"string\"}]}")))})
   public MappingJacksonValue getCandidateDetails(@PathVariable("contactId") String contactId) {
     log.info("Get Contact Details API call, Request Param contactId: " + contactId);
     ContactDTO contactDTO = service.getContactDetails(contactId);
     SimpleBeanPropertyFilter contactFilter = SimpleBeanPropertyFilter.filterOutAllExcept(
+        Constant.FIRST_NAME, Constant.LAST_NAME, Constant.CITY, Constant.STATE,
         Constant.CURRENT_JOB_TITLE, Constant.COMPANY, Constant.MOBILE_PHONE, "homePhone",
         Constant.WORK_EMAIL, Constant.EMAIL, Constant.LINKEDIN_URL, "baseSalary",
         "targetBonusValue", "equity", "compensationExpectation", "compensationNotes", "jobHistory",
@@ -122,7 +123,8 @@ public class ContactController {
     return mapping;
   }
 
-  @Operation(summary = "upload resume for contact", description = "Document Type = Resume / Attechment")
+  @Operation(summary = "upload resume for contact",
+      description = "Document Type = Resume / Attechment")
   @PostMapping("/contact/{contactId}/upload-resumes")
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = Constant.FILE_UPLOADED_SUCCESSFULLY)})
@@ -240,8 +242,8 @@ public class ContactController {
   @Operation(summary = "Add New Contact")
   @PostMapping("/contact")
   @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK",
-      content = @Content(mediaType = "application/json", schema = @Schema(type = "ContactDTO",
-          example = "{\"id\": \"string\"}")))})
+      content = @Content(mediaType = "application/json",
+          schema = @Schema(type = "ContactDTO", example = "{\"id\": \"string\"}")))})
   public String addNewContact(@RequestBody String contactData) {
     return service.addNewContact(contactData);
   }

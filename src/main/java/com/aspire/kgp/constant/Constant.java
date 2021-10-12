@@ -108,7 +108,7 @@ public class Constant {
   public static final String IMAGE_UPLOAD_URL = "/contacts/{contactId}/image";
   public static final String UPDATE_CONTACT_REFERENCE_URL = "/contact/references/{referenceId}";
   public static final String CONTACT_ID = "{contactId}";
-  public static final String CANDIDATE_ID = "{candidateId}";
+  public static final String CANDIDATE_ID_BRACES = "{candidateId}";
 
   // Queries parameter
   public static final String INVALID_JSON_ERROR = "oops ! invalid json";
@@ -146,6 +146,8 @@ public class Constant {
   // Json Fields
   public static final String FIRST_NAME = "firstName";
   public static final String LAST_NAME = "lastName";
+  public static final String CITY = "city";
+  public static final String STATE = "state";
   public static final String ID = "id";
   public static final String CONTACT = "contact";
   public static final String SEARCH = "search";
@@ -174,6 +176,8 @@ public class Constant {
   public static final String UPDATED_AT = "updatedAt";
   public static final String REPLY = "reply";
   public static final String REPLIES = "replies";
+  public static final String CANDIDATE_ID = "candidateId";
+
 
 
   // google capcha
