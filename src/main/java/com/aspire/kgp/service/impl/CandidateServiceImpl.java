@@ -24,6 +24,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.configurationprocessor.json.JSONException;
+import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -225,7 +227,8 @@ public class CandidateServiceImpl implements CandidateService {
             paramJSON.toString(), null);
         if (feedbackId != null && feedbackId.contains("id")) {
           log.info("Feedback added succefully with commentId:- " + feedbackId);
-          paramRequest.put("commentId", feedbackId);
+          JSONObject commentIdObject = new JSONObject(feedbackId);
+          paramRequest.put("commentId", commentIdObject.get("id").toString());
         }
       }
     } catch (APIException e2) {
@@ -234,6 +237,9 @@ public class CandidateServiceImpl implements CandidateService {
     } catch (JsonSyntaxException e) {
       log.error("oops ! invalid json");
       throw new JsonSyntaxException("error while get team member");
+    } catch (JSONException e) {
+      log.error("oops ! invalid json");
+      throw new JsonSyntaxException("error while get comment Id");
     }
     try {
       for (String kgpTeamMeberDetails : kgpPartnerEmailList) {
