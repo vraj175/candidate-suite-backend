@@ -2,6 +2,7 @@ package com.aspire.kgp.service;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -20,8 +21,9 @@ public interface MailService {
       Map<String, String> staticContentsMap, String templateName)
       throws IOException, TemplateException;
 
-  public String getFeedbackEmailContent(HttpServletRequest request, UserDTO userDTO,
-      Map<String, String> staticContentsMap, String templateName)
+  public String getFeedbackEmailContent(HttpServletRequest request,
+      Map<String, String> staticContentsMap, String candidateFeedbackEmailTemplate,
+      String partnerName, Map<String, String> paramRequest, Boolean isReplyFeedback)
       throws IOException, TemplateException;
 
 }

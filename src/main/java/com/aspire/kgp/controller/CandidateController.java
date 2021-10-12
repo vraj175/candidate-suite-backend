@@ -1,4 +1,4 @@
-package com.aspire.kgp.controller;
+ackage com.aspire.kgp.controller;
 
 import java.util.List;
 
@@ -135,13 +135,6 @@ public class CandidateController {
     return service.getAthenaReport(pageSize, locale, contactId);
   }
 
-  @Operation(summary = "send mail for feedback", description = "")
-  @PostMapping(value = {"candidates/feedback/mail"})
-  public ResponseEntity<Object> saveFeedbackAndSendmail(HttpServletRequest resourceRequest) {
-    log.info("Send feeback mail API");
-    return service.saveFeedbackAndSendmail(resourceRequest);
-  }
-
   @Operation(summary = "Get Candidate Feedback")
   @GetMapping(value = {"/candidates/{candidateId}/candidate-feedback"})
   @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK",
@@ -178,7 +171,7 @@ public class CandidateController {
     log.info("Candidate Feedback SAVE API call, Request Param CandidateId : "
         + candidateFeedback.getCandidateId());
     String id = service.addCandidateFeedback(candidateFeedback.getCandidateId(),
-        candidateFeedback.getComments(), user.getGalaxyId());
+        candidateFeedback.getComments(), user.getGalaxyId(), request, false, null);
     log.info("Successfully ADD Candidate Feedback and it's id: " + id);
     return id;
   }
@@ -192,7 +185,7 @@ public class CandidateController {
         + candidateFeedReqback.getCandidateId() + " Created By: " + user.getGalaxyId());
     CandidateFeedbackDTO candidateFeedback = service.addCandidateFeedbackReply(
         candidateFeedReqback.getCandidateId(), candidateFeedReqback.getCommentId(),
-        candidateFeedReqback.getReply(), user.getGalaxyId());
+        candidateFeedReqback.getReply(), user.getGalaxyId(), request);
     SimpleBeanPropertyFilter candidateFeedbackFilter = SimpleBeanPropertyFilter.filterOutAllExcept(
         Constant.ID, Constant.CANDIDATE_ID, Constant.COMMENTS, Constant.CREATED_BY,
         Constant.CREATED_AT, Constant.UPDATED_AT, Constant.REPLIES);
@@ -208,4 +201,3 @@ public class CandidateController {
     mapping.setFilters(filters);
     return mapping;
   }
-}

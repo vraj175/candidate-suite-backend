@@ -42,7 +42,6 @@ public class MailServiceImpl implements MailService {
       List<Object> attachments) throws MessagingException, UnsupportedEncodingException {
     MimeMessage mimeMessage = mailSender.createMimeMessage();
     MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, true);
-
     mimeMessageHelper.setSubject(mailSubject);
     mimeMessageHelper.setFrom(new InternetAddress(Constant.FROM_MAIL, Constant.SENDER_NAME));
     mimeMessageHelper.setTo(mailTo);
@@ -76,25 +75,30 @@ public class MailServiceImpl implements MailService {
   }
 
   @Override
-  public String getFeedbackEmailContent(HttpServletRequest request, UserDTO userDTO,
-      Map<String, String> staticContentsMap, String templateName)
+  public String getFeedbackEmailContent(HttpServletRequest request,
+      Map<String, String> staticContentsMap, String candidateFeedbackEmailTemplate,
+      String partnerName, Map<String, String> paramRequest, Boolean isReplyFeedback)
       throws IOException, TemplateException {
-    log.info("starting getEmailContent for feedback");
+    log.info("starting getEmailContent for Email feedback");
     StringWriter stringWriter = new StringWriter();
     Map<String, Object> model = new HashMap<>();
     model.put("serverUrl", CommonUtil.getServerUrl(request) + request.getContextPath());
-    model.put("clientName", "Pratik Patel");
-    model.put("partnerName", "Poorav Solanki");
-    model.put("searchName", "Full Stack Developer & Analyzer");
-    model.put("clientContactName", "Abhishek's ");
-    model.put("candidateName", "Abhishek Jaiswal");
-    model.put("companyName", "zAspire Software Solutions");
-    model.put("comment", " Feedback added By Abhishek Jaiswal");
+    model.put("clientName", paramRequest.get("clientName"));
+    model.put("partnerName", partnerName);
+    model.put("searchName", paramRequest.get("searchName"));
+    model.put("candidateName", paramRequest.get("candidateName"));
+    model.put("companyName", paramRequest.get("companyName"));
+    model.put("comment", paramRequest.get("feedback"));
     model.put("staticContentsMap", staticContentsMap);
-    model.put("isReplyAdded", "true");
-    model.put("reply", "Hi THere Replying here.");
-    configuration.getTemplate(templateName).process(model, stringWriter);
-    log.info("ending getEmailContent for feedback");
+    model.put("isReplyAdded", isReplyFeedback.toString());
+    model.put("reply", paramRequest.get("reply"));
+    model.put("replyButtonUrl",
+        CommonUtil.getServerUrl(request) + request.getContextPath() + "/candidate-status/"
+            + paramRequest.get("candidateId") + "/" + paramRequest.get("searchId") + "/"
+            + paramRequest.get("searchName") + "/" + paramRequest.get("contactId") + "/" + "true"
+            + "/" + paramRequest.get("commentId"));
+    configuration.getTemplate(candidateFeedbackEmailTemplate).process(model, stringWriter);
+    log.info("ending getEmailContent for Email feedback");
     return stringWriter.getBuffer().toString();
   }
 }
