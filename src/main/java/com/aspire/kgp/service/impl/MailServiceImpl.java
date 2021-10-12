@@ -75,7 +75,7 @@ public class MailServiceImpl implements MailService {
   }
 
   @Override
-  public String getFeedbackEmailContent(HttpServletRequest request, UserDTO userDTO,
+  public String getFeedbackEmailContent(HttpServletRequest request,
       Map<String, String> staticContentsMap, String candidateFeedbackEmailTemplate,
       String partnerName, Map<String, String> paramRequest, Boolean isReplyFeedback)
       throws IOException, TemplateException {
@@ -83,15 +83,14 @@ public class MailServiceImpl implements MailService {
     StringWriter stringWriter = new StringWriter();
     Map<String, Object> model = new HashMap<>();
     model.put("serverUrl", CommonUtil.getServerUrl(request) + request.getContextPath());
-    model.put("clientName", userDTO.getFirstName() + userDTO.getLastName());
+    model.put("clientName", paramRequest.get("clientName"));
     model.put("partnerName", partnerName);
     model.put("searchName", paramRequest.get("searchName"));
-    model.put("clientContactName", "Abhishek's ");
     model.put("candidateName", paramRequest.get("candidateName"));
     model.put("companyName", paramRequest.get("companyName"));
     model.put("comment", paramRequest.get("feedback"));
     model.put("staticContentsMap", staticContentsMap);
-    model.put("isReply", isReplyFeedback);
+    model.put("isReplyAdded", isReplyFeedback.toString());
     model.put("reply", paramRequest.get("reply"));
     model.put("replyButtonUrl",
         CommonUtil.getServerUrl(request) + request.getContextPath() + "/candidate-status/"

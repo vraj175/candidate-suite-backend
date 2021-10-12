@@ -15,12 +15,14 @@ public interface CandidateService {
 
   public ResponseEntity<byte[]> getAthenaReport(String pageSize, String locale, String contactId);
 
-  public String addCandidateFeedback(String candidateId, String comments, String galaxyId, HttpServletRequest request);
+  public String addCandidateFeedback(String candidateId, String comments, String galaxyId,
+      HttpServletRequest request, boolean isReplyFeedback,
+      CandidateFeedbackDTO candidateFeedbackDTO2);
 
   public List<CandidateFeedbackDTO> getCandidateFeedback(String candidateId);
 
   public CandidateFeedbackDTO addCandidateFeedbackReply(String candidateId, String commentId,
-      String reply, String galaxyId);
+      String reply, String galaxyId, HttpServletRequest request);
 
   public CandidateFeedbackDTO getCandidateFeedbackByCommentId(String candidateId, String commentId);
 }

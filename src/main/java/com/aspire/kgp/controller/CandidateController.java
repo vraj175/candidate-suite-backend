@@ -176,8 +176,9 @@ public class CandidateController {
     User user = (User) request.getAttribute("user");
     log.info("Candidate Feedback SAVE API call, Request Param CandidateId : "
         + candidateFeedback.getCandidateId());
+    boolean isReplyFeedback = Boolean.FALSE;
     String id = service.addCandidateFeedback(candidateFeedback.getCandidateId(),
-        candidateFeedback.getComments(), user.getGalaxyId(), request);
+        candidateFeedback.getComments(), user.getGalaxyId(), request, isReplyFeedback, null);
     log.info("Successfully ADD Candidate Feedback and it's id: " + id);
     return id;
   }
@@ -191,7 +192,7 @@ public class CandidateController {
         + candidateFeedReqback.getCandidateId() + " Created By: " + user.getGalaxyId());
     CandidateFeedbackDTO candidateFeedback = service.addCandidateFeedbackReply(
         candidateFeedReqback.getCandidateId(), candidateFeedReqback.getCommentId(),
-        candidateFeedReqback.getReply(), user.getGalaxyId());
+        candidateFeedReqback.getReply(), user.getGalaxyId(), request);
     SimpleBeanPropertyFilter candidateFeedbackFilter =
         SimpleBeanPropertyFilter.filterOutAllExcept(Constant.ID, "candidateId", Constant.COMMENTS,
             Constant.CREATED_BY, Constant.CREATED_AT, Constant.UPDATED_AT, Constant.REPLIES);

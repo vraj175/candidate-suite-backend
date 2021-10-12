@@ -21,7 +21,7 @@ public interface MailService {
       Map<String, String> staticContentsMap, String templateName)
       throws IOException, TemplateException;
 
-  public String getFeedbackEmailContent(HttpServletRequest request, UserDTO userDTO,
+  public String getFeedbackEmailContent(HttpServletRequest request,
       Map<String, String> staticContentsMap, String candidateFeedbackEmailTemplate,
       String partnerName, Map<String, String> paramRequest, Boolean isReplyFeedback)
       throws IOException, TemplateException;

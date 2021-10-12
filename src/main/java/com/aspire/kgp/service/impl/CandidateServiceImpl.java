@@ -24,8 +24,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.configurationprocessor.json.JSONException;
-import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -40,8 +38,10 @@ import com.aspire.kgp.dto.CandidateFeedbackReplyDTO;
 import com.aspire.kgp.dto.UserDTO;
 import com.aspire.kgp.exception.APIException;
 import com.aspire.kgp.exception.NotFoundException;
+import com.aspire.kgp.model.User;
 import com.aspire.kgp.service.CandidateService;
 import com.aspire.kgp.service.MailService;
+import com.aspire.kgp.service.UserService;
 import com.aspire.kgp.util.CommonUtil;
 import com.aspire.kgp.util.RestUtil;
 import com.aspire.kgp.util.StaticContentsMultiLanguageUtil;
@@ -64,6 +64,9 @@ public class CandidateServiceImpl implements CandidateService {
 
   @Autowired
   MailService mailService;
+
+  @Autowired
+  UserService userService;
 
   @Value("${clientsuite.url}")
   private String clientsuiteUrl;
@@ -168,13 +171,12 @@ public class CandidateServiceImpl implements CandidateService {
 
   @Override
   public String addCandidateFeedback(String candidateId, String comments, String galaxyId,
-      HttpServletRequest request) {
+      HttpServletRequest request, boolean isReplyFeedback,
+      CandidateFeedbackDTO candidateFeedbackDTO) {
     log.info("Saving new feedback");
     JsonObject paramJSON = new JsonObject();
     HashMap<String, String> paramRequest = new HashMap<>();
     String feedbackId = "";
-    String reply = "";
-    boolean isReplyFeedback = Boolean.FALSE;
     paramJSON.addProperty("createdBy", galaxyId);
     paramJSON.addProperty("comments", comments);
     Set<String> kgpPartnerEmailList = new HashSet<>();
@@ -191,9 +193,11 @@ public class CandidateServiceImpl implements CandidateService {
       paramRequest.put("candidateName",
           apiResponse.getContact().getFirstName() + " " + apiResponse.getContact().getLastName());
       paramRequest.put("searchId", apiResponse.getSearch().getId());
+      paramRequest.put("clientName",
+          apiResponse.getContact().getFirstName() + " " + apiResponse.getContact().getLastName());
       paramRequest.put("searchName", apiResponse.getSearch().getJobTitle());
       paramRequest.put("companyName", apiResponse.getSearch().getCompany().getName());
-      paramRequest.put("contactId", "c4ca9165-75de-404d-83f9-20698cf71369");
+      paramRequest.put("contactId", apiResponse.getContact().getId());
       paramRequest.put("candidateId", candidateId);
       if (CommonUtil.checkNullString(comments)
           || CommonUtil.checkNullString(paramRequest.get("candidateName"))
@@ -201,25 +205,27 @@ public class CandidateServiceImpl implements CandidateService {
           || CommonUtil.checkNullString(paramRequest.get("searchName"))
           || CommonUtil.checkNullString(paramRequest.get("companyName"))
           || CommonUtil.checkNullString(paramRequest.get("contactId"))
-          || CommonUtil.checkNullString(paramRequest.get("candidateId"))) {
+          || CommonUtil.checkNullString(paramRequest.get("candidateId"))
+          || CommonUtil.checkNullString(paramRequest.get("clientName"))) {
         return "parameters are not valid to sent feedback mail";
       }
-      feedbackId = restUtil.postMethod(
-          Constant.CANDIDATE_FEEDBACK_URL.replace(Constant.CANDIDATE_ID, candidateId),
-          paramJSON.toString(), null);
-      if (feedbackId != null && feedbackId.contains("id")) {
-        log.info("Feedback added succefully with commentId:- " + feedbackId);
-        if (feedbackId.contains("id")) {
-          JSONObject jsonObject = new JSONObject(feedbackId);
-          paramRequest.put("commentId", jsonObject.get("id").toString());
-          CandidateFeedbackDTO candidateFeedbackDTO = null;
-          candidateFeedbackDTO =
-              getCandidateFeedbackByCommentId(candidateId, paramRequest.get("commentId"));
-          if (candidateFeedbackDTO != null) {
-            reply = candidateFeedbackDTO.getComments();
-            isReplyFeedback = Boolean.TRUE;
-          }
-          paramRequest.put("reply", reply);
+      if (isReplyFeedback) {
+        if (candidateFeedbackDTO != null) {
+          CandidateFeedbackReplyDTO candidateFeedbackReplyDTO = candidateFeedbackDTO.getReplies()
+              .stream().filter(e -> e.getCommentId().equals(candidateFeedbackDTO.getId()))
+              .findFirst().orElse(new CandidateFeedbackReplyDTO());
+          isReplyFeedback = Boolean.TRUE;
+          paramRequest.put("reply", candidateFeedbackReplyDTO.getReply());
+          paramRequest.put("feedback", candidateFeedbackDTO.getComments());
+          paramRequest.put("commentId", candidateFeedbackReplyDTO.getCommentId());
+        }
+      } else {
+        feedbackId = restUtil.postMethod(
+            Constant.CANDIDATE_FEEDBACK_URL.replace(Constant.CANDIDATE_ID, candidateId),
+            paramJSON.toString(), null);
+        if (feedbackId != null && feedbackId.contains("id")) {
+          log.info("Feedback added succefully with commentId:- " + feedbackId);
+          paramRequest.put("commentId", feedbackId);
         }
       }
     } catch (APIException e2) {
@@ -228,9 +234,6 @@ public class CandidateServiceImpl implements CandidateService {
     } catch (JsonSyntaxException e) {
       log.error("oops ! invalid json");
       throw new JsonSyntaxException("error while get team member");
-    } catch (JSONException e) {
-      log.error("oops ! invalid json");
-      throw new JsonSyntaxException("error while Parsing JSON");
     }
     try {
       for (String kgpTeamMeberDetails : kgpPartnerEmailList) {
@@ -238,30 +241,24 @@ public class CandidateServiceImpl implements CandidateService {
         sendClientFeedbackMail(kgpTeamMeberDetails.split("##")[0],
             kgpTeamMeberDetails.split("##")[1], paramRequest, request, isReplyFeedback);
       }
-    } catch (Exception e) {
-      log.info(e);
+    } catch (Exception ex) {
+      log.info(ex);
       throw new APIException("Error in send feedback email");
     }
     return feedbackId;
   }
-
 
   private void sendClientFeedbackMail(String email, String partnerName,
       HashMap<String, String> paramRequest, HttpServletRequest request, Boolean isReplyFeedback) {
     log.info("sending client feedback email");
     String locate = "en_US";
     email = "abhishek.jaiswal@aspiresoftserv.com";
-    // User user = (User) request.getAttribute("user");
-    UserDTO userDTO = new UserDTO();
-    userDTO.setToken(generateJwtToken(email, email));
-    userDTO.setEmail(email);
-    // userDTO.setFirstName(user.get);
     try {
       Map<String, String> staticContentsMap =
           StaticContentsMultiLanguageUtil.getStaticContentsMap(locate, Constant.EMAILS_CONTENT_MAP);
       String mailSubject = staticContentsMap.get("candidate.suite.feedback.email.subject");
       mailService.sendEmail(email, null, mailSubject + " " + partnerName,
-          mailService.getFeedbackEmailContent(request, userDTO, staticContentsMap,
+          mailService.getFeedbackEmailContent(request, staticContentsMap,
               Constant.CANDIDATE_FEEDBACK_EMAIL_TEMPLATE, partnerName, paramRequest,
               isReplyFeedback),
           null);
@@ -329,7 +326,7 @@ public class CandidateServiceImpl implements CandidateService {
 
   @Override
   public CandidateFeedbackDTO addCandidateFeedbackReply(String candidateId, String commentId,
-      String reply, String galaxyId) {
+      String reply, String galaxyId, HttpServletRequest request) {
     List<CandidateFeedbackReplyDTO> candidateFeedbackReply = new ArrayList<>();
     JsonObject paramJSON = new JsonObject();
     paramJSON.addProperty("reply", reply);
@@ -342,8 +339,6 @@ public class CandidateServiceImpl implements CandidateService {
     if (jsonString.contains("invalid")) {
       throw new APIException("Invalid candidateId or commentId");
     }
-
-
     String replyId = new Gson().fromJson(jsonString, CandidateFeedbackDTO.class).getId();
     CandidateFeedbackDTO candidateFeedbackDTO =
         getCandidateFeedbackByCommentId(candidateId, commentId);
@@ -353,6 +348,7 @@ public class CandidateServiceImpl implements CandidateService {
 
     candidateFeedbackReply.add(candidateFeedbackReplyDTO);
     candidateFeedbackDTO.setReplies(candidateFeedbackReply);
+    addCandidateFeedback(candidateId, reply, galaxyId, request, true, candidateFeedbackDTO);
     return candidateFeedbackDTO;
   }
 

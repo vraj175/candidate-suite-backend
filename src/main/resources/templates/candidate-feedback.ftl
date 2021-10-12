@@ -24,8 +24,10 @@
 			          <p style="margin:0; padding:0; height:15px;">&nbsp;</p>
 			        </div>
 			        
-			        <p>${clientContactName} Feedback : ${comment}</p>
-			        
+			        <p>Feedback : ${comment}</p>
+			        <#if isReplyAdded == "true">
+			       		<p>Reply : ${reply}</p>
+			       	<#else>
 			       		<div style="text-align: center;">
 			       		<a href="${replyButtonUrl}" style="position: absolute;">
 				       		<div style="outline: 0;background-color: #5e59a7;border: none;color: white;padding: 2px 25px 5px 25px;text-align: center;text-decoration: none;display: inline-block;font-size: 17px;cursor: pointer;">
@@ -33,7 +35,7 @@
 					       		<div style=" margin-left: 5px;margin-top: 3px;float: right;">Reply</div>
 					       	</div>
 			       		</a>
-			       
+			       </#if>
 			        <p style="letter-spacing:0.3px; font-size:12px; font-weight:400; text-align:left; color:#231f20; line-height:19px;margin: 0px ;">
 			        	<span style="font-size:13;">${staticContentsMap['candidate.suite.feedback.email.regards']}</span><br>
 			        </p>
