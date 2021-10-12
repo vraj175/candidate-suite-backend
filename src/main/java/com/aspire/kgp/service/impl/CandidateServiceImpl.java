@@ -37,10 +37,10 @@ import com.aspire.kgp.constant.Constant;
 import com.aspire.kgp.dto.CandidateDTO;
 import com.aspire.kgp.dto.CandidateFeedbackDTO;
 import com.aspire.kgp.dto.CandidateFeedbackReplyDTO;
+import com.aspire.kgp.dto.CompanyDTO;
 import com.aspire.kgp.dto.UserDTO;
 import com.aspire.kgp.exception.APIException;
 import com.aspire.kgp.exception.NotFoundException;
-import com.aspire.kgp.model.User;
 import com.aspire.kgp.service.CandidateService;
 import com.aspire.kgp.service.MailService;
 import com.aspire.kgp.service.UserService;
@@ -227,8 +227,14 @@ public class CandidateServiceImpl implements CandidateService {
             paramJSON.toString(), null);
         if (feedbackId != null && feedbackId.contains("id")) {
           log.info("Feedback added succefully with commentId:- " + feedbackId);
-          JSONObject commentIdObject = new JSONObject(feedbackId);
-          paramRequest.put("commentId", commentIdObject.get("id").toString());
+          CompanyDTO commentId = new Gson().fromJson(feedbackId, new TypeToken<CompanyDTO>() {
+
+            /**
+             * 
+             */
+            private static final long serialVersionUID = 1L;
+          }.getType());
+          paramRequest.put("commentId", commentId.getId());
         }
       }
     } catch (APIException e2) {
@@ -237,9 +243,6 @@ public class CandidateServiceImpl implements CandidateService {
     } catch (JsonSyntaxException e) {
       log.error("oops ! invalid json");
       throw new JsonSyntaxException("error while get team member");
-    } catch (JSONException e) {
-      log.error("oops ! invalid json");
-      throw new JsonSyntaxException("error while get comment Id");
     }
     try {
       for (String kgpTeamMeberDetails : kgpPartnerEmailList) {
