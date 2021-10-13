@@ -24,7 +24,7 @@
 			          <p style="margin:0; padding:0; height:15px;">&nbsp;</p>
 			        </div>
 			        
-			        <p>Feedback : ${comment}</p>
+			        <p>${clientName} Feedback : ${comment}</p>
 			        <#if isReplyAdded == "true">
 			       		<p>Reply : ${reply}</p>
 			       	<#else>
