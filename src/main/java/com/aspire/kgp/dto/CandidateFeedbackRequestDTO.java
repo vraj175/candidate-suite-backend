@@ -11,7 +11,7 @@ public class CandidateFeedbackRequestDTO {
   public interface CandidateFeedbackReplyReq {
   }
 
-  @JsonProperty(value = "Candidate Id", required = true)
+  @JsonProperty(value = "candidateId", required = true)
   @NotEmpty(message = "candidate id cannot be missing or empty",
       groups = {CandidateFeedbackReq.class, CandidateFeedbackReplyReq.class})
   private String candidateId;
@@ -21,7 +21,7 @@ public class CandidateFeedbackRequestDTO {
       groups = {CandidateFeedbackReq.class})
   private String comments;
 
-  @JsonProperty(value = "comment Id", required = true)
+  @JsonProperty(value = "commentId", required = true)
   @NotEmpty(message = "comment id cannot be missing or empty",
       groups = {CandidateFeedbackReplyReq.class})
   private String commentId;

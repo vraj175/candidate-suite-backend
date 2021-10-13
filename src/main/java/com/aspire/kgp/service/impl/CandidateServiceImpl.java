@@ -24,8 +24,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.configurationprocessor.json.JSONException;
-import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -261,7 +259,7 @@ public class CandidateServiceImpl implements CandidateService {
       HashMap<String, String> paramRequest, HttpServletRequest request, Boolean isReplyFeedback) {
     log.info("sending client feedback email");
     String locate = "en_US";
-    email = "abhishek.jaiswal@aspiresoftserv.com";
+    email = "sarthak.chavda@aspiresoftserv.com";
     try {
       Map<String, String> staticContentsMap =
           StaticContentsMultiLanguageUtil.getStaticContentsMap(locate, Constant.EMAILS_CONTENT_MAP);
