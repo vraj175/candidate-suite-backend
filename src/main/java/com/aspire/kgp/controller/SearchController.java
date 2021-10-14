@@ -36,7 +36,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @RequestMapping("/api/v1.0")
 @Tag(name = "Search", description = "Rest API For Search")
 public class SearchController {
-  
+
   @Autowired
   SearchService service;
 
@@ -120,8 +120,8 @@ public class SearchController {
   public MappingJacksonValue getPositionProfile(@PathVariable("searchId") String searchId) {
     PositionProfileDTO positionProfile = service.getPositionProfileDetails(searchId);
 
-    SimpleBeanPropertyFilter companyFilter =
-        SimpleBeanPropertyFilter.filterOutAllExcept("description", "website");
+    SimpleBeanPropertyFilter companyFilter = SimpleBeanPropertyFilter
+        .filterOutAllExcept("description", "website", "linkedinUrl", "news");
 
     SimpleBeanPropertyFilter positionProfileFilter = SimpleBeanPropertyFilter.filterOutAllExcept(
         "isDegreeMandatory", "isApprovedByPartner", "isYearsOfExperienceMandatory",
