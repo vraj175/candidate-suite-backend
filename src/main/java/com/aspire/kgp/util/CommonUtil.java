@@ -253,6 +253,7 @@ public class CommonUtil {
       Date date = oldFormat.parse(galaxydateformatter);
       return newFormat.format(date);
     } catch (ParseException e) {
+      log.error("feedbackDateFormatter date parse error :" + e.getMessage());
     }
     return galaxydateformatter;
   }
