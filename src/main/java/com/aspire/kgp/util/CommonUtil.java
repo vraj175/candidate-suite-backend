@@ -246,6 +246,17 @@ public class CommonUtil {
     }
   }
 
+  public static String feedbackDateFormatter(String galaxydateformatter) {
+    try {
+      SimpleDateFormat oldFormat = new SimpleDateFormat(Constant.GALAXY_DATE_AND_TIME_FORMATTER);
+      SimpleDateFormat newFormat = new SimpleDateFormat(Constant.FEEDBACK_DATE_FORMATTER);
+      Date date = oldFormat.parse(galaxydateformatter);
+      return newFormat.format(date);
+    } catch (ParseException e) {
+    }
+    return galaxydateformatter;
+  }
+
   /**
    * Method to convert date to desired format
    * 
@@ -289,8 +300,8 @@ public class CommonUtil {
         return "th";
     }
   }
-  
-  public static String removeTime(String date) {   
+
+  public static String removeTime(String date) {
     if (CommonUtil.checkNotNullString(date) && date.contains("T")) {
       String[] spliteddate = date.split("T");
       date = spliteddate[0];

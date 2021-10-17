@@ -199,6 +199,9 @@ public class Constant {
   public static final String DATA_SAVED = "Data saved successfully";
   public static final String DATA_ALREADY_INITIALIZED = "Data already initialized";
 
+  // date formatter
+  public static final String GALAXY_DATE_AND_TIME_FORMATTER = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
+  public static final String FEEDBACK_DATE_FORMATTER = "yyyy-MM-dd";
 
   // Test Fields
   public static final String TEST = "Test";
