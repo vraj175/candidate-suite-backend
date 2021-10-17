@@ -1,5 +1,6 @@
 package com.aspire.kgp.controller;
 
+import java.util.Comparator;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -20,11 +21,13 @@ import org.springframework.web.bind.annotation.RestController;
 import com.aspire.kgp.constant.Constant;
 import com.aspire.kgp.dto.CandidateDTO;
 import com.aspire.kgp.dto.CandidateFeedbackDTO;
+import com.aspire.kgp.dto.CandidateFeedbackReplyDTO;
 import com.aspire.kgp.dto.CandidateFeedbackRequestDTO;
 import com.aspire.kgp.dto.CandidateFeedbackRequestDTO.CandidateFeedbackReplyReq;
 import com.aspire.kgp.dto.CandidateFeedbackRequestDTO.CandidateFeedbackReq;
 import com.aspire.kgp.model.User;
 import com.aspire.kgp.service.CandidateService;
+import com.aspire.kgp.util.CommonUtil;
 import com.fasterxml.jackson.databind.ser.FilterProvider;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
@@ -156,6 +159,20 @@ public class CandidateController {
         .addFilter(Constant.CANDIDATE_FEEDBACK_FILTER, candidateFeedbackFilter)
         .addFilter(Constant.CANDIDATE_FEEDBACK_REPLY_FILTER, candidateFeedbackReplyFilter);
 
+    candidateFeedbackList.stream().forEach(candidateFeedbackDTO -> candidateFeedbackDTO.getReplies()
+        .sort(Comparator.comparing(CandidateFeedbackReplyDTO::getCreatedAt).reversed()));
+    candidateFeedbackList.sort(Comparator.comparing(CandidateFeedbackDTO::getCreatedAt).reversed());
+
+    candidateFeedbackList.stream().forEach(candidateFeedbackDTO -> {
+      candidateFeedbackDTO
+          .setCreatedAt(CommonUtil.feedbackDateFormatter(candidateFeedbackDTO.getCreatedAt()));
+      candidateFeedbackDTO
+          .setUpdatedAt(CommonUtil.feedbackDateFormatter(candidateFeedbackDTO.getUpdatedAt()));
+      candidateFeedbackDTO.getReplies().stream().forEach(reply -> {
+        reply.setCreatedAt(CommonUtil.feedbackDateFormatter(reply.getCreatedAt()));
+        reply.setUpdatedAt(CommonUtil.feedbackDateFormatter(reply.getUpdatedAt()));
+      });
+    });
     MappingJacksonValue mapping = new MappingJacksonValue(candidateFeedbackList);
     mapping.setFilters(filters);
     log.info("Successfully send Candidate Feedback list " + candidateFeedbackList.size());

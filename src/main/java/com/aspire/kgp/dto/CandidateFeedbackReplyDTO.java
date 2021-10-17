@@ -17,15 +17,6 @@ public class CandidateFeedbackReplyDTO {
   @SerializedName("comment_id")
   private String commentId;
   private String reply;
-  private String replyId;
-
-  public String getReplyId() {
-    return replyId;
-  }
-
-  public void setReplyId(String replyId) {
-    this.replyId = replyId;
-  }
 
   public String getId() {
     return id;
@@ -87,7 +78,7 @@ public class CandidateFeedbackReplyDTO {
   public String toString() {
     return "CandidateFeedbackReplyDTO [id=" + id + ", candidateId=" + candidateId + ", createdBy="
         + createdBy + ", createdAt=" + createdAt + ", updatedAt=" + updatedAt + ", commentId="
-        + commentId + ", reply=" + reply + ", replyId=" + replyId + "]";
+        + commentId + ", reply=" + reply + "]";
   }
 
 }
