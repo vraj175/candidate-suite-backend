@@ -2,14 +2,14 @@ version: 0.2
 phases:
   pre_build:
     commands:
-      - echo "Entered the pre-build phase"
+      - echo "Entered the pre-build phase - PROD"
   build:
     commands:
-      - echo "Entered build phase"
-      - mvn clean install
+      - echo "Entered build phase - PROD"
+      - mvn clean install -Pprod
   post_build:
     commands:
-      - echo "Entered the post-build phase"
+      - echo "Entered the post-build phase - PROD"
       #- mv target/ ./
 artifacts:
   files:
