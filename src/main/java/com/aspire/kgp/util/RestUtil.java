@@ -6,7 +6,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
-import java.sql.Timestamp;
 import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
@@ -31,22 +30,14 @@ import com.amazonaws.auth.ClasspathPropertiesFileCredentialsProvider;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.cognitoidp.AWSCognitoIdentityProvider;
 import com.amazonaws.services.cognitoidp.AWSCognitoIdentityProviderClientBuilder;
-import com.amazonaws.services.cognitoidp.model.AWSCognitoIdentityProviderException;
 import com.amazonaws.services.cognitoidp.model.AdminInitiateAuthRequest;
 import com.amazonaws.services.cognitoidp.model.AdminInitiateAuthResult;
 import com.amazonaws.services.cognitoidp.model.AuthFlowType;
 import com.amazonaws.services.cognitoidp.model.AuthenticationResultType;
-import com.amazonaws.services.cognitoidp.model.TooManyRequestsException;
 import com.aspire.kgp.constant.Constant;
-import com.aspire.kgp.dto.ResponseObject;
-import com.aspire.kgp.dto.UserAuthenticationDTO;
 import com.aspire.kgp.exception.APIException;
 import com.aspire.kgp.exception.UnauthorizedAccessException;
-import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-
-import net.sf.kdgcommons.lang.StringUtil;
-import net.sf.kdgcommons.lang.ThreadUtil;
 
 @Component
 public class RestUtil {
@@ -68,7 +59,7 @@ public class RestUtil {
     private byte[] bytes;
 
     public JsonPart(String name, String json) {
-      super(name, "application/json", Constant.UTF_8, null);
+      super(name, Constant.CONTENT_TYPE_JSON, Constant.UTF_8, null);
       this.bytes = json.getBytes(StandardCharsets.UTF_8);
     }
 
@@ -166,12 +157,13 @@ public class RestUtil {
     HttpClient httpClient = new HttpClient();
     PutMethod httpPut = new PutMethod(baseApiUrl + url.replaceAll(Constant.SPACE_STRING, "%20"));
     httpPut.setRequestHeader("X-API-Key", apiKey);
-    httpPut.setRequestHeader("Accept", "application/json");
-    httpPut.setRequestHeader("Content-type", "application/json");
+    httpPut.setRequestHeader("Accept", Constant.CONTENT_TYPE_JSON);
+    httpPut.setRequestHeader("Content-type", Constant.CONTENT_TYPE_JSON);
     httpPut.setRequestHeader(Constant.AUTHORIZATION,
         validateCognitoWithAuthenticationToken(defaultAuth).getAccessToken());
 
-    StringRequestEntity body = new StringRequestEntity(paramJSON, "application/json", "UTF-8");
+    StringRequestEntity body =
+        new StringRequestEntity(paramJSON, Constant.CONTENT_TYPE_JSON, "UTF-8");
     httpPut.setRequestEntity(body);
 
     String responseString = "";
@@ -246,7 +238,7 @@ public class RestUtil {
         post.setRequestEntity(new MultipartRequestEntity(parts, post.getParams()));
       } else {
         StringRequestEntity body =
-            new StringRequestEntity(paramJSON, "application/json", Constant.UTF_8);
+            new StringRequestEntity(paramJSON, Constant.CONTENT_TYPE_JSON, Constant.UTF_8);
         post.setRequestEntity(body);
       }
 
@@ -327,72 +319,6 @@ public class RestUtil {
       throw new UnauthorizedAccessException(Constant.INVALID_AUTHENTICATION);
     }
     return authenticationResult;
-  }
-
-  public UserAuthenticationDTO validateUserWithCognito(String authorization) {
-    log.info("start validateUserWithCognito");
-    AuthenticationResultType authenticationResult =
-        validateCognitoWithAuthenticationToken(authorization);
-
-    JsonObject userjson;
-    String accessToken;
-    String refreshToken;
-    if (authenticationResult != null) {
-      try {
-        accessToken = authenticationResult.getAccessToken();
-        log.info("AccessToken : " + accessToken);
-        refreshToken = authenticationResult.getRefreshToken();
-
-        String authentication = getUserDetails(accessToken);
-        userjson = new Gson().fromJson(authentication, JsonObject.class);
-        log.info(userjson);
-      } catch (Exception e) {
-        throw new UnauthorizedAccessException(Constant.INVALID_AUTHENTICATION);
-      }
-    } else {
-      throw new UnauthorizedAccessException(Constant.INVALID_AUTHENTICATION);
-    }
-
-    if (userjson.has("id")) {
-      return new UserAuthenticationDTO(userjson.get("id").getAsString(),
-          userjson.get("name").getAsString(), accessToken, refreshToken);
-    } else {
-      throw new UnauthorizedAccessException(Constant.INVALID_AUTHENTICATION);
-    }
-
-  }
-
-  public ResponseObject attemptRefresh(String refreshToken) {
-    String errorMessage = "";
-    try {
-      Map<String, String> authParams = new HashMap<>();
-      authParams.put("REFRESH_TOKEN", refreshToken);
-
-      AdminInitiateAuthRequest refreshRequest =
-          new AdminInitiateAuthRequest().withAuthFlow(AuthFlowType.REFRESH_TOKEN)
-              .withAuthParameters(authParams).withClientId(clientId).withUserPoolId(userPullId);
-
-      AdminInitiateAuthResult refreshResponse =
-          getAmazonCognitoIdentityClient().adminInitiateAuth(refreshRequest);
-      if (StringUtil.isBlank(refreshResponse.getChallengeName())) {
-        log.info("successfully refreshed token");
-        return new ResponseObject(HttpStatus.SC_OK,
-            refreshResponse.getAuthenticationResult().getAccessToken(),
-            new Timestamp(System.currentTimeMillis()));
-      } else {
-        log.error(
-            "unexpected challenge when refreshing token: {}" + refreshResponse.getChallengeName());
-        errorMessage = Constant.REFRESH_TOKEN_EXPIRED;
-      }
-    } catch (TooManyRequestsException ex) {
-      log.info("caught TooManyRequestsException, delaying then retrying");
-      ThreadUtil.sleepQuietly(250);
-      attemptRefresh(refreshToken);
-    } catch (AWSCognitoIdentityProviderException ex) {
-      log.info("exception during token refresh: {}" + ex.getMessage());
-      errorMessage = Constant.REFRESH_TOKEN_EXPIRED;
-    }
-    throw new UnauthorizedAccessException(errorMessage);
   }
 
   public byte[] newGetImage(String apiUrl) {

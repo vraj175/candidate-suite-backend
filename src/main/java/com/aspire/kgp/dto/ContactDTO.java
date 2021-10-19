@@ -125,4 +125,15 @@ public class ContactDTO extends UserDTO {
   public void setBoardDetails(List<BoardDetailsDTO> boardDetails) {
     this.boardDetails = boardDetails;
   }
+
+  @Override
+  public String toString() {
+    return "ContactDTO [currentJobTitle=" + currentJobTitle + ", company=" + company
+        + ", publishedBio=" + publishedBio + ", homePhone=" + homePhone + ", baseSalary="
+        + baseSalary + ", targetBonusValue=" + targetBonusValue + ", equity=" + equity
+        + ", compensationExpectation=" + compensationExpectation + ", compensationNotes="
+        + compensationNotes + ", jobHistory=" + jobHistory + ", educationDetails="
+        + educationDetails + ", boardDetails=" + boardDetails + "]";
+  }
+
 }

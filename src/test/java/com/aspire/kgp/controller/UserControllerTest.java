@@ -14,15 +14,21 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.json.MappingJacksonValue;
 import org.springframework.mock.web.MockHttpServletRequest;
 
 import com.aspire.kgp.CustomTestData;
+import com.aspire.kgp.constant.Constant;
 import com.aspire.kgp.dto.InviteDTO;
+import com.aspire.kgp.dto.ResetPasswordDTO;
 import com.aspire.kgp.dto.UserDTO;
 import com.aspire.kgp.exception.APIException;
 import com.aspire.kgp.exception.NotFoundException;
 import com.aspire.kgp.model.User;
 import com.aspire.kgp.service.UserService;
+import com.aspire.kgp.util.RestUtil;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 
 class UserControllerTest {
 
@@ -31,37 +37,40 @@ class UserControllerTest {
 
   @Mock
   UserService service;
+  
+  @Mock
+  RestUtil restUtil;
 
   @BeforeEach
   void setUp() throws Exception {
     MockitoAnnotations.openMocks(this);
   }
 
-   @Test
-   void testInviteUser() {
-     MockHttpServletRequest request = CustomTestData.getRequest();
+  @Test
+  void testInviteUser() {
+    MockHttpServletRequest request = CustomTestData.getRequest();
 
-     when(service.findByGalaxyId(anyString())).thenReturn(null);
-     UserDTO userDTO = CustomTestData.getUserDTO();
-     when(service.getGalaxyUserDetails(anyString())).thenReturn(userDTO);
+    when(service.findByGalaxyId(anyString())).thenReturn(null);
+    UserDTO userDTO = CustomTestData.getUserDTO();
+    when(service.getGalaxyUserDetails(anyString())).thenReturn(userDTO);
 
-     User user = CustomTestData.getUser();
-     when(service.saveOrUpdatePartner(anyString(), anyString(), anyString(), anyBoolean()))
-         .thenReturn(user);
+    User user = CustomTestData.getUser();
+    when(service.saveOrUpdatePartner(anyString(), anyString(), anyString(), anyBoolean()))
+        .thenReturn(user);
 
-     when(service.inviteUser(anyString(), anyString(), anyString(), any(), any(), anyBoolean(),
-         any())).thenReturn(Boolean.TRUE);
+    when(service.inviteUser(anyString(), anyString(), anyString(), any(), any(), anyBoolean(),
+        any())).thenReturn(Boolean.TRUE);
 
-     InviteDTO inviteDTO = CustomTestData.getInviteDTO();
-     ResponseEntity<Object> entity= controller.inviteUser(inviteDTO, request);
-     
-     assertNotNull(entity);
-     
-     when(service.findByGalaxyId(anyString())).thenReturn(user);
-     entity= controller.inviteUser(inviteDTO, request);
-     
-     assertNotNull(entity);
-   }
+    InviteDTO inviteDTO = CustomTestData.getInviteDTO();
+    ResponseEntity<Object> entity = controller.inviteUser(inviteDTO, request);
+
+    assertNotNull(entity);
+
+    when(service.findByGalaxyId(anyString())).thenReturn(user);
+    entity = controller.inviteUser(inviteDTO, request);
+
+    assertNotNull(entity);
+  }
 
   @Test
   void testInviteUser_NotFoundException() {
@@ -95,9 +104,102 @@ class UserControllerTest {
 
     InviteDTO inviteDTO = CustomTestData.getInviteDTO();
 
-    Exception e =
-        assertThrows(APIException.class, () -> controller.inviteUser(inviteDTO, request));
+    Exception e = assertThrows(APIException.class, () -> controller.inviteUser(inviteDTO, request));
     assertEquals("Error in send invite", e.getMessage());
   }
 
+  @Test
+  void testGetUserProfile() throws JsonMappingException, JsonProcessingException {
+    MockHttpServletRequest request = CustomTestData.getRequest();
+    User user = CustomTestData.getUser();
+    request.setAttribute("user", user);
+
+    UserDTO userDTO = CustomTestData.getUserDTO();
+    when(service.getContactDetails(anyString())).thenReturn(userDTO);
+    MappingJacksonValue mapping = controller.getUserProfile(request);
+    assertNotNull(mapping);
+
+    user.getRole().setName(Constant.PARTNER);
+    when(service.getGalaxyUserDetails(anyString())).thenReturn(userDTO);
+    mapping = controller.getUserProfile(request);
+
+    UserDTO response = (UserDTO) mapping.getValue();
+    assertNotNull(response);
+    assertEquals(userDTO.getName(), response.getName());
+    assertEquals(userDTO.getMobilePhone(), response.getMobilePhone());
+    assertEquals(userDTO.getWorkPhone(), response.getWorkPhone());
+    assertEquals(userDTO.getWorkEmail(), response.getWorkEmail());
+    assertEquals(userDTO.getRole(), response.getRole());
+    assertEquals(userDTO.getToken(), response.getToken());
+    assertEquals(userDTO.getTitle(), response.getTitle());
+    assertEquals(userDTO.getCountry(), response.getCountry());
+    assertEquals(userDTO.getLinkedinUrl(), response.getLinkedinUrl());
+    assertEquals(userDTO.getBio(), response.getBio());
+    assertEquals(userDTO.isPasswordReset(), response.isPasswordReset());
+  }
+
+  @Test
+  void testGetUserProfile_APIException() {
+    MockHttpServletRequest request = CustomTestData.getRequest();
+    User user = CustomTestData.getUser();
+    request.setAttribute("user", user);
+
+    UserDTO userDTO = new UserDTO();
+    when(service.getContactDetails(anyString())).thenReturn(userDTO);
+
+    Exception e = assertThrows(APIException.class, () -> controller.getUserProfile(request));
+    assertEquals("Something went wrong to fetch the user data", e.getMessage());
+  }
+
+  @Test
+  void testForgotUserPassword() {
+    MockHttpServletRequest request = CustomTestData.getRequest();
+    when(service.forgotPassword(any(), anyString())).thenReturn(Boolean.TRUE);
+
+    ResponseEntity<Object> entity = controller.forgotUserPassword(Constant.TEST, request);
+
+    assertNotNull(entity);
+  }
+
+  @Test
+  void testForgotUserPassword_APIException() {
+    MockHttpServletRequest request = CustomTestData.getRequest();
+    when(service.forgotPassword(any(), anyString())).thenReturn(Boolean.FALSE);
+
+    Exception e = assertThrows(APIException.class,
+        () -> controller.forgotUserPassword(Constant.TEST, request));
+    assertEquals("Something went wrong", e.getMessage());
+  }
+
+  @Test
+  void testResetUserPassword() {
+    MockHttpServletRequest request = CustomTestData.getRequest();
+    when(service.resetPassword(any(), any())).thenReturn(Boolean.TRUE);
+
+    ResetPasswordDTO resetPasswordDTO = CustomTestData.getResetPasswordDTO();
+    ResponseEntity<Object> entity = controller.resetUserPassword(resetPasswordDTO, request);
+
+    assertNotNull(entity);
+  }
+
+  @Test
+  void testResetUserPassword_APIException() {
+    MockHttpServletRequest request = CustomTestData.getRequest();
+    when(service.resetPassword(any(), any())).thenReturn(Boolean.FALSE);
+
+    ResetPasswordDTO resetPasswordDTO = CustomTestData.getResetPasswordDTO();
+    Exception e = assertThrows(APIException.class,
+        () -> controller.resetUserPassword(resetPasswordDTO, request));
+    assertEquals("Something went wrong", e.getMessage());
+  }
+  
+  @Test
+  void testPerformVerifyGoogleCaptchaRequest() {
+    when(restUtil.performVerifyGoogleCaptchaRequest(anyString())).thenReturn(Constant.TEST);
+    
+    String response = controller.performVerifyGoogleCaptchaRequest(Constant.TEST);
+    
+    assertNotNull(response);
+    assertEquals(Constant.TEST, response);
+  }
 }

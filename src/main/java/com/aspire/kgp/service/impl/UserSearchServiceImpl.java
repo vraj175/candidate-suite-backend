@@ -23,6 +23,11 @@ public class UserSearchServiceImpl implements UserSearchService {
   }
 
   @Override
+  public UserSearch findByUserAndSearchId(User user, String searchId) {
+    return repository.findByUserAndSearchIdAndIsDeletedFalse(user, searchId);
+  }
+
+  @Override
   public UserSearch findByCandidateId(String candidateId) {
     return repository.findByCandidateIdAndIsDeletedFalse(candidateId);
   }
@@ -42,6 +47,11 @@ public class UserSearchServiceImpl implements UserSearchService {
   @Override
   public List<UserSearch> findByUser(User user) {
     return repository.findByUserAndIsDeletedFalse(user);
+  }
+
+  @Override
+  public List<UserSearch> findByIsDeletedFalse() {
+    return repository.findByIsDeletedFalse();
   }
 
 }

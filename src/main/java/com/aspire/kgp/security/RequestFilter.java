@@ -34,8 +34,8 @@ import com.aspire.kgp.util.RestUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Component
-public class JwtRequestFilter extends OncePerRequestFilter {
-  static Log log = LogFactory.getLog(JwtRequestFilter.class.getName());
+public class RequestFilter extends OncePerRequestFilter {
+  static Log log = LogFactory.getLog(RequestFilter.class.getName());
 
   @Autowired
   RestUtil restUtil;

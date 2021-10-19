@@ -1,6 +1,5 @@
 package com.aspire.kgp.service.impl;
 
-import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.sql.Timestamp;
 import java.util.Base64;
@@ -41,7 +40,6 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
-import freemarker.template.TemplateException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 
@@ -93,7 +91,7 @@ public class UserServiceImpl implements UserService {
     user.setEmail(email);
     user.setPassword(CommonUtil.hash(password));
     user.setGalaxyId(galaxyId);
-    user.setLanguage(languageService.findByName(Constant.ENGLISH));
+    user.setLanguage(languageService.findByName(Constant.ENGLISH_CODE));
     if (isLastLogin) {
       user.setLastLogin(new Timestamp(System.currentTimeMillis()));
     }
@@ -146,6 +144,7 @@ public class UserServiceImpl implements UserService {
     try {
       log.info("insering new user search...");
       UserSearch userSearch = new UserSearch();
+      userSearch.setCompanyId(candidateDTO.getSearch().getCompany().getId());
       userSearch.setSearchId(candidateDTO.getSearch().getId());
       userSearch.setCandidateId(candidateId);
       userSearch.setUser(user);
@@ -160,9 +159,8 @@ public class UserServiceImpl implements UserService {
       if (user.isPasswordReset()) {
         // mail for add user or mail for invite
         log.info("mail for add user or mail for invite");
-        String languageCode = CommonUtil.getLanguageCode(language);
         Map<String, String> staticContentsMap = StaticContentsMultiLanguageUtil
-            .getStaticContentsMap(languageCode, Constant.EMAILS_CONTENT_MAP);
+            .getStaticContentsMap(language, Constant.EMAILS_CONTENT_MAP);
         String mailSubject = staticContentsMap.get("candidate.suite.invitation.email.subject");
         mailService.sendEmail(email, bcc, mailSubject, mailService.getEmailContent(request, userDTO,
             staticContentsMap, Constant.CANDIDATE_INVITE_EMAIL_TEMPLATE), null);
@@ -228,7 +226,7 @@ public class UserServiceImpl implements UserService {
        */
       private static final long serialVersionUID = 1L;
     }.getType());
-    if (userDTO.getId() ==null) {
+    if (userDTO.getId() == null) {
       throw new APIException("Invalid contactId");
     }
     return userDTO;
@@ -245,7 +243,7 @@ public class UserServiceImpl implements UserService {
        */
       private static final long serialVersionUID = 1L;
     }.getType());
-    if (userDTO.getId() ==null) {
+    if (userDTO.getId() == null) {
       throw new APIException("Invalid userId");
     }
     return userDTO;
@@ -296,15 +294,14 @@ public class UserServiceImpl implements UserService {
     userDTO.setToken(generateJwtToken(email, email));
     userDTO.setEmail(email);
     log.info("staring email sending...");
-    String languageCode = CommonUtil.getLanguageCode(user.getLanguage().getName());
     Map<String, String> staticContentsMap = StaticContentsMultiLanguageUtil
-        .getStaticContentsMap(languageCode, Constant.EMAILS_CONTENT_MAP);
+        .getStaticContentsMap(user.getLanguage().getName(), Constant.EMAILS_CONTENT_MAP);
     String mailSubject = staticContentsMap.get("candidate.suite.forgot.email.subject");
     try {
       mailService.sendEmail(email, null, mailSubject, mailService.getEmailContent(request, userDTO,
           staticContentsMap, Constant.FORGOT_EMAIL_TEMPLATE), null);
       response = true;
-    } catch (IOException | TemplateException e) {
+    } catch (Exception e) {
       throw new APIException("Error in send Email");
     }
 

@@ -8,6 +8,8 @@ import com.aspire.kgp.model.UserSearch;
 public interface UserSearchService {
   UserSearch findByUserAndCandidateId(User user, String candidateId);
   
+  UserSearch findByUserAndSearchId(User user, String searchId);
+  
   UserSearch findByCandidateId(String candidateId);
   
   UserSearch saveorUpdate(UserSearch userSearch);
@@ -15,4 +17,6 @@ public interface UserSearchService {
   UserSearch deleteUserSearch(UserSearch userSearch);
   
   List<UserSearch> findByUser(User user);
+  
+  List<UserSearch> findByIsDeletedFalse();
 }

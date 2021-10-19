@@ -289,4 +289,12 @@ public class CommonUtil {
         return "th";
     }
   }
+  
+  public static String removeTime(String date) {   
+    if (CommonUtil.checkNotNullString(date) && date.contains("T")) {
+      String[] spliteddate = date.split("T");
+      date = spliteddate[0];
+    }
+    return date;
+  }
 }

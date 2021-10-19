@@ -119,4 +119,12 @@ public class SearchDTO {
     this.state = state;
   }
 
+  @Override
+  public String toString() {
+    return "SearchDTO [id=" + id + ", jobTitle=" + jobTitle + ", jobNumber=" + jobNumber
+        + ", stage=" + stage + ", company=" + company + ", partners=" + partners + ", recruiters="
+        + recruiters + ", researchers=" + researchers + ", eas=" + eas + ", clienTeam=" + clienTeam
+        + ", city=" + city + ", state=" + state + "]";
+  }
+
 }

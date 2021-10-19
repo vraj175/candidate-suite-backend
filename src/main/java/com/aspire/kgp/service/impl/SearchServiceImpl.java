@@ -1,57 +1,42 @@
-package com.aspire.kgp.util;
+package com.aspire.kgp.service.impl;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.converter.json.MappingJacksonValue;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import com.aspire.kgp.constant.Constant;
 import com.aspire.kgp.dto.CandidateDTO;
-import com.aspire.kgp.dto.ContactDTO;
 import com.aspire.kgp.dto.PositionProfileDTO;
 import com.aspire.kgp.dto.SearchDTO;
 import com.aspire.kgp.exception.APIException;
 import com.aspire.kgp.exception.NotFoundException;
 import com.aspire.kgp.model.User;
 import com.aspire.kgp.model.UserSearch;
+import com.aspire.kgp.service.SearchService;
 import com.aspire.kgp.service.UserSearchService;
-import com.fasterxml.jackson.databind.ser.FilterProvider;
-import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
-import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
+import com.aspire.kgp.util.RestUtil;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 
-@Component
-public class SearchUtil {
-  private static final Log log = LogFactory.getLog(SearchUtil.class);
+@Service
+public class SearchServiceImpl implements SearchService {
 
   @Autowired
   RestUtil restUtil;
 
   @Autowired
-  UserSearchService searchService;
+  UserSearchService userSearchService;
 
-  public final List<SearchDTO> getSearchList(String companyId, String stage) {
-
-    String searchListResponse =
-        restUtil.newGetMethod(Constant.SEARCHES_LIST_BY_COMAPNY.replace("{companyId}", companyId));
-
-    return getSearchListFromJsonResponse(searchListResponse, stage);
-  }
-
-  public final List<CandidateDTO> getSearchListForUser(User user, String stage) {
-    List<UserSearch> searches = searchService.findByUser(user);
+  @Override
+  public final List<SearchDTO> getSearchListForUser(User user, String stage) {
+    List<UserSearch> searches = userSearchService.findByUser(user);
 
     if (searches.isEmpty()) {
       return Collections.emptyList();
@@ -84,20 +69,7 @@ public class SearchUtil {
 
     String searchListResponse =
         restUtil.postMethod(Constant.SEARCHES_LIST_BY_IDS, paramJSON.toString(), null);
-    List<SearchDTO> searchList = getSearchListFromJsonResponse(searchListResponse, stage);
-    List<CandidateDTO> candidateList = new ArrayList<>();
-    for (SearchDTO search : searchList) {
-
-      searches.forEach(userSearch -> {
-        if (userSearch.getSearchId().equals(search.getId())) {
-          CandidateDTO candidate = new CandidateDTO();
-          candidate.setId(userSearch.getCandidateId());
-          candidate.setSearch(search);
-          candidateList.add(candidate);
-        }
-      });
-    }
-    return candidateList;
+    return getSearchListFromJsonResponse(searchListResponse, stage);
   }
 
   private List<SearchDTO> getSearchListFromJsonResponse(String searchListResponse, String stage) {
@@ -111,38 +83,48 @@ public class SearchUtil {
         private static final long serialVersionUID = 1L;
       }.getType());
     } catch (JsonSyntaxException e) {
-      throw new APIException("Error in coverting json to object");
+      throw new APIException(Constant.CONVERT_JSON_ERROR);
     }
     return searchList.stream().filter(s -> stage.equalsIgnoreCase(s.getStage()))
         .collect(Collectors.toList());
   }
 
-  public MappingJacksonValue applySearchFilter(List<SearchDTO> searchDTOs) {
-    SimpleBeanPropertyFilter filter = SimpleBeanPropertyFilter.filterOutAllExcept("id", "jobTitle",
-        "jobNumber", "stage", "company");
+  @Override
+  public List<SearchDTO> getSearchList(String companyId, String stage) {
+    List<UserSearch> searches = userSearchService.findByIsDeletedFalse();
+    if (searches.isEmpty()) {
+      return Collections.emptyList();
+    }
+    String searchListResponse =
+        restUtil.newGetMethod(Constant.SEARCHES_LIST_BY_COMAPNY.replace("{companyId}", companyId));
 
-    SimpleBeanPropertyFilter companyFilter =
-        SimpleBeanPropertyFilter.filterOutAllExcept("id", "name");
-
-    FilterProvider filters = new SimpleFilterProvider().addFilter("searchFilter", filter)
-        .addFilter("companyFilter", companyFilter);
-    MappingJacksonValue mapping = new MappingJacksonValue(searchDTOs);
-    mapping.setFilters(filters);
-    return mapping;
+    List<SearchDTO> searchDTOs = getSearchListFromJsonResponse(searchListResponse, stage);
+    return createSharedListViaStream(searchDTOs, searches);
   }
 
-  public List<CandidateDTO> getCandidateList(String searchId) {
+  public List<SearchDTO> createSharedListViaStream(List<SearchDTO> listOne,
+      List<UserSearch> listTwo) {
+    // We create a stream of elements from the first list.
+    return listOne.stream()
+        // We select any elements such that in the stream of elements from the second
+        // list
+        .filter(two -> listTwo.stream()
+            // there is an element that has the same name and school as this element,
+            .anyMatch(one -> one.getSearchId().equals(two.getId())))
+        // and collect all matching elements from the first list into a new list.
+        .collect(Collectors.toList());
+    // We return the collected list.
+  }
 
-    ContactDTO contact = null;
-    CandidateDTO candidate;
-    List<CandidateDTO> listCandidate = new ArrayList<>();
+  @Override
+  public List<CandidateDTO> getCandidateList(String searchId) {
+    List<UserSearch> searches = userSearchService.findByIsDeletedFalse();
+    if (searches.isEmpty()) {
+      return Collections.emptyList();
+    }
 
     String apiResponse =
         restUtil.newGetMethod(Constant.CANDIDATE_LIST_URL.replace("{searchId}", searchId));
-    if (CommonUtil.checkNullString(apiResponse)) {
-      log.error("Error while fetching candidate list from Galaxy.");
-      return listCandidate;
-    }
 
     JsonObject jsonObjects = (JsonObject) JsonParser.parseString(apiResponse);
     JsonArray jsonArray = jsonObjects.getAsJsonArray("data");
@@ -150,23 +132,41 @@ public class SearchUtil {
     if (jsonArray == null) {
       throw new NotFoundException("Invalid Search Id");
     }
-    Gson gson = new Gson();
-    for (JsonElement jsonElement : jsonArray) {
-      contact =
-          gson.fromJson(jsonElement.getAsJsonObject().get("contact"), new TypeToken<ContactDTO>() {
-            /**
-            *
-            */
-            private static final long serialVersionUID = 1L;
-          }.getType());
-      candidate = new CandidateDTO();
-      candidate.setId(jsonElement.getAsJsonObject().get("id").getAsString());
-      candidate.setContact(contact);
-      listCandidate.add(candidate);
-    }
-    return listCandidate;
+    List<CandidateDTO> candidateList = getCandidateListFromJsonResponse(jsonArray);
+    return getInvitedCandidatesFromAllCandidates(candidateList, searches);
   }
 
+  private List<CandidateDTO> getCandidateListFromJsonResponse(JsonArray jsonArray) {
+    List<CandidateDTO> candidateList;
+    try {
+      candidateList = new Gson().fromJson(jsonArray, new TypeToken<List<CandidateDTO>>() {
+
+        /**
+         * 
+         */
+        private static final long serialVersionUID = 1L;
+      }.getType());
+    } catch (JsonSyntaxException e) {
+      throw new APIException(Constant.CONVERT_JSON_ERROR);
+    }
+    return candidateList;
+  }
+
+  public List<CandidateDTO> getInvitedCandidatesFromAllCandidates(List<CandidateDTO> allCandidates,
+      List<UserSearch> invitedCandidates) {
+    // We create a stream of elements from the first list.
+    return allCandidates.stream()
+        // We select any elements such that in the stream of elements from the second
+        // list
+        .filter(two -> invitedCandidates.stream()
+            // there is an element that has the same name and school as this element,
+            .anyMatch(one -> one.getCandidateId().equals(two.getId())))
+        // and collect all matching elements from the first list into a new list.
+        .collect(Collectors.toList());
+    // We return the collected list.
+  }
+
+  @Override
   public PositionProfileDTO getPositionProfileDetails(String searchId) {
     PositionProfileDTO positionProfile;
     String apiResponse =
@@ -180,7 +180,7 @@ public class SearchUtil {
         private static final long serialVersionUID = 1L;
       }.getType());
     } catch (Exception e) {
-      throw new APIException("Error in coverting json to object");
+      throw new APIException(Constant.CONVERT_JSON_ERROR);
     }
 
     if (positionProfile == null || positionProfile.getIsYearsOfExperienceMandatory() == null) {
@@ -188,7 +188,8 @@ public class SearchUtil {
     }
     return positionProfile;
   }
-
+  
+  @Override
   public SearchDTO getsearchDetails(String searchId) {
     String apiResponse =
         restUtil.newGetMethod(Constant.SEARCH_INFO_URL.replace("{SEARCHID}", searchId));

@@ -2,6 +2,7 @@ package com.aspire.kgp.dto;
 
 import java.util.List;
 
+import com.aspire.kgp.util.CommonUtil;
 import com.fasterxml.jackson.annotation.JsonFilter;
 import com.google.gson.annotations.SerializedName;
 
@@ -9,14 +10,12 @@ import com.google.gson.annotations.SerializedName;
 public class CandidateDTO {
   private String id;
   boolean resumeUploaded;
-  private UserDTO contact;
+  private ContactDTO contact;
   private SearchDTO search;
   @SerializedName("kgp_interview_date1")
   private String kgpInterviewDate1;
-
   @SerializedName("kgp_interview_date2")
   private String kgpInterviewDate2;
-
   @SerializedName("kgp_interview_date3")
   private String kgpInterviewDate3;
   private List<InterviewDTO> interviews;
@@ -75,13 +74,11 @@ public class CandidateDTO {
     this.offerPresented = offerPresented;
   }
 
-
-
-  public UserDTO getContact() {
+  public ContactDTO getContact() {
     return contact;
   }
 
-  public void setContact(UserDTO contact) {
+  public void setContact(ContactDTO contact) {
     this.contact = contact;
   }
 
@@ -94,7 +91,7 @@ public class CandidateDTO {
   }
 
   public String getKgpInterviewDate1() {
-    return kgpInterviewDate1;
+    return CommonUtil.removeTime(kgpInterviewDate1);
   }
 
   public void setKgpInterviewDate1(String kgpInterviewDate1) {
@@ -102,7 +99,7 @@ public class CandidateDTO {
   }
 
   public String getKgpInterviewDate2() {
-    return kgpInterviewDate2;
+    return CommonUtil.removeTime(kgpInterviewDate2);
   }
 
   public void setKgpInterviewDate2(String kgpInterviewDate2) {
@@ -110,7 +107,7 @@ public class CandidateDTO {
   }
 
   public String getKgpInterviewDate3() {
-    return kgpInterviewDate3;
+    return CommonUtil.removeTime(kgpInterviewDate3);
   }
 
   public void setKgpInterviewDate3(String kgpInterviewDate3) {
@@ -131,6 +128,16 @@ public class CandidateDTO {
 
   public void setAthenaCompleted(boolean athenaCompleted) {
     this.athenaCompleted = athenaCompleted;
+  }
+
+  @Override
+  public String toString() {
+    return "CandidateDTO [id=" + id + ", resumeUploaded=" + resumeUploaded + ", contact=" + contact
+        + ", search=" + search + ", kgpInterviewDate1=" + kgpInterviewDate1 + ", kgpInterviewDate2="
+        + kgpInterviewDate2 + ", kgpInterviewDate3=" + kgpInterviewDate3 + ", interviews="
+        + interviews + ", degreeVerification=" + degreeVerification + ", offerPresented="
+        + offerPresented + ", athenaCompleted=" + athenaCompleted + ", athenaStatus=" + athenaStatus
+        + ", contactId=" + contactId + "]";
   }
 
 }

@@ -9,6 +9,9 @@ import javax.persistence.ManyToOne;
 @Entity
 public class UserSearch extends SuperBase {
 
+  @Column(name = "companyId", nullable = false)
+  private String companyId;
+
   @Column(name = "searchId", nullable = false)
   private String searchId;
 
@@ -27,6 +30,14 @@ public class UserSearch extends SuperBase {
 
   @Column(columnDefinition = "boolean default false")
   private boolean isDeleted;
+
+  public String getCompanyId() {
+    return companyId;
+  }
+
+  public void setCompanyId(String companyId) {
+    this.companyId = companyId;
+  }
 
   public String getSearchId() {
     return searchId;

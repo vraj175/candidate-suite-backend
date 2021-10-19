@@ -43,15 +43,15 @@ public class LanguageServiceImpl implements LanguageService {
       List<Language> languages = new ArrayList<>();
 
       Language language1 = new Language();
-      language1.setName(Constant.ENGLISH);
+      language1.setName(Constant.ENGLISH_CODE);
       languages.add(language1);
 
       Language language2 = new Language();
-      language2.setName(Constant.SPANISH);
+      language2.setName(Constant.SPANISH_CODE);
       languages.add(language2);
 
       Language language3 = new Language();
-      language3.setName(Constant.PORTUGUESE);
+      language3.setName(Constant.PORTUGUESE_CODE);
       languages.add(language3);
 
       saveAll(languages);

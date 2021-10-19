@@ -1,4 +1,4 @@
-package com.aspire.kgp.util;
+package com.aspire.kgp.service.impl;
 
 
 import java.io.File;
@@ -6,6 +6,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -16,28 +17,35 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpHeaders;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.aspire.kgp.constant.Constant;
 import com.aspire.kgp.dto.ContactDTO;
 import com.aspire.kgp.dto.ContactReferencesDTO;
 import com.aspire.kgp.dto.DocumentDTO;
+import com.aspire.kgp.dto.SearchDTO;
 import com.aspire.kgp.exception.APIException;
+import com.aspire.kgp.exception.NotFoundException;
+import com.aspire.kgp.service.ContactService;
+import com.aspire.kgp.util.CommonUtil;
+import com.aspire.kgp.util.RestUtil;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 
-
-@Component
-public class ContactUtil {
-  static Log log = LogFactory.getLog(ContactUtil.class.getName());
+@Service
+public class ContactServiceImpl implements ContactService {
+  static Log log = LogFactory.getLog(ContactServiceImpl.class.getName());
 
   @Autowired
   RestUtil restUtil;
 
-  public final ContactDTO getContactDetails(String contactId) {
+  @Override
+  public ContactDTO getContactDetails(String contactId) {
     String apiResponse =
         restUtil.newGetMethod(Constant.CONTACT_URL.replace(Constant.CONTACT_ID, contactId));
 
@@ -54,16 +62,33 @@ public class ContactUtil {
     }
   }
 
-  public final byte[] getContactImage(String contactId) {
+  @Override
+  public byte[] getContactImage(String contactId) {
     return restUtil
         .newGetImage(Constant.CONTACT_PROFILE_IMAGE_URL.replace(Constant.CONTACT_ID, contactId));
   }
 
-  public final String updateContactDetails(String contactId, String contactData)
+  @Override
+  public String updateContactDetails(String contactId, String contactData)
       throws UnsupportedEncodingException {
     return restUtil.putMethod(Constant.CONTACT_URL.replace("{contactId}", contactId), contactData);
   }
 
+  @Override
+  public String updateContactReference(String referenceId, String referenceData)
+      throws UnsupportedEncodingException {
+    return restUtil.putMethod(
+        Constant.UPDATE_CONTACT_REFERENCE_URL.replace("{referenceId}", referenceId), referenceData);
+  }
+
+  @Override
+  public final String addContactReference(String contactId, String referenceData) {
+    return restUtil.postMethod(
+        Constant.CONTACT_REFERENCE_URL.replace(Constant.CONTACT_ID, contactId), referenceData,
+        null);
+  }
+
+  @Override
   public String uploadCandidateResume(MultipartFile multipartFile, String contactId) {
     JsonObject paramJSON = new JsonObject();
     paramJSON.addProperty("description", "");
@@ -82,7 +107,6 @@ public class ContactUtil {
       fos.write(multipartFile.getBytes());
       fos.close();
     } catch (IOException e1) {
-      e1.printStackTrace();
       throw new APIException(Constant.FILE_UPLOAD_ERROR);
     }
 
@@ -96,12 +120,49 @@ public class ContactUtil {
         return Constant.FILE_UPLOADED_SUCCESSFULLY;
       }
     } catch (Exception e) {
-      e.printStackTrace();
       throw new APIException(Constant.FILE_UPLOAD_ERROR);
     }
     return Constant.FILE_UPLOAD_ERROR;
   }
 
+  @Override
+  public String uploadContactImage(MultipartFile multipartFile, String contactId) {
+    JsonObject paramJSON = new JsonObject();
+
+    File image;
+    try {
+      String imageName = multipartFile.getOriginalFilename();
+      if (imageName == null) {
+        throw new APIException(Constant.IMAGE_UPLOAD_ERROR);
+      }
+      String extension = imageName.substring(imageName.lastIndexOf("."));
+      log.info(extension);
+      image =
+          File.createTempFile(imageName.substring(0, imageName.lastIndexOf(".") - 1), extension);
+      FileOutputStream fos = new FileOutputStream(image);
+      fos.write(multipartFile.getBytes());
+      fos.close();
+    } catch (IOException e1) {
+      throw new APIException(Constant.IMAGE_UPLOAD_ERROR);
+    }
+
+    String response =
+        restUtil.postMethod(Constant.IMAGE_UPLOAD_URL.replace(Constant.CONTACT_ID, contactId),
+            paramJSON.toString(), image);
+    log.info(response);
+    JsonObject responseJson = new Gson().fromJson(response, JsonObject.class);
+
+    try {
+      if (responseJson.get("imageId").getAsString() != null) {
+        return Constant.IMAGE_UPLOADED_SUCCESSFULLY;
+      }
+    } catch (Exception e) {
+      throw new APIException(Constant.IMAGE_UPLOAD_ERROR);
+    }
+    return Constant.IMAGE_UPLOAD_ERROR;
+  }
+
+  @Override
   public final DocumentDTO getContactResumes(String contactId) {
     List<DocumentDTO> documentList = null;
     String apiResponse =
@@ -125,6 +186,7 @@ public class ContactUtil {
     return documentList.get(0);
   }
 
+  @Override
   public void downloadDocument(String documentName, String attachmentId,
       HttpServletResponse response) {
     try {
@@ -145,9 +207,10 @@ public class ContactUtil {
     }
   }
 
-  public final List<ContactReferencesDTO> getListOfReferences(String contactId) {
-    String apiResponse =
-        restUtil.newGetMethod(Constant.CONTACT_REFERENCE_URL.replace("{CONTACTID}", contactId));
+  @Override
+  public List<ContactReferencesDTO> getListOfReferences(String contactId) {
+    String apiResponse = restUtil
+        .newGetMethod(Constant.CONTACT_REFERENCE_URL.replace(Constant.CONTACT_ID, contactId));
 
     try {
       return new Gson().fromJson(apiResponse, new TypeToken<List<ContactReferencesDTO>>() {
@@ -161,4 +224,62 @@ public class ContactUtil {
       throw new APIException(Constant.JSON_PROCESSING_EXCEPTION + e.getMessage());
     }
   }
+
+  @Override
+  public List<SearchDTO> getListOfContactSearches(String contactId) {
+    String apiResponse = restUtil
+        .newGetMethod(Constant.CONTACT_SEARCHES_URL.replace(Constant.CONTACT_ID, contactId));
+    List<SearchDTO> listSearch = new ArrayList<>();
+    if (CommonUtil.checkNullString(apiResponse)) {
+      log.error("Error while fetching contact search.");
+      return listSearch;
+    }
+    JsonObject jsonObjects = (JsonObject) JsonParser.parseString(apiResponse);
+    JsonArray jsonArray = jsonObjects.getAsJsonArray("data");
+
+    if (jsonArray == null) {
+      throw new NotFoundException("Invalid Contact Id");
+    }
+    try {
+      return new Gson().fromJson(jsonArray, new TypeToken<List<SearchDTO>>() {
+
+        /**
+         * 
+         */
+        private static final long serialVersionUID = 1L;
+      }.getType());
+    } catch (JsonSyntaxException e) {
+      throw new APIException(Constant.JSON_PROCESSING_EXCEPTION + e.getMessage());
+    }
+  }
+
+  @Override
+  public final List<ContactDTO> getListOfContactByName(String contactName) {
+    String apiResponse = restUtil
+        .newGetMethod(Constant.GET_CONTACT_LIST_BY_NAME_URL.replace("{CONTACTNAME}", contactName));
+
+    List<ContactDTO> listContact = new ArrayList<>();
+    if (CommonUtil.checkNullString(apiResponse)) {
+      log.error("Error while fetching contact.");
+      return listContact;
+    }
+    JsonObject jsonObjects = (JsonObject) JsonParser.parseString(apiResponse);
+    JsonArray jsonArray = jsonObjects.getAsJsonArray("data");
+
+    if (jsonArray == null) {
+      throw new NotFoundException("Invalid Contact Id");
+    }
+    try {
+      return new Gson().fromJson(jsonArray, new TypeToken<List<ContactDTO>>() {
+
+        /**
+         * 
+         */
+        private static final long serialVersionUID = 1L;
+      }.getType());
+    } catch (JsonSyntaxException e) {
+      throw new APIException(Constant.JSON_PROCESSING_EXCEPTION + e.getMessage());
+    }
+  }
+
 }
