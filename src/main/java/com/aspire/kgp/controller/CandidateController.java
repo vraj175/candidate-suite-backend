@@ -29,7 +29,6 @@ import com.aspire.kgp.dto.CandidateFeedbackRequestDTO.CandidateFeedbackReq;
 import com.aspire.kgp.dto.CandidateFeedbackRequestDTO.CandidateFeedbackStatusUpdateReq;
 import com.aspire.kgp.model.User;
 import com.aspire.kgp.service.CandidateService;
-import com.aspire.kgp.util.CommonUtil;
 import com.fasterxml.jackson.databind.ser.FilterProvider;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;

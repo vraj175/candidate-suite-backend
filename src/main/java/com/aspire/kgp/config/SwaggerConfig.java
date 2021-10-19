@@ -106,7 +106,7 @@ public class SwaggerConfig {
             getPathItem(getCandidateFeedbackReplyDTOSchema(), "Candidate",
                 "Add Candidate Feedback Reply", "", getCandidateFeedbackReplyResponseContent()))
         .path(Constant.BASE_API_URL + "/candidates/candidate-feedback/status-update",
-            getPathItem(getCandidateFeedbackUpdateDTOSchema(), "Candidate",
+            getPutRequestPathItem(getCandidateFeedbackUpdateDTOSchema(), "Candidate",
                 "Update Candidate Feedback Status", "", getCandidateFeedbackResponseContent()))
         .addSecurityItem(
             new SecurityRequirement().addList(Constant.API_KEY).addList(Constant.AUTHORIZATION));
@@ -142,6 +142,24 @@ public class SwaggerConfig {
     requestBody.setContent(getRequestContent(schema));
 
     pathItem.setPost(new Operation().requestBody(requestBody)
+        .responses(new ApiResponses().addApiResponse("200",
+            new ApiResponse().description("OK").content(responseContent)))
+        .addTagsItem(tagItem).summary(summary).description(description));
+    return pathItem;
+  }
+
+  /*
+   * Generic methods to get PathItem object(For PUT API we have to add schemas). For Schema input
+   * parameter create schema for particular request and pass it
+   */
+  private PathItem getPutRequestPathItem(Schema<?> schema, String tagItem, String summary,
+      String description, Content responseContent) {
+    PathItem pathItem = new PathItem();
+    RequestBody requestBody = new RequestBody();
+
+    requestBody.setContent(getRequestContent(schema));
+
+    pathItem.setPut(new Operation().requestBody(requestBody)
         .responses(new ApiResponses().addApiResponse("200",
             new ApiResponse().description("OK").content(responseContent)))
         .addTagsItem(tagItem).summary(summary).description(description));
