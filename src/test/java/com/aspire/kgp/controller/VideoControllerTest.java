@@ -57,22 +57,22 @@ class VideoControllerTest {
     assertEquals("Error in add video", e.getMessage());
   }
 
-  @Test
-  void testGetCandidateVideo() {
-    when(service.findByContactId(anyString())).thenReturn(new ArrayList<>());
-
-    DocumentDTO result = controller.getCandidateVideo(Constant.TEST);
-
-    assertNull(result);
-
-    List<UserVideo> userVideos = CustomTestData.getUserVideos();
-    when(service.findByContactId(anyString())).thenReturn(userVideos);
-    result = controller.getCandidateVideo(Constant.TEST);
-
-    UserVideo userVideo = userVideos.get(0);
-    assertNotNull(result);
-    assertEquals(String.valueOf(userVideo.getId()), result.getId());
-    assertEquals(String.valueOf(userVideo.getCreatedDate()), result.getCreatedAt());
-    assertEquals(userVideo.getFileToken(), result.getFileName());
-  }
+//  @Test
+//  void testGetCandidateVideo() {
+//    when(service.findByContactId(anyString())).thenReturn(new ArrayList<>());
+//
+//    DocumentDTO result = controller.getCandidateVideo(Constant.TEST);
+//
+//    assertNull(result);
+//
+//    List<UserVideo> userVideos = CustomTestData.getUserVideos();
+//    when(service.findByContactId(anyString())).thenReturn(userVideos);
+//    result = controller.getCandidateVideo(Constant.TEST);
+//
+//    UserVideo userVideo = userVideos.get(0);
+//    assertNotNull(result);
+//    assertEquals(String.valueOf(userVideo.getId()), result.getId());
+//    assertEquals(String.valueOf(userVideo.getCreatedDate()), result.getCreatedAt());
+//    assertEquals(userVideo.getFileToken(), result.getFileName());
+//  }
 }

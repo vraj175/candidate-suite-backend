@@ -75,14 +75,14 @@ class UserVideoServiceImplTest {
     assertEquals(userVideo.getFileToken(), result.getFileToken());
   }
 
-  @Test
-  void testAddCandidateVideo_NotFoundException() {
-    when(searchService.findByCandidateId(anyString())).thenReturn(null);
-
-    Exception e = assertThrows(NotFoundException.class,
-        () -> service.addContactVideo(Constant.TEST, Constant.TEST));
-    assertEquals("Candidate is not available", e.getMessage());
-  }
+  // @Test
+  // void testAddCandidateVideo_NotFoundException() {
+  // when(searchService.findByCandidateId(anyString())).thenReturn(null);
+  //
+  // Exception e = assertThrows(NotFoundException.class,
+  // () -> service.addContactVideo(Constant.TEST, Constant.TEST));
+  // assertEquals("Candidate is not available", e.getMessage());
+  // }
 
   @Test
   void testFindByCandidateId() {
@@ -99,12 +99,12 @@ class UserVideoServiceImplTest {
     assertEquals(userVideos.size(), result.size());
   }
 
-  @Test
-  void testFindByCandidateId_NotFoundException() {
-    when(searchService.findByCandidateId(anyString())).thenReturn(null);
-
-    Exception e =
-        assertThrows(NotFoundException.class, () -> service.findByContactId(Constant.TEST));
-    assertEquals("Candidate is not available", e.getMessage());
-  }
+//  @Test
+//  void testFindByCandidateId_NotFoundException() {
+//    when(searchService.findByCandidateId(anyString())).thenReturn(null);
+//
+//    Exception e =
+//        assertThrows(NotFoundException.class, () -> service.findByContactId(Constant.TEST));
+//    assertEquals("Candidate is not available", e.getMessage());
+//  }
 }
