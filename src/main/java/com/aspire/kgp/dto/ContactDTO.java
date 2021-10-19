@@ -2,6 +2,7 @@ package com.aspire.kgp.dto;
 
 import java.util.List;
 
+import com.aspire.kgp.util.CommonUtil;
 import com.fasterxml.jackson.annotation.JsonFilter;
 import com.google.gson.annotations.SerializedName;
 
@@ -29,6 +30,10 @@ public class ContactDTO extends UserDTO {
   private List<EducationDTO> educationDetails;
   @SerializedName("board_details")
   private List<BoardDetailsDTO> boardDetails;
+  @SerializedName("athena_completion_date")
+  private String athenaCompletionDate;
+  @SerializedName("athena_invitation_sent_on")
+  private String athenaInvitationSentOn;
 
   public String getCurrentJobTitle() {
     return currentJobTitle;
@@ -124,6 +129,22 @@ public class ContactDTO extends UserDTO {
 
   public void setBoardDetails(List<BoardDetailsDTO> boardDetails) {
     this.boardDetails = boardDetails;
+  }
+
+  public String getAthenaCompletionDate() {
+    return CommonUtil.removeTime(athenaCompletionDate);
+  }
+
+  public void setAthenaCompletionDate(String athenaCompletionDate) {
+    this.athenaCompletionDate = athenaCompletionDate;
+  }
+
+  public String getAthenaInvitationSentOn() {
+    return CommonUtil.removeTime(athenaInvitationSentOn);
+  }
+
+  public void setAthenaInvitationSentOn(String athenaInvitationSentOn) {
+    this.athenaInvitationSentOn = athenaInvitationSentOn;
   }
 
   @Override
