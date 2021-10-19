@@ -7,7 +7,7 @@ import com.aspire.kgp.model.UserVideo;
 public interface UserVideoService {
   UserVideo saveorUpdate(UserVideo userVideo);
 
-  UserVideo addCandidateVideo(String candidateId, String fileToken);
-  
-  List<UserVideo> findByCandidateId(String candidateId);
+  UserVideo addContactVideo(String candidateId, String fileToken);
+
+  List<UserVideo> findByContactId(String contactId);
 }

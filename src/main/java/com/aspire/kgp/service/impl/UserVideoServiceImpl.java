@@ -7,7 +7,6 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.aspire.kgp.exception.NotFoundException;
 import com.aspire.kgp.model.UserSearch;
 import com.aspire.kgp.model.UserVideo;
 import com.aspire.kgp.repository.UserVideoRepository;
@@ -30,24 +29,19 @@ public class UserVideoServiceImpl implements UserVideoService {
   }
 
   @Override
-  public UserVideo addCandidateVideo(String candidateId, String fileToken) {
-    UserSearch userSearch = searchService.findByCandidateId(candidateId);
-    if (userSearch == null) {
-      throw new NotFoundException("Candidate is not available");
-    }
+  public UserVideo addContactVideo(String contactId, String fileToken) {
     UserVideo userVideo = new UserVideo();
+    UserSearch userSearch = new UserSearch();
+    userSearch.setId(1);
     userVideo.setUserSearch(userSearch);
+    userVideo.setContactId(contactId);
     userVideo.setFileToken(fileToken);
     return saveorUpdate(userVideo);
   }
 
   @Override
-  public List<UserVideo> findByCandidateId(String candidateId) {
-    UserSearch userSearch = searchService.findByCandidateId(candidateId);
-    if (userSearch == null) {
-      throw new NotFoundException("Candidate is not available");
-    }
-    return repository.findByUserSearchAndIsDeletedFalseOrderByCreatedDateDesc(userSearch);
+  public List<UserVideo> findByContactId(String contactId) {
+    return repository.findByContactIdAndIsDeletedFalseOrderByCreatedDateDesc(contactId);
   }
 
 }
