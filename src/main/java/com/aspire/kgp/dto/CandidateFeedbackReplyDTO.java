@@ -17,6 +17,25 @@ public class CandidateFeedbackReplyDTO {
   @SerializedName("comment_id")
   private String commentId;
   private String reply;
+  private String type;
+  @SerializedName("created_name")
+  private String createdName;
+
+  public String getCreatedName() {
+    return createdName;
+  }
+
+  public void setCreatedName(String createdName) {
+    this.createdName = createdName;
+  }
+
+  public String getType() {
+    return type;
+  }
+
+  public void setType(String type) {
+    this.type = type;
+  }
 
   public String getId() {
     return id;

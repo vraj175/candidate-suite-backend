@@ -84,6 +84,7 @@ public class Constant {
       "/candidate-suite/candidates/{candidateId}/candidate-feedback";
   public static final String CANDIDATE_FEEDBACK_REPLY_URL =
       "/candidate-suite/candidate-feedback/{commentId}/{candidateId}/reply";
+  public static final String CANDIDATE_FEEDBACK_STATUS_UPDATE_URL = "/candidate-suite/{commentId}";
 
   public static final String CONTACT_PROFILE_IMAGE_URL =
       "/clientsuite/contacts/{contactId}/profile-image";
@@ -109,6 +110,7 @@ public class Constant {
   public static final String UPDATE_CONTACT_REFERENCE_URL = "/contact/references/{referenceId}";
   public static final String CONTACT_ID = "{contactId}";
   public static final String CANDIDATE_ID_BRACES = "{candidateId}";
+  public static final String COMMENT_ID_BRACES = "{commentId}";
 
   // Queries parameter
   public static final String INVALID_JSON_ERROR = "oops ! invalid json";
@@ -177,7 +179,8 @@ public class Constant {
   public static final String REPLY = "reply";
   public static final String REPLIES = "replies";
   public static final String CANDIDATE_ID = "candidateId";
-
+  public static final String TYPE = "type";
+  public static final String CREATED_NAME = "createdName";
 
 
   // google capcha

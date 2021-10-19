@@ -105,6 +105,9 @@ public class SwaggerConfig {
         .path(Constant.BASE_API_URL + "/candidates/candidate-feedback/reply",
             getPathItem(getCandidateFeedbackReplyDTOSchema(), "Candidate",
                 "Add Candidate Feedback Reply", "", getCandidateFeedbackReplyResponseContent()))
+        .path(Constant.BASE_API_URL + "/candidates/candidate-feedback/status-update",
+            getPathItem(getCandidateFeedbackUpdateDTOSchema(), "Candidate",
+                "Update Candidate Feedback Status", "", getCandidateFeedbackResponseContent()))
         .addSecurityItem(
             new SecurityRequirement().addList(Constant.API_KEY).addList(Constant.AUTHORIZATION));
   }
@@ -206,6 +209,16 @@ public class SwaggerConfig {
     CandidateFeedbackRequestDTO feedback = new CandidateFeedbackRequestDTO();
     feedback.setComments(Constant.STRING);
     feedback.setCandidateId(Constant.STRING);
+    candidateFeedbackRequestSchema.addEnumItemObject(feedback);
+    return candidateFeedbackRequestSchema;
+  }
+
+  /* Schema For add candidate Feedback */
+  private Schema<?> getCandidateFeedbackUpdateDTOSchema() {
+    Schema<CandidateFeedbackRequestDTO> candidateFeedbackRequestSchema = new Schema<>();
+    CandidateFeedbackRequestDTO feedback = new CandidateFeedbackRequestDTO();
+    feedback.setCommentId(Constant.STRING);
+    feedback.setStatus(false);
     candidateFeedbackRequestSchema.addEnumItemObject(feedback);
     return candidateFeedbackRequestSchema;
   }

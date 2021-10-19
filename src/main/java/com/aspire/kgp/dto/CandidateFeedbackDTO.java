@@ -8,7 +8,16 @@ import com.fasterxml.jackson.annotation.JsonFilter;
 public class CandidateFeedbackDTO extends CandidateFeedbackReplyDTO {
 
   private String comments;
+  private boolean status;
   private List<CandidateFeedbackReplyDTO> replies;
+
+  public boolean isStatus() {
+    return status;
+  }
+
+  public void setStatus(boolean status) {
+    this.status = status;
+  }
 
   public String getComments() {
     return comments;
