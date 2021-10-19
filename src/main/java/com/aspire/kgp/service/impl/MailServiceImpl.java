@@ -93,7 +93,7 @@ public class MailServiceImpl implements MailService {
     model.put("isReplyAdded", isReplyFeedback.toString());
     model.put("reply", paramRequest.get("reply"));
     model.put("replyButtonUrl",
-        CommonUtil.getServerUrl(request) + request.getContextPath() + "/candidate-status/"
+        CommonUtil.getServerUrl(request) + request.getContextPath() + "/my-status/"
             + paramRequest.get("candidateId") + "/" + paramRequest.get("searchId") + "/"
             + paramRequest.get("searchName") + "/" + paramRequest.get("contactId") + "/" + "true"
             + "/" + paramRequest.get("commentId"));
