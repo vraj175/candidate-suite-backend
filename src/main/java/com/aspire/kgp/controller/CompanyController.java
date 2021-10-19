@@ -75,7 +75,7 @@ public class CompanyController {
   @GetMapping("/companyInfo/{candidateId}")
   @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK",
       content = @Content(mediaType = "application/json", schema = @Schema(type = "CandidateDTO",
-          example = "{\"id\": \"string\",\"contact\": {\"athenaCompletionDate\": \"string\",\"athenaInvitationSentOn\": \"string\"},\"kgpInterviewDate1\": \"string\",\"kgpInterviewDate2\": \"string\",\"kgpInterviewDate3\": \"string\",\"interviews\": [{\"id\": \"string\",\"method\": \"string\",\"comments\": \"string\",\"position\": 0,\"interviewDate\": \"string\",\"client\": {\"id\": \"string\",\"name\": \"string\"}}],\"degreeVerification\": true,\"offerPresented\": true,\"athenaCompleted\": true,\"contactId\": \"string\",\"stage\": \"string\",\"kgpInterviewMethod1\": \"string\",\"kgpInterviewMethod2\": \"string\",\"kgpInterviewMethod3\": \"string\",\"kgpInterviewClient1\": {\"id\": \"string\",\"name\": \"string\"},\"kgpInterviewClient2\": {\"id\": \"string\",\"name\": \"string\"},\"kgpInterviewClient3\": {\"id\": \"string\",\"name\": \"string\"},\"screenedDate\": \"string\"}")))})
+          example = "{\"id\": \"string\",\"contact\": {\"athenaCompletionDate\": \"string\",\"athenaInvitationSentOn\": \"string\"},\"kgpInterviewDate1\": \"string\",\"kgpInterviewDate2\": \"string\",\"kgpInterviewDate3\": \"string\",\"interviews\": [{\"id\": \"string\",\"method\": \"string\",\"comments\": \"string\",\"position\": 0,\"interviewDate\": \"string\",\"client\": {\"id\": \"string\",\"name\": \"string\"}}],\"degreeVerification\": true,\"offerPresented\": true,\"athenaCompleted\": true,\"contactId\": \"string\",\"stage\": \"string\",\"kgpInterviewMethod1\": \"string\",\"kgpInterviewMethod2\": \"string\",\"kgpInterviewMethod3\": \"string\",\"kgpInterviewClient1\": {\"id\": \"string\",\"name\": \"string\",\"firstName\": \"string\",\"lastName\": \"string\"},\"kgpInterviewClient2\": {\"id\": \"string\",\"name\": \"string\",\"firstName\": \"string\",\"lastName\": \"string\"},\"kgpInterviewClient3\": {\"id\": \"string\",\"name\": \"string\",\"firstName\": \"string\",\"lastName\": \"string\"},\"screenedDate\": \"string\"}")))})
   public MappingJacksonValue getCompanyInfoDetails(
       @PathVariable("candidateId") String candidateId) {
     log.info("Get candidate Details API call, Request Param CandidateId : " + candidateId);
@@ -91,7 +91,7 @@ public class CompanyController {
         SimpleBeanPropertyFilter.filterOutAllExcept(Constant.ID, Constant.METHOD, Constant.COMMENTS,
             Constant.POSITION, Constant.INTERVIEW_DATE, Constant.CLIENT);
     SimpleBeanPropertyFilter userFilter =
-        SimpleBeanPropertyFilter.filterOutAllExcept(Constant.ID, Constant.NAME);
+        SimpleBeanPropertyFilter.filterOutAllExcept(Constant.ID, Constant.NAME,Constant.FIRST_NAME,Constant.LAST_NAME);
     SimpleBeanPropertyFilter contactFilter = SimpleBeanPropertyFilter
         .filterOutAllExcept(Constant.ATHENA_INVITATION_DATE, Constant.ATHENA_COMPLETION_DATE);
     FilterProvider filters =
