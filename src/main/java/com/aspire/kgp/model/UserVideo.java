@@ -20,6 +20,17 @@ public class UserVideo extends SuperBase {
   @Column(columnDefinition = "boolean default false")
   private boolean isDeleted;
 
+  @Column(name = "contactId", nullable = false)
+  private String contactId;
+
+  public String getContactId() {
+    return contactId;
+  }
+
+  public void setContactId(String contactId) {
+    this.contactId = contactId;
+  }
+
   public UserSearch getUserSearch() {
     return userSearch;
   }

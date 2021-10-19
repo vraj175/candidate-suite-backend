@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.aspire.kgp.constant.Constant;
 import com.aspire.kgp.dto.DocumentDTO;
 import com.aspire.kgp.exception.APIException;
+import com.aspire.kgp.exception.NotFoundException;
 import com.aspire.kgp.model.UserVideo;
 import com.aspire.kgp.service.UserVideoService;
 
@@ -41,10 +42,10 @@ public class VideoController {
   @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK",
       content = @Content(mediaType = "application/json", schema = @Schema(type = "Json",
           example = "{  \"timestamp\": \"2021-09-06T08:53:39.690+00:00\", \"status\": \"OK\", \"message\": \"Video add successfully\" }")))})
-  public ResponseEntity<Object> addVideo(@RequestParam String candidateId,
+  public ResponseEntity<Object> addVideo(@RequestParam String contactId,
       @RequestParam String fileToken) {
 
-    UserVideo userVideo = service.addCandidateVideo(candidateId, fileToken);
+    UserVideo userVideo = service.addContactVideo(contactId, fileToken);
 
     if (userVideo != null) {
       Map<String, Object> body = new LinkedHashMap<>();
@@ -55,24 +56,24 @@ public class VideoController {
     }
     throw new APIException("Error in add video");
   }
-  
-  @Operation(summary = "Get Video for Candidate")
-  @GetMapping(value = Constant.PUBLIC_API_URL + "/video/{candidateId}")
+
+  @Operation(summary = "Get Video for Contact")
+  @GetMapping(value = Constant.PUBLIC_API_URL + "/video/{contactId}")
   @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK",
       content = @Content(mediaType = "application/json", schema = @Schema(type = "Video",
           example = "{ \"id\": \"string\",\"fileName\": \"string\",\"createdAt\": \"string\" }")))})
-  public DocumentDTO getCandidateVideo(@PathVariable("candidateId") String candidateId) {
-    List<UserVideo> userVideos = service.findByCandidateId(candidateId);
-    if(userVideos.isEmpty())
-      return null;
-    
+  public DocumentDTO getCandidateVideo(@PathVariable("contactId") String contactId) {
+    List<UserVideo> userVideos = service.findByContactId(contactId);
+    if (userVideos.isEmpty())
+      throw new NotFoundException("Contact is not available");
+
     UserVideo userVideo = userVideos.get(0);
-    
+
     DocumentDTO documentDTO = new DocumentDTO();
     documentDTO.setId(String.valueOf(userVideo.getId()));
     documentDTO.setFileName(userVideo.getFileToken());
     documentDTO.setCreatedAt(String.valueOf(userVideo.getCreatedDate()));
-    
+
     return documentDTO;
   }
 
