@@ -11,4 +11,6 @@ public interface CompanyService {
   public CandidateDTO getCompanyInfoDetails(String candidateId);
 
   public List<CompanyDTO> getListOfCompany(String companyName);
+
+  public String addNewCompany(String companyData);
 }

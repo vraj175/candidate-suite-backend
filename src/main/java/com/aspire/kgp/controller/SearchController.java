@@ -36,7 +36,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @RequestMapping("/api/v1.0")
 @Tag(name = "Search", description = "Rest API For Search")
 public class SearchController {
-  
+
   @Autowired
   SearchService service;
 
@@ -116,12 +116,12 @@ public class SearchController {
   @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK",
       content = @Content(mediaType = "application/json", schema = @Schema(
           type = "PositionProfileDTO",
-          example = "{\"isDegreeMandatory\": true,\"isApprovedByPartner\": true,\"isYearsOfExperienceMandatory\": true,\"positionOverview\": \"string\",\"productsServicesOverview\": \"string\",\"professionalExperience\": \"string\",\"yearsOfExperience\": \"string\",\"degreeName\": \"string\",\"certifications\": \"string\",\"company\": {\"description\": \"string\",\"website\": \"string\"}}")))})
+          example = "{\"isDegreeMandatory\": true,\"isApprovedByPartner\": true,\"isYearsOfExperienceMandatory\": true,\"positionOverview\": \"string\",\"productsServicesOverview\": \"string\",\"professionalExperience\": \"string\",\"yearsOfExperience\": \"string\",\"degreeName\": \"string\",\"certifications\": \"string\",\"company\": {\"description\": \"string\",\"website\": \"string\",\"linkedinUrl\": \"string\",\"news\": \"string\"}}")))})
   public MappingJacksonValue getPositionProfile(@PathVariable("searchId") String searchId) {
     PositionProfileDTO positionProfile = service.getPositionProfileDetails(searchId);
 
-    SimpleBeanPropertyFilter companyFilter =
-        SimpleBeanPropertyFilter.filterOutAllExcept("description", "website");
+    SimpleBeanPropertyFilter companyFilter = SimpleBeanPropertyFilter
+        .filterOutAllExcept("description", "website", "linkedinUrl", "news");
 
     SimpleBeanPropertyFilter positionProfileFilter = SimpleBeanPropertyFilter.filterOutAllExcept(
         "isDegreeMandatory", "isApprovedByPartner", "isYearsOfExperienceMandatory",
@@ -141,7 +141,11 @@ public class SearchController {
   @GetMapping("/searches/{searchId}/candidate")
   @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK",
       content = @Content(mediaType = "application/json", schema = @Schema(type = "CandidateDTO",
-          example = "{\"id\": \"string\",\"contact\":{\"id\": \"string\",\"firstName\": \"string\",\"lastName\": \"string\"},\"search\": {\"id\": \"string\",\"jobTitle\": \"string\",\"jobNumber\": \"string\",\"company\": {\"id\": \"string\",\"name\": \"string\"},\"partners\": [{\"id\": \"string\",\"firstName\": \"string\",\"lastName\": \"string\"}],\"recruiters\": [{\"id\": \"string\",\"firstName\": \"string\",\"lastName\": \"string\"}],\"researchers\": [{\"id\": \"string\",\"firstName\": \"string\",\"lastName\": \"string\"}],\"eas\": [{\"id\": \"string\",\"firstName\": \"string\",\"lastName\": \"string\"}]}}")))})
+          example = "{\"id\": \"string\",\"contact\":{\"id\": \"string\",\"firstName\": \"string\",\"lastName\": \"string\"},\"search\": {\"id\": \"string\",\"jobTitle\": \"string\",\"jobNumber\": \"string\",\"company\": {\"id\": \"string\",\"name\": \"string\"}"
+              + ",\"partners\": [{\"id\": \"string\",\"firstName\": \"string\",\"lastName\": \"string\",\"title\": \"string\"}],"
+              + "\"recruiters\": [{\"id\": \"string\",\"firstName\": \"string\",\"lastName\": \"string\",\"title\": \"string\"}],"
+              + "\"researchers\": [{\"id\": \"string\",\"firstName\": \"string\",\"lastName\": \"string\",\"title\": \"string\"}],"
+              + "\"eas\": [{\"id\": \"string\",\"firstName\": \"string\",\"lastName\": \"string\"}]}}")))})
   public MappingJacksonValue getCandidateDetailsBySearch(@PathVariable("searchId") String searchId,
       HttpServletRequest request) {
     User user = (User) request.getAttribute("user");
@@ -164,7 +168,7 @@ public class SearchController {
         SimpleBeanPropertyFilter.filterOutAllExcept(Constant.ID, "name");
 
     SimpleBeanPropertyFilter userAndContactFilter = SimpleBeanPropertyFilter
-        .filterOutAllExcept(Constant.ID, Constant.FIRST_NAME, Constant.LAST_NAME);
+        .filterOutAllExcept(Constant.ID, Constant.FIRST_NAME, Constant.LAST_NAME, "title");
 
     SimpleBeanPropertyFilter searchFilter = SimpleBeanPropertyFilter.filterOutAllExcept(Constant.ID,
         Constant.JOB_TITLE, Constant.JOB_NUMBER, Constant.COMPANY, Constant.PARTNERS,

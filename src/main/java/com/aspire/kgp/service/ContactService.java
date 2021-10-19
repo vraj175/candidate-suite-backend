@@ -25,8 +25,8 @@ public interface ContactService {
 
   String addContactReference(String contactId, String referenceData);
 
-  String uploadCandidateResume(MultipartFile multipartFile, String contactId);
-  
+  String uploadCandidateResume(MultipartFile multipartFile, String contactId, String type);
+
   String uploadContactImage(MultipartFile multipartFile, String contactId);
 
   DocumentDTO getContactResumes(String contactId);
@@ -38,4 +38,6 @@ public interface ContactService {
   List<SearchDTO> getListOfContactSearches(String contactId);
 
   List<ContactDTO> getListOfContactByName(String contactName);
+
+  String addNewContact(String contactData);
 }

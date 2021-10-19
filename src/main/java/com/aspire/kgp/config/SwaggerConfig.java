@@ -9,7 +9,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import com.aspire.kgp.constant.Constant;
+import com.aspire.kgp.dto.CandidateFeedbackRequestDTO;
 import com.aspire.kgp.dto.InviteDTO;
+import com.aspire.kgp.dto.NotificationSchedulerDTO;
+import com.aspire.kgp.dto.NotificationsDTO;
 import com.aspire.kgp.dto.ResetPasswordDTO;
 
 import io.swagger.v3.oas.models.Components;
@@ -54,7 +57,7 @@ public class SwaggerConfig {
             "/api/v1.0/companies/**", "/api/v1.0/company/**", "/api/v1.0/companyInfo/**",
             "/api/v1.0/languages/**", "/api/v1.0/roles/**", "/api/v1.0/profile/**",
             "/api/v1.0/user/**", "/api/v1.0/video/**", "/api/v1.0/picklists/**",
-            "/api/v1.0/companyName/**", "/api/v1.0/contactName/**")
+            "/api/v1.0/companyName/**", "/api/v1.0/contactName/**", "/api/v1.0/notification/**")
         .addOpenApiCustomiser(defaultAPIConfig()).build();
   }
 
@@ -90,6 +93,18 @@ public class SwaggerConfig {
             .addSecuritySchemes(Constant.AUTHORIZATION,
                 new SecurityScheme().type(SecurityScheme.Type.APIKEY).in(SecurityScheme.In.HEADER)
                     .name(Constant.AUTHORIZATION)))
+        .path(Constant.BASE_API_URL + "/notification",
+            getPathItem(getNotificationSchedulerSchema(), "Notification",
+                "Set Interview notification Schedule", "", getResponseContent()))
+        .path(Constant.BASE_API_URL + "/notification/add",
+            getPathItem(getNotificationDTOSchema(), "Notification", "Add New Notification", "",
+                getResponseContent()))
+        .path(Constant.BASE_API_URL + "/candidates/candidate-feedback",
+            getPathItem(getCandidateFeedbackDTOSchema(), "Candidate", "Add Candidate Feedback", "",
+                getCandidateFeedbackResponseContent()))
+        .path(Constant.BASE_API_URL + "/candidates/candidate-feedback/reply",
+            getPathItem(getCandidateFeedbackReplyDTOSchema(), "Candidate",
+                "Add Candidate Feedback Reply", "", getCandidateFeedbackReplyResponseContent()))
         .addSecurityItem(
             new SecurityRequirement().addList(Constant.API_KEY).addList(Constant.AUTHORIZATION));
   }
@@ -105,9 +120,10 @@ public class SwaggerConfig {
                 .name(Constant.API_KEY)))
         .path(Constant.BASE_API_URL + Constant.PUBLIC_API_URL + "/user/invite",
             getPathItem(getInviteSchema(), "User", "Invite User as Candidates",
-                "Language Should be en_US / es_ES / pt_BR"))
+                "Language Should be en_US / es_ES / pt_BR", getResponseContent()))
         .path(Constant.BASE_API_URL + Constant.PUBLIC_API_URL + "/user/resetPassword",
-            getPathItem(getResetPasswordSchema(), "User", "Reset Password for User",""))
+            getPathItem(getResetPasswordSchema(), "User", "Reset Password for User", "",
+                getResponseContent()))
         .addSecurityItem(new SecurityRequirement().addList(Constant.API_KEY));
   }
 
@@ -115,7 +131,8 @@ public class SwaggerConfig {
    * Generic methods to get PathItem object(For Post API we have to add schemas). For Schema input
    * parameter create schema for particular request and pass it
    */
-  private PathItem getPathItem(Schema<?> schema, String tagItem, String summary,String description) {
+  private PathItem getPathItem(Schema<?> schema, String tagItem, String summary, String description,
+      Content responseContent) {
     PathItem pathItem = new PathItem();
     RequestBody requestBody = new RequestBody();
 
@@ -123,7 +140,7 @@ public class SwaggerConfig {
 
     pathItem.setPost(new Operation().requestBody(requestBody)
         .responses(new ApiResponses().addApiResponse("200",
-            new ApiResponse().description("OK").content(getResponseContent())))
+            new ApiResponse().description("OK").content(responseContent)))
         .addTagsItem(tagItem).summary(summary).description(description));
     return pathItem;
   }
@@ -160,6 +177,51 @@ public class SwaggerConfig {
   }
 
   /*
+   * Schema For Send Interview Notification Scheduler API
+   */
+  private Schema<NotificationSchedulerDTO> getNotificationSchedulerSchema() {
+    Schema<NotificationSchedulerDTO> notificationSchedulerSchema = new Schema<>();
+    NotificationSchedulerDTO notificationScheduler = new NotificationSchedulerDTO();
+    notificationScheduler.setCandidateId(Constant.STRING);
+    notificationScheduler.setScheduleId(Constant.STRING);
+    notificationScheduler.setDate(Constant.STRING);
+    notificationScheduler.setMessage(Constant.STRING);
+    notificationSchedulerSchema.addEnumItemObject(notificationScheduler);
+    return notificationSchedulerSchema;
+  }
+
+  /* Schema For add new notification */
+
+  private Schema<NotificationsDTO> getNotificationDTOSchema() {
+    Schema<NotificationsDTO> notificationDTOSchema = new Schema<>();
+    NotificationsDTO notificationsDTO = new NotificationsDTO();
+    notificationsDTO.setDescription(Constant.STRING);
+    notificationDTOSchema.addEnumItemObject(notificationsDTO);
+    return notificationDTOSchema;
+  }
+
+  /* Schema For add candidate Feedback */
+  private Schema<?> getCandidateFeedbackDTOSchema() {
+    Schema<CandidateFeedbackRequestDTO> candidateFeedbackRequestSchema = new Schema<>();
+    CandidateFeedbackRequestDTO feedback = new CandidateFeedbackRequestDTO();
+    feedback.setComments(Constant.STRING);
+    feedback.setCandidateId(Constant.STRING);
+    candidateFeedbackRequestSchema.addEnumItemObject(feedback);
+    return candidateFeedbackRequestSchema;
+  }
+
+  /* Schema For add candidate Feedback Reply */
+  private Schema<?> getCandidateFeedbackReplyDTOSchema() {
+    Schema<CandidateFeedbackRequestDTO> candidateFeedbackRequestSchema = new Schema<>();
+    CandidateFeedbackRequestDTO feedbackReply = new CandidateFeedbackRequestDTO();
+    feedbackReply.setCandidateId(Constant.STRING);
+    feedbackReply.setCommentId(Constant.STRING);
+    feedbackReply.setReply(Constant.STRING);
+    candidateFeedbackRequestSchema.addEnumItemObject(feedbackReply);
+    return candidateFeedbackRequestSchema;
+  }
+
+  /*
    * Used for request content show on UI
    */
   private Content getRequestContent(Schema<?> schema) {
@@ -176,6 +238,25 @@ public class SwaggerConfig {
     return responseContent.addMediaType(Constant.CONTENT_TYPE_JSON,
         new MediaType().schema(new Schema<>().example(
             "{\"timestamp\": \"string\",\"status\": \"string\",\"message\": \"string\"}")));
+  }
+
+  /*
+   * Used For candidate Feedback response content show on UI
+   */
+  private Content getCandidateFeedbackResponseContent() {
+    Content responseContent = new Content();
+    return responseContent.addMediaType(Constant.CONTENT_TYPE_JSON,
+        new MediaType().schema(new Schema<>().example("{\"id\": \"string\"}")));
+  }
+
+  /*
+   * Used For candidate Feedback response content show on UI
+   */
+  private Content getCandidateFeedbackReplyResponseContent() {
+    Content responseContent = new Content();
+    return responseContent.addMediaType(Constant.CONTENT_TYPE_JSON,
+        new MediaType().schema(new Schema<>().example(
+            "{\"id\": \"string\",\"candidateId\": \"string\",\"comments\": \"string\",\"createdBy\": \"string\",\"createdAt\": \"string\",\"updatedAt\": \"string\",\"replies\": [{\"id\": \"string\",\"candidateId\": \"string\",\"commentId\": \"string\",\"reply\": \"string\",\"createdBy\": \"string\",\"createdAt\": \"string\",\"updatedAt\": \"string\"}]}")));
   }
 
   /*

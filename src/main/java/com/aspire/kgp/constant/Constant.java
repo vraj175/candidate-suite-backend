@@ -80,6 +80,10 @@ public class Constant {
   public static final String CANDIDATE_LIST_URL = "/searches/{searchId}/candidates";
   public static final String POSITION_PROFILE_URL = "/searches/{searchId}/sfpa";
   public static final String CANDIDATE_URL = "/candidates/{candidateId}/activity";
+  public static final String CANDIDATE_FEEDBACK_URL =
+      "/candidate-suite/candidates/{candidateId}/candidate-feedback";
+  public static final String CANDIDATE_FEEDBACK_REPLY_URL =
+      "/candidate-suite/candidate-feedback/{commentId}/{candidateId}/reply";
 
   public static final String CONTACT_PROFILE_IMAGE_URL =
       "/clientsuite/contacts/{contactId}/profile-image";
@@ -94,11 +98,17 @@ public class Constant {
   public static final String GET_CONTACT_LIST_BY_NAME_URL =
       "/picklists/contacts?name={CONTACTNAME}";
   public static final String REFERENCE_TYPE_PICKLIST_URL = "/picklists/reference-types";
+  public static final String COUNTRIES_PICKLIST_URL = "/picklists/countries";
+  public static final String INDUSTRES_PICKLIST_URL = "/synclink/picklists/industries";
+  public static final String CONTACT_SAVE_URL = "/contacts";
+  public static final String COMPANY_SAVE_URL = "/companies";
 
   public static final String RESUME_URL = "/contact/{contactId}/resumes";
+  public static final String ATTECHMENT_URL = "/contact/{contactId}/attachments";
   public static final String IMAGE_UPLOAD_URL = "/contacts/{contactId}/image";
   public static final String UPDATE_CONTACT_REFERENCE_URL = "/contact/references/{referenceId}";
   public static final String CONTACT_ID = "{contactId}";
+  public static final String CANDIDATE_ID_BRACES = "{candidateId}";
 
   // Queries parameter
   public static final String INVALID_JSON_ERROR = "oops ! invalid json";
@@ -131,10 +141,13 @@ public class Constant {
   public static final String EMAILS_CONTENT_MAP = "emailsStaticContents";
   public static final String CANDIDATE_INVITE_EMAIL_TEMPLATE = "candidate-invitation.ftl";
   public static final String FORGOT_EMAIL_TEMPLATE = "forgot-password.ftl";
+  public static final String CANDIDATE_FEEDBACK_EMAIL_TEMPLATE = "candidate-feedback.ftl";
 
   // Json Fields
   public static final String FIRST_NAME = "firstName";
   public static final String LAST_NAME = "lastName";
+  public static final String CITY = "city";
+  public static final String STATE = "state";
   public static final String ID = "id";
   public static final String CONTACT = "contact";
   public static final String SEARCH = "search";
@@ -156,6 +169,15 @@ public class Constant {
   public static final String WORK_PHONE = "workPhone";
   public static final String PUBLISHED_BIO = "publishedBio";
   public static final String WORK_EMAIL = "workEmail";
+  public static final String RESUME = "Resume";
+  public static final String COMMENTS = "comments";
+  public static final String CREATED_BY = "createdBy";
+  public static final String CREATED_AT = "createdAt";
+  public static final String UPDATED_AT = "updatedAt";
+  public static final String REPLY = "reply";
+  public static final String REPLIES = "replies";
+  public static final String CANDIDATE_ID = "candidateId";
+
 
 
   // google capcha
@@ -170,11 +192,16 @@ public class Constant {
   public static final String CONTACT_FILTER = "contactFilter";
   public static final String SEARCH_FILTER = "searchFilter";
   public static final String CANDIDATE_FILTER = "candidateFilter";
+  public static final String CANDIDATE_FEEDBACK_FILTER = "candidateFeedbackFilter";
+  public static final String CANDIDATE_FEEDBACK_REPLY_FILTER = "candidateFeedbackReplyFilter";
 
   // messages
   public static final String DATA_SAVED = "Data saved successfully";
   public static final String DATA_ALREADY_INITIALIZED = "Data already initialized";
 
+  // date formatter
+  public static final String GALAXY_DATE_AND_TIME_FORMATTER = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
+  public static final String FEEDBACK_DATE_FORMATTER = "yyyy-MM-dd";
 
   // Test Fields
   public static final String TEST = "Test";

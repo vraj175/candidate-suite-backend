@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.converter.json.MappingJacksonValue;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -112,5 +114,14 @@ public class CompanyController {
     log.info("Successfully send all matching companies");
     log.debug("Get all matching companies API Response : " + mapping.getValue());
     return mapping;
+  }
+
+  @Operation(summary = "Add New Company")
+  @PostMapping("/companies")
+  @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK",
+      content = @Content(mediaType = "application/json",
+          schema = @Schema(type = "CompanyDTO", example = "[{\"id\": \"string\"}]")))})
+  public String addNewCompany(@RequestBody String companyData) {
+    return service.addNewCompany(companyData);
   }
 }

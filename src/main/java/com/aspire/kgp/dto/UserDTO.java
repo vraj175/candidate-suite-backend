@@ -30,6 +30,25 @@ public class UserDTO {
   private String workPhone;
   private String name;
 
+  public String getState() {
+    return state;
+  }
+
+  public void setState(String state) {
+    this.state = state;
+  }
+
+  public String getCity() {
+    return city;
+  }
+
+  public void setCity(String city) {
+    this.city = city;
+  }
+
+  private String state;
+  private String city;
+
   public String getName() {
     return name;
   }
@@ -149,4 +168,14 @@ public class UserDTO {
   public void setPasswordReset(boolean passwordReset) {
     this.passwordReset = passwordReset;
   }
+
+  @Override
+  public String toString() {
+    return "UserDTO [id=" + id + ", firstName=" + firstName + ", lastName=" + lastName
+        + ", workEmail=" + workEmail + ", email=" + email + ", role=" + role + ", token=" + token
+        + ", title=" + title + ", country=" + country + ", linkedinUrl=" + linkedinUrl + ", bio="
+        + bio + ", passwordReset=" + passwordReset + ", mobilePhone=" + mobilePhone + ", workPhone="
+        + workPhone + ", name=" + name + "]";
+  }
+
 }

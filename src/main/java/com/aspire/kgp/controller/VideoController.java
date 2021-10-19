@@ -57,7 +57,7 @@ public class VideoController {
   }
   
   @Operation(summary = "Get Video for Candidate")
-  @GetMapping(value = {"/video/{candidateId}"})
+  @GetMapping(value = Constant.PUBLIC_API_URL + "/video/{candidateId}")
   @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK",
       content = @Content(mediaType = "application/json", schema = @Schema(type = "Video",
           example = "{ \"id\": \"string\",\"fileName\": \"string\",\"createdAt\": \"string\" }")))})
