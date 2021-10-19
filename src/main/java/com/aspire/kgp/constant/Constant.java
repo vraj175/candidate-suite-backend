@@ -84,6 +84,7 @@ public class Constant {
       "/candidate-suite/candidates/{candidateId}/candidate-feedback";
   public static final String CANDIDATE_FEEDBACK_REPLY_URL =
       "/candidate-suite/candidate-feedback/{commentId}/{candidateId}/reply";
+  public static final String CANDIDATE_FEEDBACK_STATUS_UPDATE_URL = "/candidate-suite/{commentId}";
 
   public static final String CONTACT_PROFILE_IMAGE_URL =
       "/clientsuite/contacts/{contactId}/profile-image";
@@ -109,6 +110,7 @@ public class Constant {
   public static final String UPDATE_CONTACT_REFERENCE_URL = "/contact/references/{referenceId}";
   public static final String CONTACT_ID = "{contactId}";
   public static final String CANDIDATE_ID_BRACES = "{candidateId}";
+  public static final String COMMENT_ID_BRACES = "{commentId}";
 
   // Queries parameter
   public static final String INVALID_JSON_ERROR = "oops ! invalid json";
@@ -183,7 +185,7 @@ public class Constant {
   public static final String KGP_INTERVIEW_DATE_1 = "kgpInterviewDate1";
   public static final String KGP_INTERVIEW_DATE_2 = "kgpInterviewDate2";
   public static final String KGP_INTERVIEW_DATE_3 = "kgpInterviewDate3";
-  public static final String INTERVIEWS =  "interviews";
+  public static final String INTERVIEWS = "interviews";
   public static final String DEGREE_VERIFICATION = "degreeVerification";
   public static final String OFFER_PRESENTED = "offerPresented";
   public static final String ATHENA_COMPLETED = "athenaCompleted";
@@ -193,13 +195,15 @@ public class Constant {
   public static final String CLIENT = "client";
   public static final String ATHENA_COMPLETION_DATE = "athenaCompletionDate";
   public static final String ATHENA_INVITATION_DATE = "athenaInvitationSentOn";
-  public static final String KGP_INTERVIEW_METHOD_1= "kgpInterviewMethod1";
-  public static final String KGP_INTERVIEW_METHOD_2= "kgpInterviewMethod2";
-  public static final String KGP_INTERVIEW_METHOD_3= "kgpInterviewMethod3";
-  public static final String KGP_INTERVIEW_CLIENT_1= "kgpInterviewClient1";
-  public static final String KGP_INTERVIEW_CLIENT_2= "kgpInterviewClient2";
-  public static final String KGP_INTERVIEW_CLIENT_3= "kgpInterviewClient3";
+  public static final String KGP_INTERVIEW_METHOD_1 = "kgpInterviewMethod1";
+  public static final String KGP_INTERVIEW_METHOD_2 = "kgpInterviewMethod2";
+  public static final String KGP_INTERVIEW_METHOD_3 = "kgpInterviewMethod3";
+  public static final String KGP_INTERVIEW_CLIENT_1 = "kgpInterviewClient1";
+  public static final String KGP_INTERVIEW_CLIENT_2 = "kgpInterviewClient2";
+  public static final String KGP_INTERVIEW_CLIENT_3 = "kgpInterviewClient3";
   public static final String SCREENED_DATE = "screenedDate";
+  public static final String TYPE = "type";
+  public static final String CREATED_NAME = "createdName";
 
   // google capcha
   public static final String GOOGLE_CAPTCHA_SECRET_KEY = "6LfPQ10aAAAAAHP7HDxskU_c1c8oBVSpf5SZdZ4C";
