@@ -167,16 +167,6 @@ public class CandidateController {
         .sort(Comparator.comparing(CandidateFeedbackReplyDTO::getCreatedAt).reversed()));
     candidateFeedbackList.sort(Comparator.comparing(CandidateFeedbackDTO::getCreatedAt).reversed());
 
-    candidateFeedbackList.stream().forEach(candidateFeedbackDTO -> {
-      candidateFeedbackDTO
-          .setCreatedAt(CommonUtil.feedbackDateFormatter(candidateFeedbackDTO.getCreatedAt()));
-      candidateFeedbackDTO
-          .setUpdatedAt(CommonUtil.feedbackDateFormatter(candidateFeedbackDTO.getUpdatedAt()));
-      candidateFeedbackDTO.getReplies().stream().forEach(reply -> {
-        reply.setCreatedAt(CommonUtil.feedbackDateFormatter(reply.getCreatedAt()));
-        reply.setUpdatedAt(CommonUtil.feedbackDateFormatter(reply.getUpdatedAt()));
-      });
-    });
     MappingJacksonValue mapping = new MappingJacksonValue(candidateFeedbackList);
     mapping.setFilters(filters);
     log.info("Successfully send Candidate Feedback list " + candidateFeedbackList.size());
