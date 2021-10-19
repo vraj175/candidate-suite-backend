@@ -146,6 +146,7 @@ public class Constant {
   // Json Fields
   public static final String FIRST_NAME = "firstName";
   public static final String LAST_NAME = "lastName";
+  public static final String NAME = "name";
   public static final String CITY = "city";
   public static final String STATE = "state";
   public static final String ID = "id";
@@ -177,8 +178,28 @@ public class Constant {
   public static final String REPLY = "reply";
   public static final String REPLIES = "replies";
   public static final String CANDIDATE_ID = "candidateId";
-
-
+  public static final String STAGE = "stage";
+  public static final String CONTACTID = "contactId";
+  public static final String KGP_INTERVIEW_DATE_1 = "kgpInterviewDate1";
+  public static final String KGP_INTERVIEW_DATE_2 = "kgpInterviewDate2";
+  public static final String KGP_INTERVIEW_DATE_3 = "kgpInterviewDate3";
+  public static final String INTERVIEWS =  "interviews";
+  public static final String DEGREE_VERIFICATION = "degreeVerification";
+  public static final String OFFER_PRESENTED = "offerPresented";
+  public static final String ATHENA_COMPLETED = "athenaCompleted";
+  public static final String METHOD = "method";
+  public static final String POSITION = "position";
+  public static final String INTERVIEW_DATE = "interviewDate";
+  public static final String CLIENT = "client";
+  public static final String ATHENA_COMPLETION_DATE = "athenaCompletionDate";
+  public static final String ATHENA_INVITATION_DATE = "athenaInvitationSentOn";
+  public static final String KGP_INTERVIEW_METHOD_1= "kgpInterviewMethod1";
+  public static final String KGP_INTERVIEW_METHOD_2= "kgpInterviewMethod2";
+  public static final String KGP_INTERVIEW_METHOD_3= "kgpInterviewMethod3";
+  public static final String KGP_INTERVIEW_CLIENT_1= "kgpInterviewClient1";
+  public static final String KGP_INTERVIEW_CLIENT_2= "kgpInterviewClient2";
+  public static final String KGP_INTERVIEW_CLIENT_3= "kgpInterviewClient3";
+  public static final String SCREENED_DATE = "screenedDate";
 
   // google capcha
   public static final String GOOGLE_CAPTCHA_SECRET_KEY = "6LfPQ10aAAAAAHP7HDxskU_c1c8oBVSpf5SZdZ4C";
@@ -194,6 +215,8 @@ public class Constant {
   public static final String CANDIDATE_FILTER = "candidateFilter";
   public static final String CANDIDATE_FEEDBACK_FILTER = "candidateFeedbackFilter";
   public static final String CANDIDATE_FEEDBACK_REPLY_FILTER = "candidateFeedbackReplyFilter";
+  public static final String USER_FILTER = "userFilter";
+  public static final String INTERVIEW_FILTER = "interviewFilter";
 
   // messages
   public static final String DATA_SAVED = "Data saved successfully";

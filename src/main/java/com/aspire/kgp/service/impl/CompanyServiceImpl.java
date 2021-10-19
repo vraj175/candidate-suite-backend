@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import com.aspire.kgp.constant.Constant;
 import com.aspire.kgp.dto.CandidateDTO;
 import com.aspire.kgp.dto.CompanyDTO;
+import com.aspire.kgp.dto.ContactDTO;
 import com.aspire.kgp.exception.APIException;
 import com.aspire.kgp.model.UserSearch;
 import com.aspire.kgp.service.CompanyService;
@@ -76,6 +77,7 @@ public class CompanyServiceImpl implements CompanyService {
     JsonObject jsonObjects = json.getAsJsonObject("candidate");
     CandidateDTO candidateDTO;
     CandidateDTO candidateContactDTO;
+    ContactDTO contactDTO;
     try {
       candidateDTO = new Gson().fromJson(jsonObjects, new TypeToken<CandidateDTO>() {
 
@@ -85,6 +87,14 @@ public class CompanyServiceImpl implements CompanyService {
         private static final long serialVersionUID = 1L;
       }.getType());
       candidateContactDTO = new Gson().fromJson(contact, new TypeToken<CandidateDTO>() {
+
+        /**
+         * 
+         */
+        private static final long serialVersionUID = 1L;
+      }.getType());
+      
+      contactDTO = new Gson().fromJson(contact, new TypeToken<ContactDTO>() {
 
         /**
          * 
@@ -108,6 +118,9 @@ public class CompanyServiceImpl implements CompanyService {
         && candidateDTO != null) {
       candidateDTO.setContactId(candidateContactDTO.getId());
       candidateDTO.setAthenaCompleted(Boolean.TRUE);
+    }
+    if (candidateDTO != null && contactDTO != null) {
+      candidateDTO.setContact(contactDTO);
     }
     return candidateDTO;
   }
