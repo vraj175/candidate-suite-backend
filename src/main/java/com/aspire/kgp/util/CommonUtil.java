@@ -246,18 +246,6 @@ public class CommonUtil {
     }
   }
 
-  public static String feedbackDateFormatter(String galaxydateformatter) {
-    try {
-      SimpleDateFormat oldFormat = new SimpleDateFormat(Constant.GALAXY_DATE_AND_TIME_FORMATTER);
-      SimpleDateFormat newFormat = new SimpleDateFormat(Constant.FEEDBACK_DATE_FORMATTER);
-      Date date = oldFormat.parse(galaxydateformatter);
-      return newFormat.format(date);
-    } catch (ParseException e) {
-      log.error("feedbackDateFormatter date parse error :" + e.getMessage());
-    }
-    return galaxydateformatter;
-  }
-
   /**
    * Method to convert date to desired format
    * 
