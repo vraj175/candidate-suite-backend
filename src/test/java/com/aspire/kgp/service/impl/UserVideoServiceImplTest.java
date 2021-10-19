@@ -64,7 +64,7 @@ class UserVideoServiceImplTest {
     when(searchService.findByCandidateId(anyString())).thenReturn(userSearch);
     when(service.saveorUpdate(any())).thenReturn(userVideo);
 
-    UserVideo result = service.addCandidateVideo(Constant.TEST, Constant.TEST);
+    UserVideo result = service.addContactVideo(Constant.TEST, Constant.TEST);
 
     assertNotNull(result);
     assertEquals(userVideo.getId(), result.getId());
@@ -80,7 +80,7 @@ class UserVideoServiceImplTest {
     when(searchService.findByCandidateId(anyString())).thenReturn(null);
 
     Exception e = assertThrows(NotFoundException.class,
-        () -> service.addCandidateVideo(Constant.TEST, Constant.TEST));
+        () -> service.addContactVideo(Constant.TEST, Constant.TEST));
     assertEquals("Candidate is not available", e.getMessage());
   }
 
@@ -90,10 +90,10 @@ class UserVideoServiceImplTest {
     UserSearch userSearch = CustomTestData.getUserSearch();
 
     when(searchService.findByCandidateId(anyString())).thenReturn(userSearch);
-    when(repository.findByUserSearchAndIsDeletedFalseOrderByCreatedDateDesc(any()))
+    when(repository.findByContactIdAndIsDeletedFalseOrderByCreatedDateDesc(any()))
         .thenReturn(userVideos);
 
-    List<UserVideo> result = service.findByCandidateId(Constant.TEST);
+    List<UserVideo> result = service.findByContactId(Constant.TEST);
 
     assertNotNull(result);
     assertEquals(userVideos.size(), result.size());
@@ -104,7 +104,7 @@ class UserVideoServiceImplTest {
     when(searchService.findByCandidateId(anyString())).thenReturn(null);
 
     Exception e =
-        assertThrows(NotFoundException.class, () -> service.findByCandidateId(Constant.TEST));
+        assertThrows(NotFoundException.class, () -> service.findByContactId(Constant.TEST));
     assertEquals("Candidate is not available", e.getMessage());
   }
 }

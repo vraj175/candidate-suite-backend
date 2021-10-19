@@ -41,7 +41,7 @@ class VideoControllerTest {
   void testAddVideo() {
     UserVideo userVideo = CustomTestData.getUserVideo();
 
-    when(service.addCandidateVideo(anyString(), anyString())).thenReturn(userVideo);
+    when(service.addContactVideo(anyString(), anyString())).thenReturn(userVideo);
 
     ResponseEntity<Object> result = controller.addVideo(Constant.TEST, Constant.TEST);
 
@@ -50,25 +50,25 @@ class VideoControllerTest {
 
   @Test
   void testAddVideo_APIException() {
-    when(service.addCandidateVideo(anyString(), anyString())).thenReturn(null);
+    when(service.addContactVideo(anyString(), anyString())).thenReturn(null);
 
     Exception e =
         assertThrows(APIException.class, () -> controller.addVideo(Constant.TEST, Constant.TEST));
     assertEquals("Error in add video", e.getMessage());
   }
-  
+
   @Test
-  void testGetCandidateVideo(){
-    when(service.findByCandidateId(anyString())).thenReturn(new ArrayList<>());
-    
+  void testGetCandidateVideo() {
+    when(service.findByContactId(anyString())).thenReturn(new ArrayList<>());
+
     DocumentDTO result = controller.getCandidateVideo(Constant.TEST);
-    
+
     assertNull(result);
-    
+
     List<UserVideo> userVideos = CustomTestData.getUserVideos();
-    when(service.findByCandidateId(anyString())).thenReturn(userVideos);
+    when(service.findByContactId(anyString())).thenReturn(userVideos);
     result = controller.getCandidateVideo(Constant.TEST);
-    
+
     UserVideo userVideo = userVideos.get(0);
     assertNotNull(result);
     assertEquals(String.valueOf(userVideo.getId()), result.getId());
