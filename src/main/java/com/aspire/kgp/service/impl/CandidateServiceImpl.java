@@ -172,13 +172,18 @@ public class CandidateServiceImpl implements CandidateService {
   @Override
   public String addCandidateFeedback(String candidateId, String comments, String galaxyId,
       HttpServletRequest request, boolean isReplyFeedback,
-      CandidateFeedbackDTO candidateFeedbackDTO) {
+      CandidateFeedbackDTO candidateFeedbackDTO, String type) {
     log.info("Saving new feedback");
     JsonObject paramJSON = new JsonObject();
     HashMap<String, String> paramRequest = new HashMap<>();
     String feedbackId = "";
     paramJSON.addProperty("createdBy", galaxyId);
     paramJSON.addProperty("comments", comments);
+    if (type.equals("candidate")) {
+      paramJSON.addProperty("type", "Candidate");
+    } else if (type.equals("partner")) {
+      paramJSON.addProperty("type", "User");
+    }
     Set<String> kgpPartnerEmailList = new HashSet<>();
     CandidateDTO apiResponse = getCandidateDetails(candidateId);
     try {
@@ -333,12 +338,16 @@ public class CandidateServiceImpl implements CandidateService {
 
   @Override
   public CandidateFeedbackDTO addCandidateFeedbackReply(String candidateId, String commentId,
-      String reply, String galaxyId, HttpServletRequest request) {
+      String reply, String galaxyId, HttpServletRequest request, String type) {
     List<CandidateFeedbackReplyDTO> candidateFeedbackReply = new ArrayList<>();
     JsonObject paramJSON = new JsonObject();
     paramJSON.addProperty("reply", reply);
     paramJSON.addProperty("created_by", galaxyId);
-
+    if (type.equals("candidate")) {
+      paramJSON.addProperty("type", "Candidate");
+    } else if (type.equals("partner")) {
+      paramJSON.addProperty("type", "User");
+    }
     String jsonString =
         restUtil.postMethod(Constant.CANDIDATE_FEEDBACK_REPLY_URL.replace("{commentId}", commentId)
             .replace(Constant.CANDIDATE_ID_BRACES, candidateId), paramJSON.toString(), null);
@@ -355,7 +364,7 @@ public class CandidateServiceImpl implements CandidateService {
 
     candidateFeedbackReply.add(candidateFeedbackReplyDTO);
     candidateFeedbackDTO.setReplies(candidateFeedbackReply);
-    addCandidateFeedback(candidateId, reply, galaxyId, request, true, candidateFeedbackDTO);
+    addCandidateFeedback(candidateId, reply, galaxyId, request, true, candidateFeedbackDTO, type);
     return candidateFeedbackDTO;
   }
 
@@ -365,5 +374,22 @@ public class CandidateServiceImpl implements CandidateService {
     List<CandidateFeedbackDTO> candidateFeedbackList = getCandidateFeedback(candidateId);
     return candidateFeedbackList.stream().filter(e -> e.getId().equals(commentId)).findFirst()
         .orElse(new CandidateFeedbackDTO());
+  }
+
+  @Override
+  public String updateCommentStatus(String commentId, boolean status) {
+    log.info("update feedback status");
+    String jsonResponseString = null;
+    JsonObject paramJSON = new JsonObject();
+
+    paramJSON.addProperty("status", status);
+    try {
+      jsonResponseString = restUtil.putMethod(Constant.CANDIDATE_FEEDBACK_STATUS_UPDATE_URL
+          .replace(Constant.COMMENT_ID_BRACES, commentId), paramJSON.toString());
+    } catch (UnsupportedEncodingException e) {
+      log.error(e.getMessage());
+    }
+    JsonObject json = (JsonObject) JsonParser.parseString(jsonResponseString);
+    return json.get("responseString").toString();
   }
 }
