@@ -37,13 +37,13 @@ public class CandidateFeedbackRequestDTO {
   @JsonProperty(value = "status", required = true)
   @NotNull(message = "status cannot be missing or empty",
       groups = {CandidateFeedbackStatusUpdateReq.class})
-  private Boolean status;
+  private boolean status;
 
-  public Boolean isStatus() {
+  public boolean isStatus() {
     return status;
   }
 
-  public void setStatus(Boolean status) {
+  public void setStatus(boolean status) {
     this.status = status;
   }
 
