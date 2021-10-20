@@ -188,7 +188,7 @@ public class SearchServiceImpl implements SearchService {
     }
     return positionProfile;
   }
-  
+
   @Override
   public SearchDTO getsearchDetails(String searchId) {
     String apiResponse =
