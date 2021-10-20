@@ -92,7 +92,6 @@ public class CandidateServiceImpl implements CandidateService {
     candidateDTO.getSearch().setRecruiters(addJsonArraytoList(json, "recruiters"));
     candidateDTO.getSearch().setResearchers(addJsonArraytoList(json, "researchers"));
     candidateDTO.getSearch().setEas(addJsonArraytoList(json, "eas"));
-
     return candidateDTO;
   }
 
@@ -100,6 +99,7 @@ public class CandidateServiceImpl implements CandidateService {
     JsonArray partnerArray =
         json.getAsJsonObject("candidate").getAsJsonObject("search").getAsJsonArray(listfor);
     List<UserDTO> partnerList = new ArrayList<>();
+    List<CandidateDTO> executionCreditList = new ArrayList<>();
     partnerArray.forEach(e -> partnerList
         .add(new Gson().fromJson(e.getAsJsonObject().get("user"), new TypeToken<UserDTO>() {
 
@@ -108,6 +108,17 @@ public class CandidateServiceImpl implements CandidateService {
            */
           private static final long serialVersionUID = 1L;
         }.getType())));
+    partnerArray.forEach(e -> executionCreditList
+        .add(new Gson().fromJson(e.getAsJsonObject(), new TypeToken<CandidateDTO>() {
+
+          /**
+           * 
+           */
+          private static final long serialVersionUID = 1L;
+        }.getType())));
+    for (int i = 0; i < partnerList.size(); i++) {
+      partnerList.get(i).setExecutionCredit(executionCreditList.get(i).getExecutionCredit());
+    }
     return partnerList;
   }
 
@@ -177,11 +188,12 @@ public class CandidateServiceImpl implements CandidateService {
     JsonObject paramJSON = new JsonObject();
     HashMap<String, String> paramRequest = new HashMap<>();
     String feedbackId = "";
-    paramJSON.addProperty("createdBy", galaxyId);
     paramJSON.addProperty("comments", comments);
     if (type.equals("candidate")) {
+      paramJSON.addProperty("createdBy", candidateId);
       paramJSON.addProperty("type", "Candidate");
     } else if (type.equals("partner")) {
+      paramJSON.addProperty("createdBy", galaxyId);
       paramJSON.addProperty("type", "User");
     }
     Set<String> kgpPartnerEmailList = new HashSet<>();
@@ -264,7 +276,6 @@ public class CandidateServiceImpl implements CandidateService {
       HashMap<String, String> paramRequest, HttpServletRequest request, Boolean isReplyFeedback) {
     log.info("sending client feedback email");
     String locate = "en_US";
-    email = "sarthak.chavda@aspiresoftserv.com";
     try {
       Map<String, String> staticContentsMap =
           StaticContentsMultiLanguageUtil.getStaticContentsMap(locate, Constant.EMAILS_CONTENT_MAP);
@@ -342,10 +353,11 @@ public class CandidateServiceImpl implements CandidateService {
     List<CandidateFeedbackReplyDTO> candidateFeedbackReply = new ArrayList<>();
     JsonObject paramJSON = new JsonObject();
     paramJSON.addProperty("reply", reply);
-    paramJSON.addProperty("created_by", galaxyId);
     if (type.equals("candidate")) {
+      paramJSON.addProperty("created_by", candidateId);
       paramJSON.addProperty("type", "Candidate");
     } else if (type.equals("partner")) {
+      paramJSON.addProperty("created_by", galaxyId);
       paramJSON.addProperty("type", "User");
     }
     String jsonString =

@@ -10,4 +10,6 @@ public interface UserVideoService {
   UserVideo addContactVideo(String candidateId, String fileToken);
 
   List<UserVideo> findByContactId(String contactId);
+
+  int getS3BucketVideoStatusCode(String videoToken);
 }

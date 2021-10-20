@@ -89,7 +89,7 @@ public class SearchController {
   @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK",
       content = @Content(mediaType = "application/json", schema = @Schema(
           type = "List<CandidateDTO>",
-          example = "[{\"id\": \"string\",\"contact\": {\"id\": \"string\",\"firstName\": \"string\",\"lastName\": \"string\",\"workEmail\": \"string\",\"currentJobTitle\": \"string\",\"company\": {\"id\": \"string\",\"name\": \"string\"}}}]")))})
+          example = "[{\"id\": \"string\",\"contact\": {\"id\": \"string\",\"firstName\": \"string\",\"lastName\": \"string\",\"workEmail\": \"string\",\"currentJobTitle\": \"string\",\"company\": {\"id\": \"string\",\"name\": \"string\"}},\"search\": {\"isApprovedByPartner\": \"string\"}}]")))})
   public MappingJacksonValue getCandidateList(@PathVariable("searchId") String searchId) {
     List<CandidateDTO> listCandidate = service.getCandidateList(searchId);
 
@@ -100,11 +100,15 @@ public class SearchController {
         "firstName", "lastName", "workEmail", "currentJobTitle", Constant.COMPANY);
 
     SimpleBeanPropertyFilter candidateFilter =
-        SimpleBeanPropertyFilter.filterOutAllExcept("id", "contact");
+        SimpleBeanPropertyFilter.filterOutAllExcept("id", "contact", "search");
+
+    SimpleBeanPropertyFilter searchFilter =
+        SimpleBeanPropertyFilter.filterOutAllExcept("isApprovedByPartner");
 
     FilterProvider filters = new SimpleFilterProvider().addFilter("contactFilter", contactFilter)
         .addFilter(Constant.COMPANY_FILTER, companyFilter)
-        .addFilter(Constant.CANDIDATE_FILTER, candidateFilter);
+        .addFilter(Constant.CANDIDATE_FILTER, candidateFilter)
+        .addFilter(Constant.SEARCH_FILTER, searchFilter);
 
     MappingJacksonValue mapping = new MappingJacksonValue(listCandidate);
     mapping.setFilters(filters);
@@ -172,7 +176,7 @@ public class SearchController {
 
     SimpleBeanPropertyFilter searchFilter = SimpleBeanPropertyFilter.filterOutAllExcept(Constant.ID,
         Constant.JOB_TITLE, Constant.JOB_NUMBER, Constant.COMPANY, Constant.PARTNERS,
-        Constant.RECRUITERS, Constant.RESEARCHERS, Constant.EAS);
+        Constant.RECRUITERS, Constant.RESEARCHERS, Constant.EAS, "isApprovedByPartner");
 
     FilterProvider filters =
         new SimpleFilterProvider().addFilter(Constant.CANDIDATE_FILTER, candidateFilter)
