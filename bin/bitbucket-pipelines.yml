@@ -1,0 +1,22 @@
+image: maven:3.8.1-jdk-11
+
+clone:
+  depth: full
+  
+pipelines:
+  branches:
+    '1.0.0':
+      - step:
+          name: SonarQube analysis
+          caches:
+            - maven
+            - sonar
+          script:
+            - mvn clean install -X sonar:sonar
+            
+definitions:
+  caches:
+    sonar: ~/.sonar
+  services:
+    docker:
+      memory: 3072
