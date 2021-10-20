@@ -17,12 +17,14 @@ public interface CandidateService {
 
   public String addCandidateFeedback(String candidateId, String comments, String galaxyId,
       HttpServletRequest request, boolean isReplyFeedback,
-      CandidateFeedbackDTO candidateFeedbackDTO2);
+      CandidateFeedbackDTO candidateFeedbackDTO2, String type);
 
   public List<CandidateFeedbackDTO> getCandidateFeedback(String candidateId);
 
   public CandidateFeedbackDTO addCandidateFeedbackReply(String candidateId, String commentId,
-      String reply, String galaxyId, HttpServletRequest request);
+      String reply, String galaxyId, HttpServletRequest request, String type);
 
   public CandidateFeedbackDTO getCandidateFeedbackByCommentId(String candidateId, String commentId);
+
+  public String updateCommentStatus(String commentId, boolean status);
 }
