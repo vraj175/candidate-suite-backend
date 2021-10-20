@@ -22,6 +22,8 @@ public class SearchDTO {
   private List<ClientTeamDTO> clienTeam;
   private String city;
   private String state;
+  @SerializedName("is_approved_by_partner")
+  private String isApprovedByPartner;
 
   public String getId() {
     return id;
@@ -117,6 +119,14 @@ public class SearchDTO {
 
   public void setState(String state) {
     this.state = state;
+  }
+
+  public String getIsApprovedByPartner() {
+    return isApprovedByPartner;
+  }
+
+  public void setIsApprovedByPartner(String isApprovedByPartner) {
+    this.isApprovedByPartner = isApprovedByPartner;
   }
 
   @Override
