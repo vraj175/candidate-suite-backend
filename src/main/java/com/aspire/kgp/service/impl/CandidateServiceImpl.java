@@ -177,11 +177,12 @@ public class CandidateServiceImpl implements CandidateService {
     JsonObject paramJSON = new JsonObject();
     HashMap<String, String> paramRequest = new HashMap<>();
     String feedbackId = "";
-    paramJSON.addProperty("createdBy", galaxyId);
     paramJSON.addProperty("comments", comments);
     if (type.equals("candidate")) {
+      paramJSON.addProperty("createdBy", candidateId);
       paramJSON.addProperty("type", "Candidate");
     } else if (type.equals("partner")) {
+      paramJSON.addProperty("createdBy", galaxyId);
       paramJSON.addProperty("type", "User");
     }
     Set<String> kgpPartnerEmailList = new HashSet<>();
@@ -342,10 +343,11 @@ public class CandidateServiceImpl implements CandidateService {
     List<CandidateFeedbackReplyDTO> candidateFeedbackReply = new ArrayList<>();
     JsonObject paramJSON = new JsonObject();
     paramJSON.addProperty("reply", reply);
-    paramJSON.addProperty("created_by", galaxyId);
     if (type.equals("candidate")) {
+      paramJSON.addProperty("created_by", candidateId);
       paramJSON.addProperty("type", "Candidate");
     } else if (type.equals("partner")) {
+      paramJSON.addProperty("created_by", galaxyId);
       paramJSON.addProperty("type", "User");
     }
     String jsonString =

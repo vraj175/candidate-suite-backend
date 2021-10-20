@@ -186,7 +186,7 @@ public class CustomTestData {
     UserVideo userVideo = new UserVideo();
     userVideo.setFileToken(Constant.TEST);
     userVideo.setDeleted(Boolean.FALSE);
-    userVideo.setUserSearch(getUserSearch());
+    //userVideo.setUserSearch(getUserSearch());
     return userVideo;
   }
   
