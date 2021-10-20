@@ -65,12 +65,11 @@ public class RequestFilter extends OncePerRequestFilter {
     } else if (currentUrl.indexOf("/api/") < 0) {
       log.info("not need to authorize ");
       apiKeyValidate = false;
-    } else if (!(currentUrl.indexOf("/initialize") > 0 
-        || currentUrl.indexOf("/user/invite") > 0
+    } else if (!(currentUrl.indexOf("/initialize") > 0 || currentUrl.indexOf("/user/invite") > 0
         || currentUrl.indexOf("/user/forgotPassword") > 0
         || currentUrl.indexOf("/user/resetPassword") > 0
         || currentUrl.indexOf("/user/verify/recaptcha") > 0
-        || currentUrl.indexOf("/open/video/") > 0)) {
+        || currentUrl.indexOf("/open/video/") > 0 || currentUrl.indexOf("/open/bit-bucket/") > 0)) {
       jwtTokenValidate = true;
     }
 
