@@ -29,25 +29,6 @@ public class UserDTO {
   @SerializedName("work_phone")
   private String workPhone;
   private String name;
-  private String location;
-  @SerializedName("execution_credit")
-  private String executionCredit;
-
-  public String getExecutionCredit() {
-    return executionCredit;
-  }
-
-  public void setExecutionCredit(String executionCredit) {
-    this.executionCredit = executionCredit;
-  }
-
-  public String getLocation() {
-    return location;
-  }
-
-  public void setLocation(String location) {
-    this.location = location;
-  }
 
   public String getState() {
     return state;
