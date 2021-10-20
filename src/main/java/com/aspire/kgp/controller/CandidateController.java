@@ -65,7 +65,8 @@ public class CandidateController {
         SimpleBeanPropertyFilter.filterOutAllExcept("id", "name");
 
     SimpleBeanPropertyFilter userAndContactFilter = SimpleBeanPropertyFilter
-        .filterOutAllExcept(Constant.ID, Constant.FIRST_NAME, Constant.LAST_NAME, "title");
+        .filterOutAllExcept(Constant.ID, Constant.FIRST_NAME, Constant.LAST_NAME, "title", "location",
+            "executionCredit");
 
     SimpleBeanPropertyFilter searchFilter = SimpleBeanPropertyFilter.filterOutAllExcept(Constant.ID,
         Constant.JOB_TITLE, Constant.JOB_NUMBER, Constant.COMPANY, Constant.PARTNERS,
@@ -102,7 +103,8 @@ public class CandidateController {
 
     SimpleBeanPropertyFilter userFilter = SimpleBeanPropertyFilter.filterOutAllExcept(Constant.ID,
         Constant.FIRST_NAME, Constant.LAST_NAME, Constant.EMAIL, Constant.TITLE, Constant.COUNTRY,
-        Constant.LINKEDIN_URL, Constant.BIO, Constant.MOBILE_PHONE, Constant.WORK_PHONE);
+        Constant.LINKEDIN_URL, Constant.BIO, Constant.MOBILE_PHONE, Constant.WORK_PHONE, "location",
+        "executionCredit");
 
     SimpleBeanPropertyFilter clientTeamFilter =
         SimpleBeanPropertyFilter.filterOutAllExcept(Constant.ID, Constant.CONTACT);

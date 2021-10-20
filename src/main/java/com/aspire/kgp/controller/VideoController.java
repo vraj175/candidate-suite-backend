@@ -77,4 +77,10 @@ public class VideoController {
     return documentDTO;
   }
 
+  @Operation(summary = "Get S3 bucket video status code")
+  @GetMapping(value = Constant.PUBLIC_API_URL + "/bit-bucket/{videoToken}")
+  public int getS3BucketVideoStatusCode(@PathVariable("videoToken") String videoToken) {
+    return service.getS3BucketVideoStatusCode(videoToken);
+  }
+
 }
