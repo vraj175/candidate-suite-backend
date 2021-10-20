@@ -7,7 +7,6 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.aspire.kgp.model.UserSearch;
 import com.aspire.kgp.model.UserVideo;
 import com.aspire.kgp.repository.UserVideoRepository;
 import com.aspire.kgp.service.UserSearchService;
@@ -31,9 +30,6 @@ public class UserVideoServiceImpl implements UserVideoService {
   @Override
   public UserVideo addContactVideo(String contactId, String fileToken) {
     UserVideo userVideo = new UserVideo();
-    UserSearch userSearch = new UserSearch();
-    userSearch.setId(1);
-    userVideo.setUserSearch(userSearch);
     userVideo.setContactId(contactId);
     userVideo.setFileToken(fileToken);
     return saveorUpdate(userVideo);
