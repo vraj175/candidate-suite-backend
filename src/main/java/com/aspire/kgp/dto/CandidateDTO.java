@@ -40,6 +40,16 @@ public class CandidateDTO {
   private UserDTO kgpInterviewClient3;
   @SerializedName("screened_date")
   private String screenedDate;
+  @SerializedName("execution_credit")
+  private String executionCredit;
+
+  public String getExecutionCredit() {
+    return executionCredit;
+  }
+
+  public void setExecutionCredit(String executionCredit) {
+    this.executionCredit = executionCredit;
+  }
 
   public String getContactId() {
     return contactId;

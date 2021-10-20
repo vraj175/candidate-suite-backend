@@ -35,6 +35,7 @@ import com.aspire.kgp.constant.Constant;
 import com.aspire.kgp.dto.CandidateDTO;
 import com.aspire.kgp.dto.CandidateFeedbackDTO;
 import com.aspire.kgp.dto.CandidateFeedbackReplyDTO;
+import com.aspire.kgp.dto.CommonDTO;
 import com.aspire.kgp.dto.CompanyDTO;
 import com.aspire.kgp.dto.UserDTO;
 import com.aspire.kgp.exception.APIException;
@@ -92,7 +93,6 @@ public class CandidateServiceImpl implements CandidateService {
     candidateDTO.getSearch().setRecruiters(addJsonArraytoList(json, "recruiters"));
     candidateDTO.getSearch().setResearchers(addJsonArraytoList(json, "researchers"));
     candidateDTO.getSearch().setEas(addJsonArraytoList(json, "eas"));
-
     return candidateDTO;
   }
 
@@ -100,6 +100,7 @@ public class CandidateServiceImpl implements CandidateService {
     JsonArray partnerArray =
         json.getAsJsonObject("candidate").getAsJsonObject("search").getAsJsonArray(listfor);
     List<UserDTO> partnerList = new ArrayList<>();
+    List<CommonDTO> executionCreditList = new ArrayList<>();
     partnerArray.forEach(e -> partnerList
         .add(new Gson().fromJson(e.getAsJsonObject().get("user"), new TypeToken<UserDTO>() {
 
@@ -108,6 +109,17 @@ public class CandidateServiceImpl implements CandidateService {
            */
           private static final long serialVersionUID = 1L;
         }.getType())));
+    partnerArray.forEach(e -> executionCreditList
+        .add(new Gson().fromJson(e.getAsJsonObject(), new TypeToken<CommonDTO>() {
+
+          /**
+           * 
+           */
+          private static final long serialVersionUID = 1L;
+        }.getType())));
+    for (int i = 0; i < partnerList.size(); i++) {
+      partnerList.get(i).setExecutionCredit(executionCreditList.get(i).getExecutionCredit());
+    }
     return partnerList;
   }
 
