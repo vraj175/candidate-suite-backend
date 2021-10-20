@@ -287,7 +287,7 @@ public class SwaggerConfig {
     Content responseContent = new Content();
     return responseContent.addMediaType(Constant.CONTENT_TYPE_JSON,
         new MediaType().schema(new Schema<>().example(
-            "{\"id\": \"string\",\"candidateId\": \"string\",\"comments\": \"string\",\"createdBy\": \"string\",\"createdAt\": \"string\",\"updatedAt\": \"string\",\"replies\": [{\"id\": \"string\",\"candidateId\": \"string\",\"commentId\": \"string\",\"reply\": \"string\",\"createdBy\": \"string\",\"createdAt\": \"string\",\"updatedAt\": \"string\"}]}")));
+            "{\"id\": \"string\",\"candidateId\": \"string\",\"createdBy\": \"string\",\"createdAt\": \"string\",\"updatedAt\": \"string\",\"type\": \"string\",\"createdName\": \"string\",\"comments\": \"string\",\"status\": false,\"replies\": [{\"id\": \"string\",\"candidateId\": \"string\",\"createdBy\": \"string\",\"createdAt\": \"string\",\"updatedAt\": \"string\",\"commentId\": \"string\",\"reply\": \"string\",\"type\": \"string\",\"createdName\": \"string\"}]}")));
   }
 
   /*

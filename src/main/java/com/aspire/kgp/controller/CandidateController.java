@@ -143,7 +143,8 @@ public class CandidateController {
   @GetMapping(value = {"/candidates/{candidateId}/candidate-feedback"})
   @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK",
       content = @Content(mediaType = "application/json", schema = @Schema(type = "CandidateDTO",
-          example = "[{\"id\": \"string\",\"candidateId\": \"string\",\"comments\": \"string\",\"createdBy\": \"string\",\"createdAt\": \"string\",\"updatedAt\": \"string\",\"replies\": [{\"id\": \"string\",\"candidateId\": \"string\",\"commentId\": \"string\",\"reply\": \"string\",\"createdBy\":\"string\",\"createdAt\": \"string\",\"updatedAt\": \"string\"}]}]")))})
+          example = "[{\"id\": \"string\",\"candidateId\": \"string\",\"createdBy\": \"string\",\"createdAt\": \"string\",\"updatedAt\": \"string\",\"type\": \"string\",\"createdName\": \"string\",\"comments\": \"string\",\"status\": false,\"replies\": [{\"id\": \"string\",\"candidateId\": \"string\",\"createdBy\": \"string\",\"createdAt\": \"string\",\"updatedAt\": \"string\",\"commentId\": \"string\",\"reply\": \"string\",\"type\": \"string\",\"createdName\": \"string\"}]}]\r\n"
+              + "")))})
   public MappingJacksonValue getCandidateFeedback(@PathVariable("candidateId") String candidateId) {
     log.info("Get Candidate Feedback API call, Request Param CandidateId : " + candidateId);
     List<CandidateFeedbackDTO> candidateFeedbackList = service.getCandidateFeedback(candidateId);
@@ -197,12 +198,15 @@ public class CandidateController {
     CandidateFeedbackDTO candidateFeedback = service.addCandidateFeedbackReply(
         candidateFeedReqback.getCandidateId(), candidateFeedReqback.getCommentId(),
         candidateFeedReqback.getReply(), user.getGalaxyId(), request, user.getRole().getName());
-    SimpleBeanPropertyFilter candidateFeedbackFilter = SimpleBeanPropertyFilter.filterOutAllExcept(
-        Constant.ID, Constant.CANDIDATE_ID, Constant.COMMENTS, Constant.CREATED_BY,
-        Constant.CREATED_AT, Constant.UPDATED_AT, Constant.REPLIES);
+
+    SimpleBeanPropertyFilter candidateFeedbackFilter =
+        SimpleBeanPropertyFilter.filterOutAllExcept(Constant.ID, Constant.CANDIDATE_ID,
+            Constant.COMMENTS, Constant.STATUS, Constant.TYPE, Constant.CREATED_NAME,
+            Constant.CREATED_BY, Constant.CREATED_AT, Constant.UPDATED_AT, Constant.REPLIES);
     SimpleBeanPropertyFilter candidateFeedbackReplyFilter =
         SimpleBeanPropertyFilter.filterOutAllExcept(Constant.ID, Constant.CANDIDATE_ID, "commentId",
-            Constant.REPLY, Constant.CREATED_BY, Constant.CREATED_AT, Constant.UPDATED_AT);
+            Constant.REPLY, Constant.TYPE, Constant.CREATED_NAME, Constant.CREATED_BY,
+            Constant.CREATED_AT, Constant.UPDATED_AT);
 
     FilterProvider filters = new SimpleFilterProvider()
         .addFilter(Constant.CANDIDATE_FEEDBACK_FILTER, candidateFeedbackFilter)
