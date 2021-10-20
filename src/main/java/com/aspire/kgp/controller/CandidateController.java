@@ -69,7 +69,7 @@ public class CandidateController {
 
     SimpleBeanPropertyFilter searchFilter = SimpleBeanPropertyFilter.filterOutAllExcept(Constant.ID,
         Constant.JOB_TITLE, Constant.JOB_NUMBER, Constant.COMPANY, Constant.PARTNERS,
-        Constant.RECRUITERS, Constant.RESEARCHERS, Constant.EAS);
+        Constant.RECRUITERS, Constant.RESEARCHERS, Constant.EAS,"isApprovedByPartner");
 
     FilterProvider filters =
         new SimpleFilterProvider().addFilter(Constant.CANDIDATE_FILTER, candidateFilter)
