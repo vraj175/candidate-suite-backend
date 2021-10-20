@@ -100,8 +100,8 @@ public class SearchController {
         "firstName", "lastName", "workEmail", "currentJobTitle", Constant.COMPANY);
 
     SimpleBeanPropertyFilter candidateFilter =
-        SimpleBeanPropertyFilter.filterOutAllExcept("id", "contact","search");
-    
+        SimpleBeanPropertyFilter.filterOutAllExcept("id", "contact", "search");
+
     SimpleBeanPropertyFilter searchFilter =
         SimpleBeanPropertyFilter.filterOutAllExcept("isApprovedByPartner");
 
@@ -176,7 +176,7 @@ public class SearchController {
 
     SimpleBeanPropertyFilter searchFilter = SimpleBeanPropertyFilter.filterOutAllExcept(Constant.ID,
         Constant.JOB_TITLE, Constant.JOB_NUMBER, Constant.COMPANY, Constant.PARTNERS,
-        Constant.RECRUITERS, Constant.RESEARCHERS, Constant.EAS);
+        Constant.RECRUITERS, Constant.RESEARCHERS, Constant.EAS, "isApprovedByPartner");
 
     FilterProvider filters =
         new SimpleFilterProvider().addFilter(Constant.CANDIDATE_FILTER, candidateFilter)
