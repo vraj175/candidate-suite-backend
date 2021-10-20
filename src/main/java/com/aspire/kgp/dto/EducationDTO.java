@@ -13,6 +13,7 @@ public class EducationDTO {
   @SerializedName("degree_year")
   private String degreeYear;
   private String position;
+  private String verify;
 
   public String getId() {
     return id;
@@ -60,6 +61,14 @@ public class EducationDTO {
 
   public void setDegreeYear(String degreeYear) {
     this.degreeYear = degreeYear;
+  }
+
+  public String getVerify() {
+    return verify;
+  }
+
+  public void setVerify(String verify) {
+    this.verify = verify;
   }
 
 
