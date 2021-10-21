@@ -19,7 +19,7 @@
 			          	<p style="font-size:13px; color:#231f20;margin:0; padding:0; line-height:20px;letter-spacing:0.3px; font-weight:400; text-align:justify;">
 			          		${staticContentsMap['candidate.suite.invitation.email.content1']} 
 				          	<b>zAspire Software Solutions</b> ${staticContentsMap['candidate.suite.invitation.email.content2']}  
-				          	Aspire Liferay Developer ${staticContentsMap['candidate.suite.invitation.email.content3']}
+				          	<b>Aspire Liferay Developer</b> ${staticContentsMap['candidate.suite.invitation.email.content3']}
 			          	</p>
 			          	<p style="margin:0; padding:0; height:15px;">&nbsp;</p>
 				        <p style="font-size:13px; color:#231f20;margin:0; padding:0; line-height:20px;letter-spacing:0.3px; font-weight:400; text-align:justify;">
@@ -37,7 +37,7 @@
 			          	${staticContentsMap['candidate.suite.invitation.email.content6']}
 			          </p>
 			          <p style="text-align:left; color:#231f20; font-size:13px; font-weight:400;letter-spacing:0.3px; margin:0px; line-height:20px; padding: 0 20px;">
-			          	<span style="color:#343031; font-weight: 700;">${staticContentsMap['candidate.suite.invitation.email.content7']} </span> 
+			          	<br><span style="color:#343031; font-weight: 700;">${staticContentsMap['candidate.suite.invitation.email.content7']} </span> 
 			          	<a href="mailto:${userEmail}" style="color:#5443d5; text-decoration:none;">${userEmail}</a>
 			          </p>
 			          <p style="height:25px;text-align: left;color: #231f20;font-size: 13px;font-weight: 400;letter-spacing: 0.3px;margin: 0px;line-height: 20px;padding: 0 20px;">${staticContentsMap['candidate.suite.invitation.email.content8']}</p>
