@@ -7,7 +7,7 @@
 	<table style="background:#fcfcfc;font-family:calibre,arial; max-width:650px;margin: 0 auto; padding-bottom: 0px; table-layout: fixed; width: 650px; ">
       	<tr>
       		<td style="text-align:center">
-      			<img src="${serverUrl}/resources/images/client_suite_banner.png" style="max-width: 100%">
+      			<img src="${serverUrl}/resources/images/feedback.png" style="max-width: 100%">
       		</td>
       	</tr>
       	<tr>
@@ -40,13 +40,20 @@
 			          	<span style="color:#343031; font-weight: 700;">${staticContentsMap['candidate.suite.invitation.email.content7']} </span> 
 			          	<a href="mailto:${userEmail}" style="color:#5443d5; text-decoration:none;">${userEmail}</a>
 			          </p>
-			          <p style="margin:0; padding:0; height:25px;">&nbsp;</p>
+			          <p style="height:25px;text-align: left;color: #231f20;font-size: 13px;font-weight: 400;letter-spacing: 0.3px;margin: 0px;line-height: 20px;padding: 0 20px;">Upon login, you will set a Password.</p>
 			        </div>
-			        <p style="letter-spacing:0.3px; font-size:13px; font-weight:400; text-align:left; color:#231f20; line-height:19px;margin:15px 0px 15px 0px;">
-						${staticContentsMap['candidate.suite.invitation.email.content9']}
-			        </p>
+			        <div>
+			        	<p style="margin-bottom: 0;"><b>The Password rules are:</b></p>
+			        	<p style="margin-top: 0;">
+			        		Password between 9 to 14 characters.<br>
+			        		Password must have at least one digit(0-9).<br>
+			        		Password must have at least one uppercase and lowercase alphabet (A-Z &amp; a-z)
+			        	</p>
+			        </div>
+			        
 			        <p style="letter-spacing:0.3px; font-size:12px; font-weight:400; text-align:left; color:#231f20; line-height:19px;margin: 0px ;">
 			        	<span style="font-size:13;">${staticContentsMap['candidate.suite.invitation.email.sincerely']}</span><br>
+			        	<span>Your <b>Kignsley Gate Partners Team</b></span>
 			        </p>
 			        <div style="clear: both;"></div>
 			        <p style="margin:0px; padding:0; height:25px;">&nbsp;</p>
