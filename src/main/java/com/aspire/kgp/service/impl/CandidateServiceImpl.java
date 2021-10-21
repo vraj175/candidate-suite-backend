@@ -328,7 +328,7 @@ public class CandidateServiceImpl implements CandidateService {
     String apiResponse = restUtil.newGetMethod(
         Constant.CANDIDATE_FEEDBACK_URL.replace(Constant.CANDIDATE_ID_BRACES, candidateId));
     if (!apiResponse.contains("candidate_id")) {
-      throw new APIException("Invalid Candidate Id");
+      throw new NotFoundException("Invalid Candidate Id");
     }
     List<CandidateFeedbackDTO> candidateFeedbackList;
     try {

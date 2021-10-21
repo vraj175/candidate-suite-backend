@@ -97,7 +97,7 @@ public class SearchController {
         SimpleBeanPropertyFilter.filterOutAllExcept("id", "name");
 
     SimpleBeanPropertyFilter contactFilter = SimpleBeanPropertyFilter.filterOutAllExcept("id",
-        "firstName", "lastName", "workEmail", "currentJobTitle", Constant.COMPANY);
+        "firstName", "lastName", "workEmail", "email", "currentJobTitle", Constant.COMPANY);
 
     SimpleBeanPropertyFilter candidateFilter =
         SimpleBeanPropertyFilter.filterOutAllExcept("id", "contact", "search");
