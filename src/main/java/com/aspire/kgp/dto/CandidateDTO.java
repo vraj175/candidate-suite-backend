@@ -20,6 +20,7 @@ public class CandidateDTO {
   private String kgpInterviewDate3;
   private List<InterviewDTO> interviews;
   boolean degreeVerification;
+  @SerializedName("is_offer_letter_uploaded")
   boolean offerPresented;
   boolean athenaCompleted;
   @SerializedName("athena_status")
@@ -42,15 +43,6 @@ public class CandidateDTO {
   private String screenedDate;
   @SerializedName("execution_credit")
   private String executionCredit;
-  boolean isOfferLetterUploaded;
-
-  public boolean isOfferLetterUploaded() {
-    return isOfferLetterUploaded;
-  }
-
-  public void setOfferLetterUploaded(boolean isOfferLetterUploaded) {
-    this.isOfferLetterUploaded = isOfferLetterUploaded;
-  }
 
   public String getExecutionCredit() {
     return executionCredit;
