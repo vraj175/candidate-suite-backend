@@ -16,6 +16,7 @@ import org.springframework.mock.web.MockHttpServletRequest;
 
 import com.aspire.kgp.CustomTestData;
 import com.aspire.kgp.constant.Constant;
+import com.aspire.kgp.dto.CandidateDTO;
 import com.aspire.kgp.dto.UserDTO;
 
 import freemarker.template.Configuration;
@@ -39,10 +40,12 @@ class MailServiceImplTest {
   void testGetEmailContent() throws IOException, TemplateException {
     MockHttpServletRequest request = CustomTestData.getRequest();
     UserDTO user = CustomTestData.getUserDTO();
+    CandidateDTO candidateDTO = CustomTestData.getCandidateDTO();
     Template template = new Template(Constant.TEST, Constant.TEST, null);
     when(configuration.getTemplate(any())).thenReturn(template);
 
-    String result = service.getEmailContent(request, user, new HashMap<>(), Constant.TEST);
+    String result =
+        service.getEmailContent(request, user, new HashMap<>(), Constant.TEST, candidateDTO);
 
     assertNotNull(result);
   }
