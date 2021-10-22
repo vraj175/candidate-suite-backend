@@ -124,7 +124,7 @@ public class ContactController {
   }
 
   @Operation(summary = "upload resume for contact",
-      description = "Document Type = Resume / Attechment")
+      description = "Document Type = Resume / Attechment / offerLetter")
   @PostMapping("/contact/{contactId}/upload-resumes")
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = Constant.FILE_UPLOADED_SUCCESSFULLY)})

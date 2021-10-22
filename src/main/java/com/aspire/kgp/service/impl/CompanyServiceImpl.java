@@ -93,7 +93,7 @@ public class CompanyServiceImpl implements CompanyService {
          */
         private static final long serialVersionUID = 1L;
       }.getType());
-      
+
       contactDTO = new Gson().fromJson(contact, new TypeToken<ContactDTO>() {
 
         /**
@@ -110,7 +110,6 @@ public class CompanyServiceImpl implements CompanyService {
     }
     if (candidateDTO != null) {
       candidateDTO.setDegreeVerification(Boolean.TRUE);
-      candidateDTO.setOfferPresented(Boolean.TRUE);
       mergeName(candidateDTO);
     }
     if (candidateContactDTO.getAthenaStatus() != null
