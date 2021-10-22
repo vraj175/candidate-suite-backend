@@ -42,6 +42,15 @@ public class CandidateDTO {
   private String screenedDate;
   @SerializedName("execution_credit")
   private String executionCredit;
+  boolean isOfferLetterUploaded;
+
+  public boolean isOfferLetterUploaded() {
+    return isOfferLetterUploaded;
+  }
+
+  public void setOfferLetterUploaded(boolean isOfferLetterUploaded) {
+    this.isOfferLetterUploaded = isOfferLetterUploaded;
+  }
 
   public String getExecutionCredit() {
     return executionCredit;

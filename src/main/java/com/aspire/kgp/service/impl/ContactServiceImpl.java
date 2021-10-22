@@ -110,12 +110,17 @@ public class ContactServiceImpl implements ContactService {
       throw new APIException(Constant.FILE_UPLOAD_ERROR);
     }
     String response = "";
-    if(Constant.RESUME.equalsIgnoreCase(type)) {      
-      response = restUtil.postMethod(
-          Constant.RESUME_URL.replace(Constant.CONTACT_ID, contactId), paramJSON.toString(), file);
-    }else {
-      response = restUtil.postMethod(
-          Constant.ATTECHMENT_URL.replace(Constant.CONTACT_ID, contactId), paramJSON.toString(), file);
+    if (Constant.RESUME.equalsIgnoreCase(type)) {
+      response = restUtil.postMethod(Constant.RESUME_URL.replace(Constant.CONTACT_ID, contactId),
+          paramJSON.toString(), file);
+    } else if ((Constant.OFFER_LETTER.equalsIgnoreCase(type))) {
+      response =
+          restUtil.postMethod(Constant.OFFER_LETTER_URL.replace(Constant.CONTACT_ID, contactId),
+              paramJSON.toString(), file);
+    } else {
+      response =
+          restUtil.postMethod(Constant.ATTECHMENT_URL.replace(Constant.CONTACT_ID, contactId),
+              paramJSON.toString(), file);
     }
     log.info(response);
     JsonObject responseJson = new Gson().fromJson(response, JsonObject.class);
