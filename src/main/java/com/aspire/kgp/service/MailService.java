@@ -8,6 +8,7 @@ import java.util.Map;
 import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
 
+import com.aspire.kgp.dto.CandidateDTO;
 import com.aspire.kgp.dto.UserDTO;
 
 import freemarker.template.TemplateException;
@@ -17,7 +18,7 @@ public interface MailService {
       List<Object> attachments) throws MessagingException, UnsupportedEncodingException;
 
   public String getEmailContent(HttpServletRequest request, UserDTO userDTO,
-      Map<String, String> staticContentsMap, String templateName)
+      Map<String, String> staticContentsMap, String templateName, CandidateDTO candidateDTO)
       throws IOException, TemplateException;
 
   public String getFeedbackEmailContent(HttpServletRequest request,

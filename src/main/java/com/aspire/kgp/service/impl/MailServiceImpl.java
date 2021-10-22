@@ -20,6 +20,7 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
 import com.aspire.kgp.constant.Constant;
+import com.aspire.kgp.dto.CandidateDTO;
 import com.aspire.kgp.dto.UserDTO;
 import com.aspire.kgp.service.MailService;
 import com.aspire.kgp.util.CommonUtil;
@@ -58,7 +59,7 @@ public class MailServiceImpl implements MailService {
 
   @Override
   public String getEmailContent(HttpServletRequest request, UserDTO user,
-      Map<String, String> staticContentsMap, String templateName)
+      Map<String, String> staticContentsMap, String templateName, CandidateDTO candidateDTO)
       throws IOException, TemplateException {
     log.info("starting getEmailContent");
     StringWriter stringWriter = new StringWriter();
@@ -66,9 +67,14 @@ public class MailServiceImpl implements MailService {
     model.put("serverUrl", CommonUtil.getServerUrl(request) + request.getContextPath());
     model.put("homeUrl", "/login");
     model.put("name", user.getFirstName() + " " + user.getLastName());
+    model.put("firstName", user.getFirstName());
     model.put("token", user.getToken());
     model.put("userEmail", user.getEmail());
     model.put("staticContentsMap", staticContentsMap);
+    if (candidateDTO != null) {
+      model.put("searchTitle", candidateDTO.getSearch().getJobTitle());
+      model.put("companyName", candidateDTO.getSearch().getCompany().getName());
+    }
     configuration.getTemplate(templateName).process(model, stringWriter);
     log.info("ending getEmailContent");
     return stringWriter.getBuffer().toString();
