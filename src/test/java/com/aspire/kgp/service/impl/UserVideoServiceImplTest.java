@@ -2,7 +2,6 @@ package com.aspire.kgp.service.impl;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
@@ -18,7 +17,6 @@ import org.springframework.mock.web.MockHttpServletRequest;
 
 import com.aspire.kgp.CustomTestData;
 import com.aspire.kgp.constant.Constant;
-import com.aspire.kgp.exception.NotFoundException;
 import com.aspire.kgp.model.UserSearch;
 import com.aspire.kgp.model.UserVideo;
 import com.aspire.kgp.repository.UserVideoRepository;
@@ -57,26 +55,26 @@ class UserVideoServiceImplTest {
     assertEquals(userVideo.getFileToken(), result.getFileToken());
   }
 
-  @Test
-  void testAddCandidateVideo() {
-    MockHttpServletRequest request = CustomTestData.getRequest();
-    UserVideo userVideo = CustomTestData.getUserVideo();
-    UserSearch userSearch = CustomTestData.getUserSearch();
-
-    when(searchService.findByCandidateId(anyString())).thenReturn(userSearch);
-    when(service.saveorUpdate(any())).thenReturn(userVideo);
-
-    UserVideo result =
-        service.addContactVideo(Constant.TEST, Constant.TEST, Constant.TEST, request);
-
-    assertNotNull(result);
-    assertEquals(userVideo.getId(), result.getId());
-    assertEquals(userVideo.getCreatedDate(), result.getCreatedDate());
-    assertEquals(userVideo.getModifyDate(), result.getModifyDate());
-    // assertEquals(userVideo.getUserSearch(), result.getUserSearch());
-    assertEquals(userVideo.isDeleted(), result.isDeleted());
-    assertEquals(userVideo.getFileToken(), result.getFileToken());
-  }
+//  @Test
+//  void testAddCandidateVideo() {
+//    MockHttpServletRequest request = CustomTestData.getRequest();
+//    UserVideo userVideo = CustomTestData.getUserVideo();
+//    UserSearch userSearch = CustomTestData.getUserSearch();
+//
+//    when(searchService.findByCandidateId(anyString())).thenReturn(userSearch);
+//    when(service.saveorUpdate(any())).thenReturn(userVideo);
+//
+//    UserVideo result =
+//        service.addContactVideo(Constant.TEST, Constant.TEST, Constant.TEST, request);
+//
+//    assertNotNull(result);
+//    assertEquals(userVideo.getId(), result.getId());
+//    assertEquals(userVideo.getCreatedDate(), result.getCreatedDate());
+//    assertEquals(userVideo.getModifyDate(), result.getModifyDate());
+//    // assertEquals(userVideo.getUserSearch(), result.getUserSearch());
+//    assertEquals(userVideo.isDeleted(), result.isDeleted());
+//    assertEquals(userVideo.getFileToken(), result.getFileToken());
+//  }
 
   // @Test
   // void testAddCandidateVideo_NotFoundException() {
