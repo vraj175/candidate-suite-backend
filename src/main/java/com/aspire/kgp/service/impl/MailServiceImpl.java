@@ -15,6 +15,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
@@ -25,8 +26,11 @@ import com.aspire.kgp.dto.UserDTO;
 import com.aspire.kgp.service.MailService;
 import com.aspire.kgp.util.CommonUtil;
 
+import freemarker.core.ParseException;
 import freemarker.template.Configuration;
+import freemarker.template.MalformedTemplateNameException;
 import freemarker.template.TemplateException;
+import freemarker.template.TemplateNotFoundException;
 
 @Service
 public class MailServiceImpl implements MailService {
@@ -37,6 +41,9 @@ public class MailServiceImpl implements MailService {
 
   @Autowired
   Configuration configuration;
+
+  @Value("${galaxy.base.api.url}")
+  private String baseApiUrl;
 
   @Override
   public void sendEmail(String mailTo, String[] mailBcc, String mailSubject, String mailContent,
@@ -104,6 +111,28 @@ public class MailServiceImpl implements MailService {
             + paramRequest.get("searchName") + "/" + paramRequest.get("contactId") + "/" + "true"
             + "/" + paramRequest.get("commentId"));
     configuration.getTemplate(candidateFeedbackEmailTemplate).process(model, stringWriter);
+    log.info("ending getEmailContent for Email feedback");
+    return stringWriter.getBuffer().toString();
+  }
+
+  @Override
+  public String getUploadEmailContent(HttpServletRequest request,
+      Map<String, String> staticContentsMap, String candidateUploadEmailTemplate,
+      String partnerName, Map<String, String> paramRequest) throws TemplateException, IOException {
+    log.info("starting getEmailContent for Upload Documnets");
+    StringWriter stringWriter = new StringWriter();
+    Map<String, Object> model = new HashMap<>();
+    model.put("serverUrl", CommonUtil.getServerUrl(request) + request.getContextPath());
+    model.put("clientName", paramRequest.get("clientName"));
+    model.put("partnerName", partnerName);
+    model.put("searchName", paramRequest.get("searchName"));
+    model.put("candidateName", paramRequest.get("candidateName"));
+    model.put("companyName", paramRequest.get("companyName"));
+    model.put("file", paramRequest.get("type"));
+    model.put("staticContentsMap", staticContentsMap);
+    model.put("clickButtonUrl",
+        baseApiUrl.replace("api", "contacts") + "/" + paramRequest.get("contactId"));
+    configuration.getTemplate(candidateUploadEmailTemplate).process(model, stringWriter);
     log.info("ending getEmailContent for Email feedback");
     return stringWriter.getBuffer().toString();
   }

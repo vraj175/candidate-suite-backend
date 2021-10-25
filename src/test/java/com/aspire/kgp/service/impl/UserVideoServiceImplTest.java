@@ -14,6 +14,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.mock.web.MockHttpServletRequest;
 
 import com.aspire.kgp.CustomTestData;
 import com.aspire.kgp.constant.Constant;
@@ -51,26 +52,28 @@ class UserVideoServiceImplTest {
     assertEquals(userVideo.getId(), result.getId());
     assertEquals(userVideo.getCreatedDate(), result.getCreatedDate());
     assertEquals(userVideo.getModifyDate(), result.getModifyDate());
-    //assertEquals(userVideo.getUserSearch(), result.getUserSearch());
+    // assertEquals(userVideo.getUserSearch(), result.getUserSearch());
     assertEquals(userVideo.isDeleted(), result.isDeleted());
     assertEquals(userVideo.getFileToken(), result.getFileToken());
   }
 
   @Test
   void testAddCandidateVideo() {
+    MockHttpServletRequest request = CustomTestData.getRequest();
     UserVideo userVideo = CustomTestData.getUserVideo();
     UserSearch userSearch = CustomTestData.getUserSearch();
 
     when(searchService.findByCandidateId(anyString())).thenReturn(userSearch);
     when(service.saveorUpdate(any())).thenReturn(userVideo);
 
-    UserVideo result = service.addContactVideo(Constant.TEST, Constant.TEST);
+    UserVideo result =
+        service.addContactVideo(Constant.TEST, Constant.TEST, Constant.TEST, request);
 
     assertNotNull(result);
     assertEquals(userVideo.getId(), result.getId());
     assertEquals(userVideo.getCreatedDate(), result.getCreatedDate());
     assertEquals(userVideo.getModifyDate(), result.getModifyDate());
-    //assertEquals(userVideo.getUserSearch(), result.getUserSearch());
+    // assertEquals(userVideo.getUserSearch(), result.getUserSearch());
     assertEquals(userVideo.isDeleted(), result.isDeleted());
     assertEquals(userVideo.getFileToken(), result.getFileToken());
   }
@@ -99,12 +102,12 @@ class UserVideoServiceImplTest {
     assertEquals(userVideos.size(), result.size());
   }
 
-//  @Test
-//  void testFindByCandidateId_NotFoundException() {
-//    when(searchService.findByCandidateId(anyString())).thenReturn(null);
-//
-//    Exception e =
-//        assertThrows(NotFoundException.class, () -> service.findByContactId(Constant.TEST));
-//    assertEquals("Candidate is not available", e.getMessage());
-//  }
+  // @Test
+  // void testFindByCandidateId_NotFoundException() {
+  // when(searchService.findByCandidateId(anyString())).thenReturn(null);
+  //
+  // Exception e =
+  // assertThrows(NotFoundException.class, () -> service.findByContactId(Constant.TEST));
+  // assertEquals("Candidate is not available", e.getMessage());
+  // }
 }

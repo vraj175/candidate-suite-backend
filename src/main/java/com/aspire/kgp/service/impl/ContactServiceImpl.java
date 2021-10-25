@@ -8,8 +8,13 @@ import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
@@ -21,15 +26,20 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.aspire.kgp.constant.Constant;
+import com.aspire.kgp.dto.CandidateDTO;
 import com.aspire.kgp.dto.ContactDTO;
 import com.aspire.kgp.dto.ContactReferencesDTO;
 import com.aspire.kgp.dto.DocumentDTO;
 import com.aspire.kgp.dto.SearchDTO;
+import com.aspire.kgp.dto.UserDTO;
 import com.aspire.kgp.exception.APIException;
 import com.aspire.kgp.exception.NotFoundException;
+import com.aspire.kgp.service.CandidateService;
 import com.aspire.kgp.service.ContactService;
+import com.aspire.kgp.service.MailService;
 import com.aspire.kgp.util.CommonUtil;
 import com.aspire.kgp.util.RestUtil;
+import com.aspire.kgp.util.StaticContentsMultiLanguageUtil;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
@@ -43,6 +53,12 @@ public class ContactServiceImpl implements ContactService {
 
   @Autowired
   RestUtil restUtil;
+
+  @Autowired
+  MailService mailService;
+
+  @Autowired
+  CandidateService candidateService;
 
   @Override
   public ContactDTO getContactDetails(String contactId) {
@@ -89,7 +105,8 @@ public class ContactServiceImpl implements ContactService {
   }
 
   @Override
-  public String uploadCandidateResume(MultipartFile multipartFile, String contactId, String type) {
+  public String uploadCandidateResume(MultipartFile multipartFile, String contactId, String type,
+      String candidateId, HttpServletRequest request) {
     JsonObject paramJSON = new JsonObject();
     paramJSON.addProperty("description", "");
     paramJSON.addProperty("show_in_clientsuite", false);
@@ -127,6 +144,7 @@ public class ContactServiceImpl implements ContactService {
 
     try {
       if (responseJson.get("id").getAsString() != null) {
+        sentUploadNotification(contactId, request, candidateId, type);
         return Constant.FILE_UPLOADED_SUCCESSFULLY;
       }
     } catch (Exception e) {
@@ -319,6 +337,79 @@ public class ContactServiceImpl implements ContactService {
       return null;
     }
     return documentList.get(0);
+  }
+
+  private void sentUploadNotification(String contactId, HttpServletRequest request,
+      String candidateId, String type) {
+    Set<String> kgpPartnerEmailList = new HashSet<>();
+    HashMap<String, String> paramRequest = new HashMap<>();
+    CandidateDTO apiResponse = candidateService.getCandidateDetails(candidateId);
+    try {
+      kgpPartnerEmailList =
+          teamMemberList(apiResponse.getSearch().getPartners(), kgpPartnerEmailList);
+      kgpPartnerEmailList =
+          teamMemberList(apiResponse.getSearch().getRecruiters(), kgpPartnerEmailList);
+      kgpPartnerEmailList =
+          teamMemberList(apiResponse.getSearch().getResearchers(), kgpPartnerEmailList);
+      kgpPartnerEmailList = teamMemberList(apiResponse.getSearch().getEas(), kgpPartnerEmailList);
+      paramRequest.put("candidateName",
+          apiResponse.getContact().getFirstName() + " " + apiResponse.getContact().getLastName());
+      paramRequest.put("searchId", apiResponse.getSearch().getId());
+      paramRequest.put("clientName",
+          apiResponse.getContact().getFirstName() + " " + apiResponse.getContact().getLastName());
+      paramRequest.put("searchName", apiResponse.getSearch().getJobTitle());
+      paramRequest.put("companyName", apiResponse.getSearch().getCompany().getName());
+      paramRequest.put("candidateId", candidateId);
+      paramRequest.put("contactId", contactId);
+      paramRequest.put("type", type);
+    } catch (JsonSyntaxException e) {
+      log.error("oops ! invalid json");
+      throw new JsonSyntaxException("error while get team member");
+    }
+    try {
+      for (String kgpTeamMeberDetails : kgpPartnerEmailList) {
+        log.info("Partner Email : " + kgpTeamMeberDetails);
+        sendClientUploadNotificationMail(kgpTeamMeberDetails.split("##")[0],
+            kgpTeamMeberDetails.split("##")[1], request, paramRequest);
+      }
+    } catch (Exception ex) {
+      log.info(ex);
+      throw new APIException("Error in send upload notification email");
+    }
+
+  }
+
+
+  private void sendClientUploadNotificationMail(String email, String partnerName,
+      HttpServletRequest request, HashMap<String, String> paramRequest) {
+    log.info("sending client upload notification email");
+    String locate = "en_US";
+    email = "abhishek.jaiswal@aspiresoftserv.com";
+    try {
+      Map<String, String> staticContentsMap =
+          StaticContentsMultiLanguageUtil.getStaticContentsMap(locate, Constant.EMAILS_CONTENT_MAP);
+      String mailSubject = staticContentsMap.get("candidate.suite.upload.email.subject");
+      mailService.sendEmail(email, null,
+          mailSubject + " " + paramRequest.get("type") + " - " + "Uploaded from "
+              + paramRequest.get("candidateName"),
+          mailService.getUploadEmailContent(request, staticContentsMap,
+              Constant.CANDIDATE_UPLOAD_EMAIL_TEMPLATE, partnerName, paramRequest),
+          null);
+    } catch (Exception e) {
+      log.info(e);
+      throw new APIException("Error in sending candidate upload email");
+    }
+    log.info("Client upload Mail sent to all partners successfully.");
+  }
+
+  private Set<String> teamMemberList(List<UserDTO> users, Set<String> partnerEmailList) {
+    log.info("Creating Team member email and name set");
+    for (UserDTO user : users) {
+      if (user != null && CommonUtil.checkNotNullString(user.getId())) {
+        partnerEmailList.add(user.getEmail() + "##" + user.getName());
+      }
+    }
+    return partnerEmailList;
   }
 
 }
