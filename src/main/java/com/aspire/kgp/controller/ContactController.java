@@ -155,6 +155,16 @@ public class ContactController {
     log.info("Get contact Resumes API call, Request Param contactId: " + contactId);
     return service.getContactResumes(contactId);
   }
+  
+  @Operation(summary = "Get contact Offer Letter")
+  @GetMapping(value = {"/contact/{contactId}/offerLetter"})
+  @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK",
+      content = @Content(mediaType = "application/json", schema = @Schema(type = "Offer Letter",
+          example = "{ \"id\": \"string\",\"fileName\": \"string\",\"createdAt\": \"string\" }")))})
+  public DocumentDTO getOfferLetterDetails(@PathVariable("contactId") String contactId) {
+    log.info("Get contact Offer Letter API call, Request Param contactId: " + contactId);
+    return service.getContactOfferLetter(contactId);
+  }
 
   @Operation(summary = "Download Documents")
   @GetMapping(value = {"contact/resumes/{attachmentId}/download"})

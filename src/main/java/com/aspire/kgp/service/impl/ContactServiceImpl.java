@@ -297,4 +297,28 @@ public class ContactServiceImpl implements ContactService {
     return restUtil.postMethod(Constant.CONTACT_SAVE_URL, contactData, null);
   }
 
+  @Override
+  public DocumentDTO getContactOfferLetter(String contactId) {
+    List<DocumentDTO> documentList = null;
+    String apiResponse =
+        restUtil.newGetMethod(Constant.OFFER_LETTER_URL.replace(Constant.CONTACT_ID, contactId));
+    try {
+      documentList = new Gson().fromJson(apiResponse, new TypeToken<List<DocumentDTO>>() {
+
+        /**
+         * 
+         */
+        private static final long serialVersionUID = 1L;
+      }.getType());
+    } catch (JsonSyntaxException e) {
+      log.error("Oops! error while fetching document list details");
+      documentList = Collections.emptyList();
+    }
+    log.info("End of getDocuments method");
+    if (documentList.isEmpty()) {
+      return null;
+    }
+    return documentList.get(0);
+  }
+
 }
