@@ -40,4 +40,6 @@ public interface ContactService {
   List<ContactDTO> getListOfContactByName(String contactName);
 
   String addNewContact(String contactData);
+
+  public DocumentDTO getContactOfferLetter(String contactId);
 }
