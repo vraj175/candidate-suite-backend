@@ -4,6 +4,7 @@ package com.aspire.kgp.controller;
 import java.io.UnsupportedEncodingException;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
@@ -125,14 +126,15 @@ public class ContactController {
 
   @Operation(summary = "upload resume for contact",
       description = "Document Type = Resume / Attechment / offerLetter")
-  @PostMapping("/contact/{contactId}/upload-resumes")
+  @PostMapping("/contact/{contactId}/{candidateId}/upload-resumes")
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = Constant.FILE_UPLOADED_SUCCESSFULLY)})
   public String uploadResume(@PathVariable("contactId") String contactId,
-      @RequestParam("file") MultipartFile file, @RequestParam("documentType") String type) {
+      @PathVariable("candidateId") String candidateId, @RequestParam("file") MultipartFile file,
+      @RequestParam("documentType") String type, HttpServletRequest request) {
     log.info("upload document for contact API call, Request Param contactId: " + contactId
         + " File: " + file.getName() + " documentType : " + type);
-    return service.uploadCandidateResume(file, contactId, type);
+    return service.uploadCandidateResume(file, candidateId, type, contactId, request);
   }
 
   @Operation(summary = "Upload Profile Image For Contact")
@@ -155,7 +157,7 @@ public class ContactController {
     log.info("Get contact Resumes API call, Request Param contactId: " + contactId);
     return service.getContactResumes(contactId);
   }
-  
+
   @Operation(summary = "Get contact Offer Letter")
   @GetMapping(value = {"/contact/{contactId}/offerLetter"})
   @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK",
