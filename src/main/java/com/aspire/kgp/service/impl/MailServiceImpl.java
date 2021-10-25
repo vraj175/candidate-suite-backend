@@ -22,15 +22,14 @@ import org.springframework.stereotype.Service;
 
 import com.aspire.kgp.constant.Constant;
 import com.aspire.kgp.dto.CandidateDTO;
+import com.aspire.kgp.dto.ClientTeamDTO;
 import com.aspire.kgp.dto.UserDTO;
 import com.aspire.kgp.service.MailService;
 import com.aspire.kgp.util.CommonUtil;
+import com.aspire.kgp.util.StaticContentsMultiLanguageUtil;
 
-import freemarker.core.ParseException;
 import freemarker.template.Configuration;
-import freemarker.template.MalformedTemplateNameException;
 import freemarker.template.TemplateException;
-import freemarker.template.TemplateNotFoundException;
 
 @Service
 public class MailServiceImpl implements MailService {
@@ -135,5 +134,69 @@ public class MailServiceImpl implements MailService {
     configuration.getTemplate(candidateUploadEmailTemplate).process(model, stringWriter);
     log.info("ending getEmailContent for Email feedback");
     return stringWriter.getBuffer().toString();
+  }
+
+  @Override
+  public String getInterviewNotificationEmailContent(String notificationType,
+      CandidateDTO candidateDTO, UserDTO userDTO, ClientTeamDTO clientTeamDTO, String time,
+      String stage, String templateName) {
+
+    log.info("starting getEmailContent");
+    StringWriter stringWriter = new StringWriter();
+    Map<String, Object> model = new HashMap<>();
+    if (time.equals("BEFORE_ONE_HOUR"))
+      model.put("time", "in an hour");
+    else
+      model.put("time", "tomorrow ");
+
+    model.put(Constant.SERVER_URL, "b");
+    model.put(Constant.HOME_URL, "/login");
+    model.put(Constant.COMPANY_NAME, candidateDTO.getSearch().getCompany().getName());
+    model.put(Constant.FEEDBACK_NOTIFICATION_POSITION_TITLE,
+        candidateDTO.getSearch().getJobTitle());
+    model.put(Constant.STATIC_CONTENT_MAP,
+        StaticContentsMultiLanguageUtil.getStaticContentsMap("en_US", Constant.EMAILS_CONTENT_MAP));
+
+    if (notificationType.equals(Constant.CANDIDATE_NOTIFICATION)) {
+      model.put(Constant.CLICK_HERE, "Click Here");
+      model.put(Constant.CLICK_HERE_MSG, "to access the login details.");
+      model.put(Constant.NAME, candidateDTO.getContact().getName());
+      model.put(Constant.POSITION_TITLE, candidateDTO.getSearch().getJobTitle());
+      model.put(Constant.FEEDBACK_NOTIFICATION_CLICK_MSG, "Candidate Suite ");
+      model.put(Constant.FEEDBACK_NOTIFICATION_CLICK_LINK, "dd");
+      if (stage.equals("KGP"))
+        model.put(Constant.CANDIDATE_NAME, userDTO.getName());
+      else
+        model.put(Constant.CANDIDATE_NAME, clientTeamDTO.getContact().getName());
+
+    } else if (notificationType.equals(Constant.CLIENT_NOTIFICATION)) {
+      model.put(Constant.CLICK_HERE, "Click Here");
+      model.put(Constant.CLICK_HERE_MSG, "to access their details in Client Suite.");
+      model.put(Constant.NAME, userDTO.getName());
+      model.put(Constant.CANDIDATE_NAME, candidateDTO.getContact().getName());
+      model.put(Constant.FEEDBACK_NOTIFICATION_CLICK_MSG, "ClientSuite ");
+      model.put(Constant.FEEDBACK_NOTIFICATION_CLICK_LINK, "dd");
+      model.put(Constant.FEEDBACK_NOTIFICATION_CANDIDATE_NAME,
+          " with" + candidateDTO.getContact().getName());
+    } else {
+      model.put(Constant.CLICK_HERE, "");
+      model.put(Constant.CLICK_HERE_MSG, "");
+      model.put(Constant.NAME, clientTeamDTO.getContact().getName());
+      model.put(Constant.CANDIDATE_NAME, candidateDTO.getContact().getName());
+      model.put(Constant.POSITION_TITLE, candidateDTO.getSearch().getJobTitle());
+      model.put(Constant.FEEDBACK_NOTIFICATION_CLICK_MSG, "ClientSuite ");
+      model.put(Constant.FEEDBACK_NOTIFICATION_CLICK_LINK, "dd");
+      model.put(Constant.FEEDBACK_NOTIFICATION_CANDIDATE_NAME,
+          " with" + candidateDTO.getContact().getName());
+    }
+
+    try {
+      configuration.getTemplate(templateName).process(model, stringWriter);
+    } catch (TemplateException | IOException e) {
+      e.printStackTrace();
+    }
+    log.info("ending getEmailContent");
+    return stringWriter.getBuffer().toString();
+
   }
 }

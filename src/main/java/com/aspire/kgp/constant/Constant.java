@@ -146,6 +146,9 @@ public class Constant {
   public static final String FORGOT_EMAIL_TEMPLATE = "forgot-password.ftl";
   public static final String CANDIDATE_FEEDBACK_EMAIL_TEMPLATE = "candidate-feedback.ftl";
   public static final String CANDIDATE_UPLOAD_EMAIL_TEMPLATE = "candidate-upload.ftl";
+  public static final String INTERVIEW_NOTIFICATION_TEMPLATE = "interviewNotification.ftl";
+  public static final String INTERVIEW_FEEDBACK_NOTIFICATION_TEMPLATE =
+      "interviewFeedbackNotification.ftl";
 
   // Json Fields
   public static final String FIRST_NAME = "firstName";
@@ -224,6 +227,26 @@ public class Constant {
   public static final String CANDIDATE_FEEDBACK_REPLY_FILTER = "candidateFeedbackReplyFilter";
   public static final String USER_FILTER = "userFilter";
   public static final String INTERVIEW_FILTER = "interviewFilter";
+
+  // field name
+  public static final String SERVER_URL = "serverUrl";
+  public static final String HOME_URL = "homeUrl";
+  public static final String COMPANY_NAME = "companyName";
+  public static final String STATIC_CONTENT_MAP = "staticContentsMap";
+  public static final String CLICK_HERE = "clickHere";
+  public static final String CLICK_HERE_MSG = "clickHereMsg";
+  public static final String POSITION_TITLE = "positionTitle";
+  public static final String CANDIDATE_NAME = "candidateName";
+  public static final String BEFORE_ONE_DAY = "BEFORE_ONE_DAY";
+  public static final String BEFORE_ONE_HOUR = "BEFORE_ONE_HOUR";
+  public static final String AFTER_INTERVIEW = "AFTER_INTERVIEW";
+  public static final String CANDIDATE_NOTIFICATION = "candidateNotification";
+  public static final String KGP_NOTIFICATION = "kgpNotification";
+  public static final String CLIENT_NOTIFICATION = "clientNotification";
+  public static final String FEEDBACK_NOTIFICATION_CLICK_MSG = "feedbackClickMsg";
+  public static final String FEEDBACK_NOTIFICATION_CLICK_LINK = "feedbackClickLink";
+  public static final String FEEDBACK_NOTIFICATION_POSITION_TITLE = "feedbackPositionTitle";
+  public static final String FEEDBACK_NOTIFICATION_CANDIDATE_NAME = "feedbackCandidateName";
 
   // messages
   public static final String DATA_SAVED = "Data saved successfully";
