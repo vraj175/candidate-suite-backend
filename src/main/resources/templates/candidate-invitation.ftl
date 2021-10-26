@@ -19,7 +19,7 @@
 			          	<p style="font-size:13px; color:#231f20;margin:0; padding:0; line-height:20px;letter-spacing:0.3px; font-weight:400; text-align:justify;">
 			          		${staticContentsMap['candidate.suite.invitation.email.content1']} 
 				          	<b>${searchTitle}</b> ${staticContentsMap['candidate.suite.invitation.email.content2']}  
-				          	<b>${companyName}</b> ${staticContentsMap['candidate.suite.invitation.email.content3']}
+				          	<b>${companyName}</b>${staticContentsMap['candidate.suite.invitation.email.content3']}
 			          	</p>
 			          	<p style="margin:0; padding:0; height:15px;">&nbsp;</p>
 				        <p style="font-size:13px; color:#231f20;margin:0; padding:0; line-height:20px;letter-spacing:0.3px; font-weight:400; text-align:justify;">
