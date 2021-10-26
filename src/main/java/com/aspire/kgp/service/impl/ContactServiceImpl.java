@@ -353,13 +353,10 @@ public class ContactServiceImpl implements ContactService {
     }
     CandidateDTO apiResponse = candidateService.getCandidateDetails(candidateId);
     try {
+      kgpPartnerEmailList = CommonUtil.teamPartnerMemberList(apiResponse.getSearch().getPartners(),
+          kgpPartnerEmailList);
       kgpPartnerEmailList =
-          teamMemberList(apiResponse.getSearch().getPartners(), kgpPartnerEmailList);
-      kgpPartnerEmailList =
-          teamMemberList(apiResponse.getSearch().getRecruiters(), kgpPartnerEmailList);
-      kgpPartnerEmailList =
-          teamMemberList(apiResponse.getSearch().getResearchers(), kgpPartnerEmailList);
-      kgpPartnerEmailList = teamMemberList(apiResponse.getSearch().getEas(), kgpPartnerEmailList);
+          CommonUtil.teamMemberList(apiResponse.getSearch().getRecruiters(), kgpPartnerEmailList);
       paramRequest.put("candidateName",
           apiResponse.getContact().getFirstName() + " " + apiResponse.getContact().getLastName());
       paramRequest.put("searchId", apiResponse.getSearch().getId());
@@ -393,6 +390,7 @@ public class ContactServiceImpl implements ContactService {
     String role = user.getRole().getName();
     paramRequest.put("role", role);
     String locate = "en_US";
+    email = "abhishek.jaiswal@aspiresoftserv.com";
     try {
       Map<String, String> staticContentsMap =
           StaticContentsMultiLanguageUtil.getStaticContentsMap(locate, Constant.EMAILS_CONTENT_MAP);
@@ -424,16 +422,6 @@ public class ContactServiceImpl implements ContactService {
       throw new APIException("Error in sending candidate upload email");
     }
     log.info("Client upload Mail sent to all partners successfully.");
-  }
-
-  private Set<String> teamMemberList(List<UserDTO> users, Set<String> partnerEmailList) {
-    log.info("Creating Team member email and name set");
-    for (UserDTO user : users) {
-      if (user != null && CommonUtil.checkNotNullString(user.getId())) {
-        partnerEmailList.add(user.getEmail() + "##" + user.getName());
-      }
-    }
-    return partnerEmailList;
   }
 
 }
