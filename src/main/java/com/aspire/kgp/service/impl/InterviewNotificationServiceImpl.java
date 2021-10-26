@@ -70,6 +70,9 @@ public class InterviewNotificationServiceImpl implements InterviewNotificationSe
 
   private void sendCandidateNotification(String mailSubject, String time, CandidateDTO candidateDTO,
       UserDTO userDTO, ClientTeamDTO clientTeamDTO, String stage, String templateName) {
+    log.info("candidate notification send... candidate details " + candidateDTO);
+    log.debug("candidate notification details : type" + time + " Stage " + stage
+        + " kgp team details " + userDTO + " client details " + clientTeamDTO);
     String contain =
         mailService.getInterviewNotificationEmailContent(Constant.CANDIDATE_NOTIFICATION,
             candidateDTO, userDTO, clientTeamDTO, time, stage, templateName);
@@ -79,6 +82,8 @@ public class InterviewNotificationServiceImpl implements InterviewNotificationSe
 
   private void sendKgpPartnerNotification(String mailSubject, String time,
       CandidateDTO candidateDTO, UserDTO userDTO, String templateName) {
+    log.info("KGP Partner notification send... candidate details " + candidateDTO);
+    log.debug("KGP Partner notification details : type" + time + " kgp team details " + userDTO);
     String contain = mailService.getInterviewNotificationEmailContent(Constant.KGP_NOTIFICATION,
         candidateDTO, userDTO, null, time, null, templateName);
     sendMail(userDTO.getEmail(), mailSubject, contain);
@@ -88,6 +93,9 @@ public class InterviewNotificationServiceImpl implements InterviewNotificationSe
 
   private void sendClientNotification(String mailSubject, String time, CandidateDTO candidateDTO,
       ClientTeamDTO clientTeamDTO, String templateName) {
+    log.info("Client Team notification send... candidate details " + candidateDTO);
+    log.debug(
+        "Client Team notification details : type" + time + " Client Team details " + clientTeamDTO);
     String contain = mailService.getInterviewNotificationEmailContent(Constant.CLIENT_NOTIFICATION,
         candidateDTO, null, clientTeamDTO, time, null, templateName);
     sendMail(clientTeamDTO.getContact().getEmail(), mailSubject, contain);

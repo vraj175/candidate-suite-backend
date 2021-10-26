@@ -17,8 +17,8 @@
 			        	<p style="margin:0; padding:0; height:15px;">&nbsp;</p>
 			          	<p style="color:#231f20; font-size:13px; font-weight:700; letter-spacing:0.3px; margin:0px; line-height:45px;">${staticContentsMap['candidate.suite.invitation.email.dear']} ${name},</p>
 			          	<p style="font-size:13px; color:#231f20;margin:0; padding:0; line-height:20px;letter-spacing:0.3px; font-weight:400; text-align:justify;">
-			          		 Thank you for attending the interview <b>${feedbackCandidateName}</b> for the <b>${feedbackPositionTitle}</b> at 
-			          		 <b>${companyName}</b>. We look forward to receiving your feedback. Please click the link below 
+			          		 Thank you for attending the interview <b>${feedbackCandidateName}</b> for the <b>${positionTitle}</b> at 
+			          		 <b>${feedbackCompanyName}</b>. We look forward to receiving your feedback. Please click the link below 
 			          		 to enter your feedback in  ${feedbackClickMsg}.
 			          		 <br>
 			          		 <a href="${feedbackClickLink}" target="_blank" style="color:#5443d5; font-weight: bold; text-decoration:none;">

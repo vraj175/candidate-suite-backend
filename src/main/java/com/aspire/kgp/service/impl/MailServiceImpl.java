@@ -152,9 +152,9 @@ public class MailServiceImpl implements MailService {
 
     model.put(Constant.SERVER_URL, "b");
     model.put(Constant.HOME_URL, "/login");
-    model.put(Constant.COMPANY_NAME, candidateDTO.getSearch().getCompany().getName());
-    model.put(Constant.FEEDBACK_NOTIFICATION_POSITION_TITLE,
-        candidateDTO.getSearch().getJobTitle());
+    model.put(Constant.POSITION_TITLE, candidateDTO.getSearch().getJobTitle());
+    model.put(Constant.FEEDBACK_NOTIFICATION_COMPANY_NAME,
+        candidateDTO.getSearch().getCompany().getName());
     model.put(Constant.STATIC_CONTENT_MAP,
         StaticContentsMultiLanguageUtil.getStaticContentsMap("en_US", Constant.EMAILS_CONTENT_MAP));
 
@@ -162,7 +162,8 @@ public class MailServiceImpl implements MailService {
       model.put(Constant.CLICK_HERE, "Click Here");
       model.put(Constant.CLICK_HERE_MSG, "to access the login details.");
       model.put(Constant.NAME, candidateDTO.getContact().getName());
-      model.put(Constant.POSITION_TITLE, candidateDTO.getSearch().getJobTitle());
+      model.put(Constant.COMPANY_NAME, candidateDTO.getSearch().getCompany().getName());
+      model.put(Constant.POSITION_TITLE_TYPE, "role");
       model.put(Constant.FEEDBACK_NOTIFICATION_CLICK_MSG, "Candidate Suite ");
       model.put(Constant.FEEDBACK_NOTIFICATION_CLICK_LINK, "dd");
       if (stage.equals("KGP"))
@@ -175,6 +176,7 @@ public class MailServiceImpl implements MailService {
       model.put(Constant.CLICK_HERE_MSG, "to access their details in Client Suite.");
       model.put(Constant.NAME, userDTO.getName());
       model.put(Constant.CANDIDATE_NAME, candidateDTO.getContact().getName());
+      model.put(Constant.POSITION_TITLE_TYPE, "role");
       model.put(Constant.FEEDBACK_NOTIFICATION_CLICK_MSG, "ClientSuite ");
       model.put(Constant.FEEDBACK_NOTIFICATION_CLICK_LINK, "dd");
       model.put(Constant.FEEDBACK_NOTIFICATION_CANDIDATE_NAME,
@@ -184,7 +186,8 @@ public class MailServiceImpl implements MailService {
       model.put(Constant.CLICK_HERE_MSG, "");
       model.put(Constant.NAME, clientTeamDTO.getContact().getName());
       model.put(Constant.CANDIDATE_NAME, candidateDTO.getContact().getName());
-      model.put(Constant.POSITION_TITLE, candidateDTO.getSearch().getJobTitle());
+      model.put(Constant.COMPANY_NAME, candidateDTO.getSearch().getCompany().getName());
+      model.put(Constant.POSITION_TITLE_TYPE, "search");
       model.put(Constant.FEEDBACK_NOTIFICATION_CLICK_MSG, "ClientSuite ");
       model.put(Constant.FEEDBACK_NOTIFICATION_CLICK_LINK, "dd");
       model.put(Constant.FEEDBACK_NOTIFICATION_CANDIDATE_NAME,

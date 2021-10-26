@@ -237,6 +237,7 @@ public class Constant {
   public static final String CLICK_HERE = "clickHere";
   public static final String CLICK_HERE_MSG = "clickHereMsg";
   public static final String POSITION_TITLE = "positionTitle";
+  public static final String POSITION_TITLE_TYPE = "positionTitleType";
   public static final String CANDIDATE_NAME = "candidateName";
   public static final String BEFORE_ONE_DAY = "BEFORE_ONE_DAY";
   public static final String BEFORE_ONE_HOUR = "BEFORE_ONE_HOUR";
@@ -246,7 +247,7 @@ public class Constant {
   public static final String CLIENT_NOTIFICATION = "clientNotification";
   public static final String FEEDBACK_NOTIFICATION_CLICK_MSG = "feedbackClickMsg";
   public static final String FEEDBACK_NOTIFICATION_CLICK_LINK = "feedbackClickLink";
-  public static final String FEEDBACK_NOTIFICATION_POSITION_TITLE = "feedbackPositionTitle";
+  public static final String FEEDBACK_NOTIFICATION_COMPANY_NAME = "feedbackCompanyName";
   public static final String FEEDBACK_NOTIFICATION_CANDIDATE_NAME = "feedbackCandidateName";
 
   // messages
