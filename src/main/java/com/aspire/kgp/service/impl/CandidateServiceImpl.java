@@ -200,12 +200,9 @@ public class CandidateServiceImpl implements CandidateService {
     CandidateDTO apiResponse = getCandidateDetails(candidateId);
     try {
       kgpPartnerEmailList =
-          teamMemberList(apiResponse.getSearch().getPartners(), kgpPartnerEmailList);
+          CommonUtil.teamPartnerMemberList(apiResponse.getSearch().getPartners(), kgpPartnerEmailList);
       kgpPartnerEmailList =
-          teamMemberList(apiResponse.getSearch().getRecruiters(), kgpPartnerEmailList);
-      kgpPartnerEmailList =
-          teamMemberList(apiResponse.getSearch().getResearchers(), kgpPartnerEmailList);
-      kgpPartnerEmailList = teamMemberList(apiResponse.getSearch().getEas(), kgpPartnerEmailList);
+          CommonUtil.teamMemberList(apiResponse.getSearch().getRecruiters(), kgpPartnerEmailList);;
       paramRequest.put("feedback", comments);
       paramRequest.put("candidateName",
           apiResponse.getContact().getFirstName() + " " + apiResponse.getContact().getLastName());
@@ -291,23 +288,6 @@ public class CandidateServiceImpl implements CandidateService {
     }
     log.info("Client Feedback Mail sent to all partners successfully.");
   }
-
-  /**
-   * Create team user map from JSON string of record
-   * 
-   * @param partnerEmailList Set<String>
-   * @throws UnsupportedEncodingException
-   */
-  private Set<String> teamMemberList(List<UserDTO> users, Set<String> partnerEmailList) {
-    log.info("Creating Team member email and name set");
-    for (UserDTO user : users) {
-      if (user != null && CommonUtil.checkNotNullString(user.getId())) {
-        partnerEmailList.add(user.getEmail() + "##" + user.getName());
-      }
-    }
-    return partnerEmailList;
-  }
-
 
   private String generateJwtToken(String userName, String password) {
     log.info("generating Token for user...");
