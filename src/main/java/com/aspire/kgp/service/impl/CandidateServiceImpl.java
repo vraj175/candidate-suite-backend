@@ -273,7 +273,6 @@ public class CandidateServiceImpl implements CandidateService {
       HashMap<String, String> paramRequest, HttpServletRequest request, Boolean isReplyFeedback) {
     log.info("sending client feedback email");
     String locate = "en_US";
-    email = "abhishek.jaiswal@aspiresoftserv.com";
     try {
       Map<String, String> staticContentsMap =
           StaticContentsMultiLanguageUtil.getStaticContentsMap(locate, Constant.EMAILS_CONTENT_MAP);
