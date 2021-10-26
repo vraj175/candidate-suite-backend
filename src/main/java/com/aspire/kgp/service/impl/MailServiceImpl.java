@@ -80,7 +80,7 @@ public class MailServiceImpl implements MailService {
     model.put("staticContentsMap", staticContentsMap);
     if (candidateDTO != null) {
       model.put("searchTitle", candidateDTO.getSearch().getJobTitle());
-      model.put("companyName", candidateDTO.getSearch().getCompany().getName());
+      model.put("companyName", candidateDTO.getSearch().getCompany().getName().trim());
     }
     configuration.getTemplate(templateName).process(model, stringWriter);
     log.info("ending getEmailContent");
