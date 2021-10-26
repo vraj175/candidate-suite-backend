@@ -22,11 +22,13 @@ import com.aspire.kgp.constant.Constant;
 import com.aspire.kgp.dto.CandidateDTO;
 import com.aspire.kgp.dto.UserDTO;
 import com.aspire.kgp.exception.APIException;
+import com.aspire.kgp.model.User;
 import com.aspire.kgp.model.UserVideo;
 import com.aspire.kgp.repository.UserVideoRepository;
 import com.aspire.kgp.service.CandidateService;
 import com.aspire.kgp.service.MailService;
 import com.aspire.kgp.service.UserSearchService;
+import com.aspire.kgp.service.UserService;
 import com.aspire.kgp.service.UserVideoService;
 import com.aspire.kgp.util.CommonUtil;
 import com.aspire.kgp.util.RestUtil;
@@ -54,6 +56,9 @@ public class UserVideoServiceImpl implements UserVideoService {
 
   @Autowired
   CandidateService candidateService;
+
+  @Autowired
+  UserService userService;
 
   @Override
   public UserVideo saveorUpdate(UserVideo userVideo) {
@@ -138,16 +143,36 @@ public class UserVideoServiceImpl implements UserVideoService {
       HttpServletRequest request, HashMap<String, String> paramRequest) {
     log.info("sending client upload notification email");
     String locate = "en_US";
+    UserDTO userDTO = null;
+    String content = "";
+    User user = (User) request.getAttribute("user");
+    String role = user.getRole().getName();
+    paramRequest.put("role", role);
     email = "abhishek.jaiswal@aspiresoftserv.com";
     try {
       Map<String, String> staticContentsMap =
           StaticContentsMultiLanguageUtil.getStaticContentsMap(locate, Constant.EMAILS_CONTENT_MAP);
       String mailSubject = staticContentsMap.get("candidate.suite.upload.email.subject");
-      mailService.sendEmail(email, null,
-          mailSubject + " " + paramRequest.get("type") + " - " + "Uploaded from "
-              + paramRequest.get("candidateName"),
-          mailService.getUploadEmailContent(request, staticContentsMap,
-              Constant.CANDIDATE_UPLOAD_EMAIL_TEMPLATE, partnerName, paramRequest),
+      if (Constant.PARTNER.equalsIgnoreCase(role)) {
+        userDTO = userService.getGalaxyUserDetails(user.getGalaxyId());
+        mailSubject = mailSubject + " " + paramRequest.get("type") + " - " + "Uploaded from "
+            + userDTO.getFirstName() + " " + userDTO.getLastName();
+        content = userDTO.getFirstName() + " " + userDTO.getLastName() + " has uploaded "
+            + paramRequest.get("candidateName") + "'s";
+        paramRequest.put("content", content);
+        paramRequest.put("clientName", userDTO.getFirstName() + " " + userDTO.getLastName());
+
+      } else {
+        userDTO = userService.getContactDetails(user.getGalaxyId());
+        mailSubject = mailSubject + " " + paramRequest.get("type") + " - " + "Uploaded from "
+            + paramRequest.get("candidateName");
+        content = paramRequest.get("candidateName") + " has uploaded their ";
+        paramRequest.put("content", content);
+        paramRequest.put("clientName", paramRequest.get("candidateName"));
+
+      }
+      mailService.sendEmail(email, null, mailSubject, mailService.getUploadEmailContent(request,
+          staticContentsMap, Constant.CANDIDATE_UPLOAD_EMAIL_TEMPLATE, partnerName, paramRequest),
           null);
     } catch (Exception e) {
       log.info(e);
