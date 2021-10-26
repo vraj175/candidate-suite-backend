@@ -22,11 +22,13 @@ import com.aspire.kgp.constant.Constant;
 import com.aspire.kgp.dto.CandidateDTO;
 import com.aspire.kgp.dto.UserDTO;
 import com.aspire.kgp.exception.APIException;
+import com.aspire.kgp.model.User;
 import com.aspire.kgp.model.UserVideo;
 import com.aspire.kgp.repository.UserVideoRepository;
 import com.aspire.kgp.service.CandidateService;
 import com.aspire.kgp.service.MailService;
 import com.aspire.kgp.service.UserSearchService;
+import com.aspire.kgp.service.UserService;
 import com.aspire.kgp.service.UserVideoService;
 import com.aspire.kgp.util.CommonUtil;
 import com.aspire.kgp.util.RestUtil;
@@ -54,6 +56,9 @@ public class UserVideoServiceImpl implements UserVideoService {
 
   @Autowired
   CandidateService candidateService;
+
+  @Autowired
+  UserService userService;
 
   @Override
   public UserVideo saveorUpdate(UserVideo userVideo) {
@@ -100,12 +105,9 @@ public class UserVideoServiceImpl implements UserVideoService {
     CandidateDTO apiResponse = candidateService.getCandidateDetails(candidateId);
     try {
       kgpPartnerEmailList =
-          teamMemberList(apiResponse.getSearch().getPartners(), kgpPartnerEmailList);
+          CommonUtil.teamPartnerMemberList(apiResponse.getSearch().getPartners(), kgpPartnerEmailList);
       kgpPartnerEmailList =
-          teamMemberList(apiResponse.getSearch().getRecruiters(), kgpPartnerEmailList);
-      kgpPartnerEmailList =
-          teamMemberList(apiResponse.getSearch().getResearchers(), kgpPartnerEmailList);
-      kgpPartnerEmailList = teamMemberList(apiResponse.getSearch().getEas(), kgpPartnerEmailList);
+          CommonUtil.teamMemberList(apiResponse.getSearch().getRecruiters(), kgpPartnerEmailList);
       paramRequest.put("candidateName",
           apiResponse.getContact().getFirstName() + " " + apiResponse.getContact().getLastName());
       paramRequest.put("searchId", apiResponse.getSearch().getId());
@@ -138,31 +140,40 @@ public class UserVideoServiceImpl implements UserVideoService {
       HttpServletRequest request, HashMap<String, String> paramRequest) {
     log.info("sending client upload notification email");
     String locate = "en_US";
-    email = "abhishek.jaiswal@aspiresoftserv.com";
+    UserDTO userDTO = null;
+    String content = "";
+    User user = (User) request.getAttribute("user");
+    String role = user.getRole().getName();
+    paramRequest.put("role", role);
     try {
       Map<String, String> staticContentsMap =
           StaticContentsMultiLanguageUtil.getStaticContentsMap(locate, Constant.EMAILS_CONTENT_MAP);
       String mailSubject = staticContentsMap.get("candidate.suite.upload.email.subject");
-      mailService.sendEmail(email, null,
-          mailSubject + " " + paramRequest.get("type") + " - " + "Uploaded from "
-              + paramRequest.get("candidateName"),
-          mailService.getUploadEmailContent(request, staticContentsMap,
-              Constant.CANDIDATE_UPLOAD_EMAIL_TEMPLATE, partnerName, paramRequest),
+      if (Constant.PARTNER.equalsIgnoreCase(role)) {
+        userDTO = userService.getGalaxyUserDetails(user.getGalaxyId());
+        mailSubject = mailSubject + " " + paramRequest.get("type") + " - " + "Uploaded from "
+            + userDTO.getFirstName() + " " + userDTO.getLastName();
+        content = userDTO.getFirstName() + " " + userDTO.getLastName() + " has uploaded "
+            + paramRequest.get("candidateName") + "'s";
+        paramRequest.put("content", content);
+        paramRequest.put("clientName", userDTO.getFirstName() + " " + userDTO.getLastName());
+
+      } else {
+        userDTO = userService.getContactDetails(user.getGalaxyId());
+        mailSubject = mailSubject + " " + paramRequest.get("type") + " - " + "Uploaded from "
+            + paramRequest.get("candidateName");
+        content = paramRequest.get("candidateName") + " has uploaded their ";
+        paramRequest.put("content", content);
+        paramRequest.put("clientName", paramRequest.get("candidateName"));
+
+      }
+      mailService.sendEmail(email, null, mailSubject, mailService.getUploadEmailContent(request,
+          staticContentsMap, Constant.CANDIDATE_UPLOAD_EMAIL_TEMPLATE, partnerName, paramRequest),
           null);
     } catch (Exception e) {
       log.info(e);
       throw new APIException("Error in sending candidate upload email");
     }
     log.info("Client upload Mail sent to all partners successfully.");
-  }
-
-  private Set<String> teamMemberList(List<UserDTO> users, Set<String> partnerEmailList) {
-    log.info("Creating Team member email and name set");
-    for (UserDTO user : users) {
-      if (user != null && CommonUtil.checkNotNullString(user.getId())) {
-        partnerEmailList.add(user.getEmail() + "##" + user.getName());
-      }
-    }
-    return partnerEmailList;
   }
 }

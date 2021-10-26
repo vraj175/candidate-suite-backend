@@ -179,6 +179,7 @@ public class Constant {
   public static final String WORK_EMAIL = "workEmail";
   public static final String RESUME = "Resume";
   public static final String OFFER_LETTER = "offerLetter";
+  public static final String OFFER_LETTERS = "Offer Letter";
   public static final String COMMENTS = "comments";
   public static final String CREATED_BY = "createdBy";
   public static final String CREATED_AT = "createdAt";
