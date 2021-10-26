@@ -119,7 +119,7 @@ public class MailServiceImpl implements MailService {
   public String getUploadEmailContent(HttpServletRequest request,
       Map<String, String> staticContentsMap, String candidateUploadEmailTemplate,
       String partnerName, Map<String, String> paramRequest) throws TemplateException, IOException {
-    log.info("starting getEmailContent for Upload Documnets");
+    log.info("starting getEmailContent for notification Upload Documnets email");
     StringWriter stringWriter = new StringWriter();
     Map<String, Object> model = new HashMap<>();
     model.put("serverUrl", CommonUtil.getServerUrl(request) + request.getContextPath());
@@ -129,11 +129,12 @@ public class MailServiceImpl implements MailService {
     model.put("candidateName", paramRequest.get("candidateName"));
     model.put("companyName", paramRequest.get("companyName"));
     model.put("file", paramRequest.get("type"));
+    model.put("content", paramRequest.get("content"));
     model.put("staticContentsMap", staticContentsMap);
     model.put("clickButtonUrl",
         baseApiUrl.replace("api", "contacts") + "/" + paramRequest.get("contactId"));
     configuration.getTemplate(candidateUploadEmailTemplate).process(model, stringWriter);
-    log.info("ending getEmailContent for Email feedback");
+    log.info("ending getEmailContent for notification Upload Documnets email");
     return stringWriter.getBuffer().toString();
   }
 }
