@@ -148,7 +148,6 @@ public class UserVideoServiceImpl implements UserVideoService {
     User user = (User) request.getAttribute("user");
     String role = user.getRole().getName();
     paramRequest.put("role", role);
-    email = "abhishek.jaiswal@aspiresoftserv.com";
     try {
       Map<String, String> staticContentsMap =
           StaticContentsMultiLanguageUtil.getStaticContentsMap(locate, Constant.EMAILS_CONTENT_MAP);

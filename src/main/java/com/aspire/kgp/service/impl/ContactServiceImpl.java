@@ -393,7 +393,6 @@ public class ContactServiceImpl implements ContactService {
     String role = user.getRole().getName();
     paramRequest.put("role", role);
     String locate = "en_US";
-    email = "abhishek.jaiswal@aspiresoftserv.com";
     try {
       Map<String, String> staticContentsMap =
           StaticContentsMultiLanguageUtil.getStaticContentsMap(locate, Constant.EMAILS_CONTENT_MAP);
