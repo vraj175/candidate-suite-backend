@@ -122,19 +122,19 @@ public class InterviewNotificationServiceImpl implements InterviewNotificationSe
   private InterviewNotificationRequestDTO getScheduleDate(Date currentDateAndTime, String type) {
     InterviewNotificationRequestDTO interviewNotificationRequestDTO =
         new InterviewNotificationRequestDTO();
-    SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+    SimpleDateFormat formatter = new SimpleDateFormat(Constant.GALAXY_DATE_AND_TIME_FORMATTER);
     Calendar fromDateCalender = Calendar.getInstance();
     Calendar toDateCalender = Calendar.getInstance();
     fromDateCalender.setTime(currentDateAndTime);
     toDateCalender.setTime(currentDateAndTime);
 
-    if (type.equals("ONE_DAY")) {
+    if (type.equals(Constant.BEFORE_ONE_DAY)) {
       fromDateCalender.add(Calendar.HOUR, 24);
       toDateCalender.add(Calendar.MINUTE, 2879);
-    } else if (type.equals("ONE_HOUR")) {
+    } else if (type.equals(Constant.BEFORE_ONE_HOUR)) {
       fromDateCalender.add(Calendar.HOUR, 1);
       toDateCalender.add(Calendar.MINUTE, 90);
-    } else if (type.equals("FEEDBACK")) {
+    } else if (type.equals(Constant.AFTER_INTERVIEW)) {
       fromDateCalender.add(Calendar.MINUTE, -150);
       toDateCalender.add(Calendar.HOUR, -2);
     }
