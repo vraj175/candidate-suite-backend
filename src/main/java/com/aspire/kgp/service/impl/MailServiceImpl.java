@@ -139,13 +139,13 @@ public class MailServiceImpl implements MailService {
 
   @Override
   public String getInterviewNotificationEmailContent(String notificationType,
-      CandidateDTO candidateDTO, UserDTO userDTO, ClientTeamDTO clientTeamDTO, String time,
+      CandidateDTO candidateDTO, UserDTO userDTO, ClientTeamDTO clientTeamDTO, String schedulerType,
       String stage, String templateName) {
 
     log.info("starting getEmailContent");
     StringWriter stringWriter = new StringWriter();
     Map<String, Object> model = new HashMap<>();
-    if (time.equals("BEFORE_ONE_HOUR"))
+    if (schedulerType.equals(Constant.BEFORE_ONE_HOUR))
       model.put("time", "in an hour");
     else
       model.put("time", "tomorrow ");
@@ -167,7 +167,7 @@ public class MailServiceImpl implements MailService {
       model.put(Constant.FEEDBACK_NOTIFICATION_CLICK_MSG, "Candidate Suite ");
       model.put(Constant.FEEDBACK_NOTIFICATION_CLICK_LINK, "dd");
       model.put(Constant.FEEDBACK_NOTIFICATION_CANDIDATE_NAME, "");
-      if (stage.equals("KGP"))
+      if (stage.equals(Constant.KGP_TEAM))
         model.put(Constant.CANDIDATE_NAME, userDTO.getName());
       else
         model.put(Constant.CANDIDATE_NAME, clientTeamDTO.getContact().getFirstName() + " "

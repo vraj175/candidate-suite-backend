@@ -34,7 +34,7 @@ public class NotificationSchedulerConfig {
     log.info("Scheduler call for sending reminder mail before Day");
     List<CandidateDTO> list = new ArrayList<>();
     if (!list.isEmpty()) {
-      service.sendNotification(list, Constant.BEFORE_ONE_DAY);
+      service.sendNotification(Constant.BEFORE_ONE_DAY);
     }
   }
 
@@ -43,7 +43,7 @@ public class NotificationSchedulerConfig {
     log.info("Scheduler call for sending reminder mail before Hour");
     List<CandidateDTO> list = new ArrayList<>();
     if (!list.isEmpty()) {
-      service.sendNotification(list, Constant.BEFORE_ONE_HOUR);
+      service.sendNotification(Constant.BEFORE_ONE_HOUR);
     }
   }
 
@@ -52,7 +52,7 @@ public class NotificationSchedulerConfig {
     log.info("Scheduler call for sending feedback mail after interview");
     List<CandidateDTO> list = new ArrayList<>();
     if (!list.isEmpty()) {
-      service.sendNotification(list, Constant.AFTER_INTERVIEW);
+      service.sendNotification(Constant.AFTER_INTERVIEW);
     }
   }
 

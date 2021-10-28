@@ -42,14 +42,14 @@ public class InterviewNotificationServiceImpl implements InterviewNotificationSe
 
 
   @Override
-  public void sendNotification(List<CandidateDTO> list, String time) {
+  public void sendNotification(String schedulerType) {
     log.info("staring email sending...");
     String mailSubject;
     String templateName;
-    if (time.equals(Constant.BEFORE_ONE_HOUR)) {
+    if (schedulerType.equals(Constant.BEFORE_ONE_HOUR)) {
       mailSubject = "REMINDER: Upcoming Interview starts 1 hour";
       templateName = Constant.INTERVIEW_NOTIFICATION_TEMPLATE;
-    } else if (time.equals(Constant.BEFORE_ONE_DAY)) {
+    } else if (schedulerType.equals(Constant.BEFORE_ONE_DAY)) {
       mailSubject = "REMINDER: Upcoming Interview starts 1 day";
       templateName = Constant.INTERVIEW_NOTIFICATION_TEMPLATE;
     } else {
@@ -58,7 +58,7 @@ public class InterviewNotificationServiceImpl implements InterviewNotificationSe
     }
 
 
-    // String apiResponse = getInterViewNotificationDetails(time);
+    // String apiResponse = getInterViewDetails(time);
     String apiResponse = "{ clientinterviews: [{\r\n"
         + "    \"id\": \"26fa66e2-670d-4aac-947c-26fb128fc2e8\",\r\n"
         + "    \"stage\": \"Client Interview\",\r\n" + "    \"contact\": {\r\n"
@@ -114,45 +114,70 @@ public class InterviewNotificationServiceImpl implements InterviewNotificationSe
 
 
     List<CandidateDTO> kgpInterviewCandidateList =
-        getCandidateListFromJsonResponse(kgpTeamJsonArray, "KGP_TEAM");
+        getCandidateListFromJsonResponse(kgpTeamJsonArray, Constant.KGP_TEAM);
     List<CandidateDTO> clientInterviewCandidateList =
-        getCandidateListFromJsonResponse(clientJsonArray, "CLIENT_TEAM");
+        getCandidateListFromJsonResponse(clientJsonArray, Constant.CLIENT_TEAM);
+
+    kgpInterviewCandidateList.stream().forEach(candidateDTO -> {
+      if (!candidateDTO.getSearch().getPartners().isEmpty()) {
+
+        candidateDTO.getSearch().getPartners().stream().forEach(kgpTeam -> {
+          sendCandidateNotification(mailSubject, schedulerType, candidateDTO, kgpTeam, null,
+              Constant.KGP_TEAM, templateName);
+          sendKgpPartnerNotification(mailSubject, schedulerType, candidateDTO, kgpTeam,
+              templateName);
+        });
+      } else if (!candidateDTO.getSearch().getRecruiters().isEmpty()) {
+
+        candidateDTO.getSearch().getRecruiters().stream().forEach(kgpTeam -> {
+          sendCandidateNotification(mailSubject, schedulerType, candidateDTO, kgpTeam, null,
+              Constant.KGP_TEAM, templateName);
+          sendKgpPartnerNotification(mailSubject, schedulerType, candidateDTO, kgpTeam,
+              templateName);
+        });
+
+      } else if (!candidateDTO.getSearch().getResearchers().isEmpty()) {
+
+        candidateDTO.getSearch().getResearchers().stream().forEach(kgpTeam -> {
+          sendCandidateNotification(mailSubject, schedulerType, candidateDTO, kgpTeam, null,
+              Constant.KGP_TEAM, templateName);
+          sendKgpPartnerNotification(mailSubject, schedulerType, candidateDTO, kgpTeam,
+              templateName);
+        });
+      }
+    });
 
 
-    for (CandidateDTO candidateDTO : kgpInterviewCandidateList) {
-      for (UserDTO user : candidateDTO.getSearch().getPartners()) {
-        sendCandidateNotification(mailSubject, time, candidateDTO, user, null, "KGP", templateName);
-        sendKgpPartnerNotification(mailSubject, time, candidateDTO, user, templateName);
-      }
-    }
-    for (CandidateDTO candidateDTO : clientInterviewCandidateList) {
-      for (ClientTeamDTO clientTeam : candidateDTO.getSearch().getClienTeam()) {
-        sendCandidateNotification(mailSubject, time, candidateDTO, null, clientTeam, "CLIENT",
-            templateName);
-        sendClientNotification(mailSubject, time, candidateDTO, clientTeam, templateName);
-      }
-    }
+    clientInterviewCandidateList.stream().forEach(candidateDTO -> {
+      candidateDTO.getSearch().getClienTeam().forEach(clientTeam -> {
+        sendCandidateNotification(mailSubject, schedulerType, candidateDTO, null, clientTeam,
+            Constant.CLIENT_TEAM, templateName);
+        sendClientNotification(mailSubject, schedulerType, candidateDTO, clientTeam, templateName);
+      });
+    });
   }
 
 
-  private void sendCandidateNotification(String mailSubject, String time, CandidateDTO candidateDTO,
-      UserDTO userDTO, ClientTeamDTO clientTeamDTO, String stage, String templateName) {
+  private void sendCandidateNotification(String mailSubject, String schedulerType,
+      CandidateDTO candidateDTO, UserDTO userDTO, ClientTeamDTO clientTeamDTO, String stage,
+      String templateName) {
     log.info("candidate notification send... candidate details " + candidateDTO);
-    log.debug("candidate notification details : type" + time + " Stage " + stage
+    log.debug("candidate notification details : type" + schedulerType + " Stage " + stage
         + " kgp team details " + userDTO + " client details " + clientTeamDTO);
     String contain =
         mailService.getInterviewNotificationEmailContent(Constant.CANDIDATE_NOTIFICATION,
-            candidateDTO, userDTO, clientTeamDTO, time, stage, templateName);
+            candidateDTO, userDTO, clientTeamDTO, schedulerType, stage, templateName);
     sendMail("vraj.patel@aspiresoftserv.com", mailSubject, contain);
 
   }
 
-  private void sendKgpPartnerNotification(String mailSubject, String time,
+  private void sendKgpPartnerNotification(String mailSubject, String schedulerType,
       CandidateDTO candidateDTO, UserDTO userDTO, String templateName) {
     log.info("KGP Partner notification send... candidate details " + candidateDTO);
-    log.debug("KGP Partner notification details : type" + time + " kgp team details " + userDTO);
+    log.debug(
+        "KGP Partner notification details : type" + schedulerType + " kgp team details " + userDTO);
     String contain = mailService.getInterviewNotificationEmailContent(Constant.KGP_NOTIFICATION,
-        candidateDTO, userDTO, null, time, null, templateName);
+        candidateDTO, userDTO, null, schedulerType, null, templateName);
     sendMail("vraj.patel@aspiresoftserv.com", mailSubject, contain);
   }
 
@@ -178,8 +203,7 @@ public class InterviewNotificationServiceImpl implements InterviewNotificationSe
 
 
   @Override
-  public String getInterViewNotificationDetails(String schedulerType) {
-    List<CandidateDTO> candidateFeedbackList = null;
+  public String getInterViewDetails(String schedulerType) {
     LocalDateTime date = java.time.LocalDateTime.now();
     Date currentDateAndTime = Date.from(date.atZone(ZoneId.systemDefault()).toInstant());
     getScheduleDate(currentDateAndTime, schedulerType);
@@ -203,7 +227,7 @@ public class InterviewNotificationServiceImpl implements InterviewNotificationSe
         private static final long serialVersionUID = 1L;
       }.getType());
 
-      if (team.equals("KGP_TEAM")) {
+      if (team.equals(Constant.KGP_TEAM)) {
         candidateDTO.getSearch().setPartners(addKgpTeamJsonArraytoList(json, "partners"));
         candidateDTO.getSearch().setRecruiters(addKgpTeamJsonArraytoList(json, "recruiters"));
       } else {

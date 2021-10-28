@@ -229,7 +229,7 @@ public class Constant {
   public static final String USER_FILTER = "userFilter";
   public static final String INTERVIEW_FILTER = "interviewFilter";
 
-  // field name
+  // interview notification
   public static final String SERVER_URL = "serverUrl";
   public static final String HOME_URL = "homeUrl";
   public static final String COMPANY_NAME = "companyName";
@@ -249,6 +249,7 @@ public class Constant {
   public static final String FEEDBACK_NOTIFICATION_CLICK_LINK = "feedbackClickLink";
   public static final String FEEDBACK_NOTIFICATION_COMPANY_NAME = "feedbackCompanyName";
   public static final String FEEDBACK_NOTIFICATION_CANDIDATE_NAME = "feedbackCandidateName";
+  public static final String KGP_TEAM = "kgpTeam";
 
   // messages
   public static final String DATA_SAVED = "Data saved successfully";
