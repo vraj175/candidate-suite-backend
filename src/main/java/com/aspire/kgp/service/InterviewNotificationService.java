@@ -8,6 +8,6 @@ public interface InterviewNotificationService {
 
   public void sendNotification(List<CandidateDTO> list, String type);
 
-  public List<CandidateDTO> getInterViewNotificationDetails(String schedulerType);
+  public String getInterViewNotificationDetails(String schedulerType);
 
 }

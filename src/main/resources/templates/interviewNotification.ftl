@@ -18,7 +18,7 @@
 			          	<p style="color:#231f20; font-size:13px; font-weight:700; letter-spacing:0.3px; margin:0px; line-height:45px;">${staticContentsMap['candidate.suite.invitation.email.dear']} ${name},</p>
 			          	<p style="font-size:13px; color:#231f20;margin:0; padding:0; line-height:20px;letter-spacing:0.3px; font-weight:400; text-align:justify;">
 			          		 You have an upcoming interview <b>${time}</b> with <b>${candidateName}</b> 
-			          		 for the <b>${companyName}</b>, <b>${positionTitle} </b> ${positionTitleType}. 
+			          		 for the <b>${companyName}</b> <b>${positionTitle} </b> ${positionTitleType}. 
 			          		<br>
 			          		 <a href="${serverUrl}${homeUrl}" target="_blank" style="color:#5443d5; font-weight: bold; text-decoration:none;">
 			          		${clickHere}

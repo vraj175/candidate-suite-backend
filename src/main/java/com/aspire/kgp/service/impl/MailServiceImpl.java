@@ -161,37 +161,44 @@ public class MailServiceImpl implements MailService {
     if (notificationType.equals(Constant.CANDIDATE_NOTIFICATION)) {
       model.put(Constant.CLICK_HERE, "Click Here");
       model.put(Constant.CLICK_HERE_MSG, "to access the login details.");
-      model.put(Constant.NAME, candidateDTO.getContact().getName());
-      model.put(Constant.COMPANY_NAME, candidateDTO.getSearch().getCompany().getName());
+      model.put(Constant.NAME, candidateDTO.getContact().getFirstName());
+      model.put(Constant.COMPANY_NAME, candidateDTO.getSearch().getCompany().getName() + ",");
       model.put(Constant.POSITION_TITLE_TYPE, "role");
       model.put(Constant.FEEDBACK_NOTIFICATION_CLICK_MSG, "Candidate Suite ");
       model.put(Constant.FEEDBACK_NOTIFICATION_CLICK_LINK, "dd");
+      model.put(Constant.FEEDBACK_NOTIFICATION_CANDIDATE_NAME, "");
       if (stage.equals("KGP"))
         model.put(Constant.CANDIDATE_NAME, userDTO.getName());
       else
-        model.put(Constant.CANDIDATE_NAME, clientTeamDTO.getContact().getName());
+        model.put(Constant.CANDIDATE_NAME, clientTeamDTO.getContact().getFirstName() + " "
+            + clientTeamDTO.getContact().getLastName());
 
     } else if (notificationType.equals(Constant.CLIENT_NOTIFICATION)) {
       model.put(Constant.CLICK_HERE, "Click Here");
       model.put(Constant.CLICK_HERE_MSG, "to access their details in Client Suite.");
-      model.put(Constant.NAME, userDTO.getName());
-      model.put(Constant.CANDIDATE_NAME, candidateDTO.getContact().getName());
+      model.put(Constant.NAME, clientTeamDTO.getContact().getFirstName());
+      model.put(Constant.CANDIDATE_NAME,
+          candidateDTO.getContact().getFirstName() + " " + candidateDTO.getContact().getLastName());
+      model.put(Constant.COMPANY_NAME, "");
       model.put(Constant.POSITION_TITLE_TYPE, "role");
       model.put(Constant.FEEDBACK_NOTIFICATION_CLICK_MSG, "ClientSuite ");
       model.put(Constant.FEEDBACK_NOTIFICATION_CLICK_LINK, "dd");
       model.put(Constant.FEEDBACK_NOTIFICATION_CANDIDATE_NAME,
-          " with" + candidateDTO.getContact().getName());
+          " with <b>" + candidateDTO.getContact().getFirstName() + " "
+              + candidateDTO.getContact().getLastName() + "</b>");
     } else {
       model.put(Constant.CLICK_HERE, "");
       model.put(Constant.CLICK_HERE_MSG, "");
-      model.put(Constant.NAME, clientTeamDTO.getContact().getName());
-      model.put(Constant.CANDIDATE_NAME, candidateDTO.getContact().getName());
-      model.put(Constant.COMPANY_NAME, candidateDTO.getSearch().getCompany().getName());
+      model.put(Constant.NAME, userDTO.getFirstName());
+      model.put(Constant.CANDIDATE_NAME,
+          candidateDTO.getContact().getFirstName() + " " + candidateDTO.getContact().getLastName());
+      model.put(Constant.COMPANY_NAME, candidateDTO.getSearch().getCompany().getName() + ",");
       model.put(Constant.POSITION_TITLE_TYPE, "search");
       model.put(Constant.FEEDBACK_NOTIFICATION_CLICK_MSG, "ClientSuite ");
       model.put(Constant.FEEDBACK_NOTIFICATION_CLICK_LINK, "dd");
       model.put(Constant.FEEDBACK_NOTIFICATION_CANDIDATE_NAME,
-          " with" + candidateDTO.getContact().getName());
+          " with <b>" + candidateDTO.getContact().getFirstName() + " "
+              + candidateDTO.getContact().getLastName() + "</b>");
     }
 
     try {
