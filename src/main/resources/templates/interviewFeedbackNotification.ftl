@@ -21,7 +21,7 @@
 			          		 <b>${feedbackCompanyName}</b>. We look forward to receiving your feedback. Please click the link below 
 			          		 to enter your feedback in  ${feedbackClickMsg}.
 			          		 <br>
-			          		 <a href="${feedbackClickLink}" target="_blank" style="color:#5443d5; font-weight: bold; text-decoration:none;">
+			          		 <a href="${clickHereServerUrl}" target="_blank" style="color:#5443d5; font-weight: bold; text-decoration:none;">
 			          		 Click Here
 			          	</a>
 			          	</p>

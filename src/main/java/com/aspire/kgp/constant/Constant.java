@@ -236,6 +236,7 @@ public class Constant {
   public static final String STATIC_CONTENT_MAP = "staticContentsMap";
   public static final String CLICK_HERE = "clickHere";
   public static final String CLICK_HERE_MSG = "clickHereMsg";
+  public static final String CLICK_HERE_SERVER_URL = "clickHereServerUrl";
   public static final String POSITION_TITLE = "positionTitle";
   public static final String POSITION_TITLE_TYPE = "positionTitleType";
   public static final String CANDIDATE_NAME = "candidateName";
@@ -246,7 +247,6 @@ public class Constant {
   public static final String KGP_NOTIFICATION = "kgpNotification";
   public static final String CLIENT_NOTIFICATION = "clientNotification";
   public static final String FEEDBACK_NOTIFICATION_CLICK_MSG = "feedbackClickMsg";
-  public static final String FEEDBACK_NOTIFICATION_CLICK_LINK = "feedbackClickLink";
   public static final String FEEDBACK_NOTIFICATION_COMPANY_NAME = "feedbackCompanyName";
   public static final String FEEDBACK_NOTIFICATION_CANDIDATE_NAME = "feedbackCandidateName";
   public static final String KGP_TEAM = "kgpTeam";

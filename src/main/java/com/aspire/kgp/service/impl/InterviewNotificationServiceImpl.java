@@ -144,6 +144,13 @@ public class InterviewNotificationServiceImpl implements InterviewNotificationSe
           sendKgpPartnerNotification(mailSubject, schedulerType, candidateDTO, kgpTeam,
               templateName);
         });
+      } else if (!candidateDTO.getSearch().getEas().isEmpty()) {
+        candidateDTO.getSearch().getEas().stream().forEach(kgpTeam -> {
+          sendCandidateNotification(mailSubject, schedulerType, candidateDTO, kgpTeam, null,
+              Constant.KGP_TEAM, templateName);
+          sendKgpPartnerNotification(mailSubject, schedulerType, candidateDTO, kgpTeam,
+              templateName);
+        });
       }
     });
 
@@ -167,7 +174,10 @@ public class InterviewNotificationServiceImpl implements InterviewNotificationSe
     String contain =
         mailService.getInterviewNotificationEmailContent(Constant.CANDIDATE_NOTIFICATION,
             candidateDTO, userDTO, clientTeamDTO, schedulerType, stage, templateName);
-    sendMail("vraj.patel@aspiresoftserv.com", mailSubject, contain);
+    sendMail(
+        candidateDTO.getContact().getEmail().isEmpty() ? candidateDTO.getContact().getWorkEmail()
+            : candidateDTO.getContact().getEmail(),
+        mailSubject, contain);
 
   }
 
@@ -178,7 +188,8 @@ public class InterviewNotificationServiceImpl implements InterviewNotificationSe
         "KGP Partner notification details : type" + schedulerType + " kgp team details " + userDTO);
     String contain = mailService.getInterviewNotificationEmailContent(Constant.KGP_NOTIFICATION,
         candidateDTO, userDTO, null, schedulerType, null, templateName);
-    sendMail("vraj.patel@aspiresoftserv.com", mailSubject, contain);
+    sendMail(userDTO.getEmail().isEmpty() ? userDTO.getWorkEmail() : userDTO.getEmail(),
+        mailSubject, contain);
   }
 
 
@@ -190,7 +201,10 @@ public class InterviewNotificationServiceImpl implements InterviewNotificationSe
         "Client Team notification details : type" + time + " Client Team details " + clientTeamDTO);
     String contain = mailService.getInterviewNotificationEmailContent(Constant.CLIENT_NOTIFICATION,
         candidateDTO, null, clientTeamDTO, time, null, templateName);
-    sendMail("vraj.patel@aspiresoftserv.com", mailSubject, contain);
+    sendMail(
+        clientTeamDTO.getContact().getEmail().isEmpty() ? clientTeamDTO.getContact().getWorkEmail()
+            : clientTeamDTO.getContact().getEmail(),
+        mailSubject, contain);
   }
 
   private void sendMail(String email, String mailSubject, String contain) {
@@ -230,6 +244,8 @@ public class InterviewNotificationServiceImpl implements InterviewNotificationSe
       if (team.equals(Constant.KGP_TEAM)) {
         candidateDTO.getSearch().setPartners(addKgpTeamJsonArraytoList(json, "partners"));
         candidateDTO.getSearch().setRecruiters(addKgpTeamJsonArraytoList(json, "recruiters"));
+        candidateDTO.getSearch().setResearchers(addKgpTeamJsonArraytoList(json, "researchers"));
+        candidateDTO.getSearch().setEas(addKgpTeamJsonArraytoList(json, "eas"));
       } else {
         candidateDTO.getSearch().setClienTeam(addClientTeamJsonArraytoList(json, "client_team"));
       }

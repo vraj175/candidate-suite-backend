@@ -20,7 +20,7 @@
 			          		 You have an upcoming interview <b>${time}</b> with <b>${candidateName}</b> 
 			          		 for the <b>${companyName}</b> <b>${positionTitle} </b> ${positionTitleType}. 
 			          		<br>
-			          		 <a href="${serverUrl}${homeUrl}" target="_blank" style="color:#5443d5; font-weight: bold; text-decoration:none;">
+			          		 <a href="${clickHereServerUrl}${homeUrl}" target="_blank" style="color:#5443d5; font-weight: bold; text-decoration:none;">
 			          		${clickHere}
 			          	</a>${clickHereMsg}
 			          	</p>

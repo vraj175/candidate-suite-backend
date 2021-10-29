@@ -44,6 +44,12 @@ public class MailServiceImpl implements MailService {
   @Value("${galaxy.base.api.url}")
   private String baseApiUrl;
 
+  @Value("${clientsuite.url}")
+  private String clientsuiteUrl;
+
+  @Value("${candidatesuite.url}")
+  private String candidateSuiteUrl;
+
   @Override
   public void sendEmail(String mailTo, String[] mailBcc, String mailSubject, String mailContent,
       List<Object> attachments) throws MessagingException, UnsupportedEncodingException {
@@ -150,7 +156,7 @@ public class MailServiceImpl implements MailService {
     else
       model.put("time", "tomorrow ");
 
-    model.put(Constant.SERVER_URL, "b");
+    model.put(Constant.SERVER_URL, candidateSuiteUrl);
     model.put(Constant.HOME_URL, "/login");
     model.put(Constant.POSITION_TITLE, candidateDTO.getSearch().getJobTitle());
     model.put(Constant.FEEDBACK_NOTIFICATION_COMPANY_NAME,
@@ -161,11 +167,11 @@ public class MailServiceImpl implements MailService {
     if (notificationType.equals(Constant.CANDIDATE_NOTIFICATION)) {
       model.put(Constant.CLICK_HERE, "Click Here");
       model.put(Constant.CLICK_HERE_MSG, "to access the login details.");
+      model.put(Constant.CLICK_HERE_SERVER_URL, candidateSuiteUrl);
       model.put(Constant.NAME, candidateDTO.getContact().getFirstName());
       model.put(Constant.COMPANY_NAME, candidateDTO.getSearch().getCompany().getName() + ",");
       model.put(Constant.POSITION_TITLE_TYPE, "role");
       model.put(Constant.FEEDBACK_NOTIFICATION_CLICK_MSG, "Candidate Suite ");
-      model.put(Constant.FEEDBACK_NOTIFICATION_CLICK_LINK, "dd");
       model.put(Constant.FEEDBACK_NOTIFICATION_CANDIDATE_NAME, "");
       if (stage.equals(Constant.KGP_TEAM))
         model.put(Constant.CANDIDATE_NAME, userDTO.getName());
@@ -176,26 +182,26 @@ public class MailServiceImpl implements MailService {
     } else if (notificationType.equals(Constant.CLIENT_NOTIFICATION)) {
       model.put(Constant.CLICK_HERE, "Click Here");
       model.put(Constant.CLICK_HERE_MSG, "to access their details in Client Suite.");
+      model.put(Constant.CLICK_HERE_SERVER_URL, clientsuiteUrl);
       model.put(Constant.NAME, clientTeamDTO.getContact().getFirstName());
       model.put(Constant.CANDIDATE_NAME,
           candidateDTO.getContact().getFirstName() + " " + candidateDTO.getContact().getLastName());
       model.put(Constant.COMPANY_NAME, "");
       model.put(Constant.POSITION_TITLE_TYPE, "role");
       model.put(Constant.FEEDBACK_NOTIFICATION_CLICK_MSG, "ClientSuite ");
-      model.put(Constant.FEEDBACK_NOTIFICATION_CLICK_LINK, "dd");
       model.put(Constant.FEEDBACK_NOTIFICATION_CANDIDATE_NAME,
           " with <b>" + candidateDTO.getContact().getFirstName() + " "
               + candidateDTO.getContact().getLastName() + "</b>");
     } else {
       model.put(Constant.CLICK_HERE, "");
       model.put(Constant.CLICK_HERE_MSG, "");
+      model.put(Constant.CLICK_HERE_SERVER_URL, clientsuiteUrl);
       model.put(Constant.NAME, userDTO.getFirstName());
       model.put(Constant.CANDIDATE_NAME,
           candidateDTO.getContact().getFirstName() + " " + candidateDTO.getContact().getLastName());
       model.put(Constant.COMPANY_NAME, candidateDTO.getSearch().getCompany().getName() + ",");
       model.put(Constant.POSITION_TITLE_TYPE, "search");
       model.put(Constant.FEEDBACK_NOTIFICATION_CLICK_MSG, "ClientSuite ");
-      model.put(Constant.FEEDBACK_NOTIFICATION_CLICK_LINK, "dd");
       model.put(Constant.FEEDBACK_NOTIFICATION_CANDIDATE_NAME,
           " with <b>" + candidateDTO.getContact().getFirstName() + " "
               + candidateDTO.getContact().getLastName() + "</b>");
