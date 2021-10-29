@@ -1,27 +1,81 @@
 package com.aspire.kgp.model;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
+import javax.persistence.Transient;
+
+import com.aspire.kgp.dto.EducationDTO;
 
 @Entity
 public class Contact extends SuperBase {
 
+  @Column(name = "galaxyId", nullable = false)
   private String galaxyId;
+
+  @Column(name = "firstName", nullable = false)
   private String firstName;
+
+  @Column(name = "lastName", nullable = false)
   private String lastName;
-  private String currentCompanyName;
-  private String currentTitle;
-  private String workPhone;
-  private String mobilePhone;
-  private String workEmail;
-  private String personalEmail;
-  private String linkedInUrl;
+
+  @Column(name = "city")
   private String city;
+
+  @Column(name = "state")
   private String state;
+
+  @Column(name = "company", nullable = false)
+  private String company;
+
+  @Column(name = "currentJobTitle", nullable = false)
+  private String currentJobTitle;
+
+  @Column(name = "mobilePhone")
+  private String mobilePhone;
+
+  @Column(name = "homePhone")
+  private String homePhone;
+
+  @Column(name = "workEmail")
+  private String workEmail;
+
+  @Column(name = "email")
+  private String email;
+
+  @Column(name = "linkedInUrl")
+  private String linkedInUrl;
+
+  @Column(name = "compensationNotes")
   private String compensationNotes;
+
+  @Column(name = "compensationExpectation")
   private String compensationExpectation;
+
+  @Column(name = "equity")
   private String equity;
+
+  @Column(name = "baseSalary")
   private String baseSalary;
-  private String targetBonusSalary;
+
+  @Column(name = "targetBonusValue")
+  private String targetBonusValue;
+
+  @OneToMany(cascade = CascadeType.ALL)
+  @JoinColumn(name = "contact", referencedColumnName = "id")
+  private List<BoardHistory> boardHistory = new ArrayList<>();
+
+  @OneToMany(cascade = CascadeType.ALL)
+  @JoinColumn(name = "contact", referencedColumnName = "id")
+  private List<JobHistory> jobHistory = new ArrayList<>();
+
+  @Transient
+  private List<EducationDTO> educationDetails;
 
   public String getGalaxyId() {
     return galaxyId;
@@ -47,28 +101,38 @@ public class Contact extends SuperBase {
     this.lastName = lastName;
   }
 
-  public String getCurrentCompanyName() {
-    return currentCompanyName;
+
+
+  public String getCompany() {
+    return company;
   }
 
-  public void setCurrentCompanyName(String currentCompanyName) {
-    this.currentCompanyName = currentCompanyName;
+  public void setCompany(String company) {
+    this.company = company;
   }
 
-  public String getCurrentTitle() {
-    return currentTitle;
+  public String getCurrentJobTitle() {
+    return currentJobTitle;
   }
 
-  public void setCurrentTitle(String currentTitle) {
-    this.currentTitle = currentTitle;
+  public void setCurrentJobTitle(String currentJobTitle) {
+    this.currentJobTitle = currentJobTitle;
   }
 
-  public String getWorkPhone() {
-    return workPhone;
+  public String getHomePhone() {
+    return homePhone;
   }
 
-  public void setWorkPhone(String workPhone) {
-    this.workPhone = workPhone;
+  public void setHomePhone(String homePhone) {
+    this.homePhone = homePhone;
+  }
+
+  public String getEmail() {
+    return email;
+  }
+
+  public void setEmail(String email) {
+    this.email = email;
   }
 
   public String getMobilePhone() {
@@ -87,13 +151,7 @@ public class Contact extends SuperBase {
     this.workEmail = workEmail;
   }
 
-  public String getPersonalEmail() {
-    return personalEmail;
-  }
 
-  public void setPersonalEmail(String personalEmail) {
-    this.personalEmail = personalEmail;
-  }
 
   public String getLinkedInUrl() {
     return linkedInUrl;
@@ -151,14 +209,36 @@ public class Contact extends SuperBase {
     this.baseSalary = baseSalary;
   }
 
-  public String getTargetBonusSalary() {
-    return targetBonusSalary;
+
+  public String getTargetBonusValue() {
+    return targetBonusValue;
   }
 
-  public void setTargetBonusSalary(String targetBonusSalary) {
-    this.targetBonusSalary = targetBonusSalary;
+  public void setTargetBonusValue(String targetBonusValue) {
+    this.targetBonusValue = targetBonusValue;
   }
 
+  public List<BoardHistory> getBoardHistory() {
+    return boardHistory;
+  }
 
+  public void setBoardHistory(List<BoardHistory> boardHistory) {
+    this.boardHistory = boardHistory;
+  }
 
+  public List<JobHistory> getJobHistory() {
+    return jobHistory;
+  }
+
+  public void setJobHistory(List<JobHistory> jobHistory) {
+    this.jobHistory = jobHistory;
+  }
+
+  public List<EducationDTO> getEducationDetails() {
+    return educationDetails;
+  }
+
+  public void setEducationDetails(List<EducationDTO> educationDetails) {
+    this.educationDetails = educationDetails;
+  }
 }
