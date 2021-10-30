@@ -22,7 +22,7 @@ public interface ContactService {
   public String updateContactDetails(String contactId, String contactData)
       throws UnsupportedEncodingException;
 
-  public String saveAndUpdateContactReference(String referenceId, String referenceData, String contactId)
+  public Reference saveAndUpdateContactReference(String referenceId, String referenceData, String contactId)
       throws UnsupportedEncodingException;
 
   String addContactReference(String contactId, String referenceData) throws UnsupportedEncodingException;

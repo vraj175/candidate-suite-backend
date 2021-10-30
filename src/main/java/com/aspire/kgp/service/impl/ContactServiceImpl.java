@@ -170,7 +170,7 @@ public class ContactServiceImpl implements ContactService {
 
 
   @Override
-  public String saveAndUpdateContactReference(String referenceId, String referenceData,
+  public Reference saveAndUpdateContactReference(String referenceId, String referenceData,
       String contactId) throws UnsupportedEncodingException {
     Reference reference = new Reference();
     try {
@@ -209,7 +209,7 @@ public class ContactServiceImpl implements ContactService {
     } else {
       referenceRepository.save(reference);
     }
-    return "Reference Data Updated or Added Successfully";
+    return reference;
   }
 
   @Override
