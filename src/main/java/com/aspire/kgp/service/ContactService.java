@@ -6,6 +6,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.aspire.kgp.dto.ContactDTO;
@@ -22,10 +23,10 @@ public interface ContactService {
   public String updateContactDetails(String contactId, String contactData)
       throws UnsupportedEncodingException;
 
-  public String updateContactReference(String referenceId, String referenceData)
+  public String saveAndUpdateContactReference(String referenceId, String referenceData, String contactId)
       throws UnsupportedEncodingException;
 
-  String addContactReference(String contactId, String referenceData);
+  String addContactReference(String contactId, String referenceData) throws UnsupportedEncodingException;
 
   String uploadCandidateResume(MultipartFile multipartFile, String contactId, String type,
       String candidateId, HttpServletRequest request);

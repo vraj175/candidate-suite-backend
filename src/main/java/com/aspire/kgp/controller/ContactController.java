@@ -57,8 +57,8 @@ public class ContactController {
     log.info("Get Contact Details API call, Request Param contactId: " + contactId);
     ContactDTO contactDTO = service.getContactDetails(contactId);
     Contact contact = service.findByGalaxyId(contactId);
-    //if (contact == null)
-      contact = service.saveOrUpdateContact(contactDTO);
+    // if (contact == null)
+    contact = service.saveOrUpdateContact(contactDTO);
     contact.setEducationDetails(contactDTO.getEducationDetails());
 
     SimpleBeanPropertyFilter contactFilter = SimpleBeanPropertyFilter.filterOutAllExcept(
@@ -220,10 +220,10 @@ public class ContactController {
   @Operation(summary = "Add Contact Refere''nce")
   @PostMapping("/contact/{contactId}/references")
   public String addContactReference(@PathVariable("contactId") String contactId,
-      @RequestBody String referenceData) {
+      @RequestBody String referenceData) throws UnsupportedEncodingException {
     log.info("Add Contact Reference API call, Request Param contactId: " + contactId
         + " referenceData: " + referenceData);
-    return service.addContactReference(contactId, referenceData);
+    return service.saveAndUpdateContactReference(null, referenceData, contactId);
   }
 
   @Operation(summary = "Update Contact Reference")
@@ -232,7 +232,7 @@ public class ContactController {
       @RequestBody String referenceData) throws UnsupportedEncodingException {
     log.info("Update Contact Reference API call, Request Param referenceId: " + referenceId
         + " referenceData: " + referenceData);
-    return service.updateContactReference(referenceId, referenceData);
+    return service.saveAndUpdateContactReference(referenceId, referenceData, null);
   }
 
   @Operation(summary = "Add New Contact")

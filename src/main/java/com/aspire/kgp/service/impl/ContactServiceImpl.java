@@ -6,13 +6,13 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
@@ -73,8 +73,11 @@ public class ContactServiceImpl implements ContactService {
 
   @Autowired
   UserService userService;
+
+  @Autowired
   ReferenceRepository referenceRepository;
 
+  @Autowired
   ContactRepository repository;
 
   @Override
@@ -108,8 +111,8 @@ public class ContactServiceImpl implements ContactService {
   }
 
   @Override
-  public String updateContactReference(String referenceId, String referenceData)
-      throws UnsupportedEncodingException {
+  public String saveAndUpdateContactReference(String referenceId, String referenceData,
+      String contactId) throws UnsupportedEncodingException {
     Reference reference = new Reference();
     try {
       reference = new Gson().fromJson(referenceData, new TypeToken<Reference>() {
@@ -123,28 +126,37 @@ public class ContactServiceImpl implements ContactService {
     } catch (JsonSyntaxException e) {
       throw new APIException(Constant.JSON_PROCESSING_EXCEPTION + e.getMessage());
     }
-    if (!referenceId.isEmpty()) {
-      Optional<Reference> referenceDatas = referenceRepository.findById(Long.valueOf(referenceId));
-      if (referenceDatas.isPresent()) {
-        referenceDatas.get().setCompanyName(reference.getCompanyName());
-        referenceDatas.get().setContactId(reference.getContactId());
-        referenceDatas.get().setPhone(reference.getPhone());
-        referenceDatas.get().setRefContactName(reference.getRefContactName());
-        referenceDatas.get().setRefType(reference.getRefType());
-        referenceDatas.get().setRelationship(reference.getRelationship());
-        referenceDatas.get().setSearchName(reference.getSearchName());
-        referenceDatas.get().setTitle(reference.getTitle());
-        referenceDatas.get().setEmail(reference.getEmail());
-        referenceDatas.get().setSearchId(reference.getSearchId());
-        referenceDatas.get().setWorkEmail(reference.getWorkEmail());
+    if (referenceId != null && !referenceId.isEmpty() && contactId == null) {
+      Reference referenceDatas = referenceRepository.findByIdAndContactId(Long.valueOf(referenceId),
+          reference.getContactId());
+      if (referenceDatas != null) {
+        referenceDatas.setCompanyName(reference.getCompanyName());
+        referenceDatas.setContactId(reference.getContactId());
+        referenceDatas.setPhone(reference.getPhone());
+        referenceDatas.setRefContactName(reference.getRefContactName());
+        referenceDatas.setRefType(reference.getRefType());
+        referenceDatas.setRelationship(reference.getRelationship());
+        referenceDatas.setSearchName(reference.getSearchName());
+        referenceDatas.setTitle(reference.getTitle());
+        referenceDatas.setEmail(reference.getEmail());
+        referenceDatas.setSearchId(reference.getSearchId());
+        referenceDatas.setWorkEmail(reference.getWorkEmail());
+        referenceDatas.setModifyDate(new Timestamp(System.currentTimeMillis()));
         referenceRepository.save(referenceDatas);
       }
+      else
+      {
+        throw new APIException("Reference Details not found for this reference Id: - " + referenceId);
+      }
+    } else {
+      referenceRepository.save(reference);
     }
-    return "Data Updated Successfully";
+    return "Data Updated or Added Successfully";
   }
 
   @Override
-  public final String addContactReference(String contactId, String referenceData) {
+  public final String addContactReference(String contactId, String referenceData)
+      throws UnsupportedEncodingException {
     Reference reference = new Reference();
     try {
       reference = new Gson().fromJson(referenceData, new TypeToken<Reference>() {
