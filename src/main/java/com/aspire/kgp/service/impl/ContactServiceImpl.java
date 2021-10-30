@@ -613,7 +613,7 @@ public class ContactServiceImpl implements ContactService {
     contact.setGalaxyId(contactDTO.getId());
     contact.setFirstName(contactDTO.getFirstName());
     contact.setLastName(contactDTO.getLastName());
-    contact.setCompany(contactDTO.getCompany().getName());
+    contact.setCompany(contactDTO.getCompany() != null ? contactDTO.getCompany().getName() : null);
     contact.setCurrentJobTitle(contactDTO.getCurrentJobTitle());
     contact.setHomePhone(contactDTO.getHomePhone());
     contact.setMobilePhone(contactDTO.getMobilePhone());
@@ -630,7 +630,7 @@ public class ContactServiceImpl implements ContactService {
     List<BoardHistory> boardHistoryList = new ArrayList<>();
     contactDTO.getBoardDetails().stream().forEach(e -> {
       BoardHistory boardHistory = new BoardHistory();
-      boardHistory.setCompany(e.getCompany().getName());
+      boardHistory.setCompany(e.getCompany() != null ? e.getCompany().getName() : null);
       boardHistory.setStartYear(e.getStartYear());
       boardHistory.setEndYear(e.getEndYear());
       boardHistory.setTitle(e.getTitle());
@@ -641,7 +641,7 @@ public class ContactServiceImpl implements ContactService {
     List<JobHistory> jobHistoryList = new ArrayList<>();
     contactDTO.getJobHistory().stream().forEach(e -> {
       JobHistory jobHistory = new JobHistory();
-      jobHistory.setCompany(e.getCompany().getName());
+      jobHistory.setCompany(e.getCompany() != null ? e.getCompany().getName() : null);
       jobHistory.setStartYear(e.getStartYear());
       jobHistory.setEndYear(e.getEndYear());
       jobHistory.setTitle(e.getTitle());
