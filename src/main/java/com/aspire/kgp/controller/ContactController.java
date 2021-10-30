@@ -38,6 +38,9 @@ import com.aspire.kgp.service.ContactService;
 import com.fasterxml.jackson.databind.ser.FilterProvider;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -63,6 +66,10 @@ public class ContactController {
   public Contact getCandidateDetails(@PathVariable("contactId") String contactId) {
     log.info("Get Contact Details API call, Request Param contactId: " + contactId);
     ContactDTO contactDTO = service.getContactDetails(contactId);
+    if (contactDTO == null) {
+      throw new APIException("Invalid Contact Id");
+    }
+
     Contact contact = service.findByGalaxyId(contactId);
 
     if (contact == null)
@@ -89,21 +96,39 @@ public class ContactController {
       @RequestBody String contactData) {
     log.info("Update Contact Details API call, Request Param contactId: " + contactId
         + " Contact Education Data: " + contactData);
-    return service.updateContactEducationDetails(contactId, contactData);
+    JsonObject json = (JsonObject) JsonParser.parseString(contactData);
+    JsonArray eductionArray = json.getAsJsonObject().getAsJsonArray("education_details");
+    JsonObject educationObj = new JsonObject();
+    educationObj.add("education_details", eductionArray);
+    return service.updateContactEducationDetails(contactId, educationObj.toString());
   }
 
   @Operation(summary = "delete Contact Job History Details")
   @DeleteMapping("/contact/jobHistory/{id}")
-  public String deleteContactJobHistory(@PathVariable("id") String id) {
+  public ResponseEntity<Object> deleteContactJobHistory(@PathVariable("id") String id) {
     log.info("delete Contact Job History Details API call, Request Param contactId: " + id);
-    return service.deleteJobHistoryById(id);
+    if (service.deleteJobHistoryById(id).equalsIgnoreCase("Successfully deleted")) {
+      Map<String, Object> body = new LinkedHashMap<>();
+      body.put(Constant.TIMESTAMP, new Date());
+      body.put(Constant.STATUS, "200");
+      body.put(Constant.MESSAGE, "Job History data deleted successfully with id:- " + id);
+      return new ResponseEntity<>(body, HttpStatus.OK);
+    }
+    throw new APIException("Error in delete Job History data with id:- " + id);
   }
 
   @Operation(summary = "delete Contact Board History Details")
   @DeleteMapping("/contact/boardHistory/{id}")
-  public String deleteContactBoardHistory(@PathVariable("id") String id) {
+  public ResponseEntity<Object> deleteContactBoardHistory(@PathVariable("id") String id) {
     log.info("delete Contact Board History Details API call, Request Param contactId: " + id);
-    return service.deleteBoardHistoryById(id);
+    if (service.deleteBoardHistoryById(id).equalsIgnoreCase("Successfully deleted")) {
+      Map<String, Object> body = new LinkedHashMap<>();
+      body.put(Constant.TIMESTAMP, new Date());
+      body.put(Constant.STATUS, "200");
+      body.put(Constant.MESSAGE, "Board History data deleted successfully with id:- " + id);
+      return new ResponseEntity<>(body, HttpStatus.OK);
+    }
+    throw new APIException("Error in delete Board History data with id:- " + id);
   }
 
   @Operation(summary = "Get contact profile image")
