@@ -22,7 +22,6 @@ import javax.transaction.Transactional.TxType;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpHeaders;
@@ -34,7 +33,6 @@ import com.aspire.kgp.dto.CandidateDTO;
 import com.aspire.kgp.dto.ContactDTO;
 import com.aspire.kgp.dto.ContactReferencesDTO;
 import com.aspire.kgp.dto.DocumentDTO;
-import com.aspire.kgp.dto.EducationUpdateDTO;
 import com.aspire.kgp.dto.SearchDTO;
 import com.aspire.kgp.dto.UserDTO;
 import com.aspire.kgp.exception.APIException;
@@ -126,25 +124,10 @@ public class ContactServiceImpl implements ContactService {
       private static final long serialVersionUID = 1L;
     }.getType());
 
-    List<EducationUpdateDTO> educationDTOList;
-    try {
-      educationDTOList = new Gson().fromJson(json.get("education_details"),
-          new TypeToken<List<EducationUpdateDTO>>() {
-
-            /**
-             * 
-             */
-            private static final long serialVersionUID = 1L;
-          }.getType());
-    } catch (JsonSyntaxException e) {
-      throw new APIException(Constant.CONVERT_JSON_ERROR);
-    }
-    ObjectMapper mapper = new ObjectMapper();
     try {
       repository.save(contact);
-      String educationJsonString = mapper.writeValueAsString(educationDTOList);
       return restUtil.putMethod(Constant.CONTACT_URL.replace("{contactId}", contactId),
-          educationJsonString);
+          json.get("education_details").toString());
     } catch (IOException e) {
       return e.getMessage();
     }
