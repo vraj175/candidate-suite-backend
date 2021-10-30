@@ -6,7 +6,6 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.aspire.kgp.dto.ContactDTO;
@@ -50,4 +49,10 @@ public interface ContactService {
   public Contact findByGalaxyId(String galaxyId);
 
   public Contact saveOrUpdateContact(ContactDTO contactDTO);
+
+  public String updateContactEducationDetails(String contactId, String contactData);
+
+  public String deleteJobHistoryById(String id);
+
+  public String deleteBoardHistoryById(String id);
 }

@@ -22,6 +22,7 @@ import javax.transaction.Transactional.TxType;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpHeaders;
@@ -33,6 +34,7 @@ import com.aspire.kgp.dto.CandidateDTO;
 import com.aspire.kgp.dto.ContactDTO;
 import com.aspire.kgp.dto.ContactReferencesDTO;
 import com.aspire.kgp.dto.DocumentDTO;
+import com.aspire.kgp.dto.EducationUpdateDTO;
 import com.aspire.kgp.dto.SearchDTO;
 import com.aspire.kgp.dto.UserDTO;
 import com.aspire.kgp.exception.APIException;
@@ -42,7 +44,9 @@ import com.aspire.kgp.model.Contact;
 import com.aspire.kgp.model.JobHistory;
 import com.aspire.kgp.model.Reference;
 import com.aspire.kgp.model.User;
+import com.aspire.kgp.repository.BoardHistoryRepository;
 import com.aspire.kgp.repository.ContactRepository;
+import com.aspire.kgp.repository.JobHistoryRepository;
 import com.aspire.kgp.repository.ReferenceRepository;
 import com.aspire.kgp.service.CandidateService;
 import com.aspire.kgp.service.ContactService;
@@ -80,6 +84,12 @@ public class ContactServiceImpl implements ContactService {
   @Autowired
   ContactRepository repository;
 
+  @Autowired
+  BoardHistoryRepository boardHistoryRepository;
+
+  @Autowired
+  JobHistoryRepository jobHistoryRepository;
+
   @Override
   public ContactDTO getContactDetails(String contactId) {
     String apiResponse =
@@ -107,8 +117,71 @@ public class ContactServiceImpl implements ContactService {
   @Override
   public String updateContactDetails(String contactId, String contactData)
       throws UnsupportedEncodingException {
-    return restUtil.putMethod(Constant.CONTACT_URL.replace("{contactId}", contactId), contactData);
+    JsonObject json = (JsonObject) JsonParser.parseString(contactData);
+    Contact contact = new Gson().fromJson(json, new TypeToken<Contact>() {
+
+      /**
+       * 
+       */
+      private static final long serialVersionUID = 1L;
+    }.getType());
+
+    List<EducationUpdateDTO> educationDTOList;
+    try {
+      educationDTOList = new Gson().fromJson(json.get("education_details"),
+          new TypeToken<List<EducationUpdateDTO>>() {
+
+            /**
+             * 
+             */
+            private static final long serialVersionUID = 1L;
+          }.getType());
+    } catch (JsonSyntaxException e) {
+      throw new APIException(Constant.CONVERT_JSON_ERROR);
+    }
+    ObjectMapper mapper = new ObjectMapper();
+    try {
+      repository.save(contact);
+      String educationJsonString = mapper.writeValueAsString(educationDTOList);
+      return restUtil.putMethod(Constant.CONTACT_URL.replace("{contactId}", contactId),
+          educationJsonString);
+    } catch (IOException e) {
+      return e.getMessage();
+    }
   }
+
+  @Override
+  public String updateContactEducationDetails(String contactId, String contactData) {
+    try {
+      return restUtil.putMethod(Constant.CONTACT_URL.replace("{contactId}", contactId),
+          contactData);
+    } catch (UnsupportedEncodingException e) {
+      return e.getMessage();
+    }
+
+  }
+
+  @Override
+  public String deleteJobHistoryById(String id) {
+    try {
+      jobHistoryRepository.deleteById(Long.parseLong(id));
+      return "Successfully deleted " + id;
+    } catch (Exception e) {
+      return e.getMessage();
+    }
+  }
+
+  @Override
+  public String deleteBoardHistoryById(String id) {
+    try {
+      boardHistoryRepository.deleteById(Long.parseLong(id));
+      return "Successfully deleted " + id;
+    } catch (Exception e) {
+      return e.getMessage();
+    }
+  }
+
+
 
   @Override
   public String saveAndUpdateContactReference(String referenceId, String referenceData,
@@ -143,10 +216,9 @@ public class ContactServiceImpl implements ContactService {
         referenceDatas.setWorkEmail(reference.getWorkEmail());
         referenceDatas.setModifyDate(new Timestamp(System.currentTimeMillis()));
         referenceRepository.save(referenceDatas);
-      }
-      else
-      {
-        throw new APIException("Reference Details not found for this reference Id: - " + referenceId);
+      } else {
+        throw new APIException(
+            "Reference Details not found for this reference Id: - " + referenceId);
       }
     } else {
       referenceRepository.save(reference);
@@ -560,7 +632,7 @@ public class ContactServiceImpl implements ContactService {
     List<BoardHistory> boardHistoryList = new ArrayList<>();
     contactDTO.getBoardDetails().stream().forEach(e -> {
       BoardHistory boardHistory = new BoardHistory();
-      boardHistory.setCompanyName(e.getCompany().getName());
+      boardHistory.setCompany(e.getCompany().getName());
       boardHistory.setStartYear(e.getStartYear());
       boardHistory.setEndYear(e.getEndYear());
       boardHistory.setTitle(e.getTitle());
@@ -571,7 +643,7 @@ public class ContactServiceImpl implements ContactService {
     List<JobHistory> jobHistoryList = new ArrayList<>();
     contactDTO.getJobHistory().stream().forEach(e -> {
       JobHistory jobHistory = new JobHistory();
-      jobHistory.setCompanyName(e.getCompany().getName());
+      jobHistory.setCompany(e.getCompany().getName());
       jobHistory.setStartYear(e.getStartYear());
       jobHistory.setEndYear(e.getEndYear());
       jobHistory.setTitle(e.getTitle());
