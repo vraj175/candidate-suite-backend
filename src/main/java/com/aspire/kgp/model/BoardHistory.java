@@ -6,8 +6,8 @@ import javax.persistence.Entity;
 @Entity
 public class BoardHistory extends SuperBase {
 
-  @Column(name = "companyName")
-  private String companyName;
+  @Column(name = "company")
+  private String company;
 
   @Column(name = "startYear")
   private String startYear;
@@ -22,13 +22,14 @@ public class BoardHistory extends SuperBase {
   private String commitee;
 
 
-  public String getCompanyName() {
-    return companyName;
+
+  public String getCompany() {
+    return company;
   }
 
 
-  public void setCompanyName(String companyName) {
-    this.companyName = companyName;
+  public void setCompany(String company) {
+    this.company = company;
   }
 
 

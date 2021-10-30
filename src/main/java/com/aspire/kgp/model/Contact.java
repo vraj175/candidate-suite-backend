@@ -11,6 +11,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Transient;
 
 import com.aspire.kgp.dto.EducationDTO;
+import com.google.gson.annotations.SerializedName;
 
 @Entity
 public class Contact extends SuperBase {
@@ -75,7 +76,9 @@ public class Contact extends SuperBase {
   private List<JobHistory> jobHistory = new ArrayList<>();
 
   @Transient
+  @SerializedName("education_details")
   private List<EducationDTO> educationDetails;
+
 
   public String getGalaxyId() {
     return galaxyId;
@@ -101,7 +104,21 @@ public class Contact extends SuperBase {
     this.lastName = lastName;
   }
 
+  public String getCity() {
+    return city;
+  }
 
+  public void setCity(String city) {
+    this.city = city;
+  }
+
+  public String getState() {
+    return state;
+  }
+
+  public void setState(String state) {
+    this.state = state;
+  }
 
   public String getCompany() {
     return company;
@@ -119,28 +136,20 @@ public class Contact extends SuperBase {
     this.currentJobTitle = currentJobTitle;
   }
 
-  public String getHomePhone() {
-    return homePhone;
-  }
-
-  public void setHomePhone(String homePhone) {
-    this.homePhone = homePhone;
-  }
-
-  public String getEmail() {
-    return email;
-  }
-
-  public void setEmail(String email) {
-    this.email = email;
-  }
-
   public String getMobilePhone() {
     return mobilePhone;
   }
 
   public void setMobilePhone(String mobilePhone) {
     this.mobilePhone = mobilePhone;
+  }
+
+  public String getHomePhone() {
+    return homePhone;
+  }
+
+  public void setHomePhone(String homePhone) {
+    this.homePhone = homePhone;
   }
 
   public String getWorkEmail() {
@@ -151,7 +160,13 @@ public class Contact extends SuperBase {
     this.workEmail = workEmail;
   }
 
+  public String getEmail() {
+    return email;
+  }
 
+  public void setEmail(String email) {
+    this.email = email;
+  }
 
   public String getLinkedInUrl() {
     return linkedInUrl;
@@ -159,22 +174,6 @@ public class Contact extends SuperBase {
 
   public void setLinkedInUrl(String linkedInUrl) {
     this.linkedInUrl = linkedInUrl;
-  }
-
-  public String getCity() {
-    return city;
-  }
-
-  public void setCity(String city) {
-    this.city = city;
-  }
-
-  public String getState() {
-    return state;
-  }
-
-  public void setState(String state) {
-    this.state = state;
   }
 
   public String getCompensationNotes() {
@@ -209,7 +208,6 @@ public class Contact extends SuperBase {
     this.baseSalary = baseSalary;
   }
 
-
   public String getTargetBonusValue() {
     return targetBonusValue;
   }
@@ -241,4 +239,6 @@ public class Contact extends SuperBase {
   public void setEducationDetails(List<EducationDTO> educationDetails) {
     this.educationDetails = educationDetails;
   }
+
+
 }

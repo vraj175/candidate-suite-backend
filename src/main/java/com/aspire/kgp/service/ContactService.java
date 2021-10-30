@@ -49,4 +49,10 @@ public interface ContactService {
   public Contact findByGalaxyId(String galaxyId);
 
   public Contact saveOrUpdateContact(ContactDTO contactDTO);
+
+  public String updateContactEducationDetails(String contactId, String contactData);
+
+  public String deleteJobHistoryById(String id);
+
+  public String deleteBoardHistoryById(String id);
 }

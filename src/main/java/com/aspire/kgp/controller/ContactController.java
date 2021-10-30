@@ -11,6 +11,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.converter.json.MappingJacksonValue;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -52,30 +53,51 @@ public class ContactController {
   @GetMapping("/contact/{contactId}")
   @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK",
       content = @Content(mediaType = "application/json", schema = @Schema(type = "ContactDTO",
-          example = "{\"firstName\": \"string\",\"lastName\": \"string\",\"city\": \"string\",\"state\": \"string\",\"workEmail\": \"string\",\"email\": \"string\",\"linkedinUrl\": \"string\",\"mobilePhone\": \"string\",\"currentJobTitle\": \"string\",\"company\": {\"id\": \"string\",\"name\": \"string\"},\"homePhone\": \"string\",\"baseSalary\": \"string\",\"targetBonusValue\": \"string\",\"equity\": \"string\",\"compensationExpectation\": \"string\",\"compensationNotes\": \"string\",\"jobHistory\": [{\"id\": \"string\",\"title\": \"string\",\"start_year\": \"string\",\"end_year\": \"string\",\"position\": \"string\",\"company\": {\"id\": \"string\",\"name\": \"string\"}}],\"educationDetails\": [{\"id\": \"string\",\"school_name\": \"string\",\"degree_name\": \"string\",\"major\": \"string\",\"degree_year\": \"string\",\"position\": \"string\"}], \"boardDetails\": [{\"id\": \"string\",\"title\": \"string\",\"startYear\": \"string\",\"endYear\": \"string\",\"position\": \"0\",\"company\": {\"id\": \"string\",\"name\": \"string\"},\"committee\": \"string\"}]}")))})
-  public MappingJacksonValue getCandidateDetails(@PathVariable("contactId") String contactId) {
+          example = "{\"id\": 0,\"createdDate\": \"yyyy-mm-dd HH:MM:SS\",\"modifyDate\": \"yyyy-mm-dd HH:MM:SS\",\"contactId\": \"string\",\"firstName\": \"string\",\"lastName\": \"string\",\"city\": \"string\",\"state\": \"string\",\"company\": \"string\",\"currentJobTitle\": \"string\",\"mobilePhone\": \"string\",\"homePhone\": \"string\",\"workEmail\": \"string\",\"email\": \"string\",\"linkedInUrl\": \"string\",\"compensationNotes\": \"string\",\"compensationExpectation\": \"string\",\"equity\": \"string\",\"baseSalary\": \"string\",\"targetBonusValue\": \"string\",\"boardHistory\": [{\"id\": 0,\"createdDate\": \"yyyy-mm-dd HH:MM:SS\",\"modifyDate\": \"yyyy-mm-dd HH:MM:SS\",\"companyName\": \"string\",\"startYear\": \"string\",\"endYear\": \"string\",\"title\": \"string\",\"commitee\": \"string\"}],\"jobHistory\": [{\"id\": 0,\"createdDate\": \"yyyy-mm-dd HH:MM:SS\",\"modifyDate\": \"yyyy-mm-dd HH:MM:SS\",\"companyName\": \"string\",\"startYear\": \"string\",\"endYear\": \"string\",\"title\": \"string\"}],\"educationDetails\": [{\"id\": \"string\",\"schoolName\": \"string\",\"degreeName\": \"string\",\"major\": \"string\",\"degreeYear\": \"string\",\"position\": \"string\",\"verify\": \"string\"}]}")))})
+  public Contact getCandidateDetails(@PathVariable("contactId") String contactId) {
     log.info("Get Contact Details API call, Request Param contactId: " + contactId);
     ContactDTO contactDTO = service.getContactDetails(contactId);
     Contact contact = service.findByGalaxyId(contactId);
-    //if (contact == null)
+    if (contact == null)
       contact = service.saveOrUpdateContact(contactDTO);
     contact.setEducationDetails(contactDTO.getEducationDetails());
 
-    SimpleBeanPropertyFilter contactFilter = SimpleBeanPropertyFilter.filterOutAllExcept(
-        Constant.FIRST_NAME, Constant.LAST_NAME, Constant.CITY, Constant.STATE,
-        Constant.CURRENT_JOB_TITLE, Constant.COMPANY, Constant.MOBILE_PHONE, "homePhone",
-        Constant.WORK_EMAIL, Constant.EMAIL, Constant.LINKEDIN_URL, "baseSalary",
-        "targetBonusValue", "equity", "compensationExpectation", "compensationNotes", "jobHistory",
-        "educationDetails", "boardDetails");
 
-    FilterProvider filters =
-        new SimpleFilterProvider().addFilter(Constant.CONTACT_FILTER, contactFilter);
-
-    MappingJacksonValue mapping = new MappingJacksonValue(contact);
-    mapping.setFilters(filters);
     log.info("Successfully send Contact Details");
-    log.debug("Get Contact Details API Response : " + mapping.getValue());
-    return mapping;
+    log.debug("Get Contact Details API Response : " + contact);
+    return contact;
+  }
+
+  @Operation(summary = "Update Contact Details")
+  @PutMapping("/contact/{contactId}")
+  public String updateContactDetails(@PathVariable("contactId") String contactId,
+      @RequestBody String contactData) throws UnsupportedEncodingException {
+    log.info("Update Contact Details API call, Request Param contactId: " + contactId
+        + " Contact Data: " + contactData);
+    return service.updateContactDetails(contactId, contactData);
+  }
+
+  @Operation(summary = "Update Contact Education Details")
+  @PutMapping("/contact/education/{contactId}")
+  public String updateContactEducationDetails(@PathVariable("contactId") String contactId,
+      @RequestBody String contactData) {
+    log.info("Update Contact Details API call, Request Param contactId: " + contactId
+        + " Contact Education Data: " + contactData);
+    return service.updateContactEducationDetails(contactId, contactData);
+  }
+
+  @Operation(summary = "delete Contact Job History Details")
+  @DeleteMapping("/contact/jobHistory/{id}")
+  public String deleteContactJobHistory(@PathVariable("id") String id) {
+    log.info("delete Contact Job History Details API call, Request Param contactId: " + id);
+    return service.deleteJobHistoryById(id);
+  }
+
+  @Operation(summary = "delete Contact Board History Details")
+  @DeleteMapping("/contact/boardHistory/{id}")
+  public String deleteContactBoardHistory(@PathVariable("id") String id) {
+    log.info("delete Contact Board History Details API call, Request Param contactId: " + id);
+    return service.deleteBoardHistoryById(id);
   }
 
   @Operation(summary = "Get contact profile image")
@@ -88,14 +110,6 @@ public class ContactController {
     return service.getContactImage(contactId);
   }
 
-  @Operation(summary = "Update Contact Details")
-  @PutMapping("/contact/{contactId}")
-  public String updateContactDetails(@PathVariable("contactId") String contactId,
-      @RequestBody String contactData) throws UnsupportedEncodingException {
-    log.info("Update Contact Details API call, Request Param contactId: " + contactId
-        + " Contact Data: " + contactData);
-    return service.updateContactDetails(contactId, contactData);
-  }
 
   @Operation(summary = "Get List of contact references")
   @GetMapping("/contact/{contactId}/references")
