@@ -6,6 +6,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -16,6 +17,8 @@ import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.transaction.Transactional;
+import javax.transaction.Transactional.TxType;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -34,7 +37,13 @@ import com.aspire.kgp.dto.SearchDTO;
 import com.aspire.kgp.dto.UserDTO;
 import com.aspire.kgp.exception.APIException;
 import com.aspire.kgp.exception.NotFoundException;
+import com.aspire.kgp.model.BoardHistory;
+import com.aspire.kgp.model.Contact;
+import com.aspire.kgp.model.JobHistory;
+import com.aspire.kgp.model.Reference;
 import com.aspire.kgp.model.User;
+import com.aspire.kgp.repository.ContactRepository;
+import com.aspire.kgp.repository.ReferenceRepository;
 import com.aspire.kgp.service.CandidateService;
 import com.aspire.kgp.service.ContactService;
 import com.aspire.kgp.service.MailService;
@@ -64,6 +73,12 @@ public class ContactServiceImpl implements ContactService {
 
   @Autowired
   UserService userService;
+
+  @Autowired
+  ReferenceRepository referenceRepository;
+
+  @Autowired
+  ContactRepository repository;
 
   @Override
   public ContactDTO getContactDetails(String contactId) {
@@ -96,17 +111,69 @@ public class ContactServiceImpl implements ContactService {
   }
 
   @Override
-  public String updateContactReference(String referenceId, String referenceData)
-      throws UnsupportedEncodingException {
-    return restUtil.putMethod(
-        Constant.UPDATE_CONTACT_REFERENCE_URL.replace("{referenceId}", referenceId), referenceData);
+  public String saveAndUpdateContactReference(String referenceId, String referenceData,
+      String contactId) throws UnsupportedEncodingException {
+    Reference reference = new Reference();
+    try {
+      reference = new Gson().fromJson(referenceData, new TypeToken<Reference>() {
+
+        /**
+         * 
+         * //
+         */
+        private static final long serialVersionUID = 1L;
+      }.getType());
+    } catch (JsonSyntaxException e) {
+      throw new APIException(Constant.JSON_PROCESSING_EXCEPTION + e.getMessage());
+    }
+    if (referenceId != null && !referenceId.isEmpty() && contactId == null) {
+      Reference referenceDatas = referenceRepository.findByIdAndContactId(Long.valueOf(referenceId),
+          reference.getContactId());
+      if (referenceDatas != null) {
+        referenceDatas.setCompanyName(reference.getCompanyName());
+        referenceDatas.setContactId(reference.getContactId());
+        referenceDatas.setPhone(reference.getPhone());
+        referenceDatas.setRefContactName(reference.getRefContactName());
+        referenceDatas.setRefType(reference.getRefType());
+        referenceDatas.setRelationship(reference.getRelationship());
+        referenceDatas.setSearchName(reference.getSearchName());
+        referenceDatas.setTitle(reference.getTitle());
+        referenceDatas.setEmail(reference.getEmail());
+        referenceDatas.setSearchId(reference.getSearchId());
+        referenceDatas.setWorkEmail(reference.getWorkEmail());
+        referenceDatas.setModifyDate(new Timestamp(System.currentTimeMillis()));
+        referenceRepository.save(referenceDatas);
+      }
+      else
+      {
+        throw new APIException("Reference Details not found for this reference Id: - " + referenceId);
+      }
+    } else {
+      referenceRepository.save(reference);
+    }
+    return "Reference Data Updated or Added Successfully";
   }
 
   @Override
-  public final String addContactReference(String contactId, String referenceData) {
-    return restUtil.postMethod(
-        Constant.CONTACT_REFERENCE_URL.replace(Constant.CONTACT_ID, contactId), referenceData,
-        null);
+  public final String addContactReference(String contactId, String referenceData)
+      throws UnsupportedEncodingException {
+    Reference reference = new Reference();
+    try {
+      reference = new Gson().fromJson(referenceData, new TypeToken<Reference>() {
+
+        /**
+         * 
+         */
+        private static final long serialVersionUID = 1L;
+      }.getType());
+    } catch (JsonSyntaxException e) {
+      throw new APIException(Constant.JSON_PROCESSING_EXCEPTION + e.getMessage());
+    }
+    if (!contactId.isEmpty() && reference != null) {
+      referenceRepository.save(reference);
+    }
+    return "Data Added Successfully";
+
   }
 
   @Override
@@ -241,21 +308,62 @@ public class ContactServiceImpl implements ContactService {
   }
 
   @Override
-  public List<ContactReferencesDTO> getListOfReferences(String contactId) {
-    String apiResponse = restUtil
-        .newGetMethod(Constant.CONTACT_REFERENCE_URL.replace(Constant.CONTACT_ID, contactId));
+  public List<Reference> getListOfReferences(String contactId) {
+    List<ContactReferencesDTO> contactReferencesDTOList = new ArrayList<>();
+    List<Reference> referenceList = new ArrayList<>();
+    referenceList = referenceRepository.findByContactId(contactId);
+    if (!referenceList.isEmpty()) {
+      return referenceList;
+    } else {
+      String apiResponse = restUtil
+          .newGetMethod(Constant.CONTACT_REFERENCE_URL.replace(Constant.CONTACT_ID, contactId));
 
-    try {
-      return new Gson().fromJson(apiResponse, new TypeToken<List<ContactReferencesDTO>>() {
+      try {
+        contactReferencesDTOList =
+            new Gson().fromJson(apiResponse, new TypeToken<List<ContactReferencesDTO>>() {
 
-        /**
-         * 
-         */
-        private static final long serialVersionUID = 1L;
-      }.getType());
-    } catch (JsonSyntaxException e) {
-      throw new APIException(Constant.JSON_PROCESSING_EXCEPTION + e.getMessage());
+              /**
+               * 
+               */
+              private static final long serialVersionUID = 1L;
+            }.getType());
+      } catch (JsonSyntaxException e) {
+        throw new APIException(Constant.JSON_PROCESSING_EXCEPTION + e.getMessage());
+      }
+      if (!contactReferencesDTOList.isEmpty()) {
+        addContactReferenceDataIntDB(contactReferencesDTOList);
+      }
+      referenceList = referenceRepository.findByContactId(contactId);
+      if (!referenceList.isEmpty()) {
+        return referenceList;
+      } else {
+        throw new APIException("No Data found for this contact Id:- " + contactId);
+      }
+
     }
+  }
+
+  private void addContactReferenceDataIntDB(List<ContactReferencesDTO> contactReferencesDTOList) {
+    for (int i = 0; i < contactReferencesDTOList.size(); i++) {
+      Reference reference = new Reference();
+      if (contactReferencesDTOList.get(i) != null) {
+        reference.setPhone(contactReferencesDTOList.get(i).getContact().getMobilePhone());
+        reference.setRefType(contactReferencesDTOList.get(i).getType());
+        reference.setSearchName(contactReferencesDTOList.get(i).getSearch().getJobTitle());
+        reference.setRelationship(contactReferencesDTOList.get(i).getRelationship());
+        reference.setEmail(contactReferencesDTOList.get(i).getContact().getEmail());
+        reference.setContactId(contactReferencesDTOList.get(i).getContactId());
+        reference.setRefContactName(contactReferencesDTOList.get(i).getContact().getFirstName()
+            + " " + contactReferencesDTOList.get(i).getContact().getLastName());
+        reference
+            .setCompanyName(contactReferencesDTOList.get(i).getContact().getCompany().getName());
+        reference.setTitle(contactReferencesDTOList.get(i).getContact().getCurrentJobTitle());
+        reference.setSearchId(contactReferencesDTOList.get(i).getSearch().getId());
+        reference.setWorkEmail(contactReferencesDTOList.get(i).getContact().getWorkEmail());
+        referenceRepository.save(reference);
+      }
+    }
+
   }
 
   @Override
@@ -421,6 +529,58 @@ public class ContactServiceImpl implements ContactService {
       throw new APIException("Error in sending candidate upload email");
     }
     log.info("Client upload Mail sent to all partners successfully.");
+  }
+
+  @Override
+  public Contact findByGalaxyId(String galaxyId) {
+    return repository.findByGalaxyId(galaxyId);
+  }
+
+  @Override
+  @Transactional(value = TxType.REQUIRES_NEW)
+  public Contact saveOrUpdateContact(ContactDTO contactDTO) {
+    Contact contact = new Contact();
+    contact.setGalaxyId(contactDTO.getId());
+    contact.setFirstName(contactDTO.getFirstName());
+    contact.setLastName(contactDTO.getLastName());
+    contact.setCompany(contactDTO.getCompany().getName());
+    contact.setCurrentJobTitle(contactDTO.getCurrentJobTitle());
+    contact.setHomePhone(contactDTO.getHomePhone());
+    contact.setMobilePhone(contactDTO.getMobilePhone());
+    contact.setWorkEmail(contactDTO.getWorkEmail());
+    contact.setEmail(contactDTO.getEmail());
+    contact.setLinkedInUrl(contactDTO.getLinkedinUrl());
+    contact.setCity(contactDTO.getCity());
+    contact.setState(contactDTO.getState());
+    contact.setCompensationNotes(contactDTO.getCompensationNotes());
+    contact.setCompensationExpectation(contactDTO.getCompensationExpectation());
+    contact.setEquity(contactDTO.getEquity());
+    contact.setBaseSalary(contactDTO.getBaseSalary());
+    contact.setTargetBonusValue(contactDTO.getTargetBonusValue());
+    List<BoardHistory> boardHistoryList = new ArrayList<>();
+    contactDTO.getBoardDetails().stream().forEach(e -> {
+      BoardHistory boardHistory = new BoardHistory();
+      boardHistory.setCompanyName(e.getCompany().getName());
+      boardHistory.setStartYear(e.getStartYear());
+      boardHistory.setEndYear(e.getEndYear());
+      boardHistory.setTitle(e.getTitle());
+      boardHistory.setCommitee(e.getCommittee());
+      boardHistoryList.add(boardHistory);
+    });
+
+    List<JobHistory> jobHistoryList = new ArrayList<>();
+    contactDTO.getJobHistory().stream().forEach(e -> {
+      JobHistory jobHistory = new JobHistory();
+      jobHistory.setCompanyName(e.getCompany().getName());
+      jobHistory.setStartYear(e.getStartYear());
+      jobHistory.setEndYear(e.getEndYear());
+      jobHistory.setTitle(e.getTitle());
+      jobHistoryList.add(jobHistory);
+    });
+    contact.setBoardHistory(boardHistoryList);
+    contact.setJobHistory(jobHistoryList);
+
+    return repository.save(contact);
   }
 
 }
