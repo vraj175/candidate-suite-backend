@@ -6,6 +6,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.aspire.kgp.dto.ContactDTO;
@@ -52,7 +53,7 @@ public interface ContactService {
 
   public String updateContactEducationDetails(String contactId, String contactData);
 
-  public String deleteJobHistoryById(String id);
+  public ResponseEntity<Object> deleteJobHistoryById(String id);
 
-  public String deleteBoardHistoryById(String id);
+  public ResponseEntity<Object> deleteBoardHistoryById(String id);
 }

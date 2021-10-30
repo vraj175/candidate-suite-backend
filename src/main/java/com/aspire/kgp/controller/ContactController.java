@@ -39,6 +39,7 @@ import com.fasterxml.jackson.databind.ser.FilterProvider;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
@@ -96,10 +97,11 @@ public class ContactController {
       @RequestBody String contactData) {
     log.info("Update Contact Details API call, Request Param contactId: " + contactId
         + " Contact Education Data: " + contactData);
-    JsonObject json = (JsonObject) JsonParser.parseString(contactData);
-    JsonArray eductionArray = json.getAsJsonObject().getAsJsonArray("education_details");
+    JsonParser parser = new JsonParser();
+    JsonElement educationElement = parser.parse(contactData);
+    JsonArray educationArray = educationElement.getAsJsonArray();
     JsonObject educationObj = new JsonObject();
-    educationObj.add("education_details", eductionArray);
+    educationObj.add("education_details", educationArray);
     return service.updateContactEducationDetails(contactId, educationObj.toString());
   }
 
@@ -107,28 +109,14 @@ public class ContactController {
   @DeleteMapping("/contact/jobHistory/{id}")
   public ResponseEntity<Object> deleteContactJobHistory(@PathVariable("id") String id) {
     log.info("delete Contact Job History Details API call, Request Param contactId: " + id);
-    if (service.deleteJobHistoryById(id).equalsIgnoreCase("Successfully deleted")) {
-      Map<String, Object> body = new LinkedHashMap<>();
-      body.put(Constant.TIMESTAMP, new Date());
-      body.put(Constant.STATUS, "200");
-      body.put(Constant.MESSAGE, "Job History data deleted successfully with id:- " + id);
-      return new ResponseEntity<>(body, HttpStatus.OK);
-    }
-    throw new APIException("Error in delete Job History data with id:- " + id);
+    return service.deleteJobHistoryById(id);
   }
 
   @Operation(summary = "delete Contact Board History Details")
   @DeleteMapping("/contact/boardHistory/{id}")
   public ResponseEntity<Object> deleteContactBoardHistory(@PathVariable("id") String id) {
     log.info("delete Contact Board History Details API call, Request Param contactId: " + id);
-    if (service.deleteBoardHistoryById(id).equalsIgnoreCase("Successfully deleted")) {
-      Map<String, Object> body = new LinkedHashMap<>();
-      body.put(Constant.TIMESTAMP, new Date());
-      body.put(Constant.STATUS, "200");
-      body.put(Constant.MESSAGE, "Board History data deleted successfully with id:- " + id);
-      return new ResponseEntity<>(body, HttpStatus.OK);
-    }
-    throw new APIException("Error in delete Board History data with id:- " + id);
+    return service.deleteBoardHistoryById(id);
   }
 
   @Operation(summary = "Get contact profile image")
