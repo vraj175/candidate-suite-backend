@@ -105,16 +105,30 @@ public class ContactController {
 
   @Operation(summary = "delete Contact Job History Details")
   @DeleteMapping("/contact/jobHistory/{id}")
-  public String deleteContactJobHistory(@PathVariable("id") String id) {
+  public ResponseEntity<Object> deleteContactJobHistory(@PathVariable("id") String id) {
     log.info("delete Contact Job History Details API call, Request Param contactId: " + id);
-    return service.deleteJobHistoryById(id);
+    if (service.deleteJobHistoryById(id).equalsIgnoreCase("Successfully deleted")) {
+      Map<String, Object> body = new LinkedHashMap<>();
+      body.put(Constant.TIMESTAMP, new Date());
+      body.put(Constant.STATUS, "200");
+      body.put(Constant.MESSAGE, "Job History data deleted successfully with id:- " + id);
+      return new ResponseEntity<>(body, HttpStatus.OK);
+    }
+    throw new APIException("Error in delete Job History data with id:- " + id);
   }
 
   @Operation(summary = "delete Contact Board History Details")
   @DeleteMapping("/contact/boardHistory/{id}")
-  public String deleteContactBoardHistory(@PathVariable("id") String id) {
+  public ResponseEntity<Object> deleteContactBoardHistory(@PathVariable("id") String id) {
     log.info("delete Contact Board History Details API call, Request Param contactId: " + id);
-    return service.deleteBoardHistoryById(id);
+    if (service.deleteBoardHistoryById(id).equalsIgnoreCase("Successfully deleted")) {
+      Map<String, Object> body = new LinkedHashMap<>();
+      body.put(Constant.TIMESTAMP, new Date());
+      body.put(Constant.STATUS, "200");
+      body.put(Constant.MESSAGE, "Board History data deleted successfully with id:- " + id);
+      return new ResponseEntity<>(body, HttpStatus.OK);
+    }
+    throw new APIException("Error in delete Board History data with id:- " + id);
   }
 
   @Operation(summary = "Get contact profile image")
