@@ -126,8 +126,11 @@ public class ContactServiceImpl implements ContactService {
 
     try {
       repository.save(contact);
+      JsonArray eductionArray = json.getAsJsonObject().getAsJsonArray("education_details");
+      JsonObject educationObj = new JsonObject();
+      educationObj.add("education_details", eductionArray);
       return restUtil.putMethod(Constant.CONTACT_URL.replace("{contactId}", contactId),
-          json.get("education_details").toString());
+          educationObj.toString());
     } catch (IOException e) {
       return e.getMessage();
     }

@@ -26,12 +26,16 @@ import com.aspire.kgp.constant.Constant;
 import com.aspire.kgp.dto.ContactDTO;
 import com.aspire.kgp.dto.DocumentDTO;
 import com.aspire.kgp.dto.SearchDTO;
+import com.aspire.kgp.exception.APIException;
 import com.aspire.kgp.model.Contact;
 import com.aspire.kgp.model.Reference;
 import com.aspire.kgp.service.ContactService;
 import com.fasterxml.jackson.databind.ser.FilterProvider;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -57,6 +61,10 @@ public class ContactController {
   public Contact getCandidateDetails(@PathVariable("contactId") String contactId) {
     log.info("Get Contact Details API call, Request Param contactId: " + contactId);
     ContactDTO contactDTO = service.getContactDetails(contactId);
+    if (contactDTO == null) {
+      throw new APIException("Invalid Contact Id");
+    }
+
     Contact contact = service.findByGalaxyId(contactId);
 
     if (contact == null)
@@ -83,7 +91,11 @@ public class ContactController {
       @RequestBody String contactData) {
     log.info("Update Contact Details API call, Request Param contactId: " + contactId
         + " Contact Education Data: " + contactData);
-    return service.updateContactEducationDetails(contactId, contactData);
+    JsonObject json = (JsonObject) JsonParser.parseString(contactData);
+    JsonArray eductionArray = json.getAsJsonObject().getAsJsonArray("education_details");
+    JsonObject educationObj = new JsonObject();
+    educationObj.add("education_details", eductionArray);
+    return service.updateContactEducationDetails(contactId, educationObj.toString());
   }
 
   @Operation(summary = "delete Contact Job History Details")
