@@ -1,31 +1,22 @@
 package com.aspire.kgp.model;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 
 @Entity
 public class JobHistory extends SuperBase {
-  private String galaxyId;
-  private String contactId;
+
+  @Column(name = "companyName")
   private String companyName;
+
+  @Column(name = "startYear")
   private String startYear;
+
+  @Column(name = "endYear")
   private String endYear;
+
+  @Column(name = "title")
   private String title;
-
-  public String getGalaxyId() {
-    return galaxyId;
-  }
-
-  public void setGalaxyId(String galaxyId) {
-    this.galaxyId = galaxyId;
-  }
-
-  public String getContactId() {
-    return contactId;
-  }
-
-  public void setContactId(String contactId) {
-    this.contactId = contactId;
-  }
 
   public String getCompanyName() {
     return companyName;
@@ -58,6 +49,7 @@ public class JobHistory extends SuperBase {
   public void setTitle(String title) {
     this.title = title;
   }
+
 
 
 }

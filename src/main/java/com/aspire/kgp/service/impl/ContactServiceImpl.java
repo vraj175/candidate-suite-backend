@@ -17,6 +17,8 @@ import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.transaction.Transactional;
+import javax.transaction.Transactional.TxType;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -35,8 +37,12 @@ import com.aspire.kgp.dto.SearchDTO;
 import com.aspire.kgp.dto.UserDTO;
 import com.aspire.kgp.exception.APIException;
 import com.aspire.kgp.exception.NotFoundException;
+import com.aspire.kgp.model.BoardHistory;
+import com.aspire.kgp.model.Contact;
+import com.aspire.kgp.model.JobHistory;
 import com.aspire.kgp.model.Reference;
 import com.aspire.kgp.model.User;
+import com.aspire.kgp.repository.ContactRepository;
 import com.aspire.kgp.repository.ReferenceRepository;
 import com.aspire.kgp.service.CandidateService;
 import com.aspire.kgp.service.ContactService;
@@ -67,10 +73,9 @@ public class ContactServiceImpl implements ContactService {
 
   @Autowired
   UserService userService;
-
-  @Autowired
   ReferenceRepository referenceRepository;
 
+  ContactRepository repository;
 
   @Override
   public ContactDTO getContactDetails(String contactId) {
@@ -512,6 +517,58 @@ public class ContactServiceImpl implements ContactService {
       throw new APIException("Error in sending candidate upload email");
     }
     log.info("Client upload Mail sent to all partners successfully.");
+  }
+
+  @Override
+  public Contact findByGalaxyId(String galaxyId) {
+    return repository.findByGalaxyId(galaxyId);
+  }
+
+  @Override
+  @Transactional(value = TxType.REQUIRES_NEW)
+  public Contact saveOrUpdateContact(ContactDTO contactDTO) {
+    Contact contact = new Contact();
+    contact.setGalaxyId(contactDTO.getId());
+    contact.setFirstName(contactDTO.getFirstName());
+    contact.setLastName(contactDTO.getLastName());
+    contact.setCompany(contactDTO.getCompany().getName());
+    contact.setCurrentJobTitle(contactDTO.getCurrentJobTitle());
+    contact.setHomePhone(contactDTO.getHomePhone());
+    contact.setMobilePhone(contactDTO.getMobilePhone());
+    contact.setWorkEmail(contactDTO.getWorkEmail());
+    contact.setEmail(contactDTO.getEmail());
+    contact.setLinkedInUrl(contactDTO.getLinkedinUrl());
+    contact.setCity(contactDTO.getCity());
+    contact.setState(contactDTO.getState());
+    contact.setCompensationNotes(contactDTO.getCompensationNotes());
+    contact.setCompensationExpectation(contactDTO.getCompensationExpectation());
+    contact.setEquity(contactDTO.getEquity());
+    contact.setBaseSalary(contactDTO.getBaseSalary());
+    contact.setTargetBonusValue(contactDTO.getTargetBonusValue());
+    List<BoardHistory> boardHistoryList = new ArrayList<>();
+    contactDTO.getBoardDetails().stream().forEach(e -> {
+      BoardHistory boardHistory = new BoardHistory();
+      boardHistory.setCompanyName(e.getCompany().getName());
+      boardHistory.setStartYear(e.getStartYear());
+      boardHistory.setEndYear(e.getEndYear());
+      boardHistory.setTitle(e.getTitle());
+      boardHistory.setCommitee(e.getCommittee());
+      boardHistoryList.add(boardHistory);
+    });
+
+    List<JobHistory> jobHistoryList = new ArrayList<>();
+    contactDTO.getJobHistory().stream().forEach(e -> {
+      JobHistory jobHistory = new JobHistory();
+      jobHistory.setCompanyName(e.getCompany().getName());
+      jobHistory.setStartYear(e.getStartYear());
+      jobHistory.setEndYear(e.getEndYear());
+      jobHistory.setTitle(e.getTitle());
+      jobHistoryList.add(jobHistory);
+    });
+    contact.setBoardHistory(boardHistoryList);
+    contact.setJobHistory(jobHistoryList);
+
+    return repository.save(contact);
   }
 
 }

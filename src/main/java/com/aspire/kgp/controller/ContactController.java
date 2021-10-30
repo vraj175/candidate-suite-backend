@@ -25,6 +25,7 @@ import com.aspire.kgp.constant.Constant;
 import com.aspire.kgp.dto.ContactDTO;
 import com.aspire.kgp.dto.DocumentDTO;
 import com.aspire.kgp.dto.SearchDTO;
+import com.aspire.kgp.model.Contact;
 import com.aspire.kgp.model.Reference;
 import com.aspire.kgp.service.ContactService;
 import com.fasterxml.jackson.databind.ser.FilterProvider;
@@ -55,19 +56,22 @@ public class ContactController {
   public MappingJacksonValue getCandidateDetails(@PathVariable("contactId") String contactId) {
     log.info("Get Contact Details API call, Request Param contactId: " + contactId);
     ContactDTO contactDTO = service.getContactDetails(contactId);
+    Contact contact = service.findByGalaxyId(contactId);
+    //if (contact == null)
+      contact = service.saveOrUpdateContact(contactDTO);
+    contact.setEducationDetails(contactDTO.getEducationDetails());
+
     SimpleBeanPropertyFilter contactFilter = SimpleBeanPropertyFilter.filterOutAllExcept(
         Constant.FIRST_NAME, Constant.LAST_NAME, Constant.CITY, Constant.STATE,
         Constant.CURRENT_JOB_TITLE, Constant.COMPANY, Constant.MOBILE_PHONE, "homePhone",
         Constant.WORK_EMAIL, Constant.EMAIL, Constant.LINKEDIN_URL, "baseSalary",
         "targetBonusValue", "equity", "compensationExpectation", "compensationNotes", "jobHistory",
         "educationDetails", "boardDetails");
-    SimpleBeanPropertyFilter companyFilter =
-        SimpleBeanPropertyFilter.filterOutAllExcept("id", "name");
-    FilterProvider filters =
-        new SimpleFilterProvider().addFilter(Constant.CONTACT_FILTER, contactFilter)
-            .addFilter(Constant.COMPANY_FILTER, companyFilter);
 
-    MappingJacksonValue mapping = new MappingJacksonValue(contactDTO);
+    FilterProvider filters =
+        new SimpleFilterProvider().addFilter(Constant.CONTACT_FILTER, contactFilter);
+
+    MappingJacksonValue mapping = new MappingJacksonValue(contact);
     mapping.setFilters(filters);
     log.info("Successfully send Contact Details");
     log.debug("Get Contact Details API Response : " + mapping.getValue());
