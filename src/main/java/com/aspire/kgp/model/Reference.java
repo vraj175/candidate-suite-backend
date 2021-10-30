@@ -1,24 +1,74 @@
 package com.aspire.kgp.model;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 
 @Entity
 public class Reference extends SuperBase {
-  private String galaxyId;
+
+  @Column(name = "contactId")
   private String contactId;
+
+  @Column(name = "refContactName")
   private String refContactName;
+
+  @Column(name = "searchName")
   private String searchName;
+
+  @Column(name = "searchId")
+  private String searchId;
+
+  @Column(name = "phone")
   private String phone;
+
+  @Column(name = "email")
   private String email;
+
+  @Column(name = "workEmail")
+  private String workEmail;
+
+  @Column(name = "relationship")
   private String relationship;
+
+  @Column(name = "refType")
   private String refType;
 
-  public String getGalaxyId() {
-    return galaxyId;
+  @Column(name = "companyName")
+  private String companyName;
+
+  @Column(name = "title")
+  private String title;
+
+  public String getWorkEmail() {
+    return workEmail;
   }
 
-  public void setGalaxyId(String galaxyId) {
-    this.galaxyId = galaxyId;
+  public void setWorkEmail(String workEmail) {
+    this.workEmail = workEmail;
+  }
+
+  public String getSearchId() {
+    return searchId;
+  }
+
+  public void setSearchId(String searchId) {
+    this.searchId = searchId;
+  }
+
+  public String getCompanyName() {
+    return companyName;
+  }
+
+  public void setCompanyName(String companyName) {
+    this.companyName = companyName;
+  }
+
+  public String getTitle() {
+    return title;
+  }
+
+  public void setTitle(String title) {
+    this.title = title;
   }
 
   public String getContactId() {

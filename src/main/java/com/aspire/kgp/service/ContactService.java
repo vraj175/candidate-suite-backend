@@ -9,10 +9,10 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.aspire.kgp.dto.ContactDTO;
-import com.aspire.kgp.dto.ContactReferencesDTO;
 import com.aspire.kgp.dto.DocumentDTO;
 import com.aspire.kgp.dto.SearchDTO;
 import com.aspire.kgp.model.Contact;
+import com.aspire.kgp.model.Reference;
 
 public interface ContactService {
   public ContactDTO getContactDetails(String contactId);
@@ -22,10 +22,10 @@ public interface ContactService {
   public String updateContactDetails(String contactId, String contactData)
       throws UnsupportedEncodingException;
 
-  public String updateContactReference(String referenceId, String referenceData)
+  public String saveAndUpdateContactReference(String referenceId, String referenceData, String contactId)
       throws UnsupportedEncodingException;
 
-  String addContactReference(String contactId, String referenceData);
+  String addContactReference(String contactId, String referenceData) throws UnsupportedEncodingException;
 
   String uploadCandidateResume(MultipartFile multipartFile, String contactId, String type,
       String candidateId, HttpServletRequest request);
@@ -36,7 +36,7 @@ public interface ContactService {
 
   void downloadDocument(String documentName, String attachmentId, HttpServletResponse response);
 
-  List<ContactReferencesDTO> getListOfReferences(String contactId);
+  List<Reference> getListOfReferences(String contactId);
 
   List<SearchDTO> getListOfContactSearches(String contactId);
 
