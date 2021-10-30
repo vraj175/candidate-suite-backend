@@ -2,7 +2,10 @@ package com.aspire.kgp.controller;
 
 
 import java.io.UnsupportedEncodingException;
+import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -10,6 +13,8 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.json.MappingJacksonValue;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,6 +31,7 @@ import com.aspire.kgp.constant.Constant;
 import com.aspire.kgp.dto.ContactDTO;
 import com.aspire.kgp.dto.DocumentDTO;
 import com.aspire.kgp.dto.SearchDTO;
+import com.aspire.kgp.exception.APIException;
 import com.aspire.kgp.model.Contact;
 import com.aspire.kgp.model.Reference;
 import com.aspire.kgp.service.ContactService;
@@ -233,20 +239,37 @@ public class ContactController {
 
   @Operation(summary = "Add Contact Refere''nce")
   @PostMapping("/contact/{contactId}/references")
-  public String addContactReference(@PathVariable("contactId") String contactId,
+  public ResponseEntity<Object> addContactReference(@PathVariable("contactId") String contactId,
       @RequestBody String referenceData) throws UnsupportedEncodingException {
     log.info("Add Contact Reference API call, Request Param contactId: " + contactId
         + " referenceData: " + referenceData);
-    return service.saveAndUpdateContactReference(null, referenceData, contactId);
+    Reference reference = service.saveAndUpdateContactReference(null, referenceData, contactId);
+    if (reference != null) {
+      Map<String, Object> body = new LinkedHashMap<>();
+      body.put(Constant.TIMESTAMP, new Date());
+      body.put(Constant.STATUS, HttpStatus.OK);
+      body.put(Constant.MESSAGE, "Reference data updated successfully");
+      return new ResponseEntity<>(body, HttpStatus.OK);
+    }
+    throw new APIException("Error in save reference data");
   }
 
   @Operation(summary = "Update Contact Reference")
   @PutMapping("/contact/reference/{referenceId}")
-  public String updateContactReference(@PathVariable("referenceId") String referenceId,
-      @RequestBody String referenceData) throws UnsupportedEncodingException {
+  public ResponseEntity<Object> updateContactReference(
+      @PathVariable("referenceId") String referenceId, @RequestBody String referenceData)
+      throws UnsupportedEncodingException {
     log.info("Update Contact Reference API call, Request Param referenceId: " + referenceId
         + " referenceData: " + referenceData);
-    return service.saveAndUpdateContactReference(referenceId, referenceData, null);
+    Reference reference = service.saveAndUpdateContactReference(referenceId, referenceData, null);
+    if (reference != null) {
+      Map<String, Object> body = new LinkedHashMap<>();
+      body.put(Constant.TIMESTAMP, new Date());
+      body.put(Constant.STATUS, HttpStatus.OK);
+      body.put(Constant.MESSAGE, "Reference Data added successfully");
+      return new ResponseEntity<>(body, HttpStatus.OK);
+    }
+    throw new APIException("Error in save reference data");
   }
 
   @Operation(summary = "Add New Contact")
