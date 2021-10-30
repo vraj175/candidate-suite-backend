@@ -9,8 +9,10 @@ import java.io.UnsupportedEncodingException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -25,6 +27,8 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -148,22 +152,30 @@ public class ContactServiceImpl implements ContactService {
   }
 
   @Override
-  public String deleteJobHistoryById(String id) {
+  public ResponseEntity<Object> deleteJobHistoryById(String id) {
     try {
       jobHistoryRepository.deleteById(Long.parseLong(id));
-      return "Successfully deleted " + id;
+      Map<String, Object> body = new LinkedHashMap<>();
+      body.put(Constant.TIMESTAMP, new Date());
+      body.put(Constant.STATUS, "200");
+      body.put(Constant.MESSAGE, "Job History data deleted successfully with id:- " + id);
+      return new ResponseEntity<>(body, HttpStatus.OK);
     } catch (Exception e) {
-      return e.getMessage();
+      throw new APIException("Error in delete Job History data with id:- " + id);
     }
   }
 
   @Override
-  public String deleteBoardHistoryById(String id) {
+  public ResponseEntity<Object> deleteBoardHistoryById(String id) {
     try {
       boardHistoryRepository.deleteById(Long.parseLong(id));
-      return "Successfully deleted " + id;
+      Map<String, Object> body = new LinkedHashMap<>();
+      body.put(Constant.TIMESTAMP, new Date());
+      body.put(Constant.STATUS, "200");
+      body.put(Constant.MESSAGE, "Board History data deleted successfully with id:- " + id);
+      return new ResponseEntity<>(body, HttpStatus.OK);
     } catch (Exception e) {
-      return e.getMessage();
+      throw new APIException("Error in delete Board History data with id:- " + id);
     }
   }
 
