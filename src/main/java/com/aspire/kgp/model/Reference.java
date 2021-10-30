@@ -4,21 +4,49 @@ import javax.persistence.Entity;
 
 @Entity
 public class Reference extends SuperBase {
-  private String galaxyId;
+
   private String contactId;
   private String refContactName;
   private String searchName;
+  private String searchId;
   private String phone;
   private String email;
+  private String workEmail;
   private String relationship;
   private String refType;
+  private String companyName;
+  private String title;
 
-  public String getGalaxyId() {
-    return galaxyId;
+  public String getWorkEmail() {
+    return workEmail;
   }
 
-  public void setGalaxyId(String galaxyId) {
-    this.galaxyId = galaxyId;
+  public void setWorkEmail(String workEmail) {
+    this.workEmail = workEmail;
+  }
+
+  public String getSearchId() {
+    return searchId;
+  }
+
+  public void setSearchId(String searchId) {
+    this.searchId = searchId;
+  }
+
+  public String getCompanyName() {
+    return companyName;
+  }
+
+  public void setCompanyName(String companyName) {
+    this.companyName = companyName;
+  }
+
+  public String getTitle() {
+    return title;
+  }
+
+  public void setTitle(String title) {
+    this.title = title;
   }
 
   public String getContactId() {

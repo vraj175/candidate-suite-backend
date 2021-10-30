@@ -23,9 +23,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.aspire.kgp.constant.Constant;
 import com.aspire.kgp.dto.ContactDTO;
-import com.aspire.kgp.dto.ContactReferencesDTO;
 import com.aspire.kgp.dto.DocumentDTO;
 import com.aspire.kgp.dto.SearchDTO;
+import com.aspire.kgp.model.Reference;
 import com.aspire.kgp.service.ContactService;
 import com.fasterxml.jackson.databind.ser.FilterProvider;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
@@ -99,29 +99,9 @@ public class ContactController {
       content = @Content(mediaType = "application/json", schema = @Schema(
           type = "List<ContactReferencesDTO>",
           example = "[{\"id\": \"string\",\"searchId\": \"string\",\"relationship\": \"string\",\"contact\": {\"firstName\": \"string\",\"lastName\": \"string\",\"workEmail\": \"string\",\"email\": \"string\",\"mobilePhone\": \"string\",\"currentJobTitle\": \"string\",\"company\": {\"id\": \"string\",\"name\": \"string\"}}}]")))})
-  public MappingJacksonValue getListOfReferences(@PathVariable("contactId") String contactId) {
+  public List<Reference> getListOfReferences(@PathVariable("contactId") String contactId) {
     log.info("Get List of contact references API call, Request Param contactId: " + contactId);
-    List<ContactReferencesDTO> contactReferenceDTO = service.getListOfReferences(contactId);
-    SimpleBeanPropertyFilter contactReferenceFilter = SimpleBeanPropertyFilter.filterOutAllExcept(
-        "id", "searchId", "relationship", "contact", "source", "type", "refContactId", "search");
-    SimpleBeanPropertyFilter contactFilter = SimpleBeanPropertyFilter.filterOutAllExcept(
-        Constant.FIRST_NAME, Constant.LAST_NAME, Constant.CURRENT_JOB_TITLE, Constant.MOBILE_PHONE,
-        Constant.COMPANY, Constant.EMAIL, Constant.WORK_EMAIL);
-    SimpleBeanPropertyFilter companyFilter =
-        SimpleBeanPropertyFilter.filterOutAllExcept("id", "name");
-    SimpleBeanPropertyFilter searchFilter =
-        SimpleBeanPropertyFilter.filterOutAllExcept("id", "jobTitle");
-    FilterProvider filters =
-        new SimpleFilterProvider().addFilter("contactReferenceFilter", contactReferenceFilter)
-            .addFilter(Constant.CONTACT_FILTER, contactFilter)
-            .addFilter(Constant.COMPANY_FILTER, companyFilter)
-            .addFilter(Constant.SEARCH_FILTER, searchFilter);
-
-    MappingJacksonValue mapping = new MappingJacksonValue(contactReferenceDTO);
-    log.info("Successfully send List of contact references: " + contactReferenceDTO.size());
-    log.debug("Get List of contact references API Response : " + mapping.getValue());
-    mapping.setFilters(filters);
-    return mapping;
+    return service.getListOfReferences(contactId);
   }
 
   @Operation(summary = "upload resume for contact",
@@ -233,7 +213,7 @@ public class ContactController {
     return mapping;
   }
 
-  @Operation(summary = "Add Contact Reference")
+  @Operation(summary = "Add Contact Refere''nce")
   @PostMapping("/contact/{contactId}/references")
   public String addContactReference(@PathVariable("contactId") String contactId,
       @RequestBody String referenceData) {

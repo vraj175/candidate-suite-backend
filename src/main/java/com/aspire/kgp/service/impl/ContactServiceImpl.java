@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
@@ -34,7 +35,9 @@ import com.aspire.kgp.dto.SearchDTO;
 import com.aspire.kgp.dto.UserDTO;
 import com.aspire.kgp.exception.APIException;
 import com.aspire.kgp.exception.NotFoundException;
+import com.aspire.kgp.model.Reference;
 import com.aspire.kgp.model.User;
+import com.aspire.kgp.repository.ReferenceRepository;
 import com.aspire.kgp.service.CandidateService;
 import com.aspire.kgp.service.ContactService;
 import com.aspire.kgp.service.MailService;
@@ -64,6 +67,10 @@ public class ContactServiceImpl implements ContactService {
 
   @Autowired
   UserService userService;
+
+  @Autowired
+  ReferenceRepository referenceRepository;
+
 
   @Override
   public ContactDTO getContactDetails(String contactId) {
@@ -98,15 +105,58 @@ public class ContactServiceImpl implements ContactService {
   @Override
   public String updateContactReference(String referenceId, String referenceData)
       throws UnsupportedEncodingException {
-    return restUtil.putMethod(
-        Constant.UPDATE_CONTACT_REFERENCE_URL.replace("{referenceId}", referenceId), referenceData);
+    Reference reference = new Reference();
+    try {
+      reference = new Gson().fromJson(referenceData, new TypeToken<Reference>() {
+
+        /**
+         * 
+         * //
+         */
+        private static final long serialVersionUID = 1L;
+      }.getType());
+    } catch (JsonSyntaxException e) {
+      throw new APIException(Constant.JSON_PROCESSING_EXCEPTION + e.getMessage());
+    }
+    if (!referenceId.isEmpty()) {
+      Optional<Reference> referenceDatas = referenceRepository.findById(Long.valueOf(referenceId));
+      if (referenceDatas.isPresent()) {
+        referenceDatas.get().setCompanyName(reference.getCompanyName());
+        referenceDatas.get().setContactId(reference.getContactId());
+        referenceDatas.get().setPhone(reference.getPhone());
+        referenceDatas.get().setRefContactName(reference.getRefContactName());
+        referenceDatas.get().setRefType(reference.getRefType());
+        referenceDatas.get().setRelationship(reference.getRelationship());
+        referenceDatas.get().setSearchName(reference.getSearchName());
+        referenceDatas.get().setTitle(reference.getTitle());
+        referenceDatas.get().setEmail(reference.getEmail());
+        referenceDatas.get().setSearchId(reference.getSearchId());
+        referenceDatas.get().setWorkEmail(reference.getWorkEmail());
+        referenceRepository.save(referenceDatas);
+      }
+    }
+    return "Data Updated Successfully";
   }
 
   @Override
   public final String addContactReference(String contactId, String referenceData) {
-    return restUtil.postMethod(
-        Constant.CONTACT_REFERENCE_URL.replace(Constant.CONTACT_ID, contactId), referenceData,
-        null);
+    Reference reference = new Reference();
+    try {
+      reference = new Gson().fromJson(referenceData, new TypeToken<Reference>() {
+
+        /**
+         * 
+         */
+        private static final long serialVersionUID = 1L;
+      }.getType());
+    } catch (JsonSyntaxException e) {
+      throw new APIException(Constant.JSON_PROCESSING_EXCEPTION + e.getMessage());
+    }
+    if (!contactId.isEmpty() && reference != null) {
+      referenceRepository.save(reference);
+    }
+    return "Data Added Successfully";
+
   }
 
   @Override
@@ -241,21 +291,62 @@ public class ContactServiceImpl implements ContactService {
   }
 
   @Override
-  public List<ContactReferencesDTO> getListOfReferences(String contactId) {
-    String apiResponse = restUtil
-        .newGetMethod(Constant.CONTACT_REFERENCE_URL.replace(Constant.CONTACT_ID, contactId));
+  public List<Reference> getListOfReferences(String contactId) {
+    List<ContactReferencesDTO> contactReferencesDTOList = new ArrayList<>();
+    List<Reference> referenceList = new ArrayList<>();
+    referenceList = referenceRepository.findByContactId(contactId);
+    if (!referenceList.isEmpty()) {
+      return referenceList;
+    } else {
+      String apiResponse = restUtil
+          .newGetMethod(Constant.CONTACT_REFERENCE_URL.replace(Constant.CONTACT_ID, contactId));
 
-    try {
-      return new Gson().fromJson(apiResponse, new TypeToken<List<ContactReferencesDTO>>() {
+      try {
+        contactReferencesDTOList =
+            new Gson().fromJson(apiResponse, new TypeToken<List<ContactReferencesDTO>>() {
 
-        /**
-         * 
-         */
-        private static final long serialVersionUID = 1L;
-      }.getType());
-    } catch (JsonSyntaxException e) {
-      throw new APIException(Constant.JSON_PROCESSING_EXCEPTION + e.getMessage());
+              /**
+               * 
+               */
+              private static final long serialVersionUID = 1L;
+            }.getType());
+      } catch (JsonSyntaxException e) {
+        throw new APIException(Constant.JSON_PROCESSING_EXCEPTION + e.getMessage());
+      }
+      if (!contactReferencesDTOList.isEmpty()) {
+        addContactReferenceDataIntDB(contactReferencesDTOList);
+      }
+      referenceList = referenceRepository.findByContactId(contactId);
+      if (!referenceList.isEmpty()) {
+        return referenceList;
+      } else {
+        throw new APIException("No Data found for this contact Id:- " + contactId);
+      }
+
     }
+  }
+
+  private void addContactReferenceDataIntDB(List<ContactReferencesDTO> contactReferencesDTOList) {
+    for (int i = 0; i < contactReferencesDTOList.size(); i++) {
+      Reference reference = new Reference();
+      if (contactReferencesDTOList.get(i) != null) {
+        reference.setPhone(contactReferencesDTOList.get(i).getContact().getMobilePhone());
+        reference.setRefType(contactReferencesDTOList.get(i).getType());
+        reference.setSearchName(contactReferencesDTOList.get(i).getSearch().getJobTitle());
+        reference.setRelationship(contactReferencesDTOList.get(i).getRelationship());
+        reference.setEmail(contactReferencesDTOList.get(i).getContact().getEmail());
+        reference.setContactId(contactReferencesDTOList.get(i).getContactId());
+        reference.setRefContactName(contactReferencesDTOList.get(i).getContact().getFirstName()
+            + " " + contactReferencesDTOList.get(i).getContact().getLastName());
+        reference
+            .setCompanyName(contactReferencesDTOList.get(i).getContact().getCompany().getName());
+        reference.setTitle(contactReferencesDTOList.get(i).getContact().getCurrentJobTitle());
+        reference.setSearchId(contactReferencesDTOList.get(i).getSearch().getId());
+        reference.setWorkEmail(contactReferencesDTOList.get(i).getContact().getWorkEmail());
+        referenceRepository.save(reference);
+      }
+    }
+
   }
 
   @Override

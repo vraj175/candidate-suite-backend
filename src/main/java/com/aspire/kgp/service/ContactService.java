@@ -12,6 +12,7 @@ import com.aspire.kgp.dto.ContactDTO;
 import com.aspire.kgp.dto.ContactReferencesDTO;
 import com.aspire.kgp.dto.DocumentDTO;
 import com.aspire.kgp.dto.SearchDTO;
+import com.aspire.kgp.model.Reference;
 
 public interface ContactService {
   public ContactDTO getContactDetails(String contactId);
@@ -34,7 +35,7 @@ public interface ContactService {
 
   void downloadDocument(String documentName, String attachmentId, HttpServletResponse response);
 
-  List<ContactReferencesDTO> getListOfReferences(String contactId);
+  List<Reference> getListOfReferences(String contactId);
 
   List<SearchDTO> getListOfContactSearches(String contactId);
 
