@@ -389,6 +389,7 @@ public class ContactServiceImpl implements ContactService {
   public List<Reference> getListOfReferences(String contactId) {
     List<ContactReferencesDTO> contactReferencesDTOList = new ArrayList<>();
     List<Reference> referenceList = new ArrayList<>();
+    List<Reference> referenceLists = new ArrayList<>();
     referenceList = referenceRepository.findByContactId(contactId);
     if (!referenceList.isEmpty()) {
       return referenceList;
@@ -415,7 +416,7 @@ public class ContactServiceImpl implements ContactService {
       if (!referenceList.isEmpty()) {
         return referenceList;
       } else {
-        throw new APIException("No Data found for this contact Id:- " + contactId);
+        return referenceLists;
       }
 
     }
