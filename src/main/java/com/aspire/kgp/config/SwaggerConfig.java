@@ -1,5 +1,6 @@
 package com.aspire.kgp.config;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,6 +19,7 @@ import com.aspire.kgp.dto.ResetPasswordDTO;
 import com.aspire.kgp.model.BoardHistory;
 import com.aspire.kgp.model.Contact;
 import com.aspire.kgp.model.JobHistory;
+import com.aspire.kgp.model.Reference;
 
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
@@ -100,6 +102,12 @@ public class SwaggerConfig {
         .path(Constant.BASE_API_URL + "/notification",
             getPathItem(getNotificationSchedulerSchema(), "Notification",
                 "Set Interview notification Schedule", "", getResponseContent()))
+        .path(Constant.BASE_API_URL + "/contact/reference/{referenceId}",
+            getPutRequestPathItem(getContactReferenceResponseContent(), "Contact",
+                "Update Contact Reference", "", getContactResponseContent()))
+        .path(Constant.BASE_API_URL + "/contact/{contactId}/references",
+            getPathItem(getContactReferenceResponseContent(), "Contact", "Add Contact Reference",
+                "", getContactResponseContent()))
         .path(Constant.BASE_API_URL + "/notification/add",
             getPathItem(getNotificationDTOSchema(), "Notification", "Add New Notification", "",
                 getResponseContent()))
@@ -120,6 +128,28 @@ public class SwaggerConfig {
                 "Update Contact Education Details", "", getContactResponseContent()))
         .addSecurityItem(
             new SecurityRequirement().addList(Constant.API_KEY).addList(Constant.AUTHORIZATION));
+  }
+
+  /* Schema For update refernce Contact Update */
+  private Schema<Reference> getContactReferenceResponseContent() {
+    Schema<Reference> contactUpdateSchema = new Schema<>();
+    Reference reference = new Reference();
+    reference.setId(0);
+    reference.setContactId(Constant.STRING);
+    reference.setRefContactName(Constant.STRING);
+    reference.setSearchName(Constant.STRING);
+    reference.setSearchId(Constant.STRING);
+    reference.setPhone(Constant.STRING);
+    reference.setEmail(Constant.STRING);
+    reference.setWorkEmail(Constant.STRING);
+    reference.setRelationship(Constant.STRING);
+    reference.setRefType(Constant.STRING);
+    reference.setCompanyName(Constant.STRING);
+    reference.setTitle(Constant.STRING);
+    reference.setCreatedDate(new Timestamp(System.currentTimeMillis()));
+    reference.setModifyDate(new Timestamp(System.currentTimeMillis()));
+    contactUpdateSchema.addEnumItemObject(reference);
+    return contactUpdateSchema;
   }
 
   /*
@@ -364,7 +394,8 @@ public class SwaggerConfig {
   }
 
   /*
-   * Used For candidate Feedback response content show on UI
+   * 
+   * /* Used For candidate Feedback response content show on UI
    */
   private Content getCandidateFeedbackReplyResponseContent() {
     Content responseContent = new Content();
