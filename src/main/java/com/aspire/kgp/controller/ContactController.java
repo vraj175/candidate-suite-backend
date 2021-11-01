@@ -38,10 +38,6 @@ import com.aspire.kgp.service.ContactService;
 import com.fasterxml.jackson.databind.ser.FilterProvider;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -82,8 +78,7 @@ public class ContactController {
     return contact;
   }
 
-  @Operation(summary = "Update Contact Details")
-  @PutMapping("/contact/{contactId}")
+  @PutMapping("/contact/update/{contactId}")
   public String updateContactDetails(@PathVariable("contactId") String contactId,
       @RequestBody String contactData) throws UnsupportedEncodingException {
     log.info("Update Contact Details API call, Request Param contactId: " + contactId
@@ -97,12 +92,7 @@ public class ContactController {
       @RequestBody String contactData) {
     log.info("Update Contact Details API call, Request Param contactId: " + contactId
         + " Contact Education Data: " + contactData);
-    JsonParser parser = new JsonParser();
-    JsonElement educationElement = parser.parse(contactData);
-    JsonArray educationArray = educationElement.getAsJsonArray();
-    JsonObject educationObj = new JsonObject();
-    educationObj.add("education_details", educationArray);
-    return service.updateContactEducationDetails(contactId, educationObj.toString());
+    return service.updateContactEducationDetails(contactId, contactData);
   }
 
   @Operation(summary = "delete Contact Job History Details")
@@ -131,11 +121,11 @@ public class ContactController {
 
 
   @Operation(summary = "Get List of contact references")
-  @GetMapping("/contact/{contactId}/references")
+  @GetMapping("/contact/{contactId}/get-references")
   @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK",
       content = @Content(mediaType = "application/json", schema = @Schema(
           type = "List<ContactReferencesDTO>",
-          example = "[{\"id\": \"string\",\"searchId\": \"string\",\"relationship\": \"string\",\"contact\": {\"firstName\": \"string\",\"lastName\": \"string\",\"workEmail\": \"string\",\"email\": \"string\",\"mobilePhone\": \"string\",\"currentJobTitle\": \"string\",\"company\": {\"id\": \"string\",\"name\": \"string\"}}}]")))})
+          example = "[{\"id\": 0,\"createdDate\": \"yyyy-mm-dd HH:MM:SS\",\"modifyDate\": \"yyyy-mm-dd HH:MM:SS\",\"contactId\": \"string\",\"refContactName\": \"string\",\"searchName\": \"string\",\"searchId\": \"string\", \"phone\": \"string\",\"email\": \"string\",\"workEmail\": string,\"relationship\": \"string\",\"refType\": \"string\",\"companyName\": \"string\",\"title\": \"string\"}]")))})
   public List<Reference> getListOfReferences(@PathVariable("contactId") String contactId) {
     log.info("Get List of contact references API call, Request Param contactId: " + contactId);
     return service.getListOfReferences(contactId);
@@ -250,7 +240,7 @@ public class ContactController {
     return mapping;
   }
 
-  @Operation(summary = "Add Contact Refere''nce")
+  @Operation(summary = "Add Contact Reference")
   @PostMapping("/contact/{contactId}/references")
   public ResponseEntity<Object> addContactReference(@PathVariable("contactId") String contactId,
       @RequestBody String referenceData) throws UnsupportedEncodingException {
@@ -261,7 +251,7 @@ public class ContactController {
       Map<String, Object> body = new LinkedHashMap<>();
       body.put(Constant.TIMESTAMP, new Date());
       body.put(Constant.STATUS, HttpStatus.OK);
-      body.put(Constant.MESSAGE, "Reference data updated successfully");
+      body.put(Constant.MESSAGE, "Reference data added successfully");
       return new ResponseEntity<>(body, HttpStatus.OK);
     }
     throw new APIException("Error in save reference data");
@@ -279,7 +269,7 @@ public class ContactController {
       Map<String, Object> body = new LinkedHashMap<>();
       body.put(Constant.TIMESTAMP, new Date());
       body.put(Constant.STATUS, HttpStatus.OK);
-      body.put(Constant.MESSAGE, "Reference Data added successfully");
+      body.put(Constant.MESSAGE, "Reference Data updated successfully");
       return new ResponseEntity<>(body, HttpStatus.OK);
     }
     throw new APIException("Error in save reference data");
