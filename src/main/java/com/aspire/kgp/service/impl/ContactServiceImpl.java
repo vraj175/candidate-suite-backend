@@ -60,6 +60,7 @@ import com.aspire.kgp.util.StaticContentsMultiLanguageUtil;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
@@ -120,35 +121,42 @@ public class ContactServiceImpl implements ContactService {
   public String updateContactDetails(String contactId, String contactData)
       throws UnsupportedEncodingException {
     JsonObject json = (JsonObject) JsonParser.parseString(contactData);
-    Contact contact = new Gson().fromJson(json, new TypeToken<Contact>() {
-
-      /**
-       * 
-       */
-      private static final long serialVersionUID = 1L;
-    }.getType());
-
     try {
+      Contact contact = new Gson().fromJson(json, new TypeToken<Contact>() {
+
+        /**
+         * 
+         */
+        private static final long serialVersionUID = 1L;
+      }.getType());
       repository.save(contact);
+    } catch (Exception e) {
+      throw new APIException("Error While converting data from request json " + e.getMessage());
+    }
+    try {
       JsonArray eductionArray = json.getAsJsonObject().getAsJsonArray("education_details");
       JsonObject educationObj = new JsonObject();
       educationObj.add("education_details", eductionArray);
       return restUtil.putMethod(Constant.CONTACT_URL.replace("{contactId}", contactId),
           educationObj.toString());
     } catch (IOException e) {
-      return e.getMessage();
+      throw new APIException("Error While update education details in galaxy" + e.getMessage());
     }
   }
 
   @Override
   public String updateContactEducationDetails(String contactId, String contactData) {
     try {
+      Gson gson = new Gson();
+      JsonElement element = gson.fromJson(contactData, JsonElement.class);
+      JsonArray jsonObj = element.getAsJsonArray();
+      JsonObject educationObj = new JsonObject();
+      educationObj.add("education_details", jsonObj);
       return restUtil.putMethod(Constant.CONTACT_URL.replace("{contactId}", contactId),
-          contactData);
+          educationObj.toString());
     } catch (UnsupportedEncodingException e) {
-      return e.getMessage();
+      throw new APIException("Error While update education details in galaxy" + e.getMessage());
     }
-
   }
 
   @Override

@@ -38,10 +38,6 @@ import com.aspire.kgp.service.ContactService;
 import com.fasterxml.jackson.databind.ser.FilterProvider;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -97,12 +93,7 @@ public class ContactController {
       @RequestBody String contactData) {
     log.info("Update Contact Details API call, Request Param contactId: " + contactId
         + " Contact Education Data: " + contactData);
-    JsonParser parser = new JsonParser();
-    JsonElement educationElement = parser.parse(contactData);
-    JsonArray educationArray = educationElement.getAsJsonArray();
-    JsonObject educationObj = new JsonObject();
-    educationObj.add("education_details", educationArray);
-    return service.updateContactEducationDetails(contactId, educationObj.toString());
+    return service.updateContactEducationDetails(contactId, contactData);
   }
 
   @Operation(summary = "delete Contact Job History Details")

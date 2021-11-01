@@ -240,5 +240,17 @@ public class Contact extends SuperBase {
     this.educationDetails = educationDetails;
   }
 
+  @Override
+  public String toString() {
+    return "Contact [galaxyId=" + galaxyId + ", firstName=" + firstName + ", lastName=" + lastName
+        + ", city=" + city + ", state=" + state + ", company=" + company + ", currentJobTitle="
+        + currentJobTitle + ", mobilePhone=" + mobilePhone + ", homePhone=" + homePhone
+        + ", workEmail=" + workEmail + ", email=" + email + ", linkedInUrl=" + linkedInUrl
+        + ", compensationNotes=" + compensationNotes + ", compensationExpectation="
+        + compensationExpectation + ", equity=" + equity + ", baseSalary=" + baseSalary
+        + ", targetBonusValue=" + targetBonusValue + ", boardHistory=" + boardHistory
+        + ", jobHistory=" + jobHistory + ", educationDetails=" + educationDetails + "]";
+  }
+
 
 }
