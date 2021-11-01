@@ -78,8 +78,7 @@ public class ContactController {
     return contact;
   }
 
-  @Operation(summary = "Update Contact Details")
-  @PutMapping("/contact/{contactId}")
+  @PutMapping("/contact/update/{contactId}")
   public String updateContactDetails(@PathVariable("contactId") String contactId,
       @RequestBody String contactData) throws UnsupportedEncodingException {
     log.info("Update Contact Details API call, Request Param contactId: " + contactId
