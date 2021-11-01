@@ -120,7 +120,7 @@ public class SwaggerConfig {
         .path(Constant.BASE_API_URL + "/candidates/candidate-feedback/status-update",
             getPutRequestPathItem(getCandidateFeedbackUpdateDTOSchema(), "Candidate",
                 "Update Candidate Feedback Status", "", getCandidateFeedbackResponseContent()))
-        .path(Constant.BASE_API_URL + "/contact/{contactId}",
+        .path(Constant.BASE_API_URL + "/contact/update/{contactId}",
             getPutRequestPathItem(getContactUpdateDTOSchema(), "Contact", "Update Contact Details",
                 "", getContactResponseContent()))
         .path(Constant.BASE_API_URL + "/contact/education/{contactId}",
