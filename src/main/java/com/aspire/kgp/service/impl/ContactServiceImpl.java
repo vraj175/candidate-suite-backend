@@ -341,7 +341,7 @@ public class ContactServiceImpl implements ContactService {
   }
 
   @Override
-  public final DocumentDTO getContactResumes(String contactId) {
+  public DocumentDTO getContactResumes(String contactId) {
     List<DocumentDTO> documentList = null;
     String apiResponse =
         restUtil.newGetMethod(Constant.RESUME_URL.replace(Constant.CONTACT_ID, contactId));
