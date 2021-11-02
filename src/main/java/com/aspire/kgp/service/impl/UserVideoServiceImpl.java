@@ -155,7 +155,7 @@ public class UserVideoServiceImpl implements UserVideoService {
       String mailSubject = staticContentsMap.get("candidate.suite.upload.email.subject");
       if (Constant.PARTNER.equalsIgnoreCase(role)) {
         userDTO = userService.getGalaxyUserDetails(user.getGalaxyId());
-        mailSubject = mailSubject + " " + paramRequest.get("type") + " - " + "Uploaded from "
+        mailSubject = mailSubject + " - " + paramRequest.get("type") + " " + "Uploaded from "
             + userDTO.getFirstName() + " " + userDTO.getLastName();
         content = userDTO.getFirstName() + " " + userDTO.getLastName() + " has uploaded "
             + paramRequest.get("candidateName") + "'s";
@@ -168,7 +168,7 @@ public class UserVideoServiceImpl implements UserVideoService {
 
       } else {
         userDTO = userService.getContactDetails(user.getGalaxyId());
-        mailSubject = mailSubject + " " + paramRequest.get("type") + " - " + "Uploaded from "
+        mailSubject = mailSubject + " - " + paramRequest.get("type") + " " + "Uploaded from "
             + paramRequest.get("candidateName");
         content = paramRequest.get("candidateName") + " has uploaded their ";
         paramRequest.put("clickButtonUrl",
