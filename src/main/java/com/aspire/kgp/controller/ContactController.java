@@ -78,12 +78,13 @@ public class ContactController {
     return contact;
   }
 
-  @PutMapping("/contact/update/{contactId}")
+  @PutMapping("/contact/update/{contactId}/{candidateId}")
   public String updateContactDetails(@PathVariable("contactId") String contactId,
-      @RequestBody String contactData) throws UnsupportedEncodingException {
+      @RequestBody String contactData, HttpServletRequest request,
+      @PathVariable("candidateId") String candidateId) throws UnsupportedEncodingException {
     log.info("Update Contact Details API call, Request Param contactId: " + contactId
         + " Contact Data: " + contactData);
-    return service.updateContactDetails(contactId, contactData);
+    return service.updateContactDetails(contactId, contactData, request, candidateId);
   }
 
   @Operation(summary = "Update Contact Education Details")
@@ -241,12 +242,14 @@ public class ContactController {
   }
 
   @Operation(summary = "Add Contact Reference")
-  @PostMapping("/contact/{contactId}/references")
+  @PostMapping("/contact/{contactId}/references/{candidateId}")
   public ResponseEntity<Object> addContactReference(@PathVariable("contactId") String contactId,
-      @RequestBody String referenceData) throws UnsupportedEncodingException {
+      @RequestBody String referenceData, HttpServletRequest request,
+      @PathVariable("candidateId") String candidateId) throws UnsupportedEncodingException {
     log.info("Add Contact Reference API call, Request Param contactId: " + contactId
         + " referenceData: " + referenceData);
-    Reference reference = service.saveAndUpdateContactReference(null, referenceData, contactId);
+    Reference reference =
+        service.saveAndUpdateContactReference(null, referenceData, contactId, request, candidateId);
     if (reference != null) {
       Map<String, Object> body = new LinkedHashMap<>();
       body.put(Constant.TIMESTAMP, new Date());
@@ -258,13 +261,15 @@ public class ContactController {
   }
 
   @Operation(summary = "Update Contact Reference")
-  @PutMapping("/contact/reference/{referenceId}")
+  @PutMapping("/contact/reference/{referenceId}/{candidateId}")
   public ResponseEntity<Object> updateContactReference(
-      @PathVariable("referenceId") String referenceId, @RequestBody String referenceData)
+      @PathVariable("referenceId") String referenceId, @RequestBody String referenceData,
+      HttpServletRequest request, @PathVariable("candidateId") String candidateId)
       throws UnsupportedEncodingException {
     log.info("Update Contact Reference API call, Request Param referenceId: " + referenceId
         + " referenceData: " + referenceData);
-    Reference reference = service.saveAndUpdateContactReference(referenceId, referenceData, null);
+    Reference reference = service.saveAndUpdateContactReference(referenceId, referenceData, null,
+        request, candidateId);
     if (reference != null) {
       Map<String, Object> body = new LinkedHashMap<>();
       body.put(Constant.TIMESTAMP, new Date());

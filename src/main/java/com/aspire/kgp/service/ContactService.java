@@ -20,13 +20,15 @@ public interface ContactService {
 
   public byte[] getContactImage(String contactId);
 
-  public String updateContactDetails(String contactId, String contactData)
+  public String updateContactDetails(String contactId, String contactData,
+      HttpServletRequest request, String candidateId) throws UnsupportedEncodingException;
+
+  public Reference saveAndUpdateContactReference(String referenceId, String referenceData,
+      String contactId, HttpServletRequest request, String candidateId)
       throws UnsupportedEncodingException;
 
-  public Reference saveAndUpdateContactReference(String referenceId, String referenceData, String contactId)
+  String addContactReference(String contactId, String referenceData)
       throws UnsupportedEncodingException;
-
-  String addContactReference(String contactId, String referenceData) throws UnsupportedEncodingException;
 
   String uploadCandidateResume(MultipartFile multipartFile, String contactId, String type,
       String candidateId, HttpServletRequest request);
