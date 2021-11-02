@@ -269,7 +269,8 @@ public class ContactServiceImpl implements ContactService {
       }
       String extension = fileName.substring(fileName.lastIndexOf("."));
       log.info(extension);
-      file = File.createTempFile(fileName.substring(0, fileName.lastIndexOf(".") - 1), extension);
+      File parent = new File(System.getProperty("java.io.tmpdir"));
+      file = new File(parent, fileName);
       FileOutputStream fos = new FileOutputStream(file);
       fos.write(multipartFile.getBytes());
       fos.close();
