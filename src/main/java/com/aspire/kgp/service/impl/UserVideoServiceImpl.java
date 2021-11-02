@@ -60,6 +60,9 @@ public class UserVideoServiceImpl implements UserVideoService {
   @Autowired
   UserService userService;
 
+  @Value("${galaxy.base.api.url}")
+  private String baseApiUrl;
+
   @Override
   public UserVideo saveorUpdate(UserVideo userVideo) {
     return repository.save(userVideo);
@@ -71,7 +74,7 @@ public class UserVideoServiceImpl implements UserVideoService {
     UserVideo userVideo = new UserVideo();
     userVideo.setContactId(contactId);
     userVideo.setFileToken(fileToken);
-    sentUploadNotification(contactId, request, candidateId, "Video");
+    sentUploadNotification(contactId, request, candidateId, "Video", fileToken);
     return saveorUpdate(userVideo);
   }
 
@@ -99,13 +102,13 @@ public class UserVideoServiceImpl implements UserVideoService {
   }
 
   private void sentUploadNotification(String contactId, HttpServletRequest request,
-      String candidateId, String type) {
+      String candidateId, String type, String fileToken) {
     Set<String> kgpPartnerEmailList = new HashSet<>();
     HashMap<String, String> paramRequest = new HashMap<>();
     CandidateDTO apiResponse = candidateService.getCandidateDetails(candidateId);
     try {
-      kgpPartnerEmailList =
-          CommonUtil.teamPartnerMemberList(apiResponse.getSearch().getPartners(), kgpPartnerEmailList);
+      kgpPartnerEmailList = CommonUtil.teamPartnerMemberList(apiResponse.getSearch().getPartners(),
+          kgpPartnerEmailList);
       kgpPartnerEmailList =
           CommonUtil.teamMemberList(apiResponse.getSearch().getRecruiters(), kgpPartnerEmailList);
       paramRequest.put("candidateName",
@@ -126,7 +129,7 @@ public class UserVideoServiceImpl implements UserVideoService {
       for (String kgpTeamMeberDetails : kgpPartnerEmailList) {
         log.info("Partner Email : " + kgpTeamMeberDetails);
         sendClientUploadNotificationMail(kgpTeamMeberDetails.split("##")[0],
-            kgpTeamMeberDetails.split("##")[1], request, paramRequest);
+            kgpTeamMeberDetails.split("##")[1], request, paramRequest, fileToken);
       }
     } catch (Exception ex) {
       log.info(ex);
@@ -137,11 +140,13 @@ public class UserVideoServiceImpl implements UserVideoService {
 
 
   private void sendClientUploadNotificationMail(String email, String partnerName,
-      HttpServletRequest request, HashMap<String, String> paramRequest) {
+      HttpServletRequest request, HashMap<String, String> paramRequest, String fileToken) {
     log.info("sending client upload notification email");
+    email = "sarthak.chavda@aspiresoftserv.com";
     String locate = "en_US";
     UserDTO userDTO = null;
     String content = "";
+    String access = "";
     User user = (User) request.getAttribute("user");
     String role = user.getRole().getName();
     paramRequest.put("role", role);
@@ -157,6 +162,10 @@ public class UserVideoServiceImpl implements UserVideoService {
             + paramRequest.get("candidateName") + "'s";
         paramRequest.put("content", content);
         paramRequest.put("clientName", userDTO.getFirstName() + " " + userDTO.getLastName());
+        paramRequest.put("clickButtonUrl",
+            baseApiUrl.replace("api", "contacts") + "/" + paramRequest.get("contactId"));
+        access = " to access in Galaxy";
+        paramRequest.put("access", access);
 
       } else {
         userDTO = userService.getContactDetails(user.getGalaxyId());
