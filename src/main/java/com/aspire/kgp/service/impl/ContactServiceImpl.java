@@ -587,7 +587,6 @@ public class ContactServiceImpl implements ContactService {
     log.info("sending client upload notification email");
     User user = (User) request.getAttribute("user");
     String role = user.getRole().getName();
-    email = "sarthak.chavda@aspiresoftserv.com";
     paramRequest.put("role", role);
     String locate = "en_US";
     try {
@@ -640,16 +639,35 @@ public class ContactServiceImpl implements ContactService {
 
       } else {
         userDTO = userService.getContactDetails(user.getGalaxyId());
-        if (paramRequest.get("type").equalsIgnoreCase("Reference")) {
-          mailSubject = mailSubject + " " + paramRequest.get("type") + " - " + "Added from "
+        if (paramRequest.get("type").equalsIgnoreCase("Reference Details")) {
+          mailSubject = mailSubject + " - " + paramRequest.get("type") + " " + "Added/Updated from "
               + paramRequest.get("candidateName");
-          content = paramRequest.get("candidateName") + " has added their ";
+          content = paramRequest.get("candidateName") + " has added or updated their ";
+          paramRequest.put("clickButtonUrl",
+              CommonUtil.getServerUrl(request) + request.getContextPath() + "/my-info/"
+                  + paramRequest.get("candidateId") + "/" + paramRequest.get("searchId") + "/"
+                  + paramRequest.get("searchName") + "/" + paramRequest.get("contactId")
+                  + "?activeTab=references-tab");
+          access = " to access in Candidate Suite";
+        } else if (paramRequest.get("type").equalsIgnoreCase("Contact Details")) {
+          mailSubject = mailSubject + " - " + paramRequest.get("type") + " " + "Added/Updated from "
+              + paramRequest.get("candidateName");
+          content = paramRequest.get("candidateName") + " has added or updated their ";
+          paramRequest.put("clickButtonUrl",
+              CommonUtil.getServerUrl(request) + request.getContextPath() + "/my-info/"
+                  + paramRequest.get("candidateId") + "/" + paramRequest.get("searchId") + "/"
+                  + paramRequest.get("searchName") + "/" + paramRequest.get("contactId"));
+          access = " to access in Candidate Suite";
         } else {
-          mailSubject = mailSubject + " " + paramRequest.get("type") + " - " + "Uploaded from "
+          mailSubject = mailSubject + " - " + paramRequest.get("type") + " " + "Uploaded from "
               + paramRequest.get("candidateName");
           content = paramRequest.get("candidateName") + " has uploaded their ";
+          paramRequest.put("clickButtonUrl",
+              baseApiUrl.replace("api", "contacts") + "/" + paramRequest.get("contactId"));
+          access = " to access in Galaxy";
         }
         paramRequest.put("content", content);
+        paramRequest.put("access", access);
         paramRequest.put("clientName", paramRequest.get("candidateName"));
       }
       mailService.sendEmail(email, null, mailSubject, mailService.getUploadEmailContent(request,

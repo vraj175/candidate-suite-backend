@@ -74,7 +74,7 @@ public class UserVideoServiceImpl implements UserVideoService {
     UserVideo userVideo = new UserVideo();
     userVideo.setContactId(contactId);
     userVideo.setFileToken(fileToken);
-    sentUploadNotification(contactId, request, candidateId, "Video", fileToken);
+    sentUploadNotification(contactId, request, candidateId, "Video");
     return saveorUpdate(userVideo);
   }
 
@@ -102,7 +102,7 @@ public class UserVideoServiceImpl implements UserVideoService {
   }
 
   private void sentUploadNotification(String contactId, HttpServletRequest request,
-      String candidateId, String type, String fileToken) {
+      String candidateId, String type) {
     Set<String> kgpPartnerEmailList = new HashSet<>();
     HashMap<String, String> paramRequest = new HashMap<>();
     CandidateDTO apiResponse = candidateService.getCandidateDetails(candidateId);
@@ -129,7 +129,7 @@ public class UserVideoServiceImpl implements UserVideoService {
       for (String kgpTeamMeberDetails : kgpPartnerEmailList) {
         log.info("Partner Email : " + kgpTeamMeberDetails);
         sendClientUploadNotificationMail(kgpTeamMeberDetails.split("##")[0],
-            kgpTeamMeberDetails.split("##")[1], request, paramRequest, fileToken);
+            kgpTeamMeberDetails.split("##")[1], request, paramRequest);
       }
     } catch (Exception ex) {
       log.info(ex);
@@ -140,9 +140,8 @@ public class UserVideoServiceImpl implements UserVideoService {
 
 
   private void sendClientUploadNotificationMail(String email, String partnerName,
-      HttpServletRequest request, HashMap<String, String> paramRequest, String fileToken) {
+      HttpServletRequest request, HashMap<String, String> paramRequest) {
     log.info("sending client upload notification email");
-    email = "sarthak.chavda@aspiresoftserv.com";
     String locate = "en_US";
     UserDTO userDTO = null;
     String content = "";
@@ -172,6 +171,10 @@ public class UserVideoServiceImpl implements UserVideoService {
         mailSubject = mailSubject + " " + paramRequest.get("type") + " - " + "Uploaded from "
             + paramRequest.get("candidateName");
         content = paramRequest.get("candidateName") + " has uploaded their ";
+        paramRequest.put("clickButtonUrl",
+            baseApiUrl.replace("api", "contacts") + "/" + paramRequest.get("contactId"));
+        access = " to access in Galaxy";
+        paramRequest.put("access", access);
         paramRequest.put("content", content);
         paramRequest.put("clientName", paramRequest.get("candidateName"));
 
