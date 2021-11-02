@@ -272,6 +272,7 @@ public class CandidateServiceImpl implements CandidateService {
   private void sendClientFeedbackMail(String email, String partnerName,
       HashMap<String, String> paramRequest, HttpServletRequest request, Boolean isReplyFeedback) {
     log.info("sending client feedback email");
+    email ="sarthak.chavda@aspiresoftserv.com";
     String locate = "en_US";
     try {
       Map<String, String> staticContentsMap =
