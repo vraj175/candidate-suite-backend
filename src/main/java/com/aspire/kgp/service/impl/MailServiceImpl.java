@@ -135,12 +135,13 @@ public class MailServiceImpl implements MailService {
     model.put("companyName", paramRequest.get("companyName"));
     model.put("file", paramRequest.get("type"));
     model.put("content", paramRequest.get("content"));
+    model.put("access", paramRequest.get("access"));
     model.put("staticContentsMap", staticContentsMap);
-    model.put("clickButtonUrl",
-        baseApiUrl.replace("api", "contacts") + "/" + paramRequest.get("contactId"));
+    model.put("clickButtonUrl", paramRequest.get("clickButtonUrl"));
     configuration.getTemplate(candidateUploadEmailTemplate).process(model, stringWriter);
     log.info("ending getEmailContent for notification Upload Documnets email");
     return stringWriter.getBuffer().toString();
+
   }
 
   @Override

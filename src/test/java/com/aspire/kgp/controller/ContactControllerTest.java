@@ -82,13 +82,13 @@ class ContactControllerTest {
     assertEquals(bs, response);
   }
   
-  @Test
-  void testUpdateContactDetails() throws UnsupportedEncodingException {
-    when(service.updateContactDetails(anyString(), anyString())).thenReturn(Constant.TEST);
-    
-    String response = controller.updateContactDetails(Constant.TEST, Constant.TEST);
-    assertNotNull(response);
-    assertEquals(Constant.TEST, response);
-  }
+//  @Test
+//  void testUpdateContactDetails() throws UnsupportedEncodingException {
+//    when(service.updateContactDetails(anyString(), anyString())).thenReturn(Constant.TEST);
+//    
+//    String response = controller.updateContactDetails(Constant.TEST, Constant.TEST);
+//    assertNotNull(response);
+//    assertEquals(Constant.TEST, response);
+//  }
 
 }

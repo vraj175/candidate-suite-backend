@@ -60,6 +60,9 @@ public class UserVideoServiceImpl implements UserVideoService {
   @Autowired
   UserService userService;
 
+  @Value("${galaxy.base.api.url}")
+  private String baseApiUrl;
+
   @Override
   public UserVideo saveorUpdate(UserVideo userVideo) {
     return repository.save(userVideo);
@@ -104,8 +107,8 @@ public class UserVideoServiceImpl implements UserVideoService {
     HashMap<String, String> paramRequest = new HashMap<>();
     CandidateDTO apiResponse = candidateService.getCandidateDetails(candidateId);
     try {
-      kgpPartnerEmailList =
-          CommonUtil.teamPartnerMemberList(apiResponse.getSearch().getPartners(), kgpPartnerEmailList);
+      kgpPartnerEmailList = CommonUtil.teamPartnerMemberList(apiResponse.getSearch().getPartners(),
+          kgpPartnerEmailList);
       kgpPartnerEmailList =
           CommonUtil.teamMemberList(apiResponse.getSearch().getRecruiters(), kgpPartnerEmailList);
       paramRequest.put("candidateName",
@@ -142,6 +145,7 @@ public class UserVideoServiceImpl implements UserVideoService {
     String locate = "en_US";
     UserDTO userDTO = null;
     String content = "";
+    String access = "";
     User user = (User) request.getAttribute("user");
     String role = user.getRole().getName();
     paramRequest.put("role", role);
@@ -151,18 +155,26 @@ public class UserVideoServiceImpl implements UserVideoService {
       String mailSubject = staticContentsMap.get("candidate.suite.upload.email.subject");
       if (Constant.PARTNER.equalsIgnoreCase(role)) {
         userDTO = userService.getGalaxyUserDetails(user.getGalaxyId());
-        mailSubject = mailSubject + " " + paramRequest.get("type") + " - " + "Uploaded from "
+        mailSubject = mailSubject + " - " + paramRequest.get("type") + " " + "Uploaded from "
             + userDTO.getFirstName() + " " + userDTO.getLastName();
         content = userDTO.getFirstName() + " " + userDTO.getLastName() + " has uploaded "
             + paramRequest.get("candidateName") + "'s";
         paramRequest.put("content", content);
         paramRequest.put("clientName", userDTO.getFirstName() + " " + userDTO.getLastName());
+        paramRequest.put("clickButtonUrl",
+            baseApiUrl.replace("api", "contacts") + "/" + paramRequest.get("contactId"));
+        access = " to access in Galaxy";
+        paramRequest.put("access", access);
 
       } else {
         userDTO = userService.getContactDetails(user.getGalaxyId());
-        mailSubject = mailSubject + " " + paramRequest.get("type") + " - " + "Uploaded from "
+        mailSubject = mailSubject + " - " + paramRequest.get("type") + " " + "Uploaded from "
             + paramRequest.get("candidateName");
         content = paramRequest.get("candidateName") + " has uploaded their ";
+        paramRequest.put("clickButtonUrl",
+            baseApiUrl.replace("api", "contacts") + "/" + paramRequest.get("contactId"));
+        access = " to access in Galaxy";
+        paramRequest.put("access", access);
         paramRequest.put("content", content);
         paramRequest.put("clientName", paramRequest.get("candidateName"));
 

@@ -24,7 +24,7 @@
 			          <p style="margin:0; padding:0; height:15px;">&nbsp;</p>
 			        </div>
 			        
-			       		<p><a href="${clickButtonUrl}">Click here</a> to access in Galaxy </p>
+			       		<p><a href="${clickButtonUrl}">Click here</a> ${access} </p>
 			       		
 			        <p style="letter-spacing:0.3px; font-size:12px; font-weight:400; text-align:left; color:#231f20; line-height:19px;margin: 0px ;">
 			        	<span style="font-size:13;">${staticContentsMap['candidate.suite.feedback.email.regards']}</span><br>

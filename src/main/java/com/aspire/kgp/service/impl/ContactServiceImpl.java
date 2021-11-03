@@ -25,6 +25,7 @@ import javax.transaction.Transactional.TxType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -93,6 +94,9 @@ public class ContactServiceImpl implements ContactService {
   @Autowired
   JobHistoryRepository jobHistoryRepository;
 
+  @Value("${galaxy.base.api.url}")
+  private String baseApiUrl;
+
   @Override
   public ContactDTO getContactDetails(String contactId) {
     String apiResponse =
@@ -118,8 +122,8 @@ public class ContactServiceImpl implements ContactService {
   }
 
   @Override
-  public String updateContactDetails(String contactId, String contactData)
-      throws UnsupportedEncodingException {
+  public String updateContactDetails(String contactId, String contactData,
+      HttpServletRequest request, String candidateId) throws UnsupportedEncodingException {
     JsonObject json = (JsonObject) JsonParser.parseString(contactData);
     try {
       Contact contact = new Gson().fromJson(json, new TypeToken<Contact>() {
@@ -130,6 +134,7 @@ public class ContactServiceImpl implements ContactService {
         private static final long serialVersionUID = 1L;
       }.getType());
       repository.save(contact);
+      sentUploadNotification(contactId, request, candidateId, "Contact Details");
     } catch (Exception e) {
       throw new APIException("Error While converting data from request json " + e.getMessage());
     }
@@ -191,7 +196,8 @@ public class ContactServiceImpl implements ContactService {
 
   @Override
   public Reference saveAndUpdateContactReference(String referenceId, String referenceData,
-      String contactId) throws UnsupportedEncodingException {
+      String contactId, HttpServletRequest request, String candidateId)
+      throws UnsupportedEncodingException {
     Reference reference = new Reference();
     try {
       reference = new Gson().fromJson(referenceData, new TypeToken<Reference>() {
@@ -222,15 +228,19 @@ public class ContactServiceImpl implements ContactService {
         referenceDatas.setWorkEmail(reference.getWorkEmail());
         referenceDatas.setModifyDate(new Timestamp(System.currentTimeMillis()));
         referenceRepository.save(referenceDatas);
+        sentUploadNotification(reference.getContactId(), request, candidateId, "Reference Details");
       } else {
         throw new APIException(
             "Reference Details not found for this reference Id: - " + referenceId);
       }
     } else {
       referenceRepository.save(reference);
+      sentUploadNotification(reference.getContactId(), request, candidateId, "Reference Details");
     }
     return reference;
   }
+
+
 
   @Override
   public final String addContactReference(String contactId, String referenceData)
@@ -269,7 +279,8 @@ public class ContactServiceImpl implements ContactService {
       }
       String extension = fileName.substring(fileName.lastIndexOf("."));
       log.info(extension);
-      file = File.createTempFile(fileName.substring(0, fileName.lastIndexOf(".") - 1), extension);
+      File parent = new File(System.getProperty("java.io.tmpdir"));
+      file = new File(parent, fileName);
       FileOutputStream fos = new FileOutputStream(file);
       fos.write(multipartFile.getBytes());
       fos.close();
@@ -389,6 +400,7 @@ public class ContactServiceImpl implements ContactService {
   public List<Reference> getListOfReferences(String contactId) {
     List<ContactReferencesDTO> contactReferencesDTOList = new ArrayList<>();
     List<Reference> referenceList = new ArrayList<>();
+    List<Reference> referenceLists = new ArrayList<>();
     referenceList = referenceRepository.findByContactId(contactId);
     if (!referenceList.isEmpty()) {
       return referenceList;
@@ -415,7 +427,8 @@ public class ContactServiceImpl implements ContactService {
       if (!referenceList.isEmpty()) {
         return referenceList;
       } else {
-        throw new APIException("No Data found for this contact Id:- " + contactId);
+
+        return referenceLists;
       }
 
     }
@@ -582,21 +595,79 @@ public class ContactServiceImpl implements ContactService {
       String mailSubject = staticContentsMap.get("candidate.suite.upload.email.subject");
       UserDTO userDTO = null;
       String content = "";
+      String access = "";
       if (Constant.PARTNER.equalsIgnoreCase(role)) {
         userDTO = userService.getGalaxyUserDetails(user.getGalaxyId());
-        mailSubject = mailSubject + " " + paramRequest.get("type") + " - " + "Uploaded from "
-            + userDTO.getFirstName() + " " + userDTO.getLastName();
-        content = userDTO.getFirstName() + " " + userDTO.getLastName() + " has uploaded "
-            + paramRequest.get("candidateName") + "'s";
+        if (paramRequest.get("type").equalsIgnoreCase("Reference Details")) {
+          mailSubject = mailSubject + " - " + paramRequest.get("type") + " " + "Added/Updated from "
+              + userDTO.getFirstName() + " " + userDTO.getLastName();
+          content = userDTO.getFirstName() + " " + userDTO.getLastName() + " has added or updated "
+              + paramRequest.get("candidateName") + "'s";
+          paramRequest.put("clickButtonUrl",
+              CommonUtil.getServerUrl(request) + request.getContextPath() + "/my-info/"
+                  + paramRequest.get("candidateId") + "/" + paramRequest.get("searchId") + "/"
+                  + paramRequest.get("searchName") + "/" + paramRequest.get("contactId")
+                  + "?activeTab=references-tab");
+          access = " to access in Candidate Suite";
+        }
+
+        else if (paramRequest.get("type").equalsIgnoreCase("Contact Details")) {
+          mailSubject = mailSubject + " - " + paramRequest.get("type") + " " + "Added/Updated from "
+              + userDTO.getFirstName() + " " + userDTO.getLastName();
+          content = userDTO.getFirstName() + " " + userDTO.getLastName() + " has added or updated "
+              + paramRequest.get("candidateName") + "'s";
+          paramRequest.put("clickButtonUrl",
+              CommonUtil.getServerUrl(request) + request.getContextPath() + "/my-info/"
+                  + paramRequest.get("candidateId") + "/" + paramRequest.get("searchId") + "/"
+                  + paramRequest.get("searchName") + "/" + paramRequest.get("contactId"));
+          access = " to access in Candidate Suite";
+        }
+
+        else {
+          mailSubject = mailSubject + " - " + paramRequest.get("type") + " " + "Uploaded from "
+              + userDTO.getFirstName() + " " + userDTO.getLastName();
+          content = userDTO.getFirstName() + " " + userDTO.getLastName() + " has uploaded "
+              + paramRequest.get("candidateName") + "'s";
+
+          paramRequest.put("clickButtonUrl",
+              baseApiUrl.replace("api", "contacts") + "/" + paramRequest.get("contactId"));
+          access = " to access in Galaxy";
+        }
         paramRequest.put("content", content);
+        paramRequest.put("access", access);
         paramRequest.put("clientName", userDTO.getFirstName() + " " + userDTO.getLastName());
 
       } else {
         userDTO = userService.getContactDetails(user.getGalaxyId());
-        mailSubject = mailSubject + " " + paramRequest.get("type") + " - " + "Uploaded from "
-            + paramRequest.get("candidateName");
-        content = paramRequest.get("candidateName") + " has uploaded their ";
+        if (paramRequest.get("type").equalsIgnoreCase("Reference Details")) {
+          mailSubject = mailSubject + " - " + paramRequest.get("type") + " " + "Added/Updated from "
+              + paramRequest.get("candidateName");
+          content = paramRequest.get("candidateName") + " has added or updated their ";
+          paramRequest.put("clickButtonUrl",
+              CommonUtil.getServerUrl(request) + request.getContextPath() + "/my-info/"
+                  + paramRequest.get("candidateId") + "/" + paramRequest.get("searchId") + "/"
+                  + paramRequest.get("searchName") + "/" + paramRequest.get("contactId")
+                  + "?activeTab=references-tab");
+          access = " to access in Candidate Suite";
+        } else if (paramRequest.get("type").equalsIgnoreCase("Contact Details")) {
+          mailSubject = mailSubject + " - " + paramRequest.get("type") + " " + "Added/Updated from "
+              + paramRequest.get("candidateName");
+          content = paramRequest.get("candidateName") + " has added or updated their ";
+          paramRequest.put("clickButtonUrl",
+              CommonUtil.getServerUrl(request) + request.getContextPath() + "/my-info/"
+                  + paramRequest.get("candidateId") + "/" + paramRequest.get("searchId") + "/"
+                  + paramRequest.get("searchName") + "/" + paramRequest.get("contactId"));
+          access = " to access in Candidate Suite";
+        } else {
+          mailSubject = mailSubject + " - " + paramRequest.get("type") + " " + "Uploaded from "
+              + paramRequest.get("candidateName");
+          content = paramRequest.get("candidateName") + " has uploaded their ";
+          paramRequest.put("clickButtonUrl",
+              baseApiUrl.replace("api", "contacts") + "/" + paramRequest.get("contactId"));
+          access = " to access in Galaxy";
+        }
         paramRequest.put("content", content);
+        paramRequest.put("access", access);
         paramRequest.put("clientName", paramRequest.get("candidateName"));
       }
       mailService.sendEmail(email, null, mailSubject, mailService.getUploadEmailContent(request,
