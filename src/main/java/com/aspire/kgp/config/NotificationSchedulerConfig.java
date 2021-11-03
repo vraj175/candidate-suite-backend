@@ -1,9 +1,6 @@
 package com.aspire.kgp.config;
 
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +10,6 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 
 import com.aspire.kgp.constant.Constant;
-import com.aspire.kgp.dto.CandidateDTO;
 import com.aspire.kgp.service.InterviewNotificationService;
 
 
@@ -32,29 +28,18 @@ public class NotificationSchedulerConfig {
   @Scheduled(cron = "${notification.reminder.beforeDay}")
   void excuteReminderJobBeforeOneDay() {
     log.info("Scheduler call for sending reminder mail before Day");
-    List<CandidateDTO> list = new ArrayList<>();
-    if (!list.isEmpty()) {
-      service.sendNotification(Constant.BEFORE_ONE_DAY);
-    }
+    service.sendNotification(Constant.BEFORE_ONE_DAY);
   }
 
   @Scheduled(cron = "${notification.reminder.beforeHour}")
   void excuteReminderJobBeforeOneHour() {
     log.info("Scheduler call for sending reminder mail before Hour");
-    List<CandidateDTO> list = new ArrayList<>();
-    if (!list.isEmpty()) {
-      service.sendNotification(Constant.BEFORE_ONE_HOUR);
-    }
+    service.sendNotification(Constant.BEFORE_ONE_HOUR);
   }
 
   @Scheduled(cron = "${notification.feedback.afterInterview}")
   void excuteFeedbackJobAfterInterview() {
     log.info("Scheduler call for sending feedback mail after interview");
-    List<CandidateDTO> list = new ArrayList<>();
-    if (!list.isEmpty()) {
-      service.sendNotification(Constant.AFTER_INTERVIEW);
-    }
+    service.sendNotification(Constant.AFTER_INTERVIEW);
   }
-
-
 }

@@ -40,7 +40,6 @@ public class InterviewNotificationServiceImpl implements InterviewNotificationSe
   @Autowired
   RestUtil restUtil;
 
-
   @Override
   public void sendNotification(String schedulerType) {
     log.info("staring email sending...");
@@ -164,8 +163,8 @@ public class InterviewNotificationServiceImpl implements InterviewNotificationSe
     });
   }
 
-
-  private void sendCandidateNotification(String mailSubject, String schedulerType,
+  @Override
+  public void sendCandidateNotification(String mailSubject, String schedulerType,
       CandidateDTO candidateDTO, UserDTO userDTO, ClientTeamDTO clientTeamDTO, String stage,
       String templateName) {
     log.info("candidate notification send... candidate details " + candidateDTO);
@@ -181,7 +180,8 @@ public class InterviewNotificationServiceImpl implements InterviewNotificationSe
 
   }
 
-  private void sendKgpPartnerNotification(String mailSubject, String schedulerType,
+  @Override
+  public void sendKgpPartnerNotification(String mailSubject, String schedulerType,
       CandidateDTO candidateDTO, UserDTO userDTO, String templateName) {
     log.info("KGP Partner notification send... candidate details " + candidateDTO);
     log.debug(
@@ -192,9 +192,8 @@ public class InterviewNotificationServiceImpl implements InterviewNotificationSe
         mailSubject, contain);
   }
 
-
-
-  private void sendClientNotification(String mailSubject, String time, CandidateDTO candidateDTO,
+  @Override
+  public void sendClientNotification(String mailSubject, String time, CandidateDTO candidateDTO,
       ClientTeamDTO clientTeamDTO, String templateName) {
     log.info("Client Team notification send... candidate details " + candidateDTO);
     log.debug(
@@ -207,14 +206,14 @@ public class InterviewNotificationServiceImpl implements InterviewNotificationSe
         mailSubject, contain);
   }
 
-  private void sendMail(String email, String mailSubject, String contain) {
+  @Override
+  public void sendMail(String email, String mailSubject, String contain) {
     try {
       mailService.sendEmail(email, null, mailSubject, contain, null);
     } catch (Exception e) {
       throw new APIException("Error in send Email");
     }
   }
-
 
   @Override
   public String getInterViewDetails(String schedulerType) {
@@ -227,9 +226,8 @@ public class InterviewNotificationServiceImpl implements InterviewNotificationSe
     return apiResponse;
   }
 
-
-
-  private List<CandidateDTO> getCandidateListFromJsonResponse(JsonArray jsonArray, String team) {
+  @Override
+  public List<CandidateDTO> getCandidateListFromJsonResponse(JsonArray jsonArray, String team) {
     List<CandidateDTO> lisCandidateDTO = new ArrayList<>();
     for (JsonElement jsonElement : jsonArray) {
       JsonObject json = jsonElement.getAsJsonObject();
@@ -254,7 +252,8 @@ public class InterviewNotificationServiceImpl implements InterviewNotificationSe
     return lisCandidateDTO;
   }
 
-  private List<UserDTO> addKgpTeamJsonArraytoList(JsonObject json, String listfor) {
+  @Override
+  public List<UserDTO> addKgpTeamJsonArraytoList(JsonObject json, String listfor) {
     JsonArray partnerArray = json.getAsJsonObject("search").getAsJsonArray(listfor);
     List<UserDTO> partnerList = new ArrayList<>();
     partnerArray.forEach(e -> partnerList
@@ -268,7 +267,8 @@ public class InterviewNotificationServiceImpl implements InterviewNotificationSe
     return partnerList;
   }
 
-  private List<ClientTeamDTO> addClientTeamJsonArraytoList(JsonObject json, String listfor) {
+  @Override
+  public List<ClientTeamDTO> addClientTeamJsonArraytoList(JsonObject json, String listfor) {
     JsonArray partnerArray = json.getAsJsonObject("search").getAsJsonArray(listfor);
     List<ClientTeamDTO> clientList = new ArrayList<>();
 
@@ -287,7 +287,8 @@ public class InterviewNotificationServiceImpl implements InterviewNotificationSe
     return clientList;
   }
 
-  private InterviewNotificationRequestDTO getScheduleDate(Date currentDateAndTime, String type) {
+  @Override
+  public InterviewNotificationRequestDTO getScheduleDate(Date currentDateAndTime, String type) {
     InterviewNotificationRequestDTO interviewNotificationRequestDTO =
         new InterviewNotificationRequestDTO();
     SimpleDateFormat formatter = new SimpleDateFormat(Constant.GALAXY_DATE_AND_TIME_FORMATTER);
