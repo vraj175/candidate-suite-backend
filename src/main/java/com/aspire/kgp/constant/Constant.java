@@ -249,6 +249,7 @@ public class Constant {
   public static final String FEEDBACK_NOTIFICATION_CLICK_MSG = "feedbackClickMsg";
   public static final String FEEDBACK_NOTIFICATION_COMPANY_NAME = "feedbackCompanyName";
   public static final String FEEDBACK_NOTIFICATION_CANDIDATE_NAME = "feedbackCandidateName";
+  public static final String FEEDBACK_NOTIFICATION_URL = "feedbackUrl";
   public static final String KGP_TEAM = "kgpTeam";
 
   // messages

@@ -174,6 +174,8 @@ public class MailServiceImpl implements MailService {
       model.put(Constant.POSITION_TITLE_TYPE, "role");
       model.put(Constant.FEEDBACK_NOTIFICATION_CLICK_MSG, "Candidate Suite ");
       model.put(Constant.FEEDBACK_NOTIFICATION_CANDIDATE_NAME, "");
+      model.put(Constant.FEEDBACK_NOTIFICATION_URL, Constant.CANDIDATE_FEEDBACK_URL
+          .replace(Constant.CANDIDATE_ID_BRACES, candidateDTO.getId()));
       if (stage.equals(Constant.KGP_TEAM))
         model.put(Constant.CANDIDATE_NAME, userDTO.getName());
       else
@@ -190,6 +192,7 @@ public class MailServiceImpl implements MailService {
       model.put(Constant.COMPANY_NAME, "");
       model.put(Constant.POSITION_TITLE_TYPE, "role");
       model.put(Constant.FEEDBACK_NOTIFICATION_CLICK_MSG, "ClientSuite ");
+      model.put(Constant.FEEDBACK_NOTIFICATION_URL, "");
       model.put(Constant.FEEDBACK_NOTIFICATION_CANDIDATE_NAME,
           " with <b>" + candidateDTO.getContact().getFirstName() + " "
               + candidateDTO.getContact().getLastName() + "</b>");
@@ -203,6 +206,7 @@ public class MailServiceImpl implements MailService {
       model.put(Constant.COMPANY_NAME, candidateDTO.getSearch().getCompany().getName() + ",");
       model.put(Constant.POSITION_TITLE_TYPE, "search");
       model.put(Constant.FEEDBACK_NOTIFICATION_CLICK_MSG, "ClientSuite ");
+      model.put(Constant.FEEDBACK_NOTIFICATION_URL, "");
       model.put(Constant.FEEDBACK_NOTIFICATION_CANDIDATE_NAME,
           " with <b>" + candidateDTO.getContact().getFirstName() + " "
               + candidateDTO.getContact().getLastName() + "</b>");
