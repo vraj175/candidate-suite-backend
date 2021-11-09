@@ -1,0 +1,59 @@
+package com.aspire.kgp.model;
+
+import java.sql.Timestamp;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+
+@Entity
+@Table(name = "")
+public class WebSocketNotification extends SuperBase {
+
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "user", referencedColumnName = "id", insertable = true, nullable = false,
+      updatable = true)
+  private User user;
+
+  @Column(name = "date", nullable = false)
+  private Timestamp date;
+
+  private String notificationType;
+
+  private boolean isReadable;
+
+  public String getNotificationType() {
+    return notificationType;
+  }
+
+  public void setNotificationType(String notificationType) {
+    this.notificationType = notificationType;
+  }
+
+  public User getUser() {
+    return user;
+  }
+
+  public void setUser(User user) {
+    this.user = user;
+  }
+
+  public Timestamp getDate() {
+    return date;
+  }
+
+  public void setDate(Timestamp date) {
+    this.date = date;
+  }
+
+  public boolean isReadable() {
+    return isReadable;
+  }
+
+  public void setReadable(boolean isReadable) {
+    this.isReadable = isReadable;
+  }
+}
