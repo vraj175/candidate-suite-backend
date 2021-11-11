@@ -9,7 +9,11 @@ public interface WebSocketNotificationService {
 
   List<WebSocketNotification> findByUser(User user);
 
+  List<WebSocketNotification> findByUserAndIsReadableFalse(User user);
+
   void loginUser(User user);
 
   void logOutUser(User user);
+
+  void addWebSocketNotification(String galaxyId, String candidateId, String notificationType);
 }

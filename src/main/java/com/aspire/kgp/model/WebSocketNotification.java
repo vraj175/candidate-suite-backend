@@ -10,7 +10,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "")
+@Table(name = "socket_notification")
 public class WebSocketNotification extends SuperBase {
 
   @ManyToOne(fetch = FetchType.LAZY)
@@ -21,7 +21,11 @@ public class WebSocketNotification extends SuperBase {
   @Column(name = "date", nullable = false)
   private Timestamp date;
 
+  @Column(name = "notificationType", nullable = false)
   private String notificationType;
+
+  @Column(name = "candidateId", nullable = false)
+  private String candidateId;
 
   private boolean isReadable;
 
@@ -55,5 +59,13 @@ public class WebSocketNotification extends SuperBase {
 
   public void setReadable(boolean isReadable) {
     this.isReadable = isReadable;
+  }
+
+  public String getCandidateId() {
+    return candidateId;
+  }
+
+  public void setCandidateId(String candidateId) {
+    this.candidateId = candidateId;
   }
 }

@@ -14,4 +14,5 @@ public interface WebSocketNotificationRepository
 
   List<WebSocketNotification> findByUser(User user);
 
+  List<WebSocketNotification> findByUserAndIsReadableFalse(User user);
 }
