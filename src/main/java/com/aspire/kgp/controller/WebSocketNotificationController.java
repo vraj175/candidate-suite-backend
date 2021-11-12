@@ -56,24 +56,6 @@ public class WebSocketNotificationController {
   }
 
 
-  @MessageMapping("user-login")
-  public void loginUser(User loginUser) {
-    if (Constant.PARTNER.equalsIgnoreCase(loginUser.getRole().getName())) {
-      service.loginUser(loginUser);
-    } else {
-      throw new NotFoundException("Partner Not Found");
-    }
-  }
-
-  @MessageMapping("user-logout")
-  public void logOutUser(User loginUser) {
-    if (Constant.PARTNER.equalsIgnoreCase(loginUser.getRole().getName())) {
-      service.logOutUser(loginUser);
-    } else {
-      throw new NotFoundException("Partner Not Found");
-    }
-  }
-
   @MessageMapping("/webSocket-notification")
   @SendTo("/response/messages")
   public String send() throws Exception {

@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
@@ -17,11 +16,10 @@ import com.aspire.kgp.repository.WebSocketNotificationRepository;
 import com.aspire.kgp.service.UserService;
 import com.aspire.kgp.service.WebSocketNotificationService;
 
-import springfox.documentation.service.ResponseMessage;
-
 @Service
 public class WebSocketNotificationServiceImpl implements WebSocketNotificationService {
-  private Set<String> loggedInUserSet = new HashSet<>();
+  public static Set<String> socketIdSet = new HashSet<>();
+
   private SimpMessagingTemplate messagingTemplate;
 
   @Autowired
@@ -46,16 +44,6 @@ public class WebSocketNotificationServiceImpl implements WebSocketNotificationSe
   }
 
   @Override
-  public void loginUser(User user) {
-    loggedInUserSet.add(user.getGalaxyId());
-  }
-
-  @Override
-  public void logOutUser(User user) {
-    loggedInUserSet.remove(user.getGalaxyId());
-  }
-
-  @Override
   public void addWebSocketNotification(String galaxyId, String candidateId,
       String notificationType) {
     User user = userService.findByGalaxyId(galaxyId);
@@ -66,9 +54,12 @@ public class WebSocketNotificationServiceImpl implements WebSocketNotificationSe
       webSocketNotification.setCandidateId(candidateId);
       webSocketNotification.setDate(new Timestamp(System.currentTimeMillis()));
       repository.save(webSocketNotification);
-      if (loggedInUserSet.contains(user.getGalaxyId())) {
-        messagingTemplate.convertAndSendToUser(galaxyId, notificationType, user);
-      }
+      // messagingTemplate.convertAndSend("/response/webSocketNotification", webSocketNotification);
+
+      socketIdSet.stream().forEach(e -> messagingTemplate.convertAndSendToUser(e,
+          "/response/webSocketNotification", webSocketNotification));
+
+
     } else {
       throw new NotFoundException("Partner Not Found");
     }
