@@ -1,5 +1,6 @@
 package com.aspire.kgp.config;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
@@ -10,6 +11,9 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 @EnableWebSocketMessageBroker
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
+  @Autowired
+  WebSocketUserHandshakeHandler handler;
+
   @Override
   public void configureMessageBroker(MessageBrokerRegistry config) {
     config.enableSimpleBroker("/response");
@@ -18,8 +22,8 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
   @Override
   public void registerStompEndpoints(StompEndpointRegistry registry) {
-    registry.addEndpoint("/webSocket-notification").setAllowedOrigins("http://localhost:4200")
-        .setHandshakeHandler(new WebSocketUserHandshakeHandler()).withSockJS();
+    registry.addEndpoint("/webSocket-notification").setAllowedOrigins("/api/**")
+        .setHandshakeHandler(handler).withSockJS();
   }
 
 }

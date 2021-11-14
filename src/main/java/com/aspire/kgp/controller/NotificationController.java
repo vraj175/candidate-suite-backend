@@ -13,7 +13,10 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,7 +28,10 @@ import com.aspire.kgp.dto.NotificationsDTO;
 import com.aspire.kgp.exception.APIException;
 import com.aspire.kgp.model.Notification;
 import com.aspire.kgp.model.User;
+import com.aspire.kgp.model.WebSocketNotification;
 import com.aspire.kgp.service.NotificationService;
+import com.aspire.kgp.service.UserService;
+import com.aspire.kgp.service.WebSocketNotificationService;
 import com.aspire.kgp.service.impl.NotificationSchedulerServiceImpl;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -41,6 +47,12 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 public class NotificationController {
 
   static Log log = LogFactory.getLog(NotificationController.class.getName());
+
+  @Autowired
+  WebSocketNotificationService webSocketNotificationService;
+
+  @Autowired
+  UserService userService;
 
   @Autowired
   NotificationService service;
@@ -101,6 +113,53 @@ public class NotificationController {
       return new ResponseEntity<>(body, HttpStatus.OK);
     }
     throw new APIException("Error in add new Notification");
+  }
+
+
+  @GetMapping(value = {"/notification/socket/team-unread"})
+  public List<WebSocketNotification> getUnreadTeamNotification(HttpServletRequest request) {
+    User loginUser = (User) request.getAttribute("user");
+    User user = userService.findByGalaxyId(loginUser.getGalaxyId());
+    return webSocketNotificationService.getKgpTeamUnreadNotification(user, Constant.PARTNER);
+
+  }
+
+  @GetMapping(value = {"/notification/socket/team-all"})
+  public List<WebSocketNotification> getAllTeamNotification(HttpServletRequest request) {
+    User loginUser = (User) request.getAttribute("user");
+    User user = userService.findByGalaxyId(loginUser.getGalaxyId());
+    return webSocketNotificationService.getKgpTeamAllNotification(user, Constant.PARTNER);
+
+  }
+
+  @GetMapping(value = {"/notification/socket/candidate-unread/{candidateId}"})
+  public List<WebSocketNotification> getUnreadCandidateNotification(HttpServletRequest request,
+      @PathVariable("candidateId") String candidateId) {
+    return webSocketNotificationService.getcandidateUnreadNotification(candidateId,
+        Constant.CANDIDATE);
+  }
+
+  @GetMapping(value = {"/notification/socket/candidate-all/{candidateId}"})
+  public List<WebSocketNotification> getAllCandidateNotification(HttpServletRequest request,
+      @PathVariable("candidateId") String candidateId) {
+    return webSocketNotificationService.getcandidateAllNotification(candidateId,
+        Constant.CANDIDATE);
+  }
+
+  @MessageMapping("/notification/socket/team-read")
+  @SendTo("/response/readTeamNotification")
+  public ResponseEntity<Object> readTeamNotification(HttpServletRequest request) {
+    User loginUser = (User) request.getAttribute("user");
+    User user = userService.findByGalaxyId(loginUser.getGalaxyId());
+    return webSocketNotificationService.updateKgpTeamReadNotification(user);
+
+  }
+
+  @MessageMapping("/notification/socket/candidate-read/{candidateId}")
+  @SendTo("/response/readCandidateNotification")
+  public ResponseEntity<Object> readCandidateNotification(HttpServletRequest request,
+      @PathVariable("candidateId") String candidateId) {
+    return webSocketNotificationService.updatecandidateReadNotification(candidateId);
   }
 }
 

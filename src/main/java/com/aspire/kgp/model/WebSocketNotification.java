@@ -14,7 +14,7 @@ import javax.persistence.Table;
 public class WebSocketNotification extends SuperBase {
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "user", referencedColumnName = "id", insertable = true, nullable = false,
+  @JoinColumn(name = "user", referencedColumnName = "id", insertable = true, nullable = true,
       updatable = true)
   private User user;
 
@@ -26,6 +26,9 @@ public class WebSocketNotification extends SuperBase {
 
   @Column(name = "candidateId", nullable = false)
   private String candidateId;
+
+  @Column(name = "notificationDest", nullable = false)
+  private String notificationDest;
 
   private boolean isReadable;
 
@@ -67,5 +70,13 @@ public class WebSocketNotification extends SuperBase {
 
   public void setCandidateId(String candidateId) {
     this.candidateId = candidateId;
+  }
+
+  public String getNotificationDest() {
+    return notificationDest;
+  }
+
+  public void setNotificationDest(String notificationDest) {
+    this.notificationDest = notificationDest;
   }
 }
