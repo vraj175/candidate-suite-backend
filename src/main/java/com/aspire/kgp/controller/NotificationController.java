@@ -14,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -96,10 +95,10 @@ public class NotificationController {
 
   @PostMapping(value = "/notification/add")
   @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK",
-  content = @Content(mediaType = "application/json", schema = @Schema(type = "Json",
-      example = "{  \"timestamp\": \"2021-09-06T08:53:39.690+00:00\", \"status\": \"OK\", \"message\": \"Notification Added Successfully\" }")))})
-  public ResponseEntity<Object> addNotification(
-      @Valid @RequestBody NotificationsDTO notifications, HttpServletRequest request) {
+      content = @Content(mediaType = "application/json", schema = @Schema(type = "Json",
+          example = "{  \"timestamp\": \"2021-09-06T08:53:39.690+00:00\", \"status\": \"OK\", \"message\": \"Notification Added Successfully\" }")))})
+  public ResponseEntity<Object> addNotification(@Valid @RequestBody NotificationsDTO notifications,
+      HttpServletRequest request) {
     User user = (User) request.getAttribute("user");
     if (user == null) {
       throw new APIException("Invalid User Id");
@@ -146,20 +145,18 @@ public class NotificationController {
         Constant.CANDIDATE);
   }
 
-  @MessageMapping("/notification/socket/team-read")
-  @SendTo("/response/readTeamNotification")
-  public ResponseEntity<Object> readTeamNotification(HttpServletRequest request) {
+  @MessageMapping("/notification/socket/team-read/{galaxyId}")
+  public void readTeamNotification(HttpServletRequest request,
+      @PathVariable("galaxyId") String galaxyId) {
     User loginUser = (User) request.getAttribute("user");
     User user = userService.findByGalaxyId(loginUser.getGalaxyId());
-    return webSocketNotificationService.updateKgpTeamReadNotification(user);
-
+    webSocketNotificationService.updateKgpTeamReadNotification(user);
   }
 
   @MessageMapping("/notification/socket/candidate-read/{candidateId}")
-  @SendTo("/response/readCandidateNotification")
-  public ResponseEntity<Object> readCandidateNotification(HttpServletRequest request,
+  public void readCandidateNotification(HttpServletRequest request,
       @PathVariable("candidateId") String candidateId) {
-    return webSocketNotificationService.updatecandidateReadNotification(candidateId);
+    webSocketNotificationService.updatecandidateReadNotification(candidateId);
   }
 }
 

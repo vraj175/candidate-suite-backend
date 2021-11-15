@@ -76,7 +76,7 @@ public class WebSocketNotificationServiceImpl implements WebSocketNotificationSe
   }
 
   @Override
-  public ResponseEntity<Object> updateKgpTeamReadNotification(User user) {
+  public void updateKgpTeamReadNotification(User user) {
     try {
       repository.updateKgpTeamReadNotification(user);
       Map<String, Object> body = new LinkedHashMap<>();
@@ -84,7 +84,11 @@ public class WebSocketNotificationServiceImpl implements WebSocketNotificationSe
       body.put(Constant.STATUS, "200");
       body.put(Constant.MESSAGE,
           "KGP Team notification successfully Read By " + user.getGalaxyId());
-      return new ResponseEntity<>(body, HttpStatus.OK);
+      getKgpTeamUserWiseSessionIdFromMap(user.getGalaxyId()).stream()
+          .forEach(e -> messagingTemplate.convertAndSendToUser(e,
+              "/response/readCandidateNotification", new ResponseEntity<>(body, HttpStatus.OK)));
+      log.info("KGP team read notification status successfully update for galaxyId: "
+          + user.getGalaxyId());
     } catch (Exception e) {
       throw new APIException(
           "Error in update read status for KGP Team notification by " + user.getGalaxyId());
@@ -92,14 +96,18 @@ public class WebSocketNotificationServiceImpl implements WebSocketNotificationSe
   }
 
   @Override
-  public ResponseEntity<Object> updatecandidateReadNotification(String candidateId) {
+  public void updatecandidateReadNotification(String candidateId) {
     try {
       repository.updatecandidateReadNotification(candidateId);
       Map<String, Object> body = new LinkedHashMap<>();
       body.put(Constant.TIMESTAMP, new Date());
       body.put(Constant.STATUS, "200");
       body.put(Constant.MESSAGE, "Candidate notification successfully Read By" + candidateId);
-      return new ResponseEntity<>(body, HttpStatus.OK);
+      getSessionIdFromMap(candidateId, Constant.CANDIDATE).stream()
+          .forEach(e -> messagingTemplate.convertAndSendToUser(e,
+              "/response/readCandidateNotification", new ResponseEntity<>(body, HttpStatus.OK)));
+      log.info(
+          "Candidate read notification status successfully update for candidateId: " + candidateId);
     } catch (Exception e) {
       throw new APIException(
           "Error in update read status for Candidate notification by " + candidateId);
@@ -153,6 +161,18 @@ public class WebSocketNotificationServiceImpl implements WebSocketNotificationSe
         }
       });
     }
+    return socketIdSet;
+  }
+
+  private Set<String> getKgpTeamUserWiseSessionIdFromMap(String galaxyId) {
+    log.info("Get KGP team userwise sessionId from Map...");
+    Set<String> socketIdSet = new HashSet<>();
+
+    socketMap.entrySet().forEach(entry -> {
+      if (entry.getValue().equals(galaxyId + "-" + Constant.PARTNER)) {
+        socketIdSet.add(entry.getKey());
+      }
+    });
     return socketIdSet;
   }
 }
