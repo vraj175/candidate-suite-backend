@@ -3,81 +3,53 @@ package com.aspire.kgp.model;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToMany;
-import javax.persistence.Transient;
-
 import com.aspire.kgp.dto.EducationDTO;
-import com.google.gson.annotations.SerializedName;
 
-@Entity
-public class Contact extends SuperBase {
+public class Contact {
 
-  @Column(name = "galaxyId", nullable = false)
   private String galaxyId;
 
-  @Column(name = "firstName", nullable = false)
   private String firstName;
 
-  @Column(name = "lastName", nullable = false)
   private String lastName;
 
-  @Column(name = "city")
   private String city;
 
-  @Column(name = "state")
   private String state;
 
-  @Column(name = "company", nullable = false)
   private String company;
 
-  @Column(name = "currentJobTitle", nullable = false)
   private String currentJobTitle;
 
-  @Column(name = "mobilePhone")
   private String mobilePhone;
 
-  @Column(name = "homePhone")
   private String homePhone;
 
-  @Column(name = "workEmail")
   private String workEmail;
 
-  @Column(name = "email")
   private String email;
 
-  @Column(name = "linkedInUrl")
   private String linkedInUrl;
 
-  @Column(name = "compensationNotes")
   private String compensationNotes;
 
-  @Column(name = "compensationExpectation")
   private String compensationExpectation;
 
-  @Column(name = "equity")
   private String equity;
 
-  @Column(name = "baseSalary")
   private String baseSalary;
 
-  @Column(name = "targetBonusValue")
   private String targetBonusValue;
 
-  @OneToMany(cascade = CascadeType.ALL)
-  @JoinColumn(name = "contact", referencedColumnName = "id")
   private List<BoardHistory> boardHistory = new ArrayList<>();
 
-  @OneToMany(cascade = CascadeType.ALL)
-  @JoinColumn(name = "contact", referencedColumnName = "id")
   private List<JobHistory> jobHistory = new ArrayList<>();
 
-  @Transient
-  @SerializedName("education_details")
   private List<EducationDTO> educationDetails;
+
+  private String currentJobStartYear;
+
+  private String currentJobEndtYear;
 
 
   public String getGalaxyId() {
@@ -238,6 +210,22 @@ public class Contact extends SuperBase {
 
   public void setEducationDetails(List<EducationDTO> educationDetails) {
     this.educationDetails = educationDetails;
+  }
+
+  public String getCurrentJobStartYear() {
+    return currentJobStartYear;
+  }
+
+  public void setCurrentJobStartYear(String currentJobStartYear) {
+    this.currentJobStartYear = currentJobStartYear;
+  }
+
+  public String getCurrentJobEndtYear() {
+    return currentJobEndtYear;
+  }
+
+  public void setCurrentJobEndtYear(String currentJobEndtYear) {
+    this.currentJobEndtYear = currentJobEndtYear;
   }
 
   @Override

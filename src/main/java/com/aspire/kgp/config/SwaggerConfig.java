@@ -291,7 +291,6 @@ public class SwaggerConfig {
     List<JobHistory> jobHistories = new ArrayList<>();
     List<BoardHistory> boardHistories = new ArrayList<>();
     List<EducationDTO> educationList = new ArrayList<>();
-    contact.setId(0);
     contact.setGalaxyId(Constant.STRING);
     contact.setCompany(Constant.STRING);
     contact.setFirstName(Constant.STRING);

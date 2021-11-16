@@ -17,8 +17,17 @@ public class JobHistory extends SuperBase {
 
   @Column(name = "title")
   private String title;
+  
+  @Column(name = "galaxyId")
+  private String galaxyId;
 
+  public String getGalaxyId() {
+    return galaxyId;
+  }
 
+  public void setGalaxyId(String galaxyId) {
+    this.galaxyId = galaxyId;
+  }
 
   public String getCompany() {
     return company;
