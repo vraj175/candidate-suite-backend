@@ -315,4 +315,5 @@ public class ContactController {
   public String addNewContact(@RequestBody String contactData) {
     return service.addNewContact(contactData);
   }
+  
 }

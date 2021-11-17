@@ -96,6 +96,12 @@ public class Contact extends SuperBase {
   @Transient
   @SerializedName("current_job_end_year")
   private String currentJobEndtYear;
+  
+  @Column(name = "gdprFirstQuestion")
+  private boolean gdprFirstQuestion;
+  
+  @Column(name = "gdprSecondQuestion")
+  private boolean gdprSecondQuestion;
 
 
   public String getGalaxyId() {
@@ -272,6 +278,22 @@ public class Contact extends SuperBase {
 
   public void setCurrentJobEndtYear(String currentJobEndtYear) {
     this.currentJobEndtYear = currentJobEndtYear;
+  }
+
+  public boolean isGdprFirstQuestion() {
+    return gdprFirstQuestion;
+  }
+
+  public void setGdprFirstQuestion(boolean gdprFirstQuestion) {
+    this.gdprFirstQuestion = gdprFirstQuestion;
+  }
+
+  public boolean isGdprSecondQuestion() {
+    return gdprSecondQuestion;
+  }
+
+  public void setGdprSecondQuestion(boolean gdprSecondQuestion) {
+    this.gdprSecondQuestion = gdprSecondQuestion;
   }
 
   @Override
