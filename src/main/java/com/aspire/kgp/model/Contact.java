@@ -3,52 +3,98 @@ package com.aspire.kgp.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
+import javax.persistence.Transient;
+
 import com.aspire.kgp.dto.EducationDTO;
+import com.google.gson.annotations.SerializedName;
 
-public class Contact {
+@Entity
+public class Contact extends SuperBase {
 
+  @Column(name = "galaxyId", nullable = false)
   private String galaxyId;
 
+  @Transient
+  @SerializedName("first_name")
   private String firstName;
 
+  @Transient
+  @SerializedName("last_name")
   private String lastName;
 
+  @Transient
+  @SerializedName("city")
   private String city;
 
+  @Transient
+  @SerializedName("state")
   private String state;
 
+  @Transient
   private String company;
 
+  @Transient
+  @SerializedName("current_job_title")
   private String currentJobTitle;
 
+  @Transient
+  @SerializedName("mobile_phone")
   private String mobilePhone;
 
+  @Transient
+  @SerializedName("home_phone")
   private String homePhone;
 
+  @Transient
+  @SerializedName("work_email")
   private String workEmail;
 
+  @Transient
+  @SerializedName("private_email")
   private String email;
 
+  @Transient
+  @SerializedName("linkedin_url")
   private String linkedInUrl;
 
+  @Transient
   private String compensationNotes;
 
+  @Transient
   private String compensationExpectation;
 
+  @Transient
   private String equity;
 
+  @Transient
   private String baseSalary;
 
+  @Transient
   private String targetBonusValue;
 
+  @OneToMany(cascade = CascadeType.ALL)
+  @JoinColumn(name = "contact", referencedColumnName = "id")
   private List<BoardHistory> boardHistory = new ArrayList<>();
 
+  @OneToMany(cascade = CascadeType.ALL)
+  @JoinColumn(name = "contact", referencedColumnName = "id")
   private List<JobHistory> jobHistory = new ArrayList<>();
 
+  @Transient
+  @SerializedName("education_details")
   private List<EducationDTO> educationDetails;
 
+  @Transient
+  @SerializedName("current_job_start_year")
   private String currentJobStartYear;
 
+  @Transient
+  @SerializedName("current_job_end_year")
   private String currentJobEndtYear;
 
 
@@ -237,8 +283,8 @@ public class Contact {
         + ", compensationNotes=" + compensationNotes + ", compensationExpectation="
         + compensationExpectation + ", equity=" + equity + ", baseSalary=" + baseSalary
         + ", targetBonusValue=" + targetBonusValue + ", boardHistory=" + boardHistory
-        + ", jobHistory=" + jobHistory + ", educationDetails=" + educationDetails + "]";
+        + ", jobHistory=" + jobHistory + ", educationDetails=" + educationDetails
+        + ", currentJobStartYear=" + currentJobStartYear + ", currentJobEndtYear="
+        + currentJobEndtYear + "]";
   }
-
-
 }

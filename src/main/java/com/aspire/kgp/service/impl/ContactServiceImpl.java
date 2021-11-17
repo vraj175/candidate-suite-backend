@@ -19,6 +19,8 @@ import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.transaction.Transactional;
+import javax.transaction.Transactional.TxType;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -40,10 +42,13 @@ import com.aspire.kgp.dto.SearchDTO;
 import com.aspire.kgp.dto.UserDTO;
 import com.aspire.kgp.exception.APIException;
 import com.aspire.kgp.exception.NotFoundException;
+import com.aspire.kgp.model.BoardHistory;
 import com.aspire.kgp.model.Contact;
+import com.aspire.kgp.model.JobHistory;
 import com.aspire.kgp.model.Reference;
 import com.aspire.kgp.model.User;
 import com.aspire.kgp.repository.BoardHistoryRepository;
+import com.aspire.kgp.repository.ContactRepository;
 import com.aspire.kgp.repository.JobHistoryRepository;
 import com.aspire.kgp.repository.ReferenceRepository;
 import com.aspire.kgp.service.CandidateService;
@@ -86,6 +91,9 @@ public class ContactServiceImpl implements ContactService {
   @Autowired
   JobHistoryRepository jobHistoryRepository;
 
+  @Autowired
+  ContactRepository repository;
+
   @Value("${galaxy.base.api.url}")
   private String baseApiUrl;
 
@@ -125,22 +133,16 @@ public class ContactServiceImpl implements ContactService {
          */
         private static final long serialVersionUID = 1L;
       }.getType());
-      contact.getJobHistory().stream().forEach(e -> {
-        jobHistoryRepository.save(e);
-      });
-      contact.getBoardHistory().stream().forEach(e -> {
-        boardHistoryRepository.save(e);
-      });
+      repository.save(contact);
       sentUploadNotification(contactId, request, candidateId, "Contact Details");
     } catch (Exception e) {
       throw new APIException("Error While converting data from request json " + e.getMessage());
     }
     try {
-      // JsonArray eductionArray = json.getAsJsonObject().getAsJsonArray("education_details");
       json.remove("jobHistory");
       json.remove("boardHistory");
-      // JsonObject educationObj = new JsonObject();
-      // educationObj.add("education_details", eductionArray);
+      json.remove("galaxyId");
+      json.remove("id");
       return restUtil.putMethod(Constant.CONTACT_URL.replace("{contactId}", contactId),
           json.toString());
     } catch (IOException e) {
@@ -677,6 +679,42 @@ public class ContactServiceImpl implements ContactService {
       throw new APIException("Error in sending candidate upload email");
     }
     log.info("Client upload Mail sent to all partners successfully.");
+  }
+
+  @Override
+  public Contact findByGalaxyId(String galaxyId) {
+    return repository.findByGalaxyId(galaxyId);
+  }
+
+  @Override
+  @Transactional(value = TxType.REQUIRES_NEW)
+  public Contact saveOrUpdateContact(ContactDTO contactDTO) {
+    Contact contact = new Contact();
+    contact.setGalaxyId(contactDTO.getId());
+    List<BoardHistory> boardHistoryList = new ArrayList<>();
+    contactDTO.getBoardDetails().stream().forEach(e -> {
+      BoardHistory boardHistory = new BoardHistory();
+      boardHistory.setCompany(e.getCompany() != null ? e.getCompany().getName() : null);
+      boardHistory.setStartYear(e.getStartYear());
+      boardHistory.setEndYear(e.getEndYear());
+      boardHistory.setTitle(e.getTitle());
+      boardHistory.setCommitee(e.getCommittee());
+      boardHistoryList.add(boardHistory);
+    });
+
+    List<JobHistory> jobHistoryList = new ArrayList<>();
+    contactDTO.getJobHistory().stream().forEach(e -> {
+      JobHistory jobHistory = new JobHistory();
+      jobHistory.setCompany(e.getCompany() != null ? e.getCompany().getName() : null);
+      jobHistory.setStartYear(e.getStartYear());
+      jobHistory.setEndYear(e.getEndYear());
+      jobHistory.setTitle(e.getTitle());
+      jobHistoryList.add(jobHistory);
+    });
+    contact.setBoardHistory(boardHistoryList);
+    contact.setJobHistory(jobHistoryList);
+
+    return repository.save(contact);
   }
 
 }

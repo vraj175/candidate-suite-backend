@@ -12,6 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.aspire.kgp.dto.ContactDTO;
 import com.aspire.kgp.dto.DocumentDTO;
 import com.aspire.kgp.dto.SearchDTO;
+import com.aspire.kgp.model.Contact;
 import com.aspire.kgp.model.Reference;
 
 public interface ContactService {
@@ -47,6 +48,10 @@ public interface ContactService {
   String addNewContact(String contactData);
 
   public DocumentDTO getContactOfferLetter(String contactId);
+
+  public Contact findByGalaxyId(String galaxyId);
+
+  public Contact saveOrUpdateContact(ContactDTO contactDTO);
 
   public String updateContactEducationDetails(String contactId, String contactData);
 

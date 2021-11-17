@@ -32,15 +32,11 @@ import com.aspire.kgp.dto.ContactDTO;
 import com.aspire.kgp.dto.DocumentDTO;
 import com.aspire.kgp.dto.SearchDTO;
 import com.aspire.kgp.exception.APIException;
-import com.aspire.kgp.model.BoardHistory;
 import com.aspire.kgp.model.Contact;
-import com.aspire.kgp.model.JobHistory;
 import com.aspire.kgp.model.Reference;
 import com.aspire.kgp.repository.BoardHistoryRepository;
 import com.aspire.kgp.repository.JobHistoryRepository;
-import com.aspire.kgp.service.BoardHistoryService;
 import com.aspire.kgp.service.ContactService;
-import com.aspire.kgp.service.JobHistoryService;
 import com.fasterxml.jackson.databind.ser.FilterProvider;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
@@ -62,12 +58,6 @@ public class ContactController {
   ContactService service;
 
   @Autowired
-  BoardHistoryService boardHistoryService;
-
-  @Autowired
-  JobHistoryService jobHistoryService;
-  
-  @Autowired
   BoardHistoryRepository boardHistoryRepository;
 
   @Autowired
@@ -85,44 +75,11 @@ public class ContactController {
       throw new APIException("Invalid Contact Id");
     }
 
-    // Contact contact = service.findByGalaxyId(contactId);
-    Contact contact = new Contact();
-    List<BoardHistory> boardDetailList = boardHistoryService.findByGalaxyId(contactId);
-    log.info("boardDetailList ::: " + boardDetailList.size());
-    // if (contact == null)
-    // contact = service.saveOrUpdateContact(contactDTO);
-    if (boardDetailList.isEmpty()) {
-      log.info("boardDetailList ::: " + boardDetailList.size());
-      contactDTO.getBoardDetails().stream().forEach(e -> {
-        BoardHistory boardHistory = new BoardHistory();
-        boardHistory.setCompany(e.getCompany() != null ? e.getCompany().getName() : null);
-        boardHistory.setStartYear(e.getStartYear());
-        boardHistory.setEndYear(e.getEndYear());
-        boardHistory.setTitle(e.getTitle());
-        boardHistory.setCommitee(e.getCommittee());
-        boardHistory.setGalaxyId(contactId);
-        boardDetailList.add(boardHistory);
-        boardHistoryRepository.save(boardHistory);
-      });
-    }
+    Contact contact = service.findByGalaxyId(contactId);
 
-    List<JobHistory> jobDetailList = jobHistoryService.findByGalaxyId(contactId);
-    if (jobDetailList.isEmpty()) {
-      contactDTO.getJobHistory().stream().forEach(e -> {
-        JobHistory jobHistory = new JobHistory();
-        jobHistory.setCompany(e.getCompany() != null ? e.getCompany().getName() : null);
-        jobHistory.setStartYear(e.getStartYear());
-        jobHistory.setEndYear(e.getEndYear());
-        jobHistory.setTitle(e.getTitle());
-        jobHistory.setGalaxyId(contactId);
-        jobDetailList.add(jobHistory);
-        jobHistoryRepository.save(jobHistory);
-      });
-    }
+    if (contact == null)
+      contact = service.saveOrUpdateContact(contactDTO);
 
-    contact.setBoardHistory(boardDetailList);
-    contact.setJobHistory(jobDetailList);
-    contact.setGalaxyId(contactDTO.getId());
     contact.setFirstName(contactDTO.getFirstName());
     contact.setLastName(contactDTO.getLastName());
     contact.setCompany(contactDTO.getCompany() != null ? contactDTO.getCompany().getName() : null);
