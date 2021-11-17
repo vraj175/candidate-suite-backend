@@ -13,6 +13,7 @@ import com.aspire.kgp.dto.ContactDTO;
 import com.aspire.kgp.dto.DocumentDTO;
 import com.aspire.kgp.dto.SearchDTO;
 import com.aspire.kgp.model.Contact;
+import com.aspire.kgp.model.GdprConsent;
 import com.aspire.kgp.model.Reference;
 
 public interface ContactService {
@@ -58,4 +59,9 @@ public interface ContactService {
   public ResponseEntity<Object> deleteJobHistoryById(String id);
 
   public ResponseEntity<Object> deleteBoardHistoryById(String id);
+
+  public GdprConsent getGdprConsent(String contactId);
+
+  public ResponseEntity<Object> updateGdprConsent(String contactId, String gdprConsentData,
+      HttpServletRequest request);
 }

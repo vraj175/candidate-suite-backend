@@ -33,6 +33,7 @@ import com.aspire.kgp.dto.DocumentDTO;
 import com.aspire.kgp.dto.SearchDTO;
 import com.aspire.kgp.exception.APIException;
 import com.aspire.kgp.model.Contact;
+import com.aspire.kgp.model.GdprConsent;
 import com.aspire.kgp.model.Reference;
 import com.aspire.kgp.repository.BoardHistoryRepository;
 import com.aspire.kgp.repository.JobHistoryRepository;
@@ -103,6 +104,22 @@ public class ContactController {
     log.info("Successfully send Contact Details");
     log.debug("Get Contact Details API Response : " + contact);
     return contact;
+  }
+
+  @Operation(summary = "Get contact GDPR consent")
+  @GetMapping("/contact/gdpr-consent/{contactId}")
+  public GdprConsent getGdprConsent(@PathVariable("contactId") String contactId) {
+    log.info("Get getGdpr Consent API call, Request Param contactId: " + contactId);
+    return service.getGdprConsent(contactId);
+  }
+
+  @PutMapping("/contact/gdpr-consent/update/{contactId}")
+  public ResponseEntity<Object> updateGdprConsent(@PathVariable("contactId") String contactId,
+      @RequestBody String gdprConsentData, HttpServletRequest request)
+      throws UnsupportedEncodingException {
+    log.info("Update Gdpr Consent Details API call, Request Param contactId: " + contactId
+        + " Contact Data: " + gdprConsentData);
+    return service.updateGdprConsent(contactId, gdprConsentData, request);
   }
 
   @PutMapping("/contact/update/{contactId}/{candidateId}")
@@ -315,5 +332,5 @@ public class ContactController {
   public String addNewContact(@RequestBody String contactData) {
     return service.addNewContact(contactData);
   }
-  
+
 }
