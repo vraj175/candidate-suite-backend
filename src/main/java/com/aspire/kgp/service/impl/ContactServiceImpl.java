@@ -44,11 +44,13 @@ import com.aspire.kgp.exception.APIException;
 import com.aspire.kgp.exception.NotFoundException;
 import com.aspire.kgp.model.BoardHistory;
 import com.aspire.kgp.model.Contact;
+import com.aspire.kgp.model.GdprConsent;
 import com.aspire.kgp.model.JobHistory;
 import com.aspire.kgp.model.Reference;
 import com.aspire.kgp.model.User;
 import com.aspire.kgp.repository.BoardHistoryRepository;
 import com.aspire.kgp.repository.ContactRepository;
+import com.aspire.kgp.repository.GdprConsentRepository;
 import com.aspire.kgp.repository.JobHistoryRepository;
 import com.aspire.kgp.repository.ReferenceRepository;
 import com.aspire.kgp.service.CandidateService;
@@ -93,6 +95,9 @@ public class ContactServiceImpl implements ContactService {
 
   @Autowired
   ContactRepository repository;
+
+  @Autowired
+  GdprConsentRepository gdprConsentRepository;
 
   @Value("${galaxy.base.api.url}")
   private String baseApiUrl;
@@ -715,6 +720,37 @@ public class ContactServiceImpl implements ContactService {
     contact.setJobHistory(jobHistoryList);
 
     return repository.save(contact);
+  }
+
+  @Override
+  public GdprConsent getGdprConsent(String contactId) {
+    return gdprConsentRepository.findByContactId(contactId);
+  }
+
+  @Override
+  public ResponseEntity<Object> updateGdprConsent(String contactId, String gdprConsentData,
+      HttpServletRequest request) {
+    JsonObject json = (JsonObject) JsonParser.parseString(gdprConsentData);
+    try {
+      GdprConsent gdprConsent = new Gson().fromJson(json, new TypeToken<GdprConsent>() {
+
+        /**
+         * 
+         */
+        private static final long serialVersionUID = 1L;
+      }.getType());
+      gdprConsent.setModifyDate(new Timestamp(System.currentTimeMillis()));
+      gdprConsent.setContactId(contactId);
+      gdprConsentRepository.save(gdprConsent);
+      Map<String, Object> body = new LinkedHashMap<>();
+      body.put(Constant.TIMESTAMP, new Date());
+      body.put(Constant.STATUS, "200");
+      body.put(Constant.MESSAGE,
+          "Gdpr Consent Data successfully updated for contactId:- " + contactId);
+      return new ResponseEntity<>(body, HttpStatus.OK);
+    } catch (Exception e) {
+      throw new APIException("Error While converting data from request json " + e.getMessage());
+    }
   }
 
 }
