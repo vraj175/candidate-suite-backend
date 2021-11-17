@@ -731,8 +731,8 @@ public class ContactServiceImpl implements ContactService {
   }
 
   @Override
-  public ResponseEntity<Object> updateGdprConsent(String contactId, String gdprConsentData,
-      HttpServletRequest request) {
+  public ResponseEntity<Object> updateGdprConsent(String contactId, String candidateId,
+      String gdprConsentData, HttpServletRequest request) {
     JsonObject json = (JsonObject) JsonParser.parseString(gdprConsentData);
     try {
       GdprConsent gdprConsent = new Gson().fromJson(json, new TypeToken<GdprConsent>() {
@@ -750,7 +750,7 @@ public class ContactServiceImpl implements ContactService {
       body.put(Constant.STATUS, "200");
       body.put(Constant.MESSAGE,
           "Gdpr Consent Data successfully updated for contactId:- " + contactId);
-      sentGDPRConsentNotification(contactId, request, "e4205683-5b52-4b57-84ef-1c7aa07641b6");
+      //sentGDPRConsentNotification(contactId, request, candidateId);
       return new ResponseEntity<>(body, HttpStatus.OK);
     } catch (Exception e) {
       throw new APIException("Error While converting data from request json " + e.getMessage());
@@ -798,9 +798,9 @@ public class ContactServiceImpl implements ContactService {
   private void sendGDPRConsentNotificationTOKGPTEAM(String email, String partnerName,
       HttpServletRequest request, HashMap<String, String> paramRequest) {
     log.info("sending client upload notification email");
-     User user = (User) request.getAttribute("user");
-     String role = user.getRole().getName();
-     paramRequest.put("role", role);
+    User user = (User) request.getAttribute("user");
+    String role = user.getRole().getName();
+    paramRequest.put("role", role);
     String locate = "en_US";
     try {
       Map<String, String> staticContentsMap =
@@ -812,23 +812,23 @@ public class ContactServiceImpl implements ContactService {
 
       mailSubject =
           mailSubject + " - GDPR Consent " + "Updated for " + paramRequest.get("candidateName");
-      if (Constant.PARTNER.equalsIgnoreCase(role)) {        
+      if (Constant.PARTNER.equalsIgnoreCase(role)) {
         content = userDTO.getFirstName() + " " + userDTO.getLastName() + " has updated "
             + paramRequest.get("candidateName") + "'s GDPR Consent Form ";
         paramRequest.put("clientName", userDTO.getFirstName() + " " + userDTO.getLastName());
-      }else {
+      } else {
         content = paramRequest.get("candidateName") + " has updated their GDPR Consent Form ";
         paramRequest.put("clientName", paramRequest.get("candidateName"));
       }
-      paramRequest.put("clickButtonUrl",          
-          galaxyUrl + "/contacts/" + paramRequest.get("contactId"));
+      paramRequest.put("clickButtonUrl", galaxyUrl + "/contacts/" + paramRequest.get("contactId"));
       access = " to access in Galaxy";
       paramRequest.put("content", content);
       paramRequest.put("access", access);
-      
 
-      mailService.sendEmail(email, null, mailSubject, mailService.getUploadEmailContent(request,
-          staticContentsMap, Constant.CONTACT_GDPR_CONSENT_EMAIL_TEMPLATE, partnerName, paramRequest),
+
+      mailService.sendEmail(email, null, mailSubject,
+          mailService.getUploadEmailContent(request, staticContentsMap,
+              Constant.CONTACT_GDPR_CONSENT_EMAIL_TEMPLATE, partnerName, paramRequest),
           null);
     } catch (Exception e) {
       log.info(e);

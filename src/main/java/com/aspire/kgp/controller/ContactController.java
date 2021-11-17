@@ -113,13 +113,13 @@ public class ContactController {
     return service.getGdprConsent(contactId);
   }
 
-  @PutMapping("/contact/gdpr-consent/update/{contactId}")
+  @PutMapping("/contact/gdpr-consent/update/{contactId}/{candidateId}")
   public ResponseEntity<Object> updateGdprConsent(@PathVariable("contactId") String contactId,
-      @RequestBody String gdprConsentData, HttpServletRequest request)
-      throws UnsupportedEncodingException {
+      @RequestBody String gdprConsentData, HttpServletRequest request,
+      @PathVariable("candidateId") String candidateId) {
     log.info("Update Gdpr Consent Details API call, Request Param contactId: " + contactId
         + " Contact Data: " + gdprConsentData);
-    return service.updateGdprConsent(contactId, gdprConsentData, request);
+    return service.updateGdprConsent(contactId, candidateId, gdprConsentData, request);
   }
 
   @PutMapping("/contact/update/{contactId}/{candidateId}")
