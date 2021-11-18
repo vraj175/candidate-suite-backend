@@ -742,6 +742,8 @@ public class ContactServiceImpl implements ContactService {
          */
         private static final long serialVersionUID = 1L;
       }.getType());
+      GdprConsent gdprConsentDatabase = gdprConsentRepository.findByContactId(contactId);
+      gdprConsent.setCreatedDate(gdprConsentDatabase.getCreatedDate());
       gdprConsent.setModifyDate(new Timestamp(System.currentTimeMillis()));
       gdprConsent.setContactId(contactId);
       gdprConsentRepository.save(gdprConsent);
