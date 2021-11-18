@@ -16,7 +16,7 @@ import com.google.gson.annotations.SerializedName;
 @Entity
 public class Contact extends SuperBase {
 
-  @Column(name = "galaxyId", nullable = false)
+  @Column(name = "galaxyId", nullable = false, unique = true)
   private String galaxyId;
 
   @Transient
