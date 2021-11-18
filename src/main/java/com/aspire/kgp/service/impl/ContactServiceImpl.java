@@ -142,8 +142,10 @@ public class ContactServiceImpl implements ContactService {
         private static final long serialVersionUID = 1L;
       }.getType());
       Contact contactDatabase = repository.findByGalaxyId(contactId);
-      contact.setCreatedDate(contactDatabase.getCreatedDate());
-      contact.setModifyDate(new Timestamp(System.currentTimeMillis()));
+      if (contactDatabase != null) {
+        contact.setCreatedDate(contactDatabase.getCreatedDate());
+        contact.setModifyDate(new Timestamp(System.currentTimeMillis()));
+      }
       repository.save(contact);
       sentUploadNotification(contactId, request, candidateId, "Contact Details");
     } catch (Exception e) {
@@ -746,8 +748,11 @@ public class ContactServiceImpl implements ContactService {
         private static final long serialVersionUID = 1L;
       }.getType());
       GdprConsent gdprConsentDatabase = gdprConsentRepository.findByContactId(contactId);
-      gdprConsent.setCreatedDate(gdprConsentDatabase.getCreatedDate());
-      gdprConsent.setModifyDate(new Timestamp(System.currentTimeMillis()));
+      if (gdprConsentDatabase != null) {
+        gdprConsent.setId(gdprConsentDatabase.getId());
+        gdprConsent.setCreatedDate(gdprConsentDatabase.getCreatedDate());
+        gdprConsent.setModifyDate(new Timestamp(System.currentTimeMillis()));
+      }
       gdprConsent.setContactId(contactId);
       gdprConsentRepository.save(gdprConsent);
       Map<String, Object> body = new LinkedHashMap<>();
@@ -843,10 +848,8 @@ public class ContactServiceImpl implements ContactService {
     log.info("Contact GDPR Consent Mail sent to all partners successfully.");
   }
 
-  public Contact setContactDetails(ContactDTO contactDTO) {
-
-    Contact contact = new Contact();
-
+  @Override
+  public Contact setContactDetails(ContactDTO contactDTO, Contact contact) {
     contact.setFirstName(contactDTO.getFirstName());
     contact.setLastName(contactDTO.getLastName());
     contact.setCompany(contactDTO.getCompany() != null ? contactDTO.getCompany().getName() : null);

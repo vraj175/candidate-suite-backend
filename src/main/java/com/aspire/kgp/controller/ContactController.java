@@ -81,7 +81,7 @@ public class ContactController {
     if (contact == null)
       contact = service.saveOrUpdateContact(contactDTO);
     
-    contact = service.setContactDetails(contactDTO);
+    contact = service.setContactDetails(contactDTO,contact);
 
     log.info("Successfully send Contact Details");
     log.debug("Get Contact Details API Response : " + contact);
