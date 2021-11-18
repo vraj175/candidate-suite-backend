@@ -141,6 +141,9 @@ public class ContactServiceImpl implements ContactService {
          */
         private static final long serialVersionUID = 1L;
       }.getType());
+      Contact contactDatabase = repository.findByGalaxyId(contactId);
+      contact.setCreatedDate(contactDatabase.getCreatedDate());
+      contact.setModifyDate(new Timestamp(System.currentTimeMillis()));
       repository.save(contact);
       sentUploadNotification(contactId, request, candidateId, "Contact Details");
     } catch (Exception e) {
@@ -839,11 +842,11 @@ public class ContactServiceImpl implements ContactService {
     }
     log.info("Contact GDPR Consent Mail sent to all partners successfully.");
   }
-  
+
   public Contact setContactDetails(ContactDTO contactDTO) {
-    
+
     Contact contact = new Contact();
-    
+
     contact.setFirstName(contactDTO.getFirstName());
     contact.setLastName(contactDTO.getLastName());
     contact.setCompany(contactDTO.getCompany() != null ? contactDTO.getCompany().getName() : null);
@@ -863,7 +866,7 @@ public class ContactServiceImpl implements ContactService {
     contact.setEducationDetails(contactDTO.getEducationDetails());
     contact.setCurrentJobStartYear(contactDTO.getCurrentJobStartYear());
     contact.setCurrentJobEndtYear(contactDTO.getCurrentJobEndtYear());
-    
+
     return contact;
   }
 }
