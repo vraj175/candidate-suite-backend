@@ -146,6 +146,7 @@ public class Constant {
   public static final String FORGOT_EMAIL_TEMPLATE = "forgot-password.ftl";
   public static final String CANDIDATE_FEEDBACK_EMAIL_TEMPLATE = "candidate-feedback.ftl";
   public static final String CANDIDATE_UPLOAD_EMAIL_TEMPLATE = "candidate-upload.ftl";
+  public static final String CONTACT_GDPR_CONSENT_EMAIL_TEMPLATE = "contact-gdpr-consent.ftl";
 
   // Json Fields
   public static final String FIRST_NAME = "firstName";
@@ -208,6 +209,10 @@ public class Constant {
   public static final String SCREENED_DATE = "screenedDate";
   public static final String TYPE = "type";
   public static final String CREATED_NAME = "createdName";
+  public static final String EXRCUTION_CREDIT = "executionCredit";
+  public static final String LOCATION = "location";
+  public static final String IS_APPROVED_BY_PARTNER = "isApprovedByPartner";
+  public static final String COMMENT_ID = "commentId";
 
   // google capcha
   public static final String GOOGLE_CAPTCHA_SECRET_KEY = "6LfPQ10aAAAAAHP7HDxskU_c1c8oBVSpf5SZdZ4C";
@@ -225,6 +230,7 @@ public class Constant {
   public static final String CANDIDATE_FEEDBACK_REPLY_FILTER = "candidateFeedbackReplyFilter";
   public static final String USER_FILTER = "userFilter";
   public static final String INTERVIEW_FILTER = "interviewFilter";
+  public static final String CLIENT_TEAM_FILTER = "clientTeamFilter";
 
   // messages
   public static final String DATA_SAVED = "Data saved successfully";

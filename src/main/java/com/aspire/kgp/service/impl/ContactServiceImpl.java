@@ -44,11 +44,13 @@ import com.aspire.kgp.exception.APIException;
 import com.aspire.kgp.exception.NotFoundException;
 import com.aspire.kgp.model.BoardHistory;
 import com.aspire.kgp.model.Contact;
+import com.aspire.kgp.model.GdprConsent;
 import com.aspire.kgp.model.JobHistory;
 import com.aspire.kgp.model.Reference;
 import com.aspire.kgp.model.User;
 import com.aspire.kgp.repository.BoardHistoryRepository;
 import com.aspire.kgp.repository.ContactRepository;
+import com.aspire.kgp.repository.GdprConsentRepository;
 import com.aspire.kgp.repository.JobHistoryRepository;
 import com.aspire.kgp.repository.ReferenceRepository;
 import com.aspire.kgp.service.CandidateService;
@@ -86,16 +88,22 @@ public class ContactServiceImpl implements ContactService {
   ReferenceRepository referenceRepository;
 
   @Autowired
-  ContactRepository repository;
-
-  @Autowired
   BoardHistoryRepository boardHistoryRepository;
 
   @Autowired
   JobHistoryRepository jobHistoryRepository;
 
+  @Autowired
+  ContactRepository repository;
+
+  @Autowired
+  GdprConsentRepository gdprConsentRepository;
+
   @Value("${galaxy.base.api.url}")
   private String baseApiUrl;
+
+  @Value("${galaxy.url}")
+  private String galaxyUrl;
 
   @Override
   public ContactDTO getContactDetails(String contactId) {
@@ -139,11 +147,12 @@ public class ContactServiceImpl implements ContactService {
       throw new APIException("Error While converting data from request json " + e.getMessage());
     }
     try {
-      JsonArray eductionArray = json.getAsJsonObject().getAsJsonArray("education_details");
-      JsonObject educationObj = new JsonObject();
-      educationObj.add("education_details", eductionArray);
+      json.remove("jobHistory");
+      json.remove("boardHistory");
+      json.remove("galaxyId");
+      json.remove("id");
       return restUtil.putMethod(Constant.CONTACT_URL.replace("{contactId}", contactId),
-          educationObj.toString());
+          json.toString());
     } catch (IOException e) {
       throw new APIException("Error While update education details in galaxy" + e.getMessage());
     }
@@ -690,22 +699,6 @@ public class ContactServiceImpl implements ContactService {
   public Contact saveOrUpdateContact(ContactDTO contactDTO) {
     Contact contact = new Contact();
     contact.setGalaxyId(contactDTO.getId());
-    contact.setFirstName(contactDTO.getFirstName());
-    contact.setLastName(contactDTO.getLastName());
-    contact.setCompany(contactDTO.getCompany() != null ? contactDTO.getCompany().getName() : null);
-    contact.setCurrentJobTitle(contactDTO.getCurrentJobTitle());
-    contact.setHomePhone(contactDTO.getHomePhone());
-    contact.setMobilePhone(contactDTO.getMobilePhone());
-    contact.setWorkEmail(contactDTO.getWorkEmail());
-    contact.setEmail(contactDTO.getEmail());
-    contact.setLinkedInUrl(contactDTO.getLinkedinUrl());
-    contact.setCity(contactDTO.getCity());
-    contact.setState(contactDTO.getState());
-    contact.setCompensationNotes(contactDTO.getCompensationNotes());
-    contact.setCompensationExpectation(contactDTO.getCompensationExpectation());
-    contact.setEquity(contactDTO.getEquity());
-    contact.setBaseSalary(contactDTO.getBaseSalary());
-    contact.setTargetBonusValue(contactDTO.getTargetBonusValue());
     List<BoardHistory> boardHistoryList = new ArrayList<>();
     contactDTO.getBoardDetails().stream().forEach(e -> {
       BoardHistory boardHistory = new BoardHistory();
@@ -732,4 +725,115 @@ public class ContactServiceImpl implements ContactService {
     return repository.save(contact);
   }
 
+  @Override
+  public GdprConsent getGdprConsent(String contactId) {
+    return gdprConsentRepository.findByContactId(contactId);
+  }
+
+  @Override
+  public ResponseEntity<Object> updateGdprConsent(String contactId, String candidateId,
+      String gdprConsentData, HttpServletRequest request) {
+    JsonObject json = (JsonObject) JsonParser.parseString(gdprConsentData);
+    try {
+      GdprConsent gdprConsent = new Gson().fromJson(json, new TypeToken<GdprConsent>() {
+
+        /**
+         * 
+         */
+        private static final long serialVersionUID = 1L;
+      }.getType());
+      gdprConsent.setModifyDate(new Timestamp(System.currentTimeMillis()));
+      gdprConsent.setContactId(contactId);
+      gdprConsentRepository.save(gdprConsent);
+      Map<String, Object> body = new LinkedHashMap<>();
+      body.put(Constant.TIMESTAMP, new Date());
+      body.put(Constant.STATUS, "200");
+      body.put(Constant.MESSAGE,
+          "Gdpr Consent Data successfully updated for contactId:- " + contactId);
+      //sentGDPRConsentNotification(contactId, request, candidateId);
+      return new ResponseEntity<>(body, HttpStatus.OK);
+    } catch (Exception e) {
+      throw new APIException("Error While converting data from request json " + e.getMessage());
+    }
+  }
+
+  private void sentGDPRConsentNotification(String contactId, HttpServletRequest request,
+      String candidateId) {
+    Set<String> kgpPartnerEmailList = new HashSet<>();
+    HashMap<String, String> paramRequest = new HashMap<>();
+    // if (type.equalsIgnoreCase(Constant.OFFER_LETTER)) {
+    // type = Constant.OFFER_LETTERS;
+    // }
+    CandidateDTO apiResponse = candidateService.getCandidateDetails(candidateId);
+    try {
+      kgpPartnerEmailList = CommonUtil.teamPartnerMemberList(apiResponse.getSearch().getPartners(),
+          kgpPartnerEmailList);
+      kgpPartnerEmailList =
+          CommonUtil.teamMemberList(apiResponse.getSearch().getRecruiters(), kgpPartnerEmailList);
+      paramRequest.put("candidateName",
+          apiResponse.getContact().getFirstName() + " " + apiResponse.getContact().getLastName());
+      paramRequest.put("searchId", apiResponse.getSearch().getId());
+      paramRequest.put("searchName", apiResponse.getSearch().getJobTitle());
+      paramRequest.put("companyName", apiResponse.getSearch().getCompany().getName());
+      paramRequest.put("candidateId", candidateId);
+      paramRequest.put("contactId", contactId);
+      // paramRequest.put("type", type);
+    } catch (JsonSyntaxException e) {
+      log.error("oops ! invalid json");
+      throw new JsonSyntaxException("error while get team member");
+    }
+    try {
+      for (String kgpTeamMeberDetails : kgpPartnerEmailList) {
+        log.info("Partner Email : " + kgpTeamMeberDetails);
+        sendGDPRConsentNotificationTOKGPTEAM(kgpTeamMeberDetails.split("##")[0],
+            kgpTeamMeberDetails.split("##")[1], request, paramRequest);
+      }
+    } catch (Exception ex) {
+      log.info(ex);
+      throw new APIException("Error in send upload notification email");
+    }
+
+  }
+
+  private void sendGDPRConsentNotificationTOKGPTEAM(String email, String partnerName,
+      HttpServletRequest request, HashMap<String, String> paramRequest) {
+    log.info("sending client upload notification email");
+    User user = (User) request.getAttribute("user");
+    String role = user.getRole().getName();
+    paramRequest.put("role", role);
+    String locate = "en_US";
+    try {
+      Map<String, String> staticContentsMap =
+          StaticContentsMultiLanguageUtil.getStaticContentsMap(locate, Constant.EMAILS_CONTENT_MAP);
+      String mailSubject = staticContentsMap.get("candidate.suite.upload.email.subject");
+      UserDTO userDTO = null;
+      String content = "";
+      String access = "";
+
+      mailSubject =
+          mailSubject + " - GDPR Consent " + "Updated for " + paramRequest.get("candidateName");
+      if (Constant.PARTNER.equalsIgnoreCase(role)) {
+        content = userDTO.getFirstName() + " " + userDTO.getLastName() + " has updated "
+            + paramRequest.get("candidateName") + "'s GDPR Consent Form ";
+        paramRequest.put("clientName", userDTO.getFirstName() + " " + userDTO.getLastName());
+      } else {
+        content = paramRequest.get("candidateName") + " has updated their GDPR Consent Form ";
+        paramRequest.put("clientName", paramRequest.get("candidateName"));
+      }
+      paramRequest.put("clickButtonUrl", galaxyUrl + "/contacts/" + paramRequest.get("contactId"));
+      access = " to access in Galaxy";
+      paramRequest.put("content", content);
+      paramRequest.put("access", access);
+
+
+      mailService.sendEmail(email, null, mailSubject,
+          mailService.getUploadEmailContent(request, staticContentsMap,
+              Constant.CONTACT_GDPR_CONSENT_EMAIL_TEMPLATE, partnerName, paramRequest),
+          null);
+    } catch (Exception e) {
+      log.info(e);
+      throw new APIException("Error in sending contact GDPR Consent email notification");
+    }
+    log.info("Contact GDPR Consent Mail sent to all partners successfully.");
+  }
 }

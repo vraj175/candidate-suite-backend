@@ -21,8 +21,6 @@ public class BoardHistory extends SuperBase {
   @Column(name = "commitee")
   private String commitee;
 
-
-
   public String getCompany() {
     return company;
   }
@@ -71,5 +69,4 @@ public class BoardHistory extends SuperBase {
   public void setCommitee(String commitee) {
     this.commitee = commitee;
   }
-
 }

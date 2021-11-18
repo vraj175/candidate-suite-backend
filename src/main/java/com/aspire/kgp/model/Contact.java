@@ -19,52 +19,62 @@ public class Contact extends SuperBase {
   @Column(name = "galaxyId", nullable = false)
   private String galaxyId;
 
-  @Column(name = "firstName", nullable = false)
+  @Transient
+  @SerializedName("first_name")
   private String firstName;
 
-  @Column(name = "lastName", nullable = false)
+  @Transient
+  @SerializedName("last_name")
   private String lastName;
 
-  @Column(name = "city")
+  @Transient
+  @SerializedName("city")
   private String city;
 
-  @Column(name = "state")
+  @Transient
+  @SerializedName("state")
   private String state;
 
-  @Column(name = "company", nullable = false)
+  @Transient
   private String company;
 
-  @Column(name = "currentJobTitle", nullable = false)
+  @Transient
+  @SerializedName("current_job_title")
   private String currentJobTitle;
 
-  @Column(name = "mobilePhone")
+  @Transient
+  @SerializedName("mobile_phone")
   private String mobilePhone;
 
-  @Column(name = "homePhone")
+  @Transient
+  @SerializedName("home_phone")
   private String homePhone;
 
-  @Column(name = "workEmail")
+  @Transient
+  @SerializedName("work_email")
   private String workEmail;
 
-  @Column(name = "email")
+  @Transient
+  @SerializedName("private_email")
   private String email;
 
-  @Column(name = "linkedInUrl")
+  @Transient
+  @SerializedName("linkedin_url")
   private String linkedInUrl;
 
-  @Column(name = "compensationNotes")
+  @Transient
   private String compensationNotes;
 
-  @Column(name = "compensationExpectation")
+  @Transient
   private String compensationExpectation;
 
-  @Column(name = "equity")
+  @Transient
   private String equity;
 
-  @Column(name = "baseSalary")
+  @Transient
   private String baseSalary;
 
-  @Column(name = "targetBonusValue")
+  @Transient
   private String targetBonusValue;
 
   @OneToMany(cascade = CascadeType.ALL)
@@ -78,6 +88,14 @@ public class Contact extends SuperBase {
   @Transient
   @SerializedName("education_details")
   private List<EducationDTO> educationDetails;
+
+  @Transient
+  @SerializedName("current_job_start_year")
+  private String currentJobStartYear;
+
+  @Transient
+  @SerializedName("current_job_end_year")
+  private String currentJobEndtYear;
 
 
   public String getGalaxyId() {
@@ -240,6 +258,22 @@ public class Contact extends SuperBase {
     this.educationDetails = educationDetails;
   }
 
+  public String getCurrentJobStartYear() {
+    return currentJobStartYear;
+  }
+
+  public void setCurrentJobStartYear(String currentJobStartYear) {
+    this.currentJobStartYear = currentJobStartYear;
+  }
+
+  public String getCurrentJobEndtYear() {
+    return currentJobEndtYear;
+  }
+
+  public void setCurrentJobEndtYear(String currentJobEndtYear) {
+    this.currentJobEndtYear = currentJobEndtYear;
+  }
+
   @Override
   public String toString() {
     return "Contact [galaxyId=" + galaxyId + ", firstName=" + firstName + ", lastName=" + lastName
@@ -249,8 +283,8 @@ public class Contact extends SuperBase {
         + ", compensationNotes=" + compensationNotes + ", compensationExpectation="
         + compensationExpectation + ", equity=" + equity + ", baseSalary=" + baseSalary
         + ", targetBonusValue=" + targetBonusValue + ", boardHistory=" + boardHistory
-        + ", jobHistory=" + jobHistory + ", educationDetails=" + educationDetails + "]";
+        + ", jobHistory=" + jobHistory + ", educationDetails=" + educationDetails
+        + ", currentJobStartYear=" + currentJobStartYear + ", currentJobEndtYear="
+        + currentJobEndtYear + "]";
   }
-
-
 }
