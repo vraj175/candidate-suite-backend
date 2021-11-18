@@ -750,7 +750,7 @@ public class ContactServiceImpl implements ContactService {
       body.put(Constant.STATUS, "200");
       body.put(Constant.MESSAGE,
           "Gdpr Consent Data successfully updated for contactId:- " + contactId);
-      //sentGDPRConsentNotification(contactId, request, candidateId);
+      sentGDPRConsentNotification(contactId, request, candidateId);
       return new ResponseEntity<>(body, HttpStatus.OK);
     } catch (Exception e) {
       throw new APIException("Error While converting data from request json " + e.getMessage());
@@ -777,7 +777,7 @@ public class ContactServiceImpl implements ContactService {
       paramRequest.put("companyName", apiResponse.getSearch().getCompany().getName());
       paramRequest.put("candidateId", candidateId);
       paramRequest.put("contactId", contactId);
-      // paramRequest.put("type", type);
+      paramRequest.put("type", "");
     } catch (JsonSyntaxException e) {
       log.error("oops ! invalid json");
       throw new JsonSyntaxException("error while get team member");
@@ -813,6 +813,7 @@ public class ContactServiceImpl implements ContactService {
       mailSubject =
           mailSubject + " - GDPR Consent " + "Updated for " + paramRequest.get("candidateName");
       if (Constant.PARTNER.equalsIgnoreCase(role)) {
+        userDTO = userService.getGalaxyUserDetails(user.getGalaxyId());
         content = userDTO.getFirstName() + " " + userDTO.getLastName() + " has updated "
             + paramRequest.get("candidateName") + "'s GDPR Consent Form ";
         paramRequest.put("clientName", userDTO.getFirstName() + " " + userDTO.getLastName());
