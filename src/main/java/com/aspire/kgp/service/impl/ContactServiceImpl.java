@@ -141,6 +141,9 @@ public class ContactServiceImpl implements ContactService {
          */
         private static final long serialVersionUID = 1L;
       }.getType());
+      Contact contactDatabase = repository.findByGalaxyId(contactId);
+      contact.setCreatedDate(contactDatabase.getCreatedDate());
+      contact.setModifyDate(new Timestamp(System.currentTimeMillis()));
       repository.save(contact);
       sentUploadNotification(contactId, request, candidateId, "Contact Details");
     } catch (Exception e) {
@@ -742,6 +745,8 @@ public class ContactServiceImpl implements ContactService {
          */
         private static final long serialVersionUID = 1L;
       }.getType());
+      GdprConsent gdprConsentDatabase = gdprConsentRepository.findByContactId(contactId);
+      gdprConsent.setCreatedDate(gdprConsentDatabase.getCreatedDate());
       gdprConsent.setModifyDate(new Timestamp(System.currentTimeMillis()));
       gdprConsent.setContactId(contactId);
       gdprConsentRepository.save(gdprConsent);
@@ -750,7 +755,7 @@ public class ContactServiceImpl implements ContactService {
       body.put(Constant.STATUS, "200");
       body.put(Constant.MESSAGE,
           "Gdpr Consent Data successfully updated for contactId:- " + contactId);
-      //sentGDPRConsentNotification(contactId, request, candidateId);
+      sentGDPRConsentNotification(contactId, request, candidateId);
       return new ResponseEntity<>(body, HttpStatus.OK);
     } catch (Exception e) {
       throw new APIException("Error While converting data from request json " + e.getMessage());
@@ -777,7 +782,7 @@ public class ContactServiceImpl implements ContactService {
       paramRequest.put("companyName", apiResponse.getSearch().getCompany().getName());
       paramRequest.put("candidateId", candidateId);
       paramRequest.put("contactId", contactId);
-      // paramRequest.put("type", type);
+      paramRequest.put("type", "");
     } catch (JsonSyntaxException e) {
       log.error("oops ! invalid json");
       throw new JsonSyntaxException("error while get team member");
@@ -813,6 +818,7 @@ public class ContactServiceImpl implements ContactService {
       mailSubject =
           mailSubject + " - GDPR Consent " + "Updated for " + paramRequest.get("candidateName");
       if (Constant.PARTNER.equalsIgnoreCase(role)) {
+        userDTO = userService.getGalaxyUserDetails(user.getGalaxyId());
         content = userDTO.getFirstName() + " " + userDTO.getLastName() + " has updated "
             + paramRequest.get("candidateName") + "'s GDPR Consent Form ";
         paramRequest.put("clientName", userDTO.getFirstName() + " " + userDTO.getLastName());
@@ -835,5 +841,32 @@ public class ContactServiceImpl implements ContactService {
       throw new APIException("Error in sending contact GDPR Consent email notification");
     }
     log.info("Contact GDPR Consent Mail sent to all partners successfully.");
+  }
+
+  public Contact setContactDetails(ContactDTO contactDTO) {
+
+    Contact contact = new Contact();
+
+    contact.setFirstName(contactDTO.getFirstName());
+    contact.setLastName(contactDTO.getLastName());
+    contact.setCompany(contactDTO.getCompany() != null ? contactDTO.getCompany().getName() : null);
+    contact.setCurrentJobTitle(contactDTO.getCurrentJobTitle());
+    contact.setHomePhone(contactDTO.getHomePhone());
+    contact.setMobilePhone(contactDTO.getMobilePhone());
+    contact.setWorkEmail(contactDTO.getWorkEmail());
+    contact.setEmail(contactDTO.getEmail());
+    contact.setLinkedInUrl(contactDTO.getLinkedinUrl());
+    contact.setCity(contactDTO.getCity());
+    contact.setState(contactDTO.getState());
+    contact.setCompensationNotes(contactDTO.getCompensationNotes());
+    contact.setCompensationExpectation(contactDTO.getCompensationExpectation());
+    contact.setEquity(contactDTO.getEquity());
+    contact.setBaseSalary(contactDTO.getBaseSalary());
+    contact.setTargetBonusValue(contactDTO.getTargetBonusValue());
+    contact.setEducationDetails(contactDTO.getEducationDetails());
+    contact.setCurrentJobStartYear(contactDTO.getCurrentJobStartYear());
+    contact.setCurrentJobEndtYear(contactDTO.getCurrentJobEndtYear());
+
+    return contact;
   }
 }

@@ -64,4 +64,6 @@ public interface ContactService {
 
   public ResponseEntity<Object> updateGdprConsent(String contactId, String candidateId,
       String gdprConsentData, HttpServletRequest request);
+  
+  public Contact setContactDetails(ContactDTO contactDTO);
 }
