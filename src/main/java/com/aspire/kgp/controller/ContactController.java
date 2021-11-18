@@ -80,26 +80,8 @@ public class ContactController {
 
     if (contact == null)
       contact = service.saveOrUpdateContact(contactDTO);
-
-    contact.setFirstName(contactDTO.getFirstName());
-    contact.setLastName(contactDTO.getLastName());
-    contact.setCompany(contactDTO.getCompany() != null ? contactDTO.getCompany().getName() : null);
-    contact.setCurrentJobTitle(contactDTO.getCurrentJobTitle());
-    contact.setHomePhone(contactDTO.getHomePhone());
-    contact.setMobilePhone(contactDTO.getMobilePhone());
-    contact.setWorkEmail(contactDTO.getWorkEmail());
-    contact.setEmail(contactDTO.getEmail());
-    contact.setLinkedInUrl(contactDTO.getLinkedinUrl());
-    contact.setCity(contactDTO.getCity());
-    contact.setState(contactDTO.getState());
-    contact.setCompensationNotes(contactDTO.getCompensationNotes());
-    contact.setCompensationExpectation(contactDTO.getCompensationExpectation());
-    contact.setEquity(contactDTO.getEquity());
-    contact.setBaseSalary(contactDTO.getBaseSalary());
-    contact.setTargetBonusValue(contactDTO.getTargetBonusValue());
-    contact.setEducationDetails(contactDTO.getEducationDetails());
-    contact.setCurrentJobStartYear(contactDTO.getCurrentJobStartYear());
-    contact.setCurrentJobEndtYear(contactDTO.getCurrentJobEndtYear());
+    
+    contact = service.setContactDetails(contactDTO);
 
     log.info("Successfully send Contact Details");
     log.debug("Get Contact Details API Response : " + contact);

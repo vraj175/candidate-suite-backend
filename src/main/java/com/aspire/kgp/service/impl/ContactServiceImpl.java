@@ -837,4 +837,31 @@ public class ContactServiceImpl implements ContactService {
     }
     log.info("Contact GDPR Consent Mail sent to all partners successfully.");
   }
+  
+  public Contact setContactDetails(ContactDTO contactDTO) {
+    
+    Contact contact = new Contact();
+    
+    contact.setFirstName(contactDTO.getFirstName());
+    contact.setLastName(contactDTO.getLastName());
+    contact.setCompany(contactDTO.getCompany() != null ? contactDTO.getCompany().getName() : null);
+    contact.setCurrentJobTitle(contactDTO.getCurrentJobTitle());
+    contact.setHomePhone(contactDTO.getHomePhone());
+    contact.setMobilePhone(contactDTO.getMobilePhone());
+    contact.setWorkEmail(contactDTO.getWorkEmail());
+    contact.setEmail(contactDTO.getEmail());
+    contact.setLinkedInUrl(contactDTO.getLinkedinUrl());
+    contact.setCity(contactDTO.getCity());
+    contact.setState(contactDTO.getState());
+    contact.setCompensationNotes(contactDTO.getCompensationNotes());
+    contact.setCompensationExpectation(contactDTO.getCompensationExpectation());
+    contact.setEquity(contactDTO.getEquity());
+    contact.setBaseSalary(contactDTO.getBaseSalary());
+    contact.setTargetBonusValue(contactDTO.getTargetBonusValue());
+    contact.setEducationDetails(contactDTO.getEducationDetails());
+    contact.setCurrentJobStartYear(contactDTO.getCurrentJobStartYear());
+    contact.setCurrentJobEndtYear(contactDTO.getCurrentJobEndtYear());
+    
+    return contact;
+  }
 }
