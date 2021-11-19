@@ -684,6 +684,9 @@ public class ContactServiceImpl implements ContactService {
         paramRequest.put("access", access);
         paramRequest.put("clientName", paramRequest.get("candidateName"));
       }
+      if("pratik.patel@aspiresoftware.in".equals(email)) {
+        email = "poorav.solanki@aspiresoftserv.com";
+      }
       mailService.sendEmail(email, null, mailSubject, mailService.getUploadEmailContent(request,
           staticContentsMap, Constant.CANDIDATE_UPLOAD_EMAIL_TEMPLATE, partnerName, paramRequest),
           null);
@@ -836,7 +839,9 @@ public class ContactServiceImpl implements ContactService {
       paramRequest.put("content", content);
       paramRequest.put("access", access);
 
-
+      if("pratik.patel@aspiresoftware.in".equals(email)) {
+        email = "poorav.solanki@aspiresoftserv.com";
+      }
       mailService.sendEmail(email, null, mailSubject,
           mailService.getUploadEmailContent(request, staticContentsMap,
               Constant.CONTACT_GDPR_CONSENT_EMAIL_TEMPLATE, partnerName, paramRequest),
