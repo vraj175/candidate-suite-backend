@@ -1,5 +1,7 @@
 package com.aspire.kgp.util;
 
+import static com.google.common.base.Preconditions.checkArgument;
+
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
@@ -12,15 +14,11 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
-import static com.google.common.base.Preconditions.*;
-
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.math.NumberUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.boot.configurationprocessor.json.JSONException;
-import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 
 import com.aspire.kgp.constant.Constant;
@@ -323,14 +321,5 @@ public class CommonUtil {
       }
     }
     return partnerEmailList;
-  }
-
-  public static boolean isJSONValid(String jsonString) {
-    try {
-      new JSONObject(jsonString);
-    } catch (JSONException ex) {
-      return false;
-    }
-    return true;
   }
 }
