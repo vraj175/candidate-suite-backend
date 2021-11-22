@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.aspire.kgp.constant.Constant;
 import com.aspire.kgp.dto.CandidateDTO;
@@ -128,7 +129,7 @@ public class CompanyController {
   }
 
   @Operation(summary = "Get all document attachment")
-  @GetMapping("/company/{companyId}/document-attachment")
+  @GetMapping("/company/{companyId}/attachments")
   @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK",
       content = @Content(mediaType = "application/json", schema = @Schema(
           type = "List<DocumentDTO>",
@@ -141,6 +142,16 @@ public class CompanyController {
     return listOfDocument;
   }
 
+  @Operation(summary = "upload Attachment for company")
+  @PostMapping("/company/{companyId}/upload/attachment")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", description = Constant.FILE_UPLOADED_SUCCESSFULLY)})
+  public String uploadCompanyAttachment(@PathVariable("companyId") String companyId,
+      @RequestParam("file") MultipartFile file, HttpServletRequest request) {
+    log.info("upload Attachment for company API call, Request Param companyId: " + companyId
+        + " File: " + file.getName());
+    return service.uploadCompanyAttachment(file, companyId, request);
+  }
 
   @Operation(summary = "Add New Company")
   @PostMapping("/companies")
