@@ -109,10 +109,12 @@ public class Constant {
 
   public static final String RESUME_URL = "/contact/{contactId}/resumes";
   public static final String ATTECHMENT_URL = "/contact/{contactId}/attachments";
+  public static final String COMPANY_ATTECHMENT_URL = "/company/{companyId}/attachments";
   public static final String OFFER_LETTER_URL = "/contact/{contactId}/offerLetter";
   public static final String IMAGE_UPLOAD_URL = "/contacts/{contactId}/image";
   public static final String UPDATE_CONTACT_REFERENCE_URL = "/contact/references/{referenceId}";
   public static final String CONTACT_ID = "{contactId}";
+  public static final String COMPANY_ID_BRACES = "{companyId}";
   public static final String CANDIDATE_ID_BRACES = "{candidateId}";
   public static final String COMMENT_ID_BRACES = "{commentId}";
 
