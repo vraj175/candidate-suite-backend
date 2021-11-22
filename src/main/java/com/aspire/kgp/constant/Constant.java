@@ -61,6 +61,7 @@ public class Constant {
   public static final String ILLEGAL_ARGUMENT_EXCEPTION = "Illegal Argument Exception";
   public static final String JSON_PROCESSING_EXCEPTION = "JsonProcessingException : ";
   public static final String INVALID_CANDIDATE_ID = "Invalid Candidate Id";
+  public static final String INVALID_COMPANY_ID = "Invalid Company Id";
   public static final String FILE_UPLOAD_ERROR = "Error in upload file";
   public static final String IMAGE_UPLOAD_ERROR = "Error in upload profile image";
   public static final String CONVERT_JSON_ERROR = "Error in coverting json to object";
@@ -101,6 +102,8 @@ public class Constant {
   public static final String REFERENCE_TYPE_PICKLIST_URL = "/picklists/reference-types";
   public static final String COUNTRIES_PICKLIST_URL = "/picklists/countries";
   public static final String INDUSTRES_PICKLIST_URL = "/synclink/picklists/industries";
+  public static final String GET_DOCUMENT_ATTCHMENT_LIST_URL =
+      "/company/{COMPANYID}/candidatesuiteattachments";
   public static final String CONTACT_SAVE_URL = "/contacts";
   public static final String COMPANY_SAVE_URL = "/companies";
 
