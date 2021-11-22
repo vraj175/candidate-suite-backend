@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.aspire.kgp.constant.Constant;
 import com.aspire.kgp.dto.CandidateDTO;
 import com.aspire.kgp.dto.CompanyDTO;
+import com.aspire.kgp.dto.DocumentDTO;
 import com.aspire.kgp.exception.NotFoundException;
 import com.aspire.kgp.model.User;
 import com.aspire.kgp.service.CompanyService;
@@ -125,6 +126,21 @@ public class CompanyController {
     log.debug("Get all matching companies API Response : " + mapping.getValue());
     return mapping;
   }
+
+  @Operation(summary = "Get all document attachment")
+  @GetMapping("/company/{companyId}/document-attachment")
+  @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK",
+      content = @Content(mediaType = "application/json", schema = @Schema(
+          type = "List<DocumentDTO>",
+          example = "[{\"id\": \"string\",\"fileName\": \"string\",\"createdAt\": \"string\"}]")))})
+  public List<DocumentDTO> getDocumentAttchment(@PathVariable("companyId") String companyId) {
+    log.info("Get document attachment API call, Request Param companyId : " + companyId);
+    List<DocumentDTO> listOfDocument = service.getDocumentAttchment(companyId);
+
+    log.info("Successfully send document attachment list" + listOfDocument.size());
+    return listOfDocument;
+  }
+
 
   @Operation(summary = "Add New Company")
   @PostMapping("/companies")

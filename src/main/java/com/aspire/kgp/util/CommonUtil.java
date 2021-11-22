@@ -19,6 +19,8 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang.math.NumberUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.boot.configurationprocessor.json.JSONException;
+import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 
 import com.aspire.kgp.constant.Constant;
@@ -311,7 +313,8 @@ public class CommonUtil {
     return partnerEmailList;
   }
 
-  public static Set<String> teamPartnerMemberList(List<UserDTO> users, Set<String> partnerEmailList) {
+  public static Set<String> teamPartnerMemberList(List<UserDTO> users,
+      Set<String> partnerEmailList) {
     log.info("Creating Team member email and name set");
     for (UserDTO user : users) {
       if (user != null && CommonUtil.checkNotNullString(user.getId())
@@ -320,5 +323,14 @@ public class CommonUtil {
       }
     }
     return partnerEmailList;
+  }
+
+  public static boolean isJSONValid(String jsonString) {
+    try {
+      new JSONObject(jsonString);
+    } catch (JSONException ex) {
+      return false;
+    }
+    return true;
   }
 }

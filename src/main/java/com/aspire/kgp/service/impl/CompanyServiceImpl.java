@@ -5,16 +5,20 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.configurationprocessor.json.JSONException;
+import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.stereotype.Service;
 
 import com.aspire.kgp.constant.Constant;
 import com.aspire.kgp.dto.CandidateDTO;
 import com.aspire.kgp.dto.CompanyDTO;
 import com.aspire.kgp.dto.ContactDTO;
+import com.aspire.kgp.dto.DocumentDTO;
 import com.aspire.kgp.exception.APIException;
 import com.aspire.kgp.model.UserSearch;
 import com.aspire.kgp.service.CompanyService;
 import com.aspire.kgp.service.UserSearchService;
+import com.aspire.kgp.util.CommonUtil;
 import com.aspire.kgp.util.RestUtil;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
@@ -167,5 +171,28 @@ public class CompanyServiceImpl implements CompanyService {
   @Override
   public String addNewCompany(String companyData) {
     return restUtil.postMethod(Constant.COMPANY_SAVE_URL, companyData, null);
+  }
+
+  @Override
+  public List<DocumentDTO> getDocumentAttchment(String companyId) {
+
+    try {
+      JSONObject obj = new JSONObject();
+      obj.put("show_in_candidatesuite", "true");
+      String apiResponse = restUtil.postMethod(
+          Constant.GET_DOCUMENT_ATTCHMENT_LIST_URL.replace("{COMPANYID}", companyId),
+          obj.toString(), null);
+      if (CommonUtil.isJSONValid(apiResponse)) {
+        throw new APIException(Constant.INVALID_COMPANY_ID);
+      }
+      return new Gson().fromJson(apiResponse, new TypeToken<List<DocumentDTO>>() {
+        /**
+         * 
+         */
+        private static final long serialVersionUID = 1L;
+      }.getType());
+    } catch (JsonSyntaxException | JSONException e) {
+      throw new APIException(Constant.JSON_PROCESSING_EXCEPTION + e.getMessage());
+    }
   }
 }
