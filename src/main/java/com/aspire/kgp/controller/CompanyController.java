@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.json.MappingJacksonValue;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -146,7 +147,7 @@ public class CompanyController {
   @PostMapping("/company/{companyId}/upload/attachment")
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = Constant.FILE_UPLOADED_SUCCESSFULLY)})
-  public String uploadCompanyAttachment(@PathVariable("companyId") String companyId,
+  public ResponseEntity<Object> uploadCompanyAttachment(@PathVariable("companyId") String companyId,
       @RequestParam("file") MultipartFile file, HttpServletRequest request) {
     log.info("upload Attachment for company API call, Request Param companyId: " + companyId
         + " File: " + file.getName());

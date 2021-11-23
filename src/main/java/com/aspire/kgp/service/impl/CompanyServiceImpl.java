@@ -4,7 +4,10 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Collections;
+import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
@@ -12,6 +15,8 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -206,8 +211,8 @@ public class CompanyServiceImpl implements CompanyService {
   }
 
   @Override
-  public String uploadCompanyAttachment(MultipartFile multipartFile, String companyId,
-      HttpServletRequest request) {
+  public ResponseEntity<Object> uploadCompanyAttachment(MultipartFile multipartFile,
+      String companyId, HttpServletRequest request) {
 
     File file;
     try {
@@ -235,12 +240,19 @@ public class CompanyServiceImpl implements CompanyService {
 
     try {
       if (responseJson.get("id").getAsString() != null) {
-        return Constant.FILE_UPLOADED_SUCCESSFULLY;
+        Map<String, Object> body = new LinkedHashMap<>();
+        body.put(Constant.TIMESTAMP, new Date());
+        body.put(Constant.STATUS, "200");
+        body.put(Constant.MESSAGE, Constant.FILE_UPLOADED_SUCCESSFULLY);
+        return new ResponseEntity<>(body, HttpStatus.OK);
       }
     } catch (Exception e) {
       throw new APIException(Constant.FILE_UPLOAD_ERROR);
     }
-    return Constant.FILE_UPLOAD_ERROR;
-
+    Map<String, Object> body = new LinkedHashMap<>();
+    body.put(Constant.TIMESTAMP, new Date());
+    body.put(Constant.STATUS, "500");
+    body.put(Constant.MESSAGE, Constant.FILE_UPLOAD_ERROR);
+    return new ResponseEntity<>(body, HttpStatus.INTERNAL_SERVER_ERROR);
   }
 }
