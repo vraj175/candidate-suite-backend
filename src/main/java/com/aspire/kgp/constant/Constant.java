@@ -92,6 +92,8 @@ public class Constant {
   public static final String GET_COMPANY_LIST_URL = "/synclink/companies?name={COMPANYNAME}";
   public static final String DOWNLOAD_ATTACHMENT =
       "/clientsuite/candidate/resumes/{attachmentId}/download";
+  public static final String DOWNLOAD_ANY_ATTACHMENT =
+      "/candidate-suite/downloads?type={attachmentType}&id={attachmentId}";
   public static final String SEARCH_INFO_URL = "/searches/{SEARCHID}";
   public static final String EDUCATION_DEGREE_PICKLIST_URL = "/picklists/educations/degrees";
   public static final String CONTACT_REFERENCE_URL = "/contact/{contactId}/references";
