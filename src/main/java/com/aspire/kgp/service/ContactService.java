@@ -66,4 +66,7 @@ public interface ContactService {
       String gdprConsentData, HttpServletRequest request);
   
   public Contact setContactDetails(ContactDTO contactDTO, Contact contact);
+
+  public void downloadAnyDocument(String documentName, String documentType, String attachmentId,
+      HttpServletResponse response);
 }

@@ -389,6 +389,9 @@ public class ContactServiceImpl implements ContactService {
     return documentList.get(0);
   }
 
+  /*
+   * This API only for resume download
+   */
   @Override
   public void downloadDocument(String documentName, String attachmentId,
       HttpServletResponse response) {
@@ -408,6 +411,31 @@ public class ContactServiceImpl implements ContactService {
     } catch (IOException e) {
       throw new APIException("error in download document");
     }
+  }
+
+  /*
+   * This API used for any type of document download just pass document type
+   */
+  @Override
+  public void downloadAnyDocument(String documentName, String documentType, String attachmentId,
+      HttpServletResponse response) {
+    try {
+      OutputStream os = response.getOutputStream();
+      response.setContentType("application/octet-stream; charset=ISO-8859-1");
+
+      ContentDisposition contentDisposition = ContentDisposition.builder("inline")
+          .filename(documentName.replaceAll("[?:,!%#\"]", "")).build();
+
+      response.setHeader(HttpHeaders.CONTENT_DISPOSITION, contentDisposition.toString());
+      // write document to output stream get data from API
+      restUtil.newGetMethod(Constant.DOWNLOAD_ANY_ATTACHMENT
+          .replace("{attachmentType}", documentType).replace("{attachmentId}", attachmentId), os);
+      os.flush();
+      os.close();
+    } catch (IOException e) {
+      throw new APIException("error in download document ,type " + documentType);
+    }
+
   }
 
   @Override
@@ -684,7 +712,7 @@ public class ContactServiceImpl implements ContactService {
         paramRequest.put("access", access);
         paramRequest.put("clientName", paramRequest.get("candidateName"));
       }
-      if("pratik.patel@aspiresoftware.in".equals(email)) {
+      if ("pratik.patel@aspiresoftware.in".equals(email)) {
         email = "poorav.solanki@aspiresoftserv.com";
       }
       mailService.sendEmail(email, null, mailSubject, mailService.getUploadEmailContent(request,
@@ -839,7 +867,7 @@ public class ContactServiceImpl implements ContactService {
       paramRequest.put("content", content);
       paramRequest.put("access", access);
 
-      if("pratik.patel@aspiresoftware.in".equals(email)) {
+      if ("pratik.patel@aspiresoftware.in".equals(email)) {
         email = "poorav.solanki@aspiresoftserv.com";
       }
       mailService.sendEmail(email, null, mailSubject,

@@ -80,8 +80,8 @@ public class ContactController {
 
     if (contact == null)
       contact = service.saveOrUpdateContact(contactDTO);
-    
-    contact = service.setContactDetails(contactDTO,contact);
+
+    contact = service.setContactDetails(contactDTO, contact);
 
     log.info("Successfully send Contact Details");
     log.debug("Get Contact Details API Response : " + contact);
@@ -202,7 +202,10 @@ public class ContactController {
     return service.getContactOfferLetter(contactId);
   }
 
-  @Operation(summary = "Download Documents")
+  /*
+   * This API only for resume download
+   */
+  @Operation(summary = "Download Resume Documents")
   @GetMapping(value = {"contact/resumes/{attachmentId}/download"})
   @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK")})
   public void downloadDocument(@PathVariable("attachmentId") String attachmentId,
@@ -211,6 +214,21 @@ public class ContactController {
         + " documentName: " + documentName);
     service.downloadDocument(documentName, attachmentId, response);
   }
+
+  /*
+   * This is API for any type of document download
+   */
+  @Operation(summary = "Download Any Documents")
+  @GetMapping(value = {"contact/document/{attachmentId}/download"})
+  @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK")})
+  public void downloadAnyDocument(@PathVariable("attachmentId") String attachmentId,
+      @RequestParam String documentName, @RequestParam String documentType,
+      HttpServletResponse response) {
+    log.info("Download Any Documents API call, Request Param attachmentId: " + attachmentId
+        + " documentName: " + documentName + " document Type: " + documentType);
+    service.downloadAnyDocument(documentName, documentType, attachmentId, response);
+  }
+
 
   @Operation(summary = "Get contact searches")
   @GetMapping(value = {"/contact/{contactId}/searches"})
