@@ -110,7 +110,9 @@ public class ContactController {
       @PathVariable("candidateId") String candidateId) throws UnsupportedEncodingException {
     log.info("Update Contact Details API call, Request Param contactId: " + contactId
         + " Contact Data: " + contactData);
-    return service.updateContactDetails(contactId, contactData, request, candidateId);
+    Contact existContactObj = getCandidateDetails(contactId);
+    return service.updateContactDetails(contactId, contactData, request, candidateId,
+        existContactObj);
   }
 
   @Operation(summary = "Update Contact Education Details")

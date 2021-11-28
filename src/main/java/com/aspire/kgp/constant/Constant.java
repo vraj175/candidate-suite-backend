@@ -259,4 +259,14 @@ public class Constant {
 
   public static final String ATHENA_REPORT_URL =
       "/delegate/NewReportServlet?params={%22pageSize%22:%22{pageSize}%22,%22locale%22:%22{locale}%22,%22contactId%22:%22{contactId}%22,%22newReportAction%22:%22AthenaIndidualConsultingReport%22}";
+
+  // MyInfo Update Email status
+  public static final String UPDATE = "Update";
+  public static final String ADD = "Add";
+  public static final String DELETE = "Delete";
+  public static final String CURRENT_INFO = "CurrentInfo";
+  public static final String JOB_HISTORY = "jobHistory";
+  public static final String BOARD_HISTORY = "boardHistory";
+  public static final String EDUCATION = "education";
+
 }
