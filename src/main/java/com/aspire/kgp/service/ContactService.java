@@ -22,7 +22,8 @@ public interface ContactService {
   public byte[] getContactImage(String contactId);
 
   public String updateContactDetails(String contactId, String contactData,
-      HttpServletRequest request, String candidateId) throws UnsupportedEncodingException;
+      HttpServletRequest request, String candidateId, Contact existContactObj)
+      throws UnsupportedEncodingException;
 
   public Reference saveAndUpdateContactReference(String referenceId, String referenceData,
       String contactId, HttpServletRequest request, String candidateId)

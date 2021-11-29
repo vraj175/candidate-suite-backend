@@ -110,9 +110,12 @@ public class ContactController {
       @PathVariable("candidateId") String candidateId) throws UnsupportedEncodingException {
     log.info("Update Contact Details API call, Request Param contactId: " + contactId
         + " Contact Data: " + contactData);
-    return service.updateContactDetails(contactId, contactData, request, candidateId);
+    Contact existContactObj = getCandidateDetails(contactId);
+    return service.updateContactDetails(contactId, contactData, request, candidateId,
+        existContactObj);
   }
 
+  //Currently not call from frontend because every thing is update throw "/contact/update/{contactId}/{candidateId}"
   @Operation(summary = "Update Contact Education Details")
   @PutMapping("/contact/education/{contactId}")
   public String updateContactEducationDetails(@PathVariable("contactId") String contactId,
@@ -122,6 +125,7 @@ public class ContactController {
     return service.updateContactEducationDetails(contactId, contactData);
   }
 
+  //currently not call from front end because this delete functionality coverd in "/contact/update/{contactId}/{candidateId}"
   @Operation(summary = "delete Contact Job History Details")
   @DeleteMapping("/contact/jobHistory/{id}")
   public ResponseEntity<Object> deleteContactJobHistory(@PathVariable("id") String id) {
@@ -129,6 +133,7 @@ public class ContactController {
     return service.deleteJobHistoryById(id);
   }
 
+//currently not call from front end because this delete functionality coverd in "/contact/update/{contactId}/{candidateId}"
   @Operation(summary = "delete Contact Board History Details")
   @DeleteMapping("/contact/boardHistory/{id}")
   public ResponseEntity<Object> deleteContactBoardHistory(@PathVariable("id") String id) {

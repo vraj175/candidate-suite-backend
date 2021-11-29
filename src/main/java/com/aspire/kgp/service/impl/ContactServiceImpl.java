@@ -16,6 +16,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -38,6 +39,7 @@ import com.aspire.kgp.dto.CandidateDTO;
 import com.aspire.kgp.dto.ContactDTO;
 import com.aspire.kgp.dto.ContactReferencesDTO;
 import com.aspire.kgp.dto.DocumentDTO;
+import com.aspire.kgp.dto.EducationDTO;
 import com.aspire.kgp.dto.SearchDTO;
 import com.aspire.kgp.dto.UserDTO;
 import com.aspire.kgp.exception.APIException;
@@ -105,6 +107,10 @@ public class ContactServiceImpl implements ContactService {
   @Value("${galaxy.url}")
   private String galaxyUrl;
 
+  private Map<String, String> jobHistoryMap;
+  private Map<String, String> boardHistoryMap;
+  private Map<String, String> educationDetailsMap;
+
   @Override
   public ContactDTO getContactDetails(String contactId) {
     String apiResponse =
@@ -131,7 +137,9 @@ public class ContactServiceImpl implements ContactService {
 
   @Override
   public String updateContactDetails(String contactId, String contactData,
-      HttpServletRequest request, String candidateId) throws UnsupportedEncodingException {
+      HttpServletRequest request, String candidateId, Contact existContactObj)
+      throws UnsupportedEncodingException {
+    Map<String, Map<String, String>> changesMap = new HashMap<>();
     JsonObject json = (JsonObject) JsonParser.parseString(contactData);
     try {
       Contact contact = new Gson().fromJson(json, new TypeToken<Contact>() {
@@ -141,13 +149,26 @@ public class ContactServiceImpl implements ContactService {
          */
         private static final long serialVersionUID = 1L;
       }.getType());
+
+
+      changesMap.put(Constant.CURRENT_INFO, checkCurrentInfoChanges(existContactObj, contact));
+      changesMap.put(Constant.JOB_HISTORY, checkJobHistoryChanges(existContactObj, contact));
+      changesMap.put(Constant.BOARD_HISTORY, checkBoardHistoryChanges(existContactObj, contact));
+      changesMap.put(Constant.EDUCATION, checkEducationDetailsChanges(existContactObj, contact));
+
       Contact contactDatabase = repository.findByGalaxyId(contactId);
       if (contactDatabase != null) {
         contact.setCreatedDate(contactDatabase.getCreatedDate());
         contact.setModifyDate(new Timestamp(System.currentTimeMillis()));
       }
       repository.save(contact);
-      sentUploadNotification(contactId, request, candidateId, "Contact Details");
+
+      if (changesMap.get(Constant.CURRENT_INFO).size() > 0
+          || changesMap.get(Constant.JOB_HISTORY).size() > 0
+          || changesMap.get(Constant.BOARD_HISTORY).size() > 0
+          || changesMap.get(Constant.EDUCATION).size() > 0) {
+        sentContactMyInfoChangesNotification(contactId, request, candidateId, changesMap);
+      }
     } catch (Exception e) {
       throw new APIException("Error While converting data from request json " + e.getMessage());
     }
@@ -159,7 +180,7 @@ public class ContactServiceImpl implements ContactService {
       return restUtil.putMethod(Constant.CONTACT_URL.replace("{contactId}", contactId),
           json.toString());
     } catch (IOException e) {
-      throw new APIException("Error While update education details in galaxy" + e.getMessage());
+      throw new APIException("Error While update contact details in galaxy" + e.getMessage());
     }
   }
 
@@ -905,4 +926,287 @@ public class ContactServiceImpl implements ContactService {
 
     return contact;
   }
+
+  private void sentContactMyInfoChangesNotification(String contactId, HttpServletRequest request,
+      String candidateId, Map<String, Map<String, String>> changesMap) {
+
+    Set<String> kgpPartnerEmailList = new HashSet<>();
+    HashMap<String, String> paramRequest = new HashMap<>();
+
+    CandidateDTO apiResponse = candidateService.getCandidateDetails(candidateId);
+    try {
+      kgpPartnerEmailList = CommonUtil.teamPartnerMemberList(apiResponse.getSearch().getPartners(),
+          kgpPartnerEmailList);
+      kgpPartnerEmailList =
+          CommonUtil.teamMemberList(apiResponse.getSearch().getRecruiters(), kgpPartnerEmailList);
+      paramRequest.put("candidateName",
+          apiResponse.getContact().getFirstName() + " " + apiResponse.getContact().getLastName());
+      paramRequest.put("searchId", apiResponse.getSearch().getId());
+      paramRequest.put("searchName", apiResponse.getSearch().getJobTitle());
+      paramRequest.put("companyName", apiResponse.getSearch().getCompany().getName());
+      paramRequest.put("candidateId", candidateId);
+      paramRequest.put("contactId", contactId);
+
+    } catch (JsonSyntaxException e) {
+      log.error("oops ! invalid json");
+      throw new JsonSyntaxException("error while get team member");
+    }
+    try {
+      for (String kgpTeamMeberDetails : kgpPartnerEmailList) {
+        log.info("Partner Email : " + kgpTeamMeberDetails);
+        sentContactMyInfoChangesNotificationMail(kgpTeamMeberDetails.split("##")[0],
+            kgpTeamMeberDetails.split("##")[1], request, paramRequest, changesMap);
+      }
+    } catch (Exception ex) {
+      log.info(ex);
+      throw new APIException("Error in send upload notification email");
+    }
+  }
+
+
+  private void sentContactMyInfoChangesNotificationMail(String email, String partnerName,
+      HttpServletRequest request, HashMap<String, String> paramRequest,
+      Map<String, Map<String, String>> changesMap) {
+
+    log.info("sending client upload notification email");
+    User user = (User) request.getAttribute("user");
+    String role = user.getRole().getName();
+    paramRequest.put("role", role);
+    String locate = "en_US";
+    try {
+      Map<String, String> staticContentsMap =
+          StaticContentsMultiLanguageUtil.getStaticContentsMap(locate, Constant.EMAILS_CONTENT_MAP);
+      String mailSubject = staticContentsMap.get("candidate.suite.upload.email.subject");
+      String content = "";
+      if (Constant.PARTNER.equalsIgnoreCase(role)) {
+        UserDTO userDTO = userService.getGalaxyUserDetails(user.getGalaxyId());
+
+        mailSubject = mailSubject + " - " + "Contact Details Changed from " + userDTO.getFirstName()
+            + " " + userDTO.getLastName();
+        content = userDTO.getFirstName() + " " + userDTO.getLastName() + " has changed "
+            + paramRequest.get("candidateName") + "'s";
+        paramRequest.put("clickButtonUrl",
+            CommonUtil.getServerUrl(request) + request.getContextPath() + "/my-info/"
+                + paramRequest.get("candidateId") + "/" + paramRequest.get("searchId") + "/"
+                + paramRequest.get("searchName") + "/" + paramRequest.get("contactId"));
+        paramRequest.put("clientName", userDTO.getFirstName() + " " + userDTO.getLastName());
+
+      } else {
+        mailSubject = mailSubject + " - " + "Contact Details Changed from "
+            + paramRequest.get("candidateName");
+        content = paramRequest.get("candidateName") + " has changed ";
+        paramRequest.put("clickButtonUrl",
+            CommonUtil.getServerUrl(request) + request.getContextPath() + "/my-info/"
+                + paramRequest.get("candidateId") + "/" + paramRequest.get("searchId") + "/"
+                + paramRequest.get("searchName") + "/" + paramRequest.get("contactId"));
+        paramRequest.put("clientName", paramRequest.get("candidateName"));
+      }
+      paramRequest.put("content", content);
+      paramRequest.put("access", "to access in Candidate Suite");
+
+      mailService.sendEmail(email, null, mailSubject,
+          mailService.getMyInfoUpdateEmailContent(request, staticContentsMap,
+              "contact-MyInfo-Changes.ftl", partnerName, paramRequest, changesMap),
+          null);
+    } catch (Exception e) {
+      log.info(e);
+      throw new APIException("Error in sending candidate upload email");
+    }
+    log.info("Client upload Mail sent to all partners successfully.");
+
+
+  }
+
+  private Map<String, String> checkCurrentInfoChanges(Contact existContactObj,
+      Contact newContactObj) {
+    Map<String, String> mapOfChangesField = new HashMap<>();
+    if (!existContactObj.getFirstName().equals(newContactObj.getFirstName())) {
+      mapOfChangesField.put(Constant.FIRST_NAME, Constant.UPDATE);
+    }
+    if (!existContactObj.getLastName().equals(newContactObj.getLastName())) {
+      mapOfChangesField.put(Constant.LAST_NAME, Constant.UPDATE);
+    }
+    if (!existContactObj.getCity().equals(newContactObj.getCity())) {
+      mapOfChangesField.put(Constant.CITY, Constant.UPDATE);
+    }
+    if (!existContactObj.getState().equals(newContactObj.getState())) {
+      mapOfChangesField.put(Constant.STATE, Constant.UPDATE);
+    }
+    if (!existContactObj.getCurrentJobTitle().equals(newContactObj.getCurrentJobTitle())) {
+      mapOfChangesField.put("Current job title", Constant.UPDATE);
+    }
+    if (!existContactObj.getMobilePhone().equals(newContactObj.getMobilePhone())) {
+      mapOfChangesField.put(Constant.MOBILE_PHONE, Constant.UPDATE);
+    }
+    if (!existContactObj.getHomePhone().equals(newContactObj.getHomePhone())) {
+      mapOfChangesField.put("Home Phone", Constant.UPDATE);
+    }
+    if (!existContactObj.getWorkEmail().equals(newContactObj.getWorkEmail())) {
+      mapOfChangesField.put(Constant.WORK_EMAIL, Constant.UPDATE);
+    }
+    if (!existContactObj.getEmail().equals(newContactObj.getEmail())) {
+      mapOfChangesField.put(Constant.EMAIL, Constant.UPDATE);
+    }
+    if (!existContactObj.getLinkedInUrl().equals(newContactObj.getLinkedInUrl())) {
+      mapOfChangesField.put(Constant.LINKEDIN_URL, Constant.UPDATE);
+    }
+    if (!existContactObj.getCurrentJobStartYear().equals(newContactObj.getCurrentJobStartYear())) {
+      mapOfChangesField.put("Current Job Start Year", Constant.UPDATE);
+    }
+    return mapOfChangesField;
+  }
+
+  private Map<String, String> checkJobHistoryChanges(Contact existContactObj,
+      Contact newContactObj) {
+    jobHistoryMap = new HashMap<>();
+
+    // find new Added job history
+    List<JobHistory> newAddedJobHistory = newContactObj.getJobHistory().stream()
+        .filter(n -> n.getId() == 0).collect(Collectors.toList());
+
+    addIntoJobHistoryMap(newAddedJobHistory, Constant.ADD);
+
+    // find deleted job history and delete from database
+    List<JobHistory> deletedJobHistory = existContactObj.getJobHistory().stream()
+        .filter(e -> newContactObj.getJobHistory().stream().noneMatch(n -> n.getId() == e.getId()))
+        .collect(Collectors.toList());
+
+    addIntoJobHistoryMap(deletedJobHistory, Constant.DELETE);
+    for (JobHistory jobHistory : deletedJobHistory) {
+      try {
+        jobHistoryRepository.deleteById(jobHistory.getId());
+        log.info("Job history is deleted for ID " + jobHistory.getId());
+      } catch (Exception e2) {
+        throw new APIException("Error While delete job history for " + jobHistory.getId());
+      }
+
+      existContactObj.getJobHistory().remove(jobHistory);
+    }
+
+
+    // find updated job history
+    List<JobHistory> updatedJobHistory = existContactObj.getJobHistory().stream()
+        .filter(e -> newContactObj.getJobHistory().stream()
+            .noneMatch(n -> n.getId() == e.getId() && n.getCompany().equals(e.getCompany())
+                && n.getStartYear().equals(e.getStartYear())
+                && n.getEndYear().equals(e.getEndYear()) && n.getTitle().equals(e.getTitle())))
+        .collect(Collectors.toList());
+
+    addIntoJobHistoryMap(updatedJobHistory, Constant.UPDATE);
+
+    return jobHistoryMap;
+  }
+
+  private void addIntoJobHistoryMap(List<JobHistory> jobHistoryList, String type) {
+    for (JobHistory history : jobHistoryList) {
+      if (jobHistoryMap.containsKey(history.getCompany()))
+        jobHistoryMap.put(history.getCompany(),
+            jobHistoryMap.get(history.getCompany()) + " , " + type);
+      else
+        jobHistoryMap.put(history.getCompany(), type);
+    }
+  }
+
+  private Map<String, String> checkBoardHistoryChanges(Contact existContactObj,
+      Contact newContactObj) {
+    boardHistoryMap = new HashMap<>();
+
+    // find new Added board history
+    List<BoardHistory> newAddedBoardHistory = newContactObj.getBoardHistory().stream()
+        .filter(n -> n.getId() == 0).collect(Collectors.toList());
+    addIntoBoardHistoryMap(newAddedBoardHistory, Constant.ADD);
+
+    // find deleted board history from new contact object and delete from database
+    List<BoardHistory> deletedBoardHistory = existContactObj.getBoardHistory().stream()
+        .filter(
+            e -> newContactObj.getBoardHistory().stream().noneMatch(n -> n.getId() == e.getId()))
+        .collect(Collectors.toList());
+    addIntoBoardHistoryMap(deletedBoardHistory, Constant.DELETE);
+    for (BoardHistory boardHistory : deletedBoardHistory) {
+      try {
+        boardHistoryRepository.deleteById(boardHistory.getId());
+        log.info("Board history is deleted for ID " + boardHistory.getId());
+      } catch (Exception e2) {
+        throw new APIException("Error While delete board history for " + boardHistory.getId());
+      }
+      existContactObj.getBoardHistory().remove(boardHistory);
+    }
+
+    // find updated board history
+    List<BoardHistory> updatedBoardHistory = existContactObj.getBoardHistory().stream()
+        .filter(e -> newContactObj.getBoardHistory().stream()
+            .noneMatch(n -> n.getId() == e.getId() && n.getCompany().equals(e.getCompany())
+                && n.getStartYear().equals(e.getStartYear())
+                && n.getEndYear().equals(e.getEndYear()) && n.getTitle().equals(e.getTitle())
+                && n.getCommitee().equals(e.getCommitee())))
+        .collect(Collectors.toList());
+    addIntoBoardHistoryMap(updatedBoardHistory, Constant.UPDATE);
+
+    return boardHistoryMap;
+  }
+
+  private void addIntoBoardHistoryMap(List<BoardHistory> boardHistories, String type) {
+    for (BoardHistory boardHistory : boardHistories) {
+      if (boardHistoryMap.containsKey(boardHistory.getCompany()))
+        boardHistoryMap.put(boardHistory.getCompany(),
+            boardHistoryMap.get(boardHistory.getCompany()) + " , " + type);
+      else
+        boardHistoryMap.put(boardHistory.getCompany(), type);
+    }
+  }
+
+  private Map<String, String> checkEducationDetailsChanges(Contact existContactObj,
+      Contact newContactObj) {
+    educationDetailsMap = new HashMap<>();
+
+    // find new Added education
+    List<EducationDTO> newAddedEducationDetails = newContactObj.getEducationDetails().stream()
+        .filter(n -> n.getId() == null).collect(Collectors.toList());
+    addIntoEducationMap(newAddedEducationDetails, Constant.ADD);
+
+    // find deleted education from new contact object and delete from database
+    List<EducationDTO> deletedEducationDetails = existContactObj.getEducationDetails().stream()
+        .filter(e -> newContactObj.getEducationDetails().stream()
+            .noneMatch(n -> n.getId().equals(e.getId())))
+        .collect(Collectors.toList());
+    addIntoEducationMap(deletedEducationDetails, Constant.DELETE);
+    for (EducationDTO educationDetail : deletedEducationDetails) {
+      existContactObj.getEducationDetails().remove(educationDetail);
+    }
+
+    // find updated Education
+    List<EducationDTO> updatedEducationDetails = existContactObj.getEducationDetails().stream()
+        .filter(e -> newContactObj.getEducationDetails().stream()
+            .noneMatch(n -> n.getId().equals(e.getId())
+                && (replaceEmptyStringIfNull(n.getSchoolName())
+                    .equals(replaceEmptyStringIfNull(e.getSchoolName())))
+                && (replaceEmptyStringIfNull(n.getDegreeName())
+                    .equals(replaceEmptyStringIfNull(e.getDegreeName())))
+                && (replaceEmptyStringIfNull(n.getMajor())
+                    .equals(replaceEmptyStringIfNull(e.getMajor())))
+                && (replaceEmptyStringIfNull(n.getDegreeYear())
+                    .equals(replaceEmptyStringIfNull(e.getDegreeYear())))))
+        .collect(Collectors.toList());
+    addIntoEducationMap(updatedEducationDetails, Constant.UPDATE);
+    return educationDetailsMap;
+  }
+
+  private String replaceEmptyStringIfNull(String inputString) {
+    if (inputString == null) {
+      return Constant.EMPTY_STRING;
+    }
+    return inputString;
+  }
+
+  private void addIntoEducationMap(List<EducationDTO> educationList, String type) {
+    for (EducationDTO educationDetail : educationList) {
+      String schoolName = educationDetail.getSchoolName() == null ? Constant.EMPTY_STRING
+          : educationDetail.getSchoolName();
+      if (educationDetailsMap.containsKey(schoolName))
+        educationDetailsMap.put(schoolName, educationDetailsMap.get(schoolName) + " , " + type);
+      else
+        educationDetailsMap.put(schoolName, type);
+    }
+  }
+
 }
