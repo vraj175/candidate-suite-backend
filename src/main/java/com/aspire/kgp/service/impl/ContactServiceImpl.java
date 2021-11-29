@@ -956,8 +956,6 @@ public class ContactServiceImpl implements ContactService {
         log.info("Partner Email : " + kgpTeamMeberDetails);
         sentContactMyInfoChangesNotificationMail(kgpTeamMeberDetails.split("##")[0],
             kgpTeamMeberDetails.split("##")[1], request, paramRequest, changesMap);
-        // sendClientUploadNotificationMail(kgpTeamMeberDetails.split("##")[0],
-        // kgpTeamMeberDetails.split("##")[1], request, paramRequest, fieldChangesList);
       }
     } catch (Exception ex) {
       log.info(ex);
@@ -1006,7 +1004,7 @@ public class ContactServiceImpl implements ContactService {
       paramRequest.put("content", content);
       paramRequest.put("access", "to access in Candidate Suite");
 
-      mailService.sendEmail("vraj.patel@aspiresoftserv.com", null, mailSubject,
+      mailService.sendEmail(email, null, mailSubject,
           mailService.getMyInfoUpdateEmailContent(request, staticContentsMap,
               "contact-MyInfo-Changes.ftl", partnerName, paramRequest, changesMap),
           null);
@@ -1180,18 +1178,24 @@ public class ContactServiceImpl implements ContactService {
     List<EducationDTO> updatedEducationDetails = existContactObj.getEducationDetails().stream()
         .filter(e -> newContactObj.getEducationDetails().stream()
             .noneMatch(n -> n.getId().equals(e.getId())
-                && (n.getSchoolName() == null ? Constant.EMPTY_STRING.equals(e.getSchoolName())
-                    : n.getSchoolName().equals(e.getSchoolName()))
-                && (n.getDegreeName() == null ? Constant.EMPTY_STRING.equals(e.getDegreeName())
-                    : n.getDegreeName().equals(e.getDegreeName()))
-                && (n.getMajor() == null ? Constant.EMPTY_STRING.equals(e.getMajor())
-                    : n.getMajor().equals(e.getMajor()))
-                && (n.getDegreeYear() == null ? Constant.EMPTY_STRING.equals(e.getDegreeYear())
-                    : n.getDegreeYear().equals(e.getDegreeYear()))))
+                && (replaceEmptyStringIfNull(n.getSchoolName())
+                    .equals(replaceEmptyStringIfNull(e.getSchoolName())))
+                && (replaceEmptyStringIfNull(n.getDegreeName())
+                    .equals(replaceEmptyStringIfNull(e.getDegreeName())))
+                && (replaceEmptyStringIfNull(n.getMajor())
+                    .equals(replaceEmptyStringIfNull(e.getMajor())))
+                && (replaceEmptyStringIfNull(n.getDegreeYear())
+                    .equals(replaceEmptyStringIfNull(e.getDegreeYear())))))
         .collect(Collectors.toList());
     addIntoEducationMap(updatedEducationDetails, Constant.UPDATE);
-
     return educationDetailsMap;
+  }
+
+  private String replaceEmptyStringIfNull(String inputString) {
+    if (inputString == null) {
+      return Constant.EMPTY_STRING;
+    }
+    return inputString;
   }
 
   private void addIntoEducationMap(List<EducationDTO> educationList, String type) {

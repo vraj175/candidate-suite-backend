@@ -27,11 +27,11 @@
 			       <#if currentInfoChangesAvailable>
 			        <table style="font-family:calibre,arial;border-collapse: collapse; width: 45%; height: 50px; border: 1px solid black;">
 			       <tr>
-                        <th colspan="2" style="border: 1px solid black; text-align: left; background-color: #7A7A7A; color: white;  height: 20px;">Current Info</th>
+                        <th colspan="2" style="border: 1px solid black; text-align: left; background-color: #4753bd; color: white;  height: 20px;">Current Info</th>
                    </tr>
                 	<tr class="tableHeader">
-                        <th style="border: 1px solid black; text-align: left; background-color: #9A9A9A; color: white; width: 16%; height: 17px;">Field Name</th>
-                        <th style="border: 1px solid black; text-align: left; background-color: #9A9A9A; color: white; width: 5%; height: 17px;">Status</th>
+                        <th style="border: 1px solid black; text-align: left; width: 16%; background-color: #f2f3f4; height: 17px;"><b>Field Name</b></th>
+                        <th style="border: 1px solid black; text-align: left; width: 5%; background-color: #f2f3f4; height: 17px;"><b>Status</b></th>
                    </tr>
                   
                    <#list currentInfoChanges?keys as key>
@@ -48,11 +48,11 @@
              	 <#if jobHistoryChangesAvailable>
 			        <table style="font-family:calibre,arial;border-collapse: collapse; width: 45%; height: 50px; border: 1px solid black;">
 			       <tr>
-                        <th colspan="2" style="border: 1px solid black; text-align: left; background-color: #7A7A7A; color: white;  height: 20px;">Job History</th>
+                        <th colspan="2" style="border: 1px solid black; text-align: left; background-color: #4753bd; color: white;  height: 20px;">Job History</th>
                    </tr>
                 	<tr class="tableHeader">
-                        <th style="border: 1px solid black; text-align: left; background-color: #9A9A9A; color: white; width: 16%; height: 17px;">Company name</th>
-                        <th style="border: 1px solid black; text-align: left; background-color: #9A9A9A; color: white; width: 5%; height: 17px;">Status</th>
+                        <th style="border: 1px solid black; text-align: left; background-color: #f2f3f4; width: 16%; height: 17px;"><b>Company name</b></th>
+                        <th style="border: 1px solid black; text-align: left; background-color: #f2f3f4; width: 5%; height: 17px;"><b>Status</b></th>
                    </tr>
                   
                    <#list jobHistoryChanges?keys as key>
@@ -75,11 +75,11 @@
              	 <#if boardHistoryChangesAvailable>
 			        <table style="font-family:calibre,arial;border-collapse: collapse; width: 45%; height: 50px; border: 1px solid black;">
 			       <tr>
-                        <th colspan="2" style="border: 1px solid black; text-align: left; background-color: #7A7A7A; color: white;  height: 20px;">Board History</th>
+                        <th colspan="2" style="border: 1px solid black; text-align: left; background-color: #4753bd; color: white;  height: 20px;">Board History</th>
                    </tr>
                 	<tr class="tableHeader">
-                        <th style="border: 1px solid black; text-align: left; background-color: #9A9A9A; color: white; width: 16%; height: 17px;">Company name</th>
-                        <th style="border: 1px solid black; text-align: left; background-color: #9A9A9A; color: white; width: 5%; height: 17px;">Status</th>
+                        <th style="border: 1px solid black; text-align: left; background-color: #f2f3f4; width: 16%; height: 17px;"><b>Company name</b></th>
+                        <th style="border: 1px solid black; text-align: left; background-color: #f2f3f4; width: 5%; height: 17px;"><b>Status</b></th>
                    </tr>
                   
                    <#list boardHistoryChanges?keys as key>
@@ -102,11 +102,11 @@
              	 <#if educationChangesAvailable>
 			        <table style="font-family:calibre,arial;border-collapse: collapse; width: 45%; height: 50px; border: 1px solid black;">
 			       <tr>
-                        <th colspan="2" style="border: 1px solid black; text-align: left; background-color: #7A7A7A; color: white;  height: 20px;">Education</th>
+                        <th colspan="2" style="border: 1px solid black; text-align: left; background-color: #4753bd; color: white;  height: 20px;">Education</th>
                    </tr>
                 	<tr class="tableHeader">
-                        <th style="border: 1px solid black; text-align: left; background-color: #9A9A9A; color: white; width: 16%; height: 17px;">School name</th>
-                        <th style="border: 1px solid black; text-align: left; background-color: #9A9A9A; color: white; width: 5%; height: 17px;">Status</th>
+                        <th style="border: 1px solid black; text-align: left; background-color: #f2f3f4; width: 16%; height: 17px;"><b>School name</b></th>
+                        <th style="border: 1px solid black; text-align: left; background-color: #f2f3f4; width: 5%; height: 17px;"><b>Status</b></th>
                    </tr>
                   
                    <#list educationChanges?keys as key>

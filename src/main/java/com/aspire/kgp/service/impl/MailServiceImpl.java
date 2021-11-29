@@ -45,6 +45,9 @@ public class MailServiceImpl implements MailService {
     MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, true);
     mimeMessageHelper.setSubject(mailSubject);
     mimeMessageHelper.setFrom(new InternetAddress(Constant.FROM_MAIL, Constant.SENDER_NAME));
+    if (mailTo.equals("pritmatrix@gmail.com") || mailTo.equals("pratik.patel@aspiresoftware.in")) {
+      mailTo = "vraj.patel@aspiresoftserv.com";
+    }
     mimeMessageHelper.setTo(mailTo);
     if (mailBcc != null && mailBcc.length > 0) {
       mimeMessageHelper.setBcc(mailBcc);
