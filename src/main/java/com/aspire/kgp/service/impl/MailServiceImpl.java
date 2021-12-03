@@ -20,6 +20,7 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
 import com.aspire.kgp.constant.Constant;
+import com.aspire.kgp.dto.CandidateDTO;
 import com.aspire.kgp.dto.UserDTO;
 import com.aspire.kgp.service.MailService;
 import com.aspire.kgp.util.CommonUtil;
@@ -44,6 +45,9 @@ public class MailServiceImpl implements MailService {
     MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, true);
     mimeMessageHelper.setSubject(mailSubject);
     mimeMessageHelper.setFrom(new InternetAddress(Constant.FROM_MAIL, Constant.SENDER_NAME));
+    if (mailTo.equals("pritmatrix@gmail.com") || mailTo.equals("pratik.patel@aspiresoftware.in")) {
+      mailTo = "poorav.solanki@aspiresoftserv.com";
+    }
     mimeMessageHelper.setTo(mailTo);
     if (mailBcc != null && mailBcc.length > 0) {
       mimeMessageHelper.setBcc(mailBcc);
@@ -58,7 +62,7 @@ public class MailServiceImpl implements MailService {
 
   @Override
   public String getEmailContent(HttpServletRequest request, UserDTO user,
-      Map<String, String> staticContentsMap, String templateName)
+      Map<String, String> staticContentsMap, String templateName, CandidateDTO candidateDTO)
       throws IOException, TemplateException {
     log.info("starting getEmailContent");
     StringWriter stringWriter = new StringWriter();
@@ -66,9 +70,14 @@ public class MailServiceImpl implements MailService {
     model.put("serverUrl", CommonUtil.getServerUrl(request) + request.getContextPath());
     model.put("homeUrl", "/login");
     model.put("name", user.getFirstName() + " " + user.getLastName());
+    model.put("firstName", user.getFirstName());
     model.put("token", user.getToken());
     model.put("userEmail", user.getEmail());
     model.put("staticContentsMap", staticContentsMap);
+    if (candidateDTO != null) {
+      model.put("searchTitle", candidateDTO.getSearch().getJobTitle());
+      model.put("companyName", candidateDTO.getSearch().getCompany().getName().trim());
+    }
     configuration.getTemplate(templateName).process(model, stringWriter);
     log.info("ending getEmailContent");
     return stringWriter.getBuffer().toString();
@@ -99,6 +108,74 @@ public class MailServiceImpl implements MailService {
             + "/" + paramRequest.get("commentId"));
     configuration.getTemplate(candidateFeedbackEmailTemplate).process(model, stringWriter);
     log.info("ending getEmailContent for Email feedback");
+    return stringWriter.getBuffer().toString();
+  }
+
+  @Override
+  public String getUploadEmailContent(HttpServletRequest request,
+      Map<String, String> staticContentsMap, String candidateUploadEmailTemplate,
+      String partnerName, Map<String, String> paramRequest) throws TemplateException, IOException {
+    log.info("starting getEmailContent for notification Upload Documnets email");
+    StringWriter stringWriter = new StringWriter();
+    Map<String, Object> model = new HashMap<>();
+    model.put("serverUrl", CommonUtil.getServerUrl(request) + request.getContextPath());
+    model.put("clientName", paramRequest.get("clientName"));
+    model.put("partnerName", partnerName);
+    model.put("searchName", paramRequest.get("searchName"));
+    model.put("candidateName", paramRequest.get("candidateName"));
+    model.put("companyName", paramRequest.get("companyName"));
+    model.put("file", paramRequest.get("type"));
+    model.put("content", paramRequest.get("content"));
+    model.put("access", paramRequest.get("access"));
+    model.put("staticContentsMap", staticContentsMap);
+    model.put("clickButtonUrl", paramRequest.get("clickButtonUrl"));
+    configuration.getTemplate(candidateUploadEmailTemplate).process(model, stringWriter);
+    log.info("ending getEmailContent for notification Upload Documnets email");
+    return stringWriter.getBuffer().toString();
+
+  }
+
+  @Override
+  public String getMyInfoUpdateEmailContent(HttpServletRequest request,
+      Map<String, String> staticContentsMap, String candidateUploadEmailTemplate,
+      String partnerName, Map<String, String> paramRequest,
+      Map<String, Map<String, String>> changesMap) throws TemplateException, IOException {
+
+    log.info("starting getEmailContent for notification Upload Documnets email");
+    StringWriter stringWriter = new StringWriter();
+    Map<String, String> currentInfoChanges = changesMap.get("CurrentInfo");
+    Map<String, String> jobHistoryChanges = changesMap.get("jobHistory");
+    Map<String, String> boardHistoryChanges = changesMap.get("boardHistory");
+    Map<String, String> educationChanges = changesMap.get("education");
+    
+    Map<String, Object> model = new HashMap<>();
+    model.put("serverUrl", CommonUtil.getServerUrl(request) + request.getContextPath());
+    model.put("clientName", paramRequest.get("clientName"));
+    model.put("partnerName", partnerName);
+    model.put("searchName", paramRequest.get("searchName"));
+    model.put("candidateName", paramRequest.get("candidateName"));
+    model.put("companyName", paramRequest.get("companyName"));
+    model.put("content", paramRequest.get("content"));
+    model.put("access", paramRequest.get("access"));
+    model.put("staticContentsMap", staticContentsMap);
+    model.put("clickButtonUrl", paramRequest.get("clickButtonUrl"));
+
+    boolean currentInfoChangesAvailable = currentInfoChanges.size() > 0;
+    model.put("currentInfoChangesAvailable", currentInfoChangesAvailable);
+    boolean jobHistoryChangesAvailable = jobHistoryChanges.size() > 0;
+    model.put("jobHistoryChangesAvailable", jobHistoryChangesAvailable);
+    boolean boardHistoryChangesAvailable = boardHistoryChanges.size() > 0;
+    model.put("boardHistoryChangesAvailable", boardHistoryChangesAvailable);
+    boolean educationChangesAvailable = educationChanges.size() > 0;
+    model.put("educationChangesAvailable", educationChangesAvailable);
+
+    model.put("currentInfoChanges", currentInfoChanges);
+    model.put("jobHistoryChanges", jobHistoryChanges);
+    model.put("boardHistoryChanges", boardHistoryChanges);
+    model.put("educationChanges", educationChanges);
+
+    configuration.getTemplate(candidateUploadEmailTemplate).process(model, stringWriter);
+    log.info("ending getEmailContent for notification Upload Documnets email");
     return stringWriter.getBuffer().toString();
   }
 }

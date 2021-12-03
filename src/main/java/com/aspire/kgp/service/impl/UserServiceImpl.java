@@ -163,7 +163,7 @@ public class UserServiceImpl implements UserService {
             .getStaticContentsMap(language, Constant.EMAILS_CONTENT_MAP);
         String mailSubject = staticContentsMap.get("candidate.suite.invitation.email.subject");
         mailService.sendEmail(email, bcc, mailSubject, mailService.getEmailContent(request, userDTO,
-            staticContentsMap, Constant.CANDIDATE_INVITE_EMAIL_TEMPLATE), null);
+            staticContentsMap, Constant.CANDIDATE_INVITE_EMAIL_TEMPLATE, candidateDTO), null);
       } else {
         log.info("mail for add search");
         // mail for add search
@@ -299,7 +299,7 @@ public class UserServiceImpl implements UserService {
     String mailSubject = staticContentsMap.get("candidate.suite.forgot.email.subject");
     try {
       mailService.sendEmail(email, null, mailSubject, mailService.getEmailContent(request, userDTO,
-          staticContentsMap, Constant.FORGOT_EMAIL_TEMPLATE), null);
+          staticContentsMap, Constant.FORGOT_EMAIL_TEMPLATE, null), null);
       response = true;
     } catch (Exception e) {
       throw new APIException("Error in send Email");

@@ -34,6 +34,10 @@ public class ContactDTO extends UserDTO {
   private String athenaCompletionDate;
   @SerializedName("athena_invitation_sent_on")
   private String athenaInvitationSentOn;
+  @SerializedName("current_job_start_year")
+  private String currentJobStartYear;
+  @SerializedName("current_job_end_year")
+  private String currentJobEndtYear;
 
   public String getCurrentJobTitle() {
     return currentJobTitle;
@@ -145,6 +149,22 @@ public class ContactDTO extends UserDTO {
 
   public void setAthenaInvitationSentOn(String athenaInvitationSentOn) {
     this.athenaInvitationSentOn = athenaInvitationSentOn;
+  }
+
+  public String getCurrentJobStartYear() {
+    return currentJobStartYear;
+  }
+
+  public void setCurrentJobStartYear(String currentJobStartYear) {
+    this.currentJobStartYear = currentJobStartYear;
+  }
+
+  public String getCurrentJobEndtYear() {
+    return currentJobEndtYear;
+  }
+
+  public void setCurrentJobEndtYear(String currentJobEndtYear) {
+    this.currentJobEndtYear = currentJobEndtYear;
   }
 
   @Override
