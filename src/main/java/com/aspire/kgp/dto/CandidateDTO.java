@@ -20,6 +20,7 @@ public class CandidateDTO {
   private String kgpInterviewDate3;
   private List<InterviewDTO> interviews;
   boolean degreeVerification;
+  @SerializedName("is_offer_letter_uploaded")
   boolean offerPresented;
   boolean athenaCompleted;
   @SerializedName("athena_status")

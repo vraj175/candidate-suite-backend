@@ -61,6 +61,7 @@ public class Constant {
   public static final String ILLEGAL_ARGUMENT_EXCEPTION = "Illegal Argument Exception";
   public static final String JSON_PROCESSING_EXCEPTION = "JsonProcessingException : ";
   public static final String INVALID_CANDIDATE_ID = "Invalid Candidate Id";
+  public static final String INVALID_COMPANY_ID = "Invalid Company Id";
   public static final String FILE_UPLOAD_ERROR = "Error in upload file";
   public static final String IMAGE_UPLOAD_ERROR = "Error in upload profile image";
   public static final String CONVERT_JSON_ERROR = "Error in coverting json to object";
@@ -91,6 +92,8 @@ public class Constant {
   public static final String GET_COMPANY_LIST_URL = "/synclink/companies?name={COMPANYNAME}";
   public static final String DOWNLOAD_ATTACHMENT =
       "/clientsuite/candidate/resumes/{attachmentId}/download";
+  public static final String DOWNLOAD_ANY_ATTACHMENT =
+      "/candidate-suite/downloads?type={attachmentType}&id={attachmentId}";
   public static final String SEARCH_INFO_URL = "/searches/{SEARCHID}";
   public static final String EDUCATION_DEGREE_PICKLIST_URL = "/picklists/educations/degrees";
   public static final String CONTACT_REFERENCE_URL = "/contact/{contactId}/references";
@@ -101,14 +104,19 @@ public class Constant {
   public static final String REFERENCE_TYPE_PICKLIST_URL = "/picklists/reference-types";
   public static final String COUNTRIES_PICKLIST_URL = "/picklists/countries";
   public static final String INDUSTRES_PICKLIST_URL = "/synclink/picklists/industries";
+  public static final String GET_DOCUMENT_ATTCHMENT_LIST_URL =
+      "/company/{COMPANYID}/candidatesuiteattachments";
   public static final String CONTACT_SAVE_URL = "/contacts";
   public static final String COMPANY_SAVE_URL = "/companies";
 
   public static final String RESUME_URL = "/contact/{contactId}/resumes";
   public static final String ATTECHMENT_URL = "/contact/{contactId}/attachments";
+  public static final String COMPANY_ATTECHMENT_URL = "/company/{companyId}/attachments";
+  public static final String OFFER_LETTER_URL = "/contact/{contactId}/offerLetter";
   public static final String IMAGE_UPLOAD_URL = "/contacts/{contactId}/image";
   public static final String UPDATE_CONTACT_REFERENCE_URL = "/contact/references/{referenceId}";
   public static final String CONTACT_ID = "{contactId}";
+  public static final String COMPANY_ID_BRACES = "{companyId}";
   public static final String CANDIDATE_ID_BRACES = "{candidateId}";
   public static final String COMMENT_ID_BRACES = "{commentId}";
 
@@ -144,6 +152,8 @@ public class Constant {
   public static final String CANDIDATE_INVITE_EMAIL_TEMPLATE = "candidate-invitation.ftl";
   public static final String FORGOT_EMAIL_TEMPLATE = "forgot-password.ftl";
   public static final String CANDIDATE_FEEDBACK_EMAIL_TEMPLATE = "candidate-feedback.ftl";
+  public static final String CANDIDATE_UPLOAD_EMAIL_TEMPLATE = "candidate-upload.ftl";
+  public static final String CONTACT_GDPR_CONSENT_EMAIL_TEMPLATE = "contact-gdpr-consent.ftl";
 
   // Json Fields
   public static final String FIRST_NAME = "firstName";
@@ -173,6 +183,8 @@ public class Constant {
   public static final String PUBLISHED_BIO = "publishedBio";
   public static final String WORK_EMAIL = "workEmail";
   public static final String RESUME = "Resume";
+  public static final String OFFER_LETTER = "offerLetter";
+  public static final String OFFER_LETTERS = "Offer Letter";
   public static final String COMMENTS = "comments";
   public static final String CREATED_BY = "createdBy";
   public static final String CREATED_AT = "createdAt";
@@ -204,6 +216,10 @@ public class Constant {
   public static final String SCREENED_DATE = "screenedDate";
   public static final String TYPE = "type";
   public static final String CREATED_NAME = "createdName";
+  public static final String EXRCUTION_CREDIT = "executionCredit";
+  public static final String LOCATION = "location";
+  public static final String IS_APPROVED_BY_PARTNER = "isApprovedByPartner";
+  public static final String COMMENT_ID = "commentId";
 
   // google capcha
   public static final String GOOGLE_CAPTCHA_SECRET_KEY = "6LfPQ10aAAAAAHP7HDxskU_c1c8oBVSpf5SZdZ4C";
@@ -221,6 +237,7 @@ public class Constant {
   public static final String CANDIDATE_FEEDBACK_REPLY_FILTER = "candidateFeedbackReplyFilter";
   public static final String USER_FILTER = "userFilter";
   public static final String INTERVIEW_FILTER = "interviewFilter";
+  public static final String CLIENT_TEAM_FILTER = "clientTeamFilter";
 
   // messages
   public static final String DATA_SAVED = "Data saved successfully";
@@ -242,4 +259,14 @@ public class Constant {
 
   public static final String ATHENA_REPORT_URL =
       "/delegate/NewReportServlet?params={%22pageSize%22:%22{pageSize}%22,%22locale%22:%22{locale}%22,%22contactId%22:%22{contactId}%22,%22newReportAction%22:%22AthenaIndidualConsultingReport%22}";
+
+  // MyInfo Update Email status
+  public static final String UPDATE = "Update";
+  public static final String ADD = "Add";
+  public static final String DELETE = "Delete";
+  public static final String CURRENT_INFO = "CurrentInfo";
+  public static final String JOB_HISTORY = "jobHistory";
+  public static final String BOARD_HISTORY = "boardHistory";
+  public static final String EDUCATION = "education";
+
 }

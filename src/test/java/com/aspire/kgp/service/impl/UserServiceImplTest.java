@@ -214,8 +214,7 @@ class UserServiceImplTest {
        */
       private static final long serialVersionUID = 1L;
     }.getType());
-    String responseJson =
-        "{  \"candidate\": "+element+ "}";
+    String responseJson = "{  \"candidate\": " + element + "}";
     when(restUtil.newGetMethod(anyString())).thenReturn(responseJson);
     when(service.findByEmail(anyString())).thenReturn(null);
     when(service.findByGalaxyId(anyString())).thenReturn(null);
@@ -237,8 +236,8 @@ class UserServiceImplTest {
 
     user.setPasswordReset(Boolean.TRUE);
     when(searchService.findByUserAndCandidateId(any(), anyString())).thenReturn(userSearch);
-    result = service.inviteUser(Constant.TEST, Constant.ENGLISH_CODE, Constant.TEST, new String[] {}, user,
-        Boolean.TRUE, CustomTestData.getRequest());
+    result = service.inviteUser(Constant.TEST, Constant.ENGLISH_CODE, Constant.TEST,
+        new String[] {}, user, Boolean.TRUE, CustomTestData.getRequest());
 
     assertTrue(result);
 
@@ -298,7 +297,8 @@ class UserServiceImplTest {
     when(restUtil.newGetMethod(anyString())).thenReturn(responseJson);
     when(service.saveorUpdate(any())).thenReturn(user);
     when(service.findByEmail(anyString())).thenReturn(user);
-    when(mailService.getEmailContent(any(), any(), any(), anyString())).thenReturn(Constant.TEST);
+    when(mailService.getEmailContent(any(), any(), any(), anyString(), any()))
+        .thenReturn(Constant.TEST);
 
     boolean result = service.forgotPassword(CustomTestData.getRequest(), Constant.TEST);
 
@@ -331,7 +331,7 @@ class UserServiceImplTest {
     responseJson =
         "{" + "    \"name\": " + Constant.TEST + "," + "    \"id\": " + Constant.TEST + "   }";
     when(restUtil.newGetMethod(anyString())).thenReturn(responseJson);
-    when(mailService.getEmailContent(any(), any(), any(), anyString()))
+    when(mailService.getEmailContent(any(), any(), any(), anyString(), any()))
         .thenThrow(TemplateException.class);
     e = assertThrows(APIException.class, () -> service.forgotPassword(request, Constant.TEST));
     assertEquals("Error in send Email", e.getMessage());

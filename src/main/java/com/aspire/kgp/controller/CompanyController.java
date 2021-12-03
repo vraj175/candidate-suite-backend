@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.json.MappingJacksonValue;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -15,10 +16,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.aspire.kgp.constant.Constant;
 import com.aspire.kgp.dto.CandidateDTO;
 import com.aspire.kgp.dto.CompanyDTO;
+import com.aspire.kgp.dto.DocumentDTO;
 import com.aspire.kgp.exception.NotFoundException;
 import com.aspire.kgp.model.User;
 import com.aspire.kgp.service.CompanyService;
@@ -75,7 +78,7 @@ public class CompanyController {
   @GetMapping("/companyInfo/{candidateId}")
   @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK",
       content = @Content(mediaType = "application/json", schema = @Schema(type = "CandidateDTO",
-          example = "{\"id\": \"string\",\"contact\": {\"athenaCompletionDate\": \"string\",\"athenaInvitationSentOn\": \"string\"},\"kgpInterviewDate1\": \"string\",\"kgpInterviewDate2\": \"string\",\"kgpInterviewDate3\": \"string\",\"interviews\": [{\"id\": \"string\",\"method\": \"string\",\"comments\": \"string\",\"position\": 0,\"interviewDate\": \"string\",\"client\": {\"id\": \"string\",\"name\": \"string\"}}],\"degreeVerification\": true,\"offerPresented\": true,\"athenaCompleted\": true,\"contactId\": \"string\",\"stage\": \"string\",\"kgpInterviewMethod1\": \"string\",\"kgpInterviewMethod2\": \"string\",\"kgpInterviewMethod3\": \"string\",\"kgpInterviewClient1\": {\"id\": \"string\",\"name\": \"string\",\"firstName\": \"string\",\"lastName\": \"string\"},\"kgpInterviewClient2\": {\"id\": \"string\",\"name\": \"string\",\"firstName\": \"string\",\"lastName\": \"string\"},\"kgpInterviewClient3\": {\"id\": \"string\",\"name\": \"string\",\"firstName\": \"string\",\"lastName\": \"string\"},\"screenedDate\": \"string\"}")))})
+          example = "{\"id\": \"string\",\"contact\": {\"athenaCompletionDate\": \"string\",\"athenaInvitationSentOn\": \"string\"},\"kgpInterviewDate1\": \"string\",\"kgpInterviewDate2\": \"string\",\"kgpInterviewDate3\": \"string\",\"interviews\": [{\"id\": \"string\",\"method\": \"string\",\"comments\": \"string\",\"position\": 0,\"interviewDate\": \"string\",\"client\": {\"id\": \"string\",\"name\": \"string\"}}],\"degreeVerification\": true,\"offerPresented\": true,\"athenaCompleted\": true,\"contactId\": \"string\",\"stage\": \"string\",\"kgpInterviewMethod1\": \"string\",\"kgpInterviewMethod2\": \"string\",\"kgpInterviewMethod3\": \"string\",\"kgpInterviewClient1\": {\"id\": \"string\",\"name\": \"string\",\"firstName\": \"string\",\"lastName\": \"string\"},\"kgpInterviewClient2\": {\"id\": \"string\",\"name\": \"string\",\"firstName\": \"string\",\"lastName\": \"string\"},\"kgpInterviewClient3\": {\"id\": \"string\",\"name\": \"string\",\"firstName\": \"string\",\"lastName\": \"string\"},\"screenedDate\": \"string\",\"isOfferLetterUploaded\": true}")))})
   public MappingJacksonValue getCompanyInfoDetails(
       @PathVariable("candidateId") String candidateId) {
     log.info("Get candidate Details API call, Request Param CandidateId : " + candidateId);
@@ -86,14 +89,15 @@ public class CompanyController {
         Constant.DEGREE_VERIFICATION, Constant.OFFER_PRESENTED, Constant.ATHENA_COMPLETED,
         Constant.CONTACT, Constant.KGP_INTERVIEW_METHOD_1, Constant.KGP_INTERVIEW_METHOD_2,
         Constant.KGP_INTERVIEW_METHOD_3, Constant.KGP_INTERVIEW_CLIENT_1,
-        Constant.KGP_INTERVIEW_CLIENT_2, Constant.KGP_INTERVIEW_CLIENT_3, Constant.SCREENED_DATE);
+        Constant.KGP_INTERVIEW_CLIENT_2, Constant.KGP_INTERVIEW_CLIENT_3, Constant.SCREENED_DATE,
+        "isOfferLetterUploaded");
     SimpleBeanPropertyFilter interviewFilter =
         SimpleBeanPropertyFilter.filterOutAllExcept(Constant.ID, Constant.METHOD, Constant.COMMENTS,
             Constant.POSITION, Constant.INTERVIEW_DATE, Constant.CLIENT);
-    SimpleBeanPropertyFilter userFilter =
-        SimpleBeanPropertyFilter.filterOutAllExcept(Constant.ID, Constant.NAME,Constant.FIRST_NAME,Constant.LAST_NAME);
-    SimpleBeanPropertyFilter contactFilter = SimpleBeanPropertyFilter
-        .filterOutAllExcept(Constant.ATHENA_INVITATION_DATE, Constant.ATHENA_COMPLETION_DATE,"educationDetails");
+    SimpleBeanPropertyFilter userFilter = SimpleBeanPropertyFilter.filterOutAllExcept(Constant.ID,
+        Constant.NAME, Constant.FIRST_NAME, Constant.LAST_NAME);
+    SimpleBeanPropertyFilter contactFilter = SimpleBeanPropertyFilter.filterOutAllExcept(
+        Constant.ATHENA_INVITATION_DATE, Constant.ATHENA_COMPLETION_DATE, "educationDetails");
     FilterProvider filters =
         new SimpleFilterProvider().addFilter(Constant.CANDIDATE_FILTER, candidateFilter)
             .addFilter(Constant.INTERVIEW_FILTER, interviewFilter)
@@ -123,6 +127,31 @@ public class CompanyController {
     log.info("Successfully send all matching companies");
     log.debug("Get all matching companies API Response : " + mapping.getValue());
     return mapping;
+  }
+
+  @Operation(summary = "Get all document attachment")
+  @GetMapping("/company/{companyId}/attachments")
+  @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK",
+      content = @Content(mediaType = "application/json", schema = @Schema(
+          type = "List<DocumentDTO>",
+          example = "[{\"id\": \"string\",\"fileName\": \"string\",\"createdAt\": \"string\"}]")))})
+  public List<DocumentDTO> getDocumentAttchment(@PathVariable("companyId") String companyId) {
+    log.info("Get document attachment API call, Request Param companyId : " + companyId);
+    List<DocumentDTO> listOfDocument = service.getDocumentAttchment(companyId);
+
+    log.info("Successfully send document attachment list" + listOfDocument.size());
+    return listOfDocument;
+  }
+
+  @Operation(summary = "upload Attachment for company")
+  @PostMapping("/company/{companyId}/upload/attachment")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", description = Constant.FILE_UPLOADED_SUCCESSFULLY)})
+  public ResponseEntity<Object> uploadCompanyAttachment(@PathVariable("companyId") String companyId,
+      @RequestParam("file") MultipartFile file, HttpServletRequest request) {
+    log.info("upload Attachment for company API call, Request Param companyId: " + companyId
+        + " File: " + file.getName());
+    return service.uploadCompanyAttachment(file, companyId, request);
   }
 
   @Operation(summary = "Add New Company")

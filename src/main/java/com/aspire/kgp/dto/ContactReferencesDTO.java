@@ -16,6 +16,16 @@ public class ContactReferencesDTO {
   @SerializedName("ref_contact_id")
   private String refContactId;
   private SearchDTO search;
+  @SerializedName("contact_id")
+  private String contactId;
+  
+  public String getContactId() {
+    return contactId;
+  }
+
+  public void setContactId(String contactId) {
+    this.contactId = contactId;
+  }
 
   public String getId() {
     return id;
