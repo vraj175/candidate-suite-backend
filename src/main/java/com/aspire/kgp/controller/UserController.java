@@ -57,18 +57,28 @@ public class UserController {
   public ResponseEntity<Object> inviteUser(@Valid @RequestBody InviteDTO invite,
       HttpServletRequest request) {
     log.info("Invite User as Candidates API call");
+    log.info("Invite  Partner : "+ invite.getPartnerId());
+    
     User user = service.findByGalaxyId(invite.getPartnerId());
     if (user == null) {
       UserDTO userDTO = service.getGalaxyUserDetails(invite.getPartnerId());
+      log.info("User  Id : "+ userDTO.getId());
+      log.info("User  Email : "+ userDTO.getEmail());
       if (CommonUtil.checkNotNullString(userDTO.getId()))
         user = service.saveOrUpdatePartner(userDTO.getId(), userDTO.getEmail(), userDTO.getEmail(),
             false);
     }
 
     if (user == null) {
+    log.error("User is null ");
       throw new NotFoundException("Invalid Partner Id");
     }
 
+    log.info("CandidateId : "+ invite.getCandidateId());
+    log.info("Language : "+ invite.getLanguage());
+    log.info("Invite Email : "+ invite.getEmail());
+    log.info("Invite BCC : "+ invite.getBcc());
+    log.info("Remove Duplicate : "+ invite.isRemoveDuplicate());
     boolean result = service.inviteUser(invite.getCandidateId(), invite.getLanguage(),
         invite.getEmail(), invite.getBcc(), user, invite.isRemoveDuplicate(), request);
     if (result) {
