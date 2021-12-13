@@ -135,8 +135,9 @@ public class UserServiceImpl implements UserService {
       user.setEmail(email);
       user.setPassword(CommonUtil.hash(email));
       user.setGalaxyId(candidateDTO.getContact().getId());
-      user.setPasswordReset(Boolean.TRUE);
     }
+    
+    user.setPasswordReset(Boolean.TRUE);
     user.setModifyDate(new Timestamp(System.currentTimeMillis()));
     user.setLanguage(languageService.findByName(language));
     user = saveorUpdate(user);
