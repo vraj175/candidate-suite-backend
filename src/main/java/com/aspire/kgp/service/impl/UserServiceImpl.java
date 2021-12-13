@@ -157,14 +157,17 @@ public class UserServiceImpl implements UserService {
       userDTO.setEmail(email);
 
       log.info("staring email sending...");
-
+      if(user.isPasswordReset()) {
+	    log.info("mail for add user or mail for invite");
+	    Map<String, String> staticContentsMap = StaticContentsMultiLanguageUtil
+	        .getStaticContentsMap(language, Constant.EMAILS_CONTENT_MAP);
+	    String mailSubject = staticContentsMap.get("candidate.suite.invitation.email.subject");
+	    mailService.sendEmail(email, bcc, mailSubject, mailService.getEmailContent(request, userDTO,
+	        staticContentsMap, Constant.CANDIDATE_INVITE_EMAIL_TEMPLATE, candidateDTO), null);    	  
+      } else {
+    	  log.info("Invate for search");
+      }
         // mail for add user or mail for invite
-    log.info("mail for add user or mail for invite");
-    Map<String, String> staticContentsMap = StaticContentsMultiLanguageUtil
-        .getStaticContentsMap(language, Constant.EMAILS_CONTENT_MAP);
-    String mailSubject = staticContentsMap.get("candidate.suite.invitation.email.subject");
-    mailService.sendEmail(email, bcc, mailSubject, mailService.getEmailContent(request, userDTO,
-        staticContentsMap, Constant.CANDIDATE_INVITE_EMAIL_TEMPLATE, candidateDTO), null);
       
       response = true;
     } catch (Exception e) {
