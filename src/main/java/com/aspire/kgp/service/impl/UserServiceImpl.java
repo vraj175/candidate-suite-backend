@@ -165,6 +165,10 @@ public class UserServiceImpl implements UserService {
         mailService.sendEmail(email, bcc, mailSubject, mailService.getEmailContent(request, userDTO,
             staticContentsMap, Constant.CANDIDATE_INVITE_EMAIL_TEMPLATE, candidateDTO), null);
       
+        
+        
+        
+        
       response = true;
     } catch (Exception e) {
       log.info(e);
