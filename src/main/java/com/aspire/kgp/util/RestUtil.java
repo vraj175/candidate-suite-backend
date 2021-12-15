@@ -233,8 +233,12 @@ public class RestUtil {
   private String returnPostString(PostMethod post, String paramJSON, File file) {
     String responseString = null;
     try {
-      if (file != null) {
+      if (file != null && paramJSON != null) {
         Part[] parts = new Part[] {new JsonPart("Json", paramJSON), new FilePart("Body", file)};
+        post.setRequestEntity(new MultipartRequestEntity(parts, post.getParams()));
+      } else if (file != null) {
+        Part[] parts =
+            new Part[] {new JsonPart("show_in_candidatesuite", "true"), new FilePart("Body", file)};
         post.setRequestEntity(new MultipartRequestEntity(parts, post.getParams()));
       } else {
         StringRequestEntity body =

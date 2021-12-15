@@ -229,7 +229,7 @@ class UserServiceImplTest {
     when(service.findByGalaxyId(anyString())).thenReturn(user);
     when(searchService.findByUserAndCandidateId(any(), anyString())).thenReturn(null);
 
-    result = service.inviteUser(Constant.TEST, Constant.TEST, Constant.TEST, new String[] {}, user,
+    result = service.inviteUser(Constant.TEST, Constant.ENGLISH_CODE, Constant.TEST, new String[] {}, user,
         Boolean.FALSE, CustomTestData.getRequest());
 
     assertTrue(result);

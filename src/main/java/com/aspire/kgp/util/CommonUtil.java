@@ -1,5 +1,7 @@
 package com.aspire.kgp.util;
 
+import static com.google.common.base.Preconditions.checkArgument;
+
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
@@ -11,8 +13,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
-
-import static com.google.common.base.Preconditions.*;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -311,7 +311,8 @@ public class CommonUtil {
     return partnerEmailList;
   }
 
-  public static Set<String> teamPartnerMemberList(List<UserDTO> users, Set<String> partnerEmailList) {
+  public static Set<String> teamPartnerMemberList(List<UserDTO> users,
+      Set<String> partnerEmailList) {
     log.info("Creating Team member email and name set");
     for (UserDTO user : users) {
       if (user != null && CommonUtil.checkNotNullString(user.getId())

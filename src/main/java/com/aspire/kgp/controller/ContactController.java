@@ -33,7 +33,10 @@ import com.aspire.kgp.dto.DocumentDTO;
 import com.aspire.kgp.dto.SearchDTO;
 import com.aspire.kgp.exception.APIException;
 import com.aspire.kgp.model.Contact;
+import com.aspire.kgp.model.GdprConsent;
 import com.aspire.kgp.model.Reference;
+import com.aspire.kgp.repository.BoardHistoryRepository;
+import com.aspire.kgp.repository.JobHistoryRepository;
 import com.aspire.kgp.service.ContactService;
 import com.fasterxml.jackson.databind.ser.FilterProvider;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
@@ -55,6 +58,12 @@ public class ContactController {
   @Autowired
   ContactService service;
 
+  @Autowired
+  BoardHistoryRepository boardHistoryRepository;
+
+  @Autowired
+  JobHistoryRepository jobHistoryRepository;
+
   @Operation(summary = "Get Contact Details")
   @GetMapping("/contact/{contactId}")
   @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK",
@@ -71,11 +80,28 @@ public class ContactController {
 
     if (contact == null)
       contact = service.saveOrUpdateContact(contactDTO);
-    contact.setEducationDetails(contactDTO.getEducationDetails());
+
+    contact = service.setContactDetails(contactDTO, contact);
 
     log.info("Successfully send Contact Details");
     log.debug("Get Contact Details API Response : " + contact);
     return contact;
+  }
+
+  @Operation(summary = "Get contact GDPR consent")
+  @GetMapping("/contact/gdpr-consent/{contactId}")
+  public GdprConsent getGdprConsent(@PathVariable("contactId") String contactId) {
+    log.info("Get getGdpr Consent API call, Request Param contactId: " + contactId);
+    return service.getGdprConsent(contactId);
+  }
+
+  @PutMapping("/contact/gdpr-consent/update/{contactId}/{candidateId}")
+  public ResponseEntity<Object> updateGdprConsent(@PathVariable("contactId") String contactId,
+      @RequestBody String gdprConsentData, HttpServletRequest request,
+      @PathVariable("candidateId") String candidateId) {
+    log.info("Update Gdpr Consent Details API call, Request Param contactId: " + contactId
+        + " Contact Data: " + gdprConsentData);
+    return service.updateGdprConsent(contactId, candidateId, gdprConsentData, request);
   }
 
   @PutMapping("/contact/update/{contactId}/{candidateId}")
@@ -84,9 +110,12 @@ public class ContactController {
       @PathVariable("candidateId") String candidateId) throws UnsupportedEncodingException {
     log.info("Update Contact Details API call, Request Param contactId: " + contactId
         + " Contact Data: " + contactData);
-    return service.updateContactDetails(contactId, contactData, request, candidateId);
+    Contact existContactObj = getCandidateDetails(contactId);
+    return service.updateContactDetails(contactId, contactData, request, candidateId,
+        existContactObj);
   }
 
+  //Currently not call from frontend because every thing is update throw "/contact/update/{contactId}/{candidateId}"
   @Operation(summary = "Update Contact Education Details")
   @PutMapping("/contact/education/{contactId}")
   public String updateContactEducationDetails(@PathVariable("contactId") String contactId,
@@ -96,6 +125,7 @@ public class ContactController {
     return service.updateContactEducationDetails(contactId, contactData);
   }
 
+  //currently not call from front end because this delete functionality coverd in "/contact/update/{contactId}/{candidateId}"
   @Operation(summary = "delete Contact Job History Details")
   @DeleteMapping("/contact/jobHistory/{id}")
   public ResponseEntity<Object> deleteContactJobHistory(@PathVariable("id") String id) {
@@ -103,6 +133,7 @@ public class ContactController {
     return service.deleteJobHistoryById(id);
   }
 
+//currently not call from front end because this delete functionality coverd in "/contact/update/{contactId}/{candidateId}"
   @Operation(summary = "delete Contact Board History Details")
   @DeleteMapping("/contact/boardHistory/{id}")
   public ResponseEntity<Object> deleteContactBoardHistory(@PathVariable("id") String id) {
@@ -176,7 +207,10 @@ public class ContactController {
     return service.getContactOfferLetter(contactId);
   }
 
-  @Operation(summary = "Download Documents")
+  /*
+   * This API only for resume download
+   */
+  @Operation(summary = "Download Resume Documents")
   @GetMapping(value = {"contact/resumes/{attachmentId}/download"})
   @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK")})
   public void downloadDocument(@PathVariable("attachmentId") String attachmentId,
@@ -185,6 +219,21 @@ public class ContactController {
         + " documentName: " + documentName);
     service.downloadDocument(documentName, attachmentId, response);
   }
+
+  /*
+   * This is API for any type of document download
+   */
+  @Operation(summary = "Download Any Documents")
+  @GetMapping(value = {"contact/document/{attachmentId}/download"})
+  @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK")})
+  public void downloadAnyDocument(@PathVariable("attachmentId") String attachmentId,
+      @RequestParam String documentName, @RequestParam String documentType,
+      HttpServletResponse response) {
+    log.info("Download Any Documents API call, Request Param attachmentId: " + attachmentId
+        + " documentName: " + documentName + " document Type: " + documentType);
+    service.downloadAnyDocument(documentName, documentType, attachmentId, response);
+  }
+
 
   @Operation(summary = "Get contact searches")
   @GetMapping(value = {"/contact/{contactId}/searches"})
@@ -288,4 +337,5 @@ public class ContactController {
   public String addNewContact(@RequestBody String contactData) {
     return service.addNewContact(contactData);
   }
+
 }

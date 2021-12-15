@@ -13,6 +13,7 @@ import com.aspire.kgp.dto.ContactDTO;
 import com.aspire.kgp.dto.DocumentDTO;
 import com.aspire.kgp.dto.SearchDTO;
 import com.aspire.kgp.model.Contact;
+import com.aspire.kgp.model.GdprConsent;
 import com.aspire.kgp.model.Reference;
 
 public interface ContactService {
@@ -21,7 +22,8 @@ public interface ContactService {
   public byte[] getContactImage(String contactId);
 
   public String updateContactDetails(String contactId, String contactData,
-      HttpServletRequest request, String candidateId) throws UnsupportedEncodingException;
+      HttpServletRequest request, String candidateId, Contact existContactObj)
+      throws UnsupportedEncodingException;
 
   public Reference saveAndUpdateContactReference(String referenceId, String referenceData,
       String contactId, HttpServletRequest request, String candidateId)
@@ -58,4 +60,14 @@ public interface ContactService {
   public ResponseEntity<Object> deleteJobHistoryById(String id);
 
   public ResponseEntity<Object> deleteBoardHistoryById(String id);
+
+  public GdprConsent getGdprConsent(String contactId);
+
+  public ResponseEntity<Object> updateGdprConsent(String contactId, String candidateId,
+      String gdprConsentData, HttpServletRequest request);
+  
+  public Contact setContactDetails(ContactDTO contactDTO, Contact contact);
+
+  public void downloadAnyDocument(String documentName, String documentType, String attachmentId,
+      HttpServletResponse response);
 }

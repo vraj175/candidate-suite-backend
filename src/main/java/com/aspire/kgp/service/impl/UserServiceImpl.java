@@ -135,8 +135,9 @@ public class UserServiceImpl implements UserService {
       user.setEmail(email);
       user.setPassword(CommonUtil.hash(email));
       user.setGalaxyId(candidateDTO.getContact().getId());
-      user.setPasswordReset(Boolean.TRUE);
     }
+    
+    user.setPasswordReset(Boolean.TRUE);
     user.setModifyDate(new Timestamp(System.currentTimeMillis()));
     user.setLanguage(languageService.findByName(language));
     user = saveorUpdate(user);
@@ -156,18 +157,18 @@ public class UserServiceImpl implements UserService {
       userDTO.setEmail(email);
 
       log.info("staring email sending...");
-      if (user.isPasswordReset()) {
-        // mail for add user or mail for invite
-        log.info("mail for add user or mail for invite");
-        Map<String, String> staticContentsMap = StaticContentsMultiLanguageUtil
-            .getStaticContentsMap(language, Constant.EMAILS_CONTENT_MAP);
-        String mailSubject = staticContentsMap.get("candidate.suite.invitation.email.subject");
-        mailService.sendEmail(email, bcc, mailSubject, mailService.getEmailContent(request, userDTO,
-            staticContentsMap, Constant.CANDIDATE_INVITE_EMAIL_TEMPLATE, candidateDTO), null);
+      if(user.isPasswordReset()) {
+	    log.info("mail for add user or mail for invite");
+	    Map<String, String> staticContentsMap = StaticContentsMultiLanguageUtil
+	        .getStaticContentsMap(language, Constant.EMAILS_CONTENT_MAP);
+	    String mailSubject = staticContentsMap.get("candidate.suite.invitation.email.subject");
+	    mailService.sendEmail(email, bcc, mailSubject, mailService.getEmailContent(request, userDTO,
+	        staticContentsMap, Constant.CANDIDATE_INVITE_EMAIL_TEMPLATE, candidateDTO), null);    	  
       } else {
-        log.info("mail for add search");
-        // mail for add search
+    	  log.info("Invate for search");
       }
+        // mail for add user or mail for invite
+      
       response = true;
     } catch (Exception e) {
       log.info(e);
