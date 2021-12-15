@@ -53,26 +53,24 @@ public class WebSocketNotificationServiceImpl implements WebSocketNotificationSe
   }
 
   @Override
-  public List<WebSocketNotification> getKgpTeamUnreadNotification(User user, String partner) {
-    return repository.findByUserAndNotificationDestAndIsReadableFalse(user, partner);
+  public List<WebSocketNotification> getKgpTeamUnreadNotification(User user) {
+    return repository.findByUserAndNotificationDestAndIsReadableFalse(user, Constant.PARTNER);
   }
 
   @Override
-  public List<WebSocketNotification> getcandidateUnreadNotification(String candidateId,
-      String candidate) {
-    return repository.findByCandidateIdAndNotificationDestAndIsReadableFalse(candidateId,
-        candidate);
+  public List<WebSocketNotification> getKgpTeamAllNotification(User user) {
+    return repository.findByUserAndNotificationDest(user, Constant.PARTNER);
   }
 
   @Override
-  public List<WebSocketNotification> getKgpTeamAllNotification(User user, String partner) {
-    return repository.findByUserAndNotificationDest(user, partner);
+  public List<WebSocketNotification> getContactUnreadNotification(String contactId) {
+    return repository.findByContactIdAndNotificationDestAndIsReadableFalse(contactId,
+        Constant.CONTACT);
   }
 
   @Override
-  public List<WebSocketNotification> getcandidateAllNotification(String candidateId,
-      String candidate) {
-    return repository.findByCandidateIdAndNotificationDest(candidateId, candidate);
+  public List<WebSocketNotification> getContactAllNotification(String contactId) {
+    return repository.findByContactIdAndNotificationDest(contactId, Constant.PARTNER);
   }
 
   @Override
@@ -86,7 +84,7 @@ public class WebSocketNotificationServiceImpl implements WebSocketNotificationSe
           "KGP Team notification successfully Read By " + user.getGalaxyId());
       getKgpTeamUserWiseSessionIdFromMap(user.getGalaxyId()).stream()
           .forEach(e -> messagingTemplate.convertAndSendToUser(e,
-              "/response/readCandidateNotification", new ResponseEntity<>(body, HttpStatus.OK)));
+              "/response/readGalaxyUserNotification", new ResponseEntity<>(body, HttpStatus.OK)));
       log.info("KGP team read notification status successfully update for galaxyId: "
           + user.getGalaxyId());
     } catch (Exception e) {
@@ -96,37 +94,36 @@ public class WebSocketNotificationServiceImpl implements WebSocketNotificationSe
   }
 
   @Override
-  public void updatecandidateReadNotification(String candidateId) {
+  public void updateContactReadNotification(String contactId) {
     try {
-      repository.updatecandidateReadNotification(candidateId);
+      repository.updateContactReadNotification(contactId);
       Map<String, Object> body = new LinkedHashMap<>();
       body.put(Constant.TIMESTAMP, new Date());
       body.put(Constant.STATUS, "200");
-      body.put(Constant.MESSAGE, "Candidate notification successfully Read By" + candidateId);
-      getSessionIdFromMap(candidateId, Constant.CANDIDATE).stream()
+      body.put(Constant.MESSAGE, "Contact notification successfully Read By" + contactId);
+      getSessionIdFromMap(contactId, Constant.CONTACT).stream()
           .forEach(e -> messagingTemplate.convertAndSendToUser(e,
-              "/response/readCandidateNotification", new ResponseEntity<>(body, HttpStatus.OK)));
-      log.info(
-          "Candidate read notification status successfully update for candidateId: " + candidateId);
+              "/response/readContactNotification", new ResponseEntity<>(body, HttpStatus.OK)));
+      log.info("Contact read notification status successfully update for contactId: " + contactId);
     } catch (Exception e) {
       throw new APIException(
-          "Error in update read status for Candidate notification by " + candidateId);
+          "Error in update read status for contact notification by " + contactId);
     }
   }
 
   @Override
   @Transactional
-  public void sendWebSocketNotification(String galaxyId, String candidateId,
-      String notificationType, String notificationDest) {
+  public void sendWebSocketNotification(String galaxyId, String contactId, String notificationType,
+      String notificationDest) {
     log.info("Add web socket notification for " + notificationType + " to " + notificationDest
-        + "Galaxy Id: " + galaxyId + " Candidate Id: " + candidateId);
+        + "Galaxy Id: " + galaxyId + " contact Id: " + contactId);
     WebSocketNotification webSocketNotification = new WebSocketNotification();
     webSocketNotification.setNotificationType(notificationType);
-    webSocketNotification.setCandidateId(candidateId);
+    webSocketNotification.setContactId(contactId);
     webSocketNotification.setDate(new Timestamp(System.currentTimeMillis()));
     webSocketNotification.setNotificationDest(notificationDest);
 
-    if (notificationDest.equals(Constant.CANDIDATE)) {
+    if (notificationDest.equals(Constant.CONTACT)) {
       webSocketNotification.setUser(null);
       repository.save(webSocketNotification);
     } else {
@@ -139,18 +136,18 @@ public class WebSocketNotificationServiceImpl implements WebSocketNotificationSe
       }
 
     }
-    getSessionIdFromMap(candidateId, notificationDest).stream().forEach(e -> messagingTemplate
+    getSessionIdFromMap(contactId, notificationDest).stream().forEach(e -> messagingTemplate
         .convertAndSendToUser(e, "/response/webSocketNotification", webSocketNotification));
     log.info("Notification Send Successfully");
   }
 
-  private Set<String> getSessionIdFromMap(String candidateId, String notificationDest) {
+  private Set<String> getSessionIdFromMap(String contactId, String notificationDest) {
     log.info("Get Session Id from Map...");
     Set<String> socketIdSet = new HashSet<>();
 
-    if (notificationDest.equals(Constant.CANDIDATE)) {
+    if (notificationDest.equals(Constant.CONTACT)) {
       socketMap.entrySet().forEach(entry -> {
-        if (entry.getValue().equals(candidateId + "-" + Constant.CANDIDATE)) {
+        if (entry.getValue().equals(contactId + "-" + Constant.CONTACT)) {
           socketIdSet.add(entry.getKey());
         }
       });

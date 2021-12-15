@@ -18,19 +18,19 @@ public interface WebSocketNotificationRepository
   List<WebSocketNotification> findByUserAndNotificationDestAndIsReadableFalse(User user,
       String partner);
 
-  List<WebSocketNotification> findByCandidateIdAndNotificationDestAndIsReadableFalse(
-      String galaxyId, String candidate);
+  List<WebSocketNotification> findByContactIdAndNotificationDestAndIsReadableFalse(String galaxyId,
+      String candidate);
 
   List<WebSocketNotification> findByUserAndNotificationDest(User user, String partner);
 
-  List<WebSocketNotification> findByCandidateIdAndNotificationDest(String galaxyId,
+  List<WebSocketNotification> findByContactIdAndNotificationDest(String contactId,
       String candidate);
 
   @Modifying
-  @Query("update WebSocketNotification webNotif set webNotif.isReadable = true where webNotif.User = :user and webNotif.notificationDest = 'partner'")
+  @Query("update WebSocketNotification webNotif set webNotif.isReadable = true where webNotif.user = :user and webNotif.notificationDest = 'partner'")
   void updateKgpTeamReadNotification(@Param("user") User user);
 
   @Modifying
-  @Query("update WebSocketNotification webNotif set webNotif.isReadable = true where webNotif.candidateId = :candidateId and webNotif.notificationDest = 'candidate'")
-  void updatecandidateReadNotification(@Param("candidateId") String candidateId);
+  @Query("update WebSocketNotification webNotif set webNotif.isReadable = true where webNotif.contactId = :contactId and webNotif.notificationDest = 'contact'")
+  void updateContactReadNotification(@Param("contactId") String contactId);
 }

@@ -119,7 +119,7 @@ public class NotificationController {
   public List<WebSocketNotification> getUnreadTeamNotification(HttpServletRequest request) {
     User loginUser = (User) request.getAttribute("user");
     User user = userService.findByGalaxyId(loginUser.getGalaxyId());
-    return webSocketNotificationService.getKgpTeamUnreadNotification(user, Constant.PARTNER);
+    return webSocketNotificationService.getKgpTeamUnreadNotification(user);
 
   }
 
@@ -127,25 +127,23 @@ public class NotificationController {
   public List<WebSocketNotification> getAllTeamNotification(HttpServletRequest request) {
     User loginUser = (User) request.getAttribute("user");
     User user = userService.findByGalaxyId(loginUser.getGalaxyId());
-    return webSocketNotificationService.getKgpTeamAllNotification(user, Constant.PARTNER);
+    return webSocketNotificationService.getKgpTeamAllNotification(user);
 
   }
 
-  @GetMapping(value = {"/notification/socket/candidate-unread/{candidateId}"})
-  public List<WebSocketNotification> getUnreadCandidateNotification(HttpServletRequest request,
-      @PathVariable("candidateId") String candidateId) {
-    return webSocketNotificationService.getcandidateUnreadNotification(candidateId,
-        Constant.CANDIDATE);
+  @GetMapping(value = {"/notification/socket/contact-unread/{contactId}"})
+  public List<WebSocketNotification> getUnreadContactNotification(HttpServletRequest request,
+      @PathVariable("contactId") String contactId) {
+    return webSocketNotificationService.getContactUnreadNotification(contactId);
   }
 
-  @GetMapping(value = {"/notification/socket/candidate-all/{candidateId}"})
-  public List<WebSocketNotification> getAllCandidateNotification(HttpServletRequest request,
-      @PathVariable("candidateId") String candidateId) {
-    return webSocketNotificationService.getcandidateAllNotification(candidateId,
-        Constant.CANDIDATE);
+  @GetMapping(value = {"/notification/socket/contact-all/{contactId}"})
+  public List<WebSocketNotification> getAllContactNotification(HttpServletRequest request,
+      @PathVariable("contactId") String contactId) {
+    return webSocketNotificationService.getContactAllNotification(contactId);
   }
 
-  @MessageMapping("/notification/socket/team-read/{galaxyId}")
+  @MessageMapping("/notification/socket/teamMember-read/{galaxyId}")
   public void readTeamNotification(HttpServletRequest request,
       @PathVariable("galaxyId") String galaxyId) {
     User loginUser = (User) request.getAttribute("user");
@@ -153,11 +151,27 @@ public class NotificationController {
     webSocketNotificationService.updateKgpTeamReadNotification(user);
   }
 
-  @MessageMapping("/notification/socket/candidate-read/{candidateId}")
-  public void readCandidateNotification(HttpServletRequest request,
-      @PathVariable("candidateId") String candidateId) {
-    webSocketNotificationService.updatecandidateReadNotification(candidateId);
+  @MessageMapping("/notification/socket/contact-read/{contactId}")
+  public void readContactNotification(HttpServletRequest request,
+      @PathVariable("contactId") String contactId) {
+    webSocketNotificationService.updateContactReadNotification(contactId);
   }
+
+  @Operation(summary = "Athena report completed notification send")
+  @PostMapping(
+      value = Constant.PUBLIC_API_URL + "/external-notification/{contactId}/{notificationType}")
+  public ResponseEntity<Object> externalNotification(@PathVariable("contactId") String contactId,
+      HttpServletRequest request, @PathVariable("notificationType") String notificationType) {
+    webSocketNotificationService.sendWebSocketNotification(null, contactId, notificationType,
+        Constant.PARTNER);
+    Map<String, Object> body = new LinkedHashMap<>();
+    body.put(Constant.TIMESTAMP, new Date());
+    body.put(Constant.STATUS, HttpStatus.OK);
+    body.put(Constant.MESSAGE, "Notification Send successfully");
+    return new ResponseEntity<>(body, HttpStatus.OK);
+  }
+
+
 }
 
 

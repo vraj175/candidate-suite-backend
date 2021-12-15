@@ -7,18 +7,18 @@ import com.aspire.kgp.model.WebSocketNotification;
 
 public interface WebSocketNotificationService {
 
-  List<WebSocketNotification> getKgpTeamUnreadNotification(User user, String partner);
+  List<WebSocketNotification> getKgpTeamUnreadNotification(User user);
 
-  List<WebSocketNotification> getcandidateUnreadNotification(String galaxyId, String candidate);
+  List<WebSocketNotification> getContactUnreadNotification(String galaxyId);
 
-  List<WebSocketNotification> getKgpTeamAllNotification(User user, String partner);
+  List<WebSocketNotification> getKgpTeamAllNotification(User user);
 
-  List<WebSocketNotification> getcandidateAllNotification(String galaxyId, String candidate);
+  List<WebSocketNotification> getContactAllNotification(String galaxyId);
 
-  void sendWebSocketNotification(String galaxyId, String candidateId, String notificationType,
+  void sendWebSocketNotification(String galaxyId, String contactId, String notificationType,
       String notificationSendTo);
 
   void updateKgpTeamReadNotification(User user);
 
-  void updatecandidateReadNotification(String candidateId);
+  void updateContactReadNotification(String contactId);
 }

@@ -69,7 +69,8 @@ public class RequestFilter extends OncePerRequestFilter {
         || currentUrl.indexOf("/user/forgotPassword") > 0
         || currentUrl.indexOf("/user/resetPassword") > 0
         || currentUrl.indexOf("/user/verify/recaptcha") > 0
-        || currentUrl.indexOf("/open/video/") > 0 || currentUrl.indexOf("/open/bit-bucket/") > 0)) {
+        || currentUrl.indexOf("/open/video/") > 0 || currentUrl.indexOf("/open/bit-bucket/") > 0
+        || currentUrl.indexOf("/open/external-notification/") > 0)) {
       jwtTokenValidate = true;
     }
 
