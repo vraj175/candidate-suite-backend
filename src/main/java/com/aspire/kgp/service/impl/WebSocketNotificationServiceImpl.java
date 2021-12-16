@@ -20,24 +20,28 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import com.aspire.kgp.constant.Constant;
-import com.aspire.kgp.dto.SearchDTO;
+import com.aspire.kgp.dto.UserDTO;
 import com.aspire.kgp.exception.APIException;
 import com.aspire.kgp.model.User;
 import com.aspire.kgp.model.WebSocketNotification;
 import com.aspire.kgp.repository.WebSocketNotificationRepository;
 import com.aspire.kgp.service.UserService;
 import com.aspire.kgp.service.WebSocketNotificationService;
-import com.aspire.kgp.util.CommonUtil;
 import com.aspire.kgp.util.RestUtil;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
-import com.google.gson.JsonSyntaxException;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 @Service
 public class WebSocketNotificationServiceImpl implements WebSocketNotificationService {
   static Log log = LogFactory.getLog(WebSocketNotificationServiceImpl.class.getName());
 
   private Map<String, String> socketMap = new HashMap<>();
+
+  private Set<String> kgpPartnerIdList;
 
   private SimpMessagingTemplate messagingTemplate;
 
@@ -175,29 +179,31 @@ public class WebSocketNotificationServiceImpl implements WebSocketNotificationSe
 
   @Override
   public Set<String> getContactKgpTeamDetails(String contactId) {
-    Set<String> kgpPartnerIdList = new HashSet<>();
     String apiResponse = restUtil
         .newGetMethod(Constant.CONTACT_KGP_TEAM_URL.replace(Constant.CONTACT_ID, contactId));
-
-    try {
-      List<SearchDTO> listSearchDTO =
-          new Gson().fromJson(apiResponse, new TypeToken<List<SearchDTO>>() {
-
-            /**
-             * 
-             */
-            private static final long serialVersionUID = 1L;
-          }.getType());
-
-      for (SearchDTO searchDTO : listSearchDTO) {
-        kgpPartnerIdList = CommonUtil.getkgpTeamId(searchDTO.getPartners(), kgpPartnerIdList);
-        kgpPartnerIdList = CommonUtil.getkgpTeamId(searchDTO.getRecruiters(), kgpPartnerIdList);
-      }
-
-      return kgpPartnerIdList;
-    } catch (JsonSyntaxException e) {
-      throw new APIException(Constant.JSON_PROCESSING_EXCEPTION + e.getMessage());
+    JsonArray jsonArray = (JsonArray) JsonParser.parseString(apiResponse);
+    kgpPartnerIdList = new HashSet<>();
+    for (JsonElement jsonElement : jsonArray) {
+      addJsonArraytoList(jsonElement.getAsJsonObject(), "partners");
+      addJsonArraytoList(jsonElement.getAsJsonObject(), "recruiters");
     }
+    return kgpPartnerIdList;
   }
 
+  private void addJsonArraytoList(JsonObject json, String listfor) {
+    JsonArray partnerArray = json.getAsJsonArray(listfor);
+    if (partnerArray != null) {
+      partnerArray.forEach(e -> {
+        UserDTO userDTO =
+            new Gson().fromJson(e.getAsJsonObject().get("user"), new TypeToken<UserDTO>() {
+
+              /**
+               * 
+               */
+              private static final long serialVersionUID = 1L;
+            }.getType());
+        kgpPartnerIdList.add(userDTO.getId());
+      });
+    }
+  }
 }
