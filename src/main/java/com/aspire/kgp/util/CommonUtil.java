@@ -322,4 +322,15 @@ public class CommonUtil {
     }
     return partnerEmailList;
   }
+
+  public static Set<String> getkgpTeamId(List<UserDTO> users, Set<String> partnerId) {
+    log.info("Get Kgp Team Id");
+    for (UserDTO user : users) {
+      if (user != null && CommonUtil.checkNotNullString(user.getId())
+          && user.getExecutionCredit() != null) {
+        partnerId.add(user.getId());
+      }
+    }
+    return partnerId;
+  }
 }

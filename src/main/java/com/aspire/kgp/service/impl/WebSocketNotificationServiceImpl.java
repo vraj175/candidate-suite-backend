@@ -19,15 +19,19 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
-
 import com.aspire.kgp.constant.Constant;
+import com.aspire.kgp.dto.SearchDTO;
 import com.aspire.kgp.exception.APIException;
-import com.aspire.kgp.exception.NotFoundException;
 import com.aspire.kgp.model.User;
 import com.aspire.kgp.model.WebSocketNotification;
 import com.aspire.kgp.repository.WebSocketNotificationRepository;
 import com.aspire.kgp.service.UserService;
 import com.aspire.kgp.service.WebSocketNotificationService;
+import com.aspire.kgp.util.CommonUtil;
+import com.aspire.kgp.util.RestUtil;
+import com.google.common.reflect.TypeToken;
+import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 
 @Service
 public class WebSocketNotificationServiceImpl implements WebSocketNotificationService {
@@ -41,6 +45,9 @@ public class WebSocketNotificationServiceImpl implements WebSocketNotificationSe
   public WebSocketNotificationServiceImpl(SimpMessagingTemplate messagingTemplate) {
     this.messagingTemplate = messagingTemplate;
   }
+
+  @Autowired
+  RestUtil restUtil;
 
   @Autowired
   UserService userService;
@@ -101,7 +108,7 @@ public class WebSocketNotificationServiceImpl implements WebSocketNotificationSe
       body.put(Constant.TIMESTAMP, new Date());
       body.put(Constant.STATUS, "200");
       body.put(Constant.MESSAGE, "Contact notification successfully Read By" + contactId);
-      getSessionIdFromMap(contactId, Constant.CONTACT).stream()
+      getContactWiseSessionIdFromMap(contactId).stream()
           .forEach(e -> messagingTemplate.convertAndSendToUser(e,
               "/response/readContactNotification", new ResponseEntity<>(body, HttpStatus.OK)));
       log.info("Contact read notification status successfully update for contactId: " + contactId);
@@ -126,38 +133,31 @@ public class WebSocketNotificationServiceImpl implements WebSocketNotificationSe
     if (notificationDest.equals(Constant.CONTACT)) {
       webSocketNotification.setUser(null);
       repository.save(webSocketNotification);
+      getContactWiseSessionIdFromMap(contactId).stream().forEach(e -> messagingTemplate
+          .convertAndSendToUser(e, "/response/webSocketNotification", webSocketNotification));
     } else {
       User user = userService.findByGalaxyId(galaxyId);
       if (user != null) {
         webSocketNotification.setUser(user);
         repository.save(webSocketNotification);
+        getKgpTeamUserWiseSessionIdFromMap(galaxyId).stream().forEach(e -> messagingTemplate
+            .convertAndSendToUser(e, "/response/webSocketNotification", webSocketNotification));
       } else {
-        throw new NotFoundException("Partner Not Found");
+        log.info("User is not available for : " + galaxyId);
       }
-
     }
-    getSessionIdFromMap(contactId, notificationDest).stream().forEach(e -> messagingTemplate
-        .convertAndSendToUser(e, "/response/webSocketNotification", webSocketNotification));
     log.info("Notification Send Successfully");
   }
 
-  private Set<String> getSessionIdFromMap(String contactId, String notificationDest) {
-    log.info("Get Session Id from Map...");
+  private Set<String> getContactWiseSessionIdFromMap(String contactId) {
+    log.info("Get contact wise sessionId from Map...");
     Set<String> socketIdSet = new HashSet<>();
 
-    if (notificationDest.equals(Constant.CONTACT)) {
-      socketMap.entrySet().forEach(entry -> {
-        if (entry.getValue().equals(contactId + "-" + Constant.CONTACT)) {
-          socketIdSet.add(entry.getKey());
-        }
-      });
-    } else {
-      socketMap.entrySet().forEach(entry -> {
-        if (entry.getValue().split("-")[1].equals(Constant.PARTNER)) {
-          socketIdSet.add(entry.getKey());
-        }
-      });
-    }
+    socketMap.entrySet().forEach(entry -> {
+      if (entry.getValue().equals(contactId + "-" + Constant.CONTACT)) {
+        socketIdSet.add(entry.getKey());
+      }
+    });
     return socketIdSet;
   }
 
@@ -172,4 +172,32 @@ public class WebSocketNotificationServiceImpl implements WebSocketNotificationSe
     });
     return socketIdSet;
   }
+
+  @Override
+  public Set<String> getContactKgpTeamDetails(String contactId) {
+    Set<String> kgpPartnerIdList = new HashSet<>();
+    String apiResponse = restUtil
+        .newGetMethod(Constant.CONTACT_KGP_TEAM_URL.replace(Constant.CONTACT_ID, contactId));
+
+    try {
+      List<SearchDTO> listSearchDTO =
+          new Gson().fromJson(apiResponse, new TypeToken<List<SearchDTO>>() {
+
+            /**
+             * 
+             */
+            private static final long serialVersionUID = 1L;
+          }.getType());
+
+      for (SearchDTO searchDTO : listSearchDTO) {
+        kgpPartnerIdList = CommonUtil.getkgpTeamId(searchDTO.getPartners(), kgpPartnerIdList);
+        kgpPartnerIdList = CommonUtil.getkgpTeamId(searchDTO.getRecruiters(), kgpPartnerIdList);
+      }
+
+      return kgpPartnerIdList;
+    } catch (JsonSyntaxException e) {
+      throw new APIException(Constant.JSON_PROCESSING_EXCEPTION + e.getMessage());
+    }
+  }
+
 }

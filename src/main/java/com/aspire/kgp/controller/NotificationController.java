@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
@@ -24,6 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.aspire.kgp.constant.Constant;
 import com.aspire.kgp.dto.NotificationSchedulerDTO;
 import com.aspire.kgp.dto.NotificationsDTO;
+import com.aspire.kgp.dto.WebSocketNotificationDTO;
 import com.aspire.kgp.exception.APIException;
 import com.aspire.kgp.model.Notification;
 import com.aspire.kgp.model.User;
@@ -158,16 +160,24 @@ public class NotificationController {
   }
 
   @Operation(summary = "Athena report completed notification send")
-  @PostMapping(
-      value = Constant.PUBLIC_API_URL + "/external-notification/{contactId}/{notificationType}")
-  public ResponseEntity<Object> externalNotification(@PathVariable("contactId") String contactId,
-      HttpServletRequest request, @PathVariable("notificationType") String notificationType) {
-    webSocketNotificationService.sendWebSocketNotification(null, contactId, notificationType,
-        Constant.PARTNER);
+  @PostMapping(value = Constant.PUBLIC_API_URL + "/add-notification-externalSource")
+  public ResponseEntity<Object> externalNotification(
+      @Valid @RequestBody WebSocketNotificationDTO webSocketNotificationDTO,
+      HttpServletRequest request) {
+    Set<String> kgpTeamSet = webSocketNotificationService
+        .getContactKgpTeamDetails(webSocketNotificationDTO.getContactId());
+
+    for (String galaxyId : kgpTeamSet) {
+      webSocketNotificationService.sendWebSocketNotification(galaxyId,
+          webSocketNotificationDTO.getContactId(), webSocketNotificationDTO.getNotificationType(),
+          Constant.PARTNER);
+    }
+
     Map<String, Object> body = new LinkedHashMap<>();
     body.put(Constant.TIMESTAMP, new Date());
     body.put(Constant.STATUS, HttpStatus.OK);
     body.put(Constant.MESSAGE, "Notification Send successfully");
+    log.info("Successfully send external source notification for " + kgpTeamSet.size());
     return new ResponseEntity<>(body, HttpStatus.OK);
   }
 

@@ -1,6 +1,7 @@
 package com.aspire.kgp.service;
 
 import java.util.List;
+import java.util.Set;
 
 import com.aspire.kgp.model.User;
 import com.aspire.kgp.model.WebSocketNotification;
@@ -21,4 +22,6 @@ public interface WebSocketNotificationService {
   void updateKgpTeamReadNotification(User user);
 
   void updateContactReadNotification(String contactId);
+
+  Set<String> getContactKgpTeamDetails(String contactId);
 }

@@ -83,6 +83,7 @@ public class Constant {
   public static final String CANDIDATE_URL = "/candidates/{candidateId}/activity";
   public static final String CANDIDATE_FEEDBACK_URL =
       "/candidate-suite/candidates/{candidateId}/candidate-feedback";
+  public static final String CONTACT_KGP_TEAM_URL = "/candidate-suite/searches/{contactId}";
   public static final String CANDIDATE_FEEDBACK_REPLY_URL =
       "/candidate-suite/candidate-feedback/{commentId}/{candidateId}/reply";
   public static final String CANDIDATE_FEEDBACK_STATUS_UPDATE_URL = "/candidate-suite/{commentId}";
