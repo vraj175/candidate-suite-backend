@@ -112,10 +112,10 @@ public class WebSocketNotificationServiceImpl implements WebSocketNotificationSe
 
   @Override
   @Transactional
-  public boolean sendWebSocketNotification(String galaxyId, String contactId,
+  public boolean sendWebSocketNotification(String kgpTeamId, String contactId,
       String notificationType, String notificationUserType) {
     log.info("Add web socket notification for " + notificationType + " to " + notificationUserType
-        + "Galaxy Id: " + galaxyId + " contact Id: " + contactId);
+        + "kgpTeam Id: " + kgpTeamId + " contact Id: " + contactId);
     WebSocketNotification webSocketNotification = new WebSocketNotification();
     webSocketNotification.setNotificationType(notificationType);
     webSocketNotification.setContactId(contactId);
@@ -124,21 +124,27 @@ public class WebSocketNotificationServiceImpl implements WebSocketNotificationSe
 
     try {
       if (notificationUserType.equals(Constant.CONTACT)) {
-        webSocketNotification.setUser(null);
-        repository.save(webSocketNotification);
-
-        getSessionIdFromMap(contactId, Constant.CONTACT).stream().forEach(e -> messagingTemplate
-            .convertAndSendToUser(e, "/response/webSocketNotification", webSocketNotification));
-      } else {
-        User user = userService.findByGalaxyId(galaxyId);
+        User user = userService.findByGalaxyId(contactId);
         if (user != null) {
           webSocketNotification.setUser(user);
           repository.save(webSocketNotification);
 
-          getSessionIdFromMap(contactId, Constant.PARTNER).stream().forEach(e -> messagingTemplate
+          getSessionIdFromMap(contactId, Constant.CONTACT).stream().forEach(e -> messagingTemplate
               .convertAndSendToUser(e, "/response/webSocketNotification", webSocketNotification));
         } else {
-          log.info("User is not available for : " + galaxyId);
+          log.info("Contact is not available for : " + contactId);
+        }
+
+      } else {
+        User user = userService.findByGalaxyId(kgpTeamId);
+        if (user != null) {
+          webSocketNotification.setUser(user);
+          repository.save(webSocketNotification);
+
+          getSessionIdFromMap(kgpTeamId, Constant.PARTNER).stream().forEach(e -> messagingTemplate
+              .convertAndSendToUser(e, "/response/webSocketNotification", webSocketNotification));
+        } else {
+          log.info("Kgp Team Member is not available for : " + kgpTeamId);
         }
       }
     } catch (Exception e) {

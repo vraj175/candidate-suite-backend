@@ -14,7 +14,7 @@ import javax.persistence.Table;
 public class WebSocketNotification extends SuperBase {
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "user", referencedColumnName = "id", insertable = true, nullable = true,
+  @JoinColumn(name = "user", referencedColumnName = "id", insertable = true, nullable = false,
       updatable = true)
   private User user;
 
