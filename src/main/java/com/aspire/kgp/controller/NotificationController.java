@@ -27,7 +27,6 @@ import com.aspire.kgp.dto.NotificationSchedulerDTO;
 import com.aspire.kgp.dto.NotificationsDTO;
 import com.aspire.kgp.dto.WebSocketNotificationDTO;
 import com.aspire.kgp.exception.APIException;
-import com.aspire.kgp.exception.NotFoundException;
 import com.aspire.kgp.model.Notification;
 import com.aspire.kgp.model.User;
 import com.aspire.kgp.model.WebSocketNotification;
@@ -118,42 +117,28 @@ public class NotificationController {
   }
 
 
-  @Operation(summary = "Get KGP team Unread Notification")
-  @GetMapping(value = {"/notification/socket/kgp-team-unread"})
-  public List<WebSocketNotification> getUnreadTeamNotification(HttpServletRequest request) {
+  @Operation(summary = "Get Unread Notification")
+  @GetMapping(value = {"/notification/socket/unread/{galaxyId}"})
+  public List<WebSocketNotification> getUnreadNotification(HttpServletRequest request,
+      @PathVariable("galaxyId") String galaxyId) {
     User loginUser = (User) request.getAttribute("user");
     if (Constant.PARTNER.equalsIgnoreCase(loginUser.getRole().getName())) {
-      User user = userService.findByGalaxyId(loginUser.getGalaxyId());
-      return webSocketNotificationService.getKgpTeamUnreadNotification(user);
+      return webSocketNotificationService.getUnreadNotification(galaxyId, Constant.PARTNER);
     } else {
-      throw new NotFoundException("Partner Not Found");
+      return webSocketNotificationService.getUnreadNotification(galaxyId, Constant.CONTACT);
     }
   }
 
-  @Operation(summary = "Get KGP team ALL Notification")
-  @GetMapping(value = {"/notification/socket/kgp-team-all"})
-  public List<WebSocketNotification> getAllTeamNotification(HttpServletRequest request) {
+  @Operation(summary = "Get ALL Notification")
+  @GetMapping(value = {"/notification/socket/all/{galaxyId}"})
+  public List<WebSocketNotification> getAllNotification(HttpServletRequest request,
+      @PathVariable("galaxyId") String galaxyId) {
     User loginUser = (User) request.getAttribute("user");
     if (Constant.PARTNER.equalsIgnoreCase(loginUser.getRole().getName())) {
-      User user = userService.findByGalaxyId(loginUser.getGalaxyId());
-      return webSocketNotificationService.getKgpTeamAllNotification(user);
+      return webSocketNotificationService.getAllNotification(galaxyId, Constant.PARTNER);
     } else {
-      throw new NotFoundException("Partner Not Found");
+      return webSocketNotificationService.getAllNotification(galaxyId, Constant.CONTACT);
     }
-  }
-
-  @Operation(summary = "Get Contact Unread Notification")
-  @GetMapping(value = {"/notification/socket/contact-unread/{contactId}"})
-  public List<WebSocketNotification> getUnreadContactNotification(HttpServletRequest request,
-      @PathVariable("contactId") String contactId) {
-    return webSocketNotificationService.getContactUnreadNotification(contactId);
-  }
-
-  @Operation(summary = "Get Contact ALL Notification")
-  @GetMapping(value = {"/notification/socket/contact-all/{contactId}"})
-  public List<WebSocketNotification> getAllContactNotification(HttpServletRequest request,
-      @PathVariable("contactId") String contactId) {
-    return webSocketNotificationService.getContactAllNotification(contactId);
   }
 
   @MessageMapping("/notification/socket/read/{id}/{galaxyId}/{user_type}")

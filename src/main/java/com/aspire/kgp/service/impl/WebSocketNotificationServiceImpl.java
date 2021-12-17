@@ -63,25 +63,31 @@ public class WebSocketNotificationServiceImpl implements WebSocketNotificationSe
     this.socketMap.put(key, value);
   }
 
+
   @Override
-  public List<WebSocketNotification> getKgpTeamUnreadNotification(User user) {
-    return repository.findByUserAndNotificationUserTypeAndIsReadable(user, Constant.PARTNER, false);
+  public List<WebSocketNotification> getUnreadNotification(String galaxyId,
+      String notificationUserType) {
+    User user = userService.findByGalaxyId(galaxyId);
+    if (user != null && notificationUserType.equals(Constant.PARTNER)) {
+      return repository.findByUserAndNotificationUserTypeAndIsReadable(user, notificationUserType,
+          false);
+    } else if (user != null && notificationUserType.equals(Constant.CONTACT)) {
+      return repository.findByUserAndNotificationUserTypeAndIsReadable(user, notificationUserType,
+          false);
+    } else
+      throw new APIException("Invalid galaxyId " + galaxyId);
   }
 
   @Override
-  public List<WebSocketNotification> getKgpTeamAllNotification(User user) {
-    return repository.findByUserAndNotificationUserType(user, Constant.PARTNER);
-  }
-
-  @Override
-  public List<WebSocketNotification> getContactUnreadNotification(String contactId) {
-    return repository.findByContactIdAndNotificationUserTypeAndIsReadable(contactId,
-        Constant.CONTACT, false);
-  }
-
-  @Override
-  public List<WebSocketNotification> getContactAllNotification(String contactId) {
-    return repository.findByContactIdAndNotificationUserType(contactId, Constant.CONTACT);
+  public List<WebSocketNotification> getAllNotification(String galaxyId,
+      String notificationUserType) {
+    User user = userService.findByGalaxyId(galaxyId);
+    if (user != null && notificationUserType.equals(Constant.PARTNER)) {
+      return repository.findByUserAndNotificationUserType(user, notificationUserType);
+    } else if (user != null && notificationUserType.equals(Constant.CONTACT)) {
+      return repository.findByUserAndNotificationUserType(user, notificationUserType);
+    } else
+      throw new APIException("Invalid galaxyId " + galaxyId);
   }
 
   @Override

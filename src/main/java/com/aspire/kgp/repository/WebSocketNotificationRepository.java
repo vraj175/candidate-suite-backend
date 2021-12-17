@@ -5,7 +5,6 @@ import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.aspire.kgp.model.User;
@@ -19,12 +18,6 @@ public interface WebSocketNotificationRepository
       String partner, boolean b);
 
   List<WebSocketNotification> findByUserAndNotificationUserType(User user, String partner);
-
-  List<WebSocketNotification> findByContactIdAndNotificationUserTypeAndIsReadable(String contactId,
-      String contact, boolean b);
-
-  List<WebSocketNotification> findByContactIdAndNotificationUserType(String contactId,
-      String contact);
 
   @Modifying
   @Query("update WebSocketNotification webNotif set webNotif.isReadable = true where webNotif.id = :id")
