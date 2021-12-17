@@ -94,12 +94,12 @@ public class WebSocketNotificationServiceImpl implements WebSocketNotificationSe
 
       if (Constant.PARTNER.equals(userType)) {
         body.put(Constant.MESSAGE, "KGP Team notification successfully Read By " + galaxyId);
-        getKgpTeamUserWiseSessionIdFromMap(galaxyId).stream()
+        getSessionIdFromMap(galaxyId, Constant.PARTNER).stream()
             .forEach(e -> messagingTemplate.convertAndSendToUser(e, "/response/readNotification",
                 new ResponseEntity<>(body, HttpStatus.OK)));
       } else {
         body.put(Constant.MESSAGE, "Contact notification successfully Read By" + galaxyId);
-        getContactWiseSessionIdFromMap(galaxyId).stream()
+        getSessionIdFromMap(galaxyId, Constant.CONTACT).stream()
             .forEach(e -> messagingTemplate.convertAndSendToUser(e, "/response/readNotification",
                 new ResponseEntity<>(body, HttpStatus.OK)));
       }
@@ -126,14 +126,16 @@ public class WebSocketNotificationServiceImpl implements WebSocketNotificationSe
       if (notificationUserType.equals(Constant.CONTACT)) {
         webSocketNotification.setUser(null);
         repository.save(webSocketNotification);
-        getContactWiseSessionIdFromMap(contactId).stream().forEach(e -> messagingTemplate
+
+        getSessionIdFromMap(contactId, Constant.CONTACT).stream().forEach(e -> messagingTemplate
             .convertAndSendToUser(e, "/response/webSocketNotification", webSocketNotification));
       } else {
         User user = userService.findByGalaxyId(galaxyId);
         if (user != null) {
           webSocketNotification.setUser(user);
           repository.save(webSocketNotification);
-          getKgpTeamUserWiseSessionIdFromMap(galaxyId).stream().forEach(e -> messagingTemplate
+
+          getSessionIdFromMap(contactId, Constant.PARTNER).stream().forEach(e -> messagingTemplate
               .convertAndSendToUser(e, "/response/webSocketNotification", webSocketNotification));
         } else {
           log.info("User is not available for : " + galaxyId);
@@ -147,27 +149,24 @@ public class WebSocketNotificationServiceImpl implements WebSocketNotificationSe
     return true;
   }
 
-  private Set<String> getContactWiseSessionIdFromMap(String contactId) {
-    log.info("Get contact wise sessionId from Map...");
+
+  private Set<String> getSessionIdFromMap(String id, String notificationUserType) {
+    log.info("Get sessionId from Map...");
     Set<String> socketIdSet = new HashSet<>();
 
-    socketMap.entrySet().forEach(entry -> {
-      if (entry.getValue().equals(contactId + "-" + Constant.CONTACT)) {
-        socketIdSet.add(entry.getKey());
-      }
-    });
-    return socketIdSet;
-  }
-
-  private Set<String> getKgpTeamUserWiseSessionIdFromMap(String galaxyId) {
-    log.info("Get KGP team userwise sessionId from Map...");
-    Set<String> socketIdSet = new HashSet<>();
-
-    socketMap.entrySet().forEach(entry -> {
-      if (entry.getValue().equals(galaxyId + "-" + Constant.PARTNER)) {
-        socketIdSet.add(entry.getKey());
-      }
-    });
+    if (notificationUserType.equals(Constant.CONTACT)) {
+      socketMap.entrySet().forEach(entry -> {
+        if (entry.getValue().equals(id + "-" + Constant.CONTACT)) {
+          socketIdSet.add(entry.getKey());
+        }
+      });
+    } else {
+      socketMap.entrySet().forEach(entry -> {
+        if (entry.getValue().equals(id + "-" + Constant.PARTNER)) {
+          socketIdSet.add(entry.getKey());
+        }
+      });
+    }
     return socketIdSet;
   }
 

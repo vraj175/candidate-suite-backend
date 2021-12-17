@@ -118,6 +118,7 @@ public class NotificationController {
   }
 
 
+  @Operation(summary = "Get KGP team Unread Notification")
   @GetMapping(value = {"/notification/socket/kgp-team-unread"})
   public List<WebSocketNotification> getUnreadTeamNotification(HttpServletRequest request) {
     User loginUser = (User) request.getAttribute("user");
@@ -129,6 +130,7 @@ public class NotificationController {
     }
   }
 
+  @Operation(summary = "Get KGP team ALL Notification")
   @GetMapping(value = {"/notification/socket/kgp-team-all"})
   public List<WebSocketNotification> getAllTeamNotification(HttpServletRequest request) {
     User loginUser = (User) request.getAttribute("user");
@@ -140,12 +142,14 @@ public class NotificationController {
     }
   }
 
+  @Operation(summary = "Get Contact Unread Notification")
   @GetMapping(value = {"/notification/socket/contact-unread/{contactId}"})
   public List<WebSocketNotification> getUnreadContactNotification(HttpServletRequest request,
       @PathVariable("contactId") String contactId) {
     return webSocketNotificationService.getContactUnreadNotification(contactId);
   }
 
+  @Operation(summary = "Get Contact ALL Notification")
   @GetMapping(value = {"/notification/socket/contact-all/{contactId}"})
   public List<WebSocketNotification> getAllContactNotification(HttpServletRequest request,
       @PathVariable("contactId") String contactId) {
