@@ -27,8 +27,8 @@ public class WebSocketNotification extends SuperBase {
   @Column(name = "contactId", nullable = false)
   private String contactId;
 
-  @Column(name = "notificationDest", nullable = false)
-  private String notificationDest;
+  @Column(name = "notificationUserType", nullable = false)
+  private String notificationUserType;
 
   private boolean isReadable;
 
@@ -72,11 +72,11 @@ public class WebSocketNotification extends SuperBase {
     this.contactId = contactId;
   }
 
-  public String getNotificationDest() {
-    return notificationDest;
+  public String getNotificationUserType() {
+    return notificationUserType;
   }
 
-  public void setNotificationDest(String notificationDest) {
-    this.notificationDest = notificationDest;
+  public void setNotificationUserType(String notificationUserType) {
+    this.notificationUserType = notificationUserType;
   }
 }

@@ -16,12 +16,10 @@ public interface WebSocketNotificationService {
 
   List<WebSocketNotification> getContactAllNotification(String galaxyId);
 
-  void sendWebSocketNotification(String galaxyId, String contactId, String notificationType,
+  boolean sendWebSocketNotification(String galaxyId, String contactId, String notificationType,
       String notificationSendTo);
 
-  void updateKgpTeamReadNotification(User user);
-
-  void updateContactReadNotification(String contactId);
-
   Set<String> getContactKgpTeamDetails(String contactId);
+
+  void updateReadNotification(String id, String galaxyId, String userType);
 }

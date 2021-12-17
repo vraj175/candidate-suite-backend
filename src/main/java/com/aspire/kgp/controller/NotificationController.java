@@ -27,6 +27,7 @@ import com.aspire.kgp.dto.NotificationSchedulerDTO;
 import com.aspire.kgp.dto.NotificationsDTO;
 import com.aspire.kgp.dto.WebSocketNotificationDTO;
 import com.aspire.kgp.exception.APIException;
+import com.aspire.kgp.exception.NotFoundException;
 import com.aspire.kgp.model.Notification;
 import com.aspire.kgp.model.User;
 import com.aspire.kgp.model.WebSocketNotification;
@@ -117,20 +118,26 @@ public class NotificationController {
   }
 
 
-  @GetMapping(value = {"/notification/socket/team-unread"})
+  @GetMapping(value = {"/notification/socket/kgp-team-unread"})
   public List<WebSocketNotification> getUnreadTeamNotification(HttpServletRequest request) {
     User loginUser = (User) request.getAttribute("user");
-    User user = userService.findByGalaxyId(loginUser.getGalaxyId());
-    return webSocketNotificationService.getKgpTeamUnreadNotification(user);
-
+    if (Constant.PARTNER.equalsIgnoreCase(loginUser.getRole().getName())) {
+      User user = userService.findByGalaxyId(loginUser.getGalaxyId());
+      return webSocketNotificationService.getKgpTeamUnreadNotification(user);
+    } else {
+      throw new NotFoundException("Partner Not Found");
+    }
   }
 
-  @GetMapping(value = {"/notification/socket/team-all"})
+  @GetMapping(value = {"/notification/socket/kgp-team-all"})
   public List<WebSocketNotification> getAllTeamNotification(HttpServletRequest request) {
     User loginUser = (User) request.getAttribute("user");
-    User user = userService.findByGalaxyId(loginUser.getGalaxyId());
-    return webSocketNotificationService.getKgpTeamAllNotification(user);
-
+    if (Constant.PARTNER.equalsIgnoreCase(loginUser.getRole().getName())) {
+      User user = userService.findByGalaxyId(loginUser.getGalaxyId());
+      return webSocketNotificationService.getKgpTeamAllNotification(user);
+    } else {
+      throw new NotFoundException("Partner Not Found");
+    }
   }
 
   @GetMapping(value = {"/notification/socket/contact-unread/{contactId}"})
@@ -145,19 +152,13 @@ public class NotificationController {
     return webSocketNotificationService.getContactAllNotification(contactId);
   }
 
-  @MessageMapping("/notification/socket/teamMember-read/{galaxyId}")
-  public void readTeamNotification(HttpServletRequest request,
-      @PathVariable("galaxyId") String galaxyId) {
-    User loginUser = (User) request.getAttribute("user");
-    User user = userService.findByGalaxyId(loginUser.getGalaxyId());
-    webSocketNotificationService.updateKgpTeamReadNotification(user);
+  @MessageMapping("/notification/socket/read/{id}/{galaxyId}/{user_type}")
+  public void readTeamNotification(HttpServletRequest request, @PathVariable("id") String id,
+      @PathVariable("galaxyId") String galaxyId, @PathVariable("user_type") String userType) {
+    // User loginUser = (User) request.getAttribute("user");
+    webSocketNotificationService.updateReadNotification(id, galaxyId, userType);
   }
 
-  @MessageMapping("/notification/socket/contact-read/{contactId}")
-  public void readContactNotification(HttpServletRequest request,
-      @PathVariable("contactId") String contactId) {
-    webSocketNotificationService.updateContactReadNotification(contactId);
-  }
 
   @Operation(summary = "Athena report completed notification send")
   @PostMapping(value = Constant.PUBLIC_API_URL + "/add-notification-externalSource")

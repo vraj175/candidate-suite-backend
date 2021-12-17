@@ -15,22 +15,18 @@ import com.aspire.kgp.model.WebSocketNotification;
 public interface WebSocketNotificationRepository
     extends JpaRepository<WebSocketNotification, Long> {
 
-  List<WebSocketNotification> findByUserAndNotificationDestAndIsReadableFalse(User user,
-      String partner);
+  List<WebSocketNotification> findByUserAndNotificationUserTypeAndIsReadable(User user,
+      String partner, boolean b);
 
-  List<WebSocketNotification> findByContactIdAndNotificationDestAndIsReadableFalse(String galaxyId,
-      String candidate);
+  List<WebSocketNotification> findByUserAndNotificationUserType(User user, String partner);
 
-  List<WebSocketNotification> findByUserAndNotificationDest(User user, String partner);
+  List<WebSocketNotification> findByContactIdAndNotificationUserTypeAndIsReadable(String contactId,
+      String contact, boolean b);
 
-  List<WebSocketNotification> findByContactIdAndNotificationDest(String contactId,
-      String candidate);
-
-  @Modifying
-  @Query("update WebSocketNotification webNotif set webNotif.isReadable = true where webNotif.user = :user and webNotif.notificationDest = 'partner'")
-  void updateKgpTeamReadNotification(@Param("user") User user);
+  List<WebSocketNotification> findByContactIdAndNotificationUserType(String contactId,
+      String contact);
 
   @Modifying
-  @Query("update WebSocketNotification webNotif set webNotif.isReadable = true where webNotif.contactId = :contactId and webNotif.notificationDest = 'contact'")
-  void updateContactReadNotification(@Param("contactId") String contactId);
+  @Query("update WebSocketNotification webNotif set webNotif.isReadable = true where webNotif.id = :id")
+  void updateReadNotification(String id);
 }

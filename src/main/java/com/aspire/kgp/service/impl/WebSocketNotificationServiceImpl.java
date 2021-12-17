@@ -65,92 +65,86 @@ public class WebSocketNotificationServiceImpl implements WebSocketNotificationSe
 
   @Override
   public List<WebSocketNotification> getKgpTeamUnreadNotification(User user) {
-    return repository.findByUserAndNotificationDestAndIsReadableFalse(user, Constant.PARTNER);
+    return repository.findByUserAndNotificationUserTypeAndIsReadable(user, Constant.PARTNER, false);
   }
 
   @Override
   public List<WebSocketNotification> getKgpTeamAllNotification(User user) {
-    return repository.findByUserAndNotificationDest(user, Constant.PARTNER);
+    return repository.findByUserAndNotificationUserType(user, Constant.PARTNER);
   }
 
   @Override
   public List<WebSocketNotification> getContactUnreadNotification(String contactId) {
-    return repository.findByContactIdAndNotificationDestAndIsReadableFalse(contactId,
-        Constant.CONTACT);
+    return repository.findByContactIdAndNotificationUserTypeAndIsReadable(contactId,
+        Constant.CONTACT, false);
   }
 
   @Override
   public List<WebSocketNotification> getContactAllNotification(String contactId) {
-    return repository.findByContactIdAndNotificationDest(contactId, Constant.PARTNER);
+    return repository.findByContactIdAndNotificationUserType(contactId, Constant.CONTACT);
   }
 
   @Override
-  public void updateKgpTeamReadNotification(User user) {
+  public void updateReadNotification(String id, String galaxyId, String userType) {
     try {
-      repository.updateKgpTeamReadNotification(user);
+      repository.updateReadNotification(id);
       Map<String, Object> body = new LinkedHashMap<>();
       body.put(Constant.TIMESTAMP, new Date());
       body.put(Constant.STATUS, "200");
-      body.put(Constant.MESSAGE,
-          "KGP Team notification successfully Read By " + user.getGalaxyId());
-      getKgpTeamUserWiseSessionIdFromMap(user.getGalaxyId()).stream()
-          .forEach(e -> messagingTemplate.convertAndSendToUser(e,
-              "/response/readGalaxyUserNotification", new ResponseEntity<>(body, HttpStatus.OK)));
-      log.info("KGP team read notification status successfully update for galaxyId: "
-          + user.getGalaxyId());
-    } catch (Exception e) {
-      throw new APIException(
-          "Error in update read status for KGP Team notification by " + user.getGalaxyId());
-    }
-  }
 
-  @Override
-  public void updateContactReadNotification(String contactId) {
-    try {
-      repository.updateContactReadNotification(contactId);
-      Map<String, Object> body = new LinkedHashMap<>();
-      body.put(Constant.TIMESTAMP, new Date());
-      body.put(Constant.STATUS, "200");
-      body.put(Constant.MESSAGE, "Contact notification successfully Read By" + contactId);
-      getContactWiseSessionIdFromMap(contactId).stream()
-          .forEach(e -> messagingTemplate.convertAndSendToUser(e,
-              "/response/readContactNotification", new ResponseEntity<>(body, HttpStatus.OK)));
-      log.info("Contact read notification status successfully update for contactId: " + contactId);
+      if (Constant.PARTNER.equals(userType)) {
+        body.put(Constant.MESSAGE, "KGP Team notification successfully Read By " + galaxyId);
+        getKgpTeamUserWiseSessionIdFromMap(galaxyId).stream()
+            .forEach(e -> messagingTemplate.convertAndSendToUser(e, "/response/readNotification",
+                new ResponseEntity<>(body, HttpStatus.OK)));
+      } else {
+        body.put(Constant.MESSAGE, "Contact notification successfully Read By" + galaxyId);
+        getContactWiseSessionIdFromMap(galaxyId).stream()
+            .forEach(e -> messagingTemplate.convertAndSendToUser(e, "/response/readNotification",
+                new ResponseEntity<>(body, HttpStatus.OK)));
+      }
+      log.info("KGP team read notification status successfully update for galaxyId: " + galaxyId);
     } catch (Exception e) {
       throw new APIException(
-          "Error in update read status for contact notification by " + contactId);
+          "Error in update read status for KGP Team notification by " + galaxyId);
     }
   }
 
   @Override
   @Transactional
-  public void sendWebSocketNotification(String galaxyId, String contactId, String notificationType,
-      String notificationDest) {
-    log.info("Add web socket notification for " + notificationType + " to " + notificationDest
+  public boolean sendWebSocketNotification(String galaxyId, String contactId,
+      String notificationType, String notificationUserType) {
+    log.info("Add web socket notification for " + notificationType + " to " + notificationUserType
         + "Galaxy Id: " + galaxyId + " contact Id: " + contactId);
     WebSocketNotification webSocketNotification = new WebSocketNotification();
     webSocketNotification.setNotificationType(notificationType);
     webSocketNotification.setContactId(contactId);
     webSocketNotification.setDate(new Timestamp(System.currentTimeMillis()));
-    webSocketNotification.setNotificationDest(notificationDest);
+    webSocketNotification.setNotificationUserType(notificationUserType);
 
-    if (notificationDest.equals(Constant.CONTACT)) {
-      webSocketNotification.setUser(null);
-      repository.save(webSocketNotification);
-      getContactWiseSessionIdFromMap(contactId).stream().forEach(e -> messagingTemplate
-          .convertAndSendToUser(e, "/response/webSocketNotification", webSocketNotification));
-    } else {
-      User user = userService.findByGalaxyId(galaxyId);
-      if (user != null) {
-        webSocketNotification.setUser(user);
+    try {
+      if (notificationUserType.equals(Constant.CONTACT)) {
+        webSocketNotification.setUser(null);
         repository.save(webSocketNotification);
-        getKgpTeamUserWiseSessionIdFromMap(galaxyId).stream().forEach(e -> messagingTemplate
+        getContactWiseSessionIdFromMap(contactId).stream().forEach(e -> messagingTemplate
             .convertAndSendToUser(e, "/response/webSocketNotification", webSocketNotification));
       } else {
-        log.info("User is not available for : " + galaxyId);
+        User user = userService.findByGalaxyId(galaxyId);
+        if (user != null) {
+          webSocketNotification.setUser(user);
+          repository.save(webSocketNotification);
+          getKgpTeamUserWiseSessionIdFromMap(galaxyId).stream().forEach(e -> messagingTemplate
+              .convertAndSendToUser(e, "/response/webSocketNotification", webSocketNotification));
+        } else {
+          log.info("User is not available for : " + galaxyId);
+        }
       }
+    } catch (Exception e) {
+      log.error("Error While Sending socket notification " + e.getMessage());
+      return false;
     }
     log.info("Notification Send Successfully");
+    return true;
   }
 
   private Set<String> getContactWiseSessionIdFromMap(String contactId) {
