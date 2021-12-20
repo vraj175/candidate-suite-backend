@@ -12,6 +12,7 @@ public class Constant {
   public static final String ERROR = "error";
   public static final String COMPLETED = "Completed";
   public static final String MESSAGE = "message";
+  public static final String DATA = "data";
   public static final String SQL_EXCEPTION = "SQL Exception :";
   public static final String MISSING_API_KEY = "Missing API key.";
   public static final String MISSING_REQUEST_HEADER = "Missing request header.";

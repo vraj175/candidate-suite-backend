@@ -63,25 +63,33 @@ public class WebSocketNotificationServiceImpl implements WebSocketNotificationSe
     this.socketMap.put(key, value);
   }
 
-
+  /*
+   * Get Unread Notification for partner or contact. galaxy id is contact Id or galaxy Team Id
+   * 
+   */
   @Override
   public List<WebSocketNotification> getUnreadNotification(String galaxyId,
       String notificationUserType) {
     User user = userService.findByGalaxyId(galaxyId);
+    log.info("Fetching.. Unread Notification");
     if (user != null && notificationUserType.equals(Constant.PARTNER)) {
-      return repository.findByUserAndNotificationUserTypeAndIsReadable(user, notificationUserType,
-          false);
+      return repository.findByUserAndNotificationUserTypeAndIsReadableFalse(user,
+          notificationUserType);
     } else if (user != null && notificationUserType.equals(Constant.CONTACT)) {
-      return repository.findByUserAndNotificationUserTypeAndIsReadable(user, notificationUserType,
-          false);
+      return repository.findByUserAndNotificationUserTypeAndIsReadableFalse(user,
+          notificationUserType);
     } else
       throw new APIException("Invalid galaxyId " + galaxyId);
   }
 
+  /*
+   * Get ALL Notification for partner or contact. galaxy id is contact Id or galaxy Team Id
+   */
   @Override
   public List<WebSocketNotification> getAllNotification(String galaxyId,
       String notificationUserType) {
     User user = userService.findByGalaxyId(galaxyId);
+    log.info("Fetching.. ALL Notification");
     if (user != null && notificationUserType.equals(Constant.PARTNER)) {
       return repository.findByUserAndNotificationUserType(user, notificationUserType);
     } else if (user != null && notificationUserType.equals(Constant.CONTACT)) {
@@ -90,10 +98,14 @@ public class WebSocketNotificationServiceImpl implements WebSocketNotificationSe
       throw new APIException("Invalid galaxyId " + galaxyId);
   }
 
+  /*
+   * Update read status
+   */
   @Override
+  @Transactional
   public void updateReadNotification(String id, String galaxyId, String userType) {
     try {
-      repository.updateReadNotification(id);
+      repository.updateReadNotification(Long.parseLong(id));
       Map<String, Object> body = new LinkedHashMap<>();
       body.put(Constant.TIMESTAMP, new Date());
       body.put(Constant.STATUS, "200");
@@ -110,12 +122,18 @@ public class WebSocketNotificationServiceImpl implements WebSocketNotificationSe
                 new ResponseEntity<>(body, HttpStatus.OK)));
       }
       log.info("KGP team read notification status successfully update for galaxyId: " + galaxyId);
+      log.debug(
+          "Update read status for ID:" + id + "Galaxy Id:" + galaxyId + "User Type:" + userType);
     } catch (Exception e) {
       throw new APIException(
           "Error in update read status for KGP Team notification by " + galaxyId);
     }
   }
 
+  /*
+   * method call when want to send notification.Send notification if id is currently connected
+   * 
+   */
   @Override
   @Transactional
   public boolean sendWebSocketNotification(String kgpTeamId, String contactId,
@@ -134,11 +152,12 @@ public class WebSocketNotificationServiceImpl implements WebSocketNotificationSe
         if (user != null) {
           webSocketNotification.setUser(user);
           repository.save(webSocketNotification);
-
+          log.debug("Successfully add Notification for " + user.getGalaxyId());
           getSessionIdFromMap(contactId, Constant.CONTACT).stream().forEach(e -> messagingTemplate
               .convertAndSendToUser(e, "/response/webSocketNotification", webSocketNotification));
         } else {
           log.info("Contact is not available for : " + contactId);
+          return false;
         }
 
       } else {
@@ -146,11 +165,12 @@ public class WebSocketNotificationServiceImpl implements WebSocketNotificationSe
         if (user != null) {
           webSocketNotification.setUser(user);
           repository.save(webSocketNotification);
-
+          log.debug("Successfully add Notification for " + user.getGalaxyId());
           getSessionIdFromMap(kgpTeamId, Constant.PARTNER).stream().forEach(e -> messagingTemplate
               .convertAndSendToUser(e, "/response/webSocketNotification", webSocketNotification));
         } else {
           log.info("Kgp Team Member is not available for : " + kgpTeamId);
+          return false;
         }
       }
     } catch (Exception e) {
@@ -161,7 +181,9 @@ public class WebSocketNotificationServiceImpl implements WebSocketNotificationSe
     return true;
   }
 
-
+  /*
+   * Get connected Id
+   */
   private Set<String> getSessionIdFromMap(String id, String notificationUserType) {
     log.info("Get sessionId from Map...");
     Set<String> socketIdSet = new HashSet<>();

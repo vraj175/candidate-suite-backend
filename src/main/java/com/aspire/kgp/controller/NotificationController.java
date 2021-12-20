@@ -1,6 +1,7 @@
 package com.aspire.kgp.controller;
 
 import java.util.Date;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -156,17 +157,20 @@ public class NotificationController {
       HttpServletRequest request) {
     Set<String> kgpTeamSet = webSocketNotificationService
         .getContactKgpTeamDetails(webSocketNotificationDTO.getContactId());
-
+    Set<String> successSendNotification = new HashSet<>();
     for (String galaxyId : kgpTeamSet) {
-      webSocketNotificationService.sendWebSocketNotification(galaxyId,
+      boolean isSuccess = webSocketNotificationService.sendWebSocketNotification(galaxyId,
           webSocketNotificationDTO.getContactId(), webSocketNotificationDTO.getNotificationType(),
           Constant.PARTNER);
+      if (isSuccess)
+        successSendNotification.add(galaxyId);
     }
 
     Map<String, Object> body = new LinkedHashMap<>();
     body.put(Constant.TIMESTAMP, new Date());
     body.put(Constant.STATUS, HttpStatus.OK);
     body.put(Constant.MESSAGE, "Notification Send successfully");
+    body.put(Constant.DATA, successSendNotification);
     log.info("Successfully send external source notification for " + kgpTeamSet.size());
     return new ResponseEntity<>(body, HttpStatus.OK);
   }
