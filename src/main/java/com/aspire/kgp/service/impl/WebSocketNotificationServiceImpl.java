@@ -105,29 +105,32 @@ public class WebSocketNotificationServiceImpl implements WebSocketNotificationSe
   @Transactional
   public void updateReadNotification(String id, String galaxyId, String userType) {
     try {
-      repository.updateReadNotification(Long.parseLong(id));
       Map<String, Object> body = new LinkedHashMap<>();
       body.put(Constant.TIMESTAMP, new Date());
       body.put(Constant.STATUS, "200");
-
       if (Constant.PARTNER.equals(userType)) {
+        repository.updateReadNotification(Long.parseLong(id));
         body.put(Constant.MESSAGE, "KGP Team notification successfully Read By " + galaxyId);
         getSessionIdFromMap(galaxyId, Constant.PARTNER).stream()
             .forEach(e -> messagingTemplate.convertAndSendToUser(e, "/response/readNotification",
                 new ResponseEntity<>(body, HttpStatus.OK)));
-      } else {
+      } else if (Constant.CONTACT.equals(userType)) {
+        repository.updateReadNotification(Long.parseLong(id));
         body.put(Constant.MESSAGE, "Contact notification successfully Read By" + galaxyId);
         getSessionIdFromMap(galaxyId, Constant.CONTACT).stream()
             .forEach(e -> messagingTemplate.convertAndSendToUser(e, "/response/readNotification",
                 new ResponseEntity<>(body, HttpStatus.OK)));
+
+      } else {
+        log.error("Invalid User Type");
       }
-      log.info("KGP team read notification status successfully update for galaxyId: " + galaxyId);
-      log.debug(
-          "Update read status for ID:" + id + "Galaxy Id:" + galaxyId + "User Type:" + userType);
     } catch (Exception e) {
       throw new APIException(
           "Error in update read status for KGP Team notification by " + galaxyId);
     }
+    log.info("KGP team read notification status successfully update for galaxyId: " + galaxyId);
+    log.debug(
+        "Update read status for ID:" + id + "Galaxy Id:" + galaxyId + "User Type:" + userType);
   }
 
   /*

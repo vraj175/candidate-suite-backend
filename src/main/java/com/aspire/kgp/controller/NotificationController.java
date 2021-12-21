@@ -142,11 +142,11 @@ public class NotificationController {
     }
   }
 
-  @MessageMapping("/notification/socket/read/{id}/{galaxyId}/{user_type}")
-  public void readTeamNotification(HttpServletRequest request, @PathVariable("id") String id,
-      @PathVariable("galaxyId") String galaxyId, @PathVariable("user_type") String userType) {
-    // User loginUser = (User) request.getAttribute("user");
-    webSocketNotificationService.updateReadNotification(id, galaxyId, userType);
+  @MessageMapping("/notification/socket/read")
+  public void readTeamNotification(WebSocketNotificationDTO webSocketNotificationDTO) {
+    webSocketNotificationService.updateReadNotification(webSocketNotificationDTO.getId(),
+        webSocketNotificationDTO.getContactId(),
+        webSocketNotificationDTO.getNotificationUserType());
   }
 
 
