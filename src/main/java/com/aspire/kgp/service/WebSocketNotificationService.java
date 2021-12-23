@@ -19,4 +19,8 @@ public interface WebSocketNotificationService {
   List<WebSocketNotification> getUnreadNotification(String galaxyId, String notificationUserType);
 
   List<WebSocketNotification> getAllNotification(String galaxyId, String notificationUserType);
+
+  void setSocketMap(String key, String value);
+
+  void removeFromSocketMap(String key);
 }

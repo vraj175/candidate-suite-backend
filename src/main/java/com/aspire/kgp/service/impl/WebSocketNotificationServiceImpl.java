@@ -59,8 +59,14 @@ public class WebSocketNotificationServiceImpl implements WebSocketNotificationSe
   @Autowired
   WebSocketNotificationRepository repository;
 
+  @Override
   public void setSocketMap(String key, String value) {
     this.socketMap.put(key, value);
+  }
+
+  @Override
+  public void removeFromSocketMap(String key) {
+    this.socketMap.remove(key);
   }
 
   /*
@@ -157,7 +163,7 @@ public class WebSocketNotificationServiceImpl implements WebSocketNotificationSe
           repository.save(webSocketNotification);
           log.debug("Successfully add Notification for " + user.getGalaxyId());
           getSessionIdFromMap(contactId, Constant.CONTACT).stream().forEach(e -> messagingTemplate
-              .convertAndSendToUser(e, "/response/webSocketNotification", webSocketNotification));
+              .convertAndSendToUser(e, "/queue/reply", webSocketNotification));
         } else {
           log.info("Contact is not available for : " + contactId);
           return false;
@@ -170,7 +176,7 @@ public class WebSocketNotificationServiceImpl implements WebSocketNotificationSe
           repository.save(webSocketNotification);
           log.debug("Successfully add Notification for " + user.getGalaxyId());
           getSessionIdFromMap(kgpTeamId, Constant.PARTNER).stream().forEach(e -> messagingTemplate
-              .convertAndSendToUser(e, "/response/webSocketNotification", webSocketNotification));
+              .convertAndSendToUser(e, "/queue/reply", webSocketNotification));
         } else {
           log.info("Kgp Team Member is not available for : " + kgpTeamId);
           return false;
