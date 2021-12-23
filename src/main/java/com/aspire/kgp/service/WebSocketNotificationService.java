@@ -23,4 +23,8 @@ public interface WebSocketNotificationService {
   void setSocketMap(String key, String value);
 
   void removeFromSocketMap(String key);
+
+  void apiKeyCheck(String apiKey);
+
+  void jwtTokenCheck(String accessToken);
 }

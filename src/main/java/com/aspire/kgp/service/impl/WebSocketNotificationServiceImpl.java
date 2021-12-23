@@ -14,19 +14,25 @@ import javax.transaction.Transactional;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.security.oauth2.provider.OAuth2Authentication;
+import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
 import org.springframework.stereotype.Service;
 
 import com.aspire.kgp.constant.Constant;
 import com.aspire.kgp.dto.UserDTO;
 import com.aspire.kgp.exception.APIException;
+import com.aspire.kgp.exception.MissingAuthTokenException;
+import com.aspire.kgp.exception.UnauthorizedAccessException;
 import com.aspire.kgp.model.User;
 import com.aspire.kgp.model.WebSocketNotification;
 import com.aspire.kgp.repository.WebSocketNotificationRepository;
 import com.aspire.kgp.service.UserService;
 import com.aspire.kgp.service.WebSocketNotificationService;
+import com.aspire.kgp.util.CommonUtil;
 import com.aspire.kgp.util.RestUtil;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
@@ -58,6 +64,15 @@ public class WebSocketNotificationServiceImpl implements WebSocketNotificationSe
 
   @Autowired
   WebSocketNotificationRepository repository;
+
+  @Value("${spring.api.secret.key}")
+  private String apiSecretKey;
+
+  @Autowired
+  UserService service;
+
+  @Autowired
+  private JwtTokenStore jwtTokenStore;
 
   @Override
   public void setSocketMap(String key, String value) {
@@ -240,6 +255,55 @@ public class WebSocketNotificationServiceImpl implements WebSocketNotificationSe
             }.getType());
         kgpPartnerIdList.add(userDTO.getId());
       });
+    }
+  }
+
+  public void jwtTokenCheck(String accessToken)
+      throws UnauthorizedAccessException, MissingAuthTokenException {
+    if (accessToken == null) {
+      throw new MissingAuthTokenException(Constant.MISSING_REQUEST_HEADER);
+    }
+    if (!accessToken.startsWith("Bearer ")) {
+      throw new UnauthorizedAccessException(Constant.INVALID_AUTHENTICATION);
+    }
+    accessToken = accessToken.split(" ")[1].trim();
+
+    try {
+      OAuth2Authentication authentication = jwtTokenStore.readAuthentication(accessToken);
+      if (authentication.getUserAuthentication() == null) {
+        throw new UnauthorizedAccessException("Malformed Token");
+      } else {
+        if (jwtTokenStore.readAccessToken(accessToken).getExpiresIn() <= 0) {
+          throw new UnauthorizedAccessException("Token Expired");
+        }
+      }
+      String userId = authentication.getUserAuthentication().getName();
+      User user = service.findByEmail(userId);
+      UserDTO userDTO = null;
+      if (user.getRole().getName().equalsIgnoreCase(Constant.PARTNER)) {
+        userDTO = service.getGalaxyUserDetails(user.getGalaxyId());
+      } else {
+        userDTO = service.getContactDetails(user.getGalaxyId());
+      }
+      if (userDTO.getFirstName() == null) {
+        throw new UnauthorizedAccessException("Invalid User or User Delete from Galaxy");
+      }
+    } catch (UnauthorizedAccessException e) {
+      throw new UnauthorizedAccessException(e.getMessage());
+    } catch (Exception e) {
+      throw new UnauthorizedAccessException("Malformed Token");
+    }
+  }
+
+
+
+  public void apiKeyCheck(String apiKey)
+      throws UnauthorizedAccessException, MissingAuthTokenException {
+    if (apiKey == null) {
+      throw new MissingAuthTokenException(Constant.MISSING_API_KEY);
+    }
+    if (!CommonUtil.verifyHash(apiSecretKey, apiKey)) {
+      throw new UnauthorizedAccessException(Constant.INVALID_API_KEY);
     }
   }
 }
