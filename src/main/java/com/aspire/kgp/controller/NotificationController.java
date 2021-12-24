@@ -156,11 +156,23 @@ public class NotificationController {
   }
 
 
+  /*
+   * This API is used for external applications that want to send candidate suite notifications
+   */
   @Operation(summary = "Athena report completed notification send")
   @PostMapping(value = Constant.PUBLIC_API_URL + "/add-notification-externalSource")
   public ResponseEntity<Object> externalNotification(
       @Valid @RequestBody WebSocketNotificationDTO webSocketNotificationDTO,
       HttpServletRequest request) {
+    User user = userService.findByGalaxyId(webSocketNotificationDTO.getContactId());
+    Map<String, Object> body = new LinkedHashMap<>();
+    body.put(Constant.TIMESTAMP, new Date());
+    body.put(Constant.STATUS, HttpStatus.OK);
+    if (user == null) {
+      body.put(Constant.MESSAGE, "Contact is not invented yet");
+      log.info("Contact is not invented yet");
+      return new ResponseEntity<>(body, HttpStatus.OK);
+    }
     Set<String> kgpTeamSet = webSocketNotificationService
         .getContactKgpTeamDetails(webSocketNotificationDTO.getContactId());
     Set<String> successSendNotification = new HashSet<>();
@@ -171,13 +183,10 @@ public class NotificationController {
       if (isSuccess)
         successSendNotification.add(galaxyId);
     }
-
-    Map<String, Object> body = new LinkedHashMap<>();
-    body.put(Constant.TIMESTAMP, new Date());
-    body.put(Constant.STATUS, HttpStatus.OK);
     body.put(Constant.MESSAGE, "Notification Send successfully");
     body.put(Constant.DATA, successSendNotification);
-    log.info("Successfully send external source notification for " + kgpTeamSet.size());
+    log.info(
+        "Successfully send external source notification for " + successSendNotification.size());
     return new ResponseEntity<>(body, HttpStatus.OK);
   }
 
