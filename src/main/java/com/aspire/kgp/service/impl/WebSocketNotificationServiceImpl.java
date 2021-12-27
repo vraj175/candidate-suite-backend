@@ -133,13 +133,13 @@ public class WebSocketNotificationServiceImpl implements WebSocketNotificationSe
         repository.updateReadNotification(Long.parseLong(id));
         body.put(Constant.MESSAGE, "KGP Team notification successfully Read By " + galaxyId);
         getSessionIdFromMap(galaxyId, Constant.PARTNER).stream()
-            .forEach(e -> messagingTemplate.convertAndSendToUser(e, "/response/readNotification",
+            .forEach(e -> messagingTemplate.convertAndSendToUser(e, "/response/socket-notification",
                 new ResponseEntity<>(body, HttpStatus.OK)));
       } else if (Constant.CONTACT.equals(userType)) {
         repository.updateReadNotification(Long.parseLong(id));
         body.put(Constant.MESSAGE, "Contact notification successfully Read By" + galaxyId);
         getSessionIdFromMap(galaxyId, Constant.CONTACT).stream()
-            .forEach(e -> messagingTemplate.convertAndSendToUser(e, "/response/readNotification",
+            .forEach(e -> messagingTemplate.convertAndSendToUser(e, "/response/socket-notification",
                 new ResponseEntity<>(body, HttpStatus.OK)));
 
       } else {
@@ -178,7 +178,7 @@ public class WebSocketNotificationServiceImpl implements WebSocketNotificationSe
           repository.save(webSocketNotification);
           log.debug("Successfully add Notification for " + user.getGalaxyId());
           getSessionIdFromMap(contactId, Constant.CONTACT).stream().forEach(e -> messagingTemplate
-              .convertAndSendToUser(e, "/queue/reply", webSocketNotification));
+              .convertAndSendToUser(e, "/response/socket-notification", webSocketNotification));
         } else {
           log.info("Contact is not available for : " + contactId);
           return false;
@@ -191,7 +191,7 @@ public class WebSocketNotificationServiceImpl implements WebSocketNotificationSe
           repository.save(webSocketNotification);
           log.debug("Successfully add Notification for " + user.getGalaxyId());
           getSessionIdFromMap(kgpTeamId, Constant.PARTNER).stream().forEach(e -> messagingTemplate
-              .convertAndSendToUser(e, "/queue/reply", webSocketNotification));
+              .convertAndSendToUser(e, "/response/socket-notification", webSocketNotification));
         } else {
           log.info("Kgp Team Member is not available for : " + kgpTeamId);
           return false;
