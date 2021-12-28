@@ -15,15 +15,18 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
 import com.aspire.kgp.constant.Constant;
 import com.aspire.kgp.dto.CandidateDTO;
+import com.aspire.kgp.dto.ClientTeamDTO;
 import com.aspire.kgp.dto.UserDTO;
 import com.aspire.kgp.service.MailService;
 import com.aspire.kgp.util.CommonUtil;
+import com.aspire.kgp.util.StaticContentsMultiLanguageUtil;
 
 import freemarker.template.Configuration;
 import freemarker.template.TemplateException;
@@ -37,6 +40,15 @@ public class MailServiceImpl implements MailService {
 
   @Autowired
   Configuration configuration;
+
+  @Value("${galaxy.base.api.url}")
+  private String baseApiUrl;
+
+  @Value("${clientsuite.url}")
+  private String clientsuiteUrl;
+
+  @Value("${candidatesuite.url}")
+  private String candidateSuiteUrl;
 
   @Override
   public void sendEmail(String mailTo, String[] mailBcc, String mailSubject, String mailContent,
@@ -147,7 +159,7 @@ public class MailServiceImpl implements MailService {
     Map<String, String> jobHistoryChanges = changesMap.get("jobHistory");
     Map<String, String> boardHistoryChanges = changesMap.get("boardHistory");
     Map<String, String> educationChanges = changesMap.get("education");
-    
+
     Map<String, Object> model = new HashMap<>();
     model.put("serverUrl", CommonUtil.getServerUrl(request) + request.getContextPath());
     model.put("clientName", paramRequest.get("clientName"));
@@ -177,5 +189,83 @@ public class MailServiceImpl implements MailService {
     configuration.getTemplate(candidateUploadEmailTemplate).process(model, stringWriter);
     log.info("ending getEmailContent for notification Upload Documnets email");
     return stringWriter.getBuffer().toString();
+  }
+
+  @Override
+  public String getInterviewNotificationEmailContent(String notificationType,
+      CandidateDTO candidateDTO, UserDTO userDTO, ClientTeamDTO clientTeamDTO, String schedulerType,
+      String stage, String templateName) {
+
+    log.info("starting getEmailContent");
+    StringWriter stringWriter = new StringWriter();
+    Map<String, Object> model = new HashMap<>();
+    if (schedulerType.equals(Constant.BEFORE_ONE_HOUR))
+      model.put("time", "in an hour");
+    else
+      model.put("time", "tomorrow ");
+
+    model.put(Constant.SERVER_URL, candidateSuiteUrl);
+    model.put(Constant.HOME_URL, "/login");
+    model.put(Constant.POSITION_TITLE, candidateDTO.getSearch().getJobTitle());
+    model.put(Constant.FEEDBACK_NOTIFICATION_COMPANY_NAME,
+        candidateDTO.getSearch().getCompany().getName());
+    model.put(Constant.STATIC_CONTENT_MAP,
+        StaticContentsMultiLanguageUtil.getStaticContentsMap("en_US", Constant.EMAILS_CONTENT_MAP));
+
+    if (notificationType.equals(Constant.CANDIDATE_NOTIFICATION)) {
+      model.put(Constant.CLICK_HERE, "Click Here");
+      model.put(Constant.CLICK_HERE_MSG, "to access the login details.");
+      model.put(Constant.CLICK_HERE_SERVER_URL, candidateSuiteUrl);
+      model.put(Constant.NAME, candidateDTO.getContact().getFirstName());
+      model.put(Constant.COMPANY_NAME, candidateDTO.getSearch().getCompany().getName() + ",");
+      model.put(Constant.POSITION_TITLE_TYPE, "role");
+      model.put(Constant.FEEDBACK_NOTIFICATION_CLICK_MSG, "Candidate Suite ");
+      model.put(Constant.FEEDBACK_NOTIFICATION_CANDIDATE_NAME, "");
+      model.put(Constant.FEEDBACK_NOTIFICATION_URL, Constant.CANDIDATE_FEEDBACK_URL
+          .replace(Constant.CANDIDATE_ID_BRACES, candidateDTO.getId()));
+      if (stage.equals(Constant.KGP_TEAM))
+        model.put(Constant.CANDIDATE_NAME, userDTO.getName());
+      else
+        model.put(Constant.CANDIDATE_NAME, clientTeamDTO.getContact().getFirstName() + " "
+            + clientTeamDTO.getContact().getLastName());
+
+    } else if (notificationType.equals(Constant.CLIENT_NOTIFICATION)) {
+      model.put(Constant.CLICK_HERE, "Click Here");
+      model.put(Constant.CLICK_HERE_MSG, "to access their details in Client Suite.");
+      model.put(Constant.CLICK_HERE_SERVER_URL, clientsuiteUrl);
+      model.put(Constant.NAME, clientTeamDTO.getContact().getFirstName());
+      model.put(Constant.CANDIDATE_NAME,
+          candidateDTO.getContact().getFirstName() + " " + candidateDTO.getContact().getLastName());
+      model.put(Constant.COMPANY_NAME, "");
+      model.put(Constant.POSITION_TITLE_TYPE, "role");
+      model.put(Constant.FEEDBACK_NOTIFICATION_CLICK_MSG, "ClientSuite ");
+      model.put(Constant.FEEDBACK_NOTIFICATION_URL, "");
+      model.put(Constant.FEEDBACK_NOTIFICATION_CANDIDATE_NAME,
+          " with <b>" + candidateDTO.getContact().getFirstName() + " "
+              + candidateDTO.getContact().getLastName() + "</b>");
+    } else {
+      model.put(Constant.CLICK_HERE, "");
+      model.put(Constant.CLICK_HERE_MSG, "");
+      model.put(Constant.CLICK_HERE_SERVER_URL, clientsuiteUrl);
+      model.put(Constant.NAME, userDTO.getFirstName());
+      model.put(Constant.CANDIDATE_NAME,
+          candidateDTO.getContact().getFirstName() + " " + candidateDTO.getContact().getLastName());
+      model.put(Constant.COMPANY_NAME, candidateDTO.getSearch().getCompany().getName() + ",");
+      model.put(Constant.POSITION_TITLE_TYPE, "search");
+      model.put(Constant.FEEDBACK_NOTIFICATION_CLICK_MSG, "ClientSuite ");
+      model.put(Constant.FEEDBACK_NOTIFICATION_URL, "");
+      model.put(Constant.FEEDBACK_NOTIFICATION_CANDIDATE_NAME,
+          " with <b>" + candidateDTO.getContact().getFirstName() + " "
+              + candidateDTO.getContact().getLastName() + "</b>");
+    }
+
+    try {
+      configuration.getTemplate(templateName).process(model, stringWriter);
+    } catch (TemplateException | IOException e) {
+      e.printStackTrace();
+    }
+    log.info("ending getEmailContent");
+    return stringWriter.getBuffer().toString();
+
   }
 }
