@@ -1,16 +1,30 @@
 package com.aspire.kgp.service.impl;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.Collections;
+import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.aspire.kgp.constant.Constant;
 import com.aspire.kgp.dto.CandidateDTO;
 import com.aspire.kgp.dto.CompanyDTO;
 import com.aspire.kgp.dto.ContactDTO;
+import com.aspire.kgp.dto.DocumentDTO;
 import com.aspire.kgp.exception.APIException;
 import com.aspire.kgp.model.UserSearch;
 import com.aspire.kgp.service.CompanyService;
@@ -22,8 +36,12 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 
+
 @Service
 public class CompanyServiceImpl implements CompanyService {
+  static Log log = LogFactory.getLog(CompanyServiceImpl.class.getName());
+
+
   @Autowired
   RestUtil restUtil;
 
@@ -124,6 +142,7 @@ public class CompanyServiceImpl implements CompanyService {
     return candidateDTO;
   }
 
+
   private CandidateDTO mergeName(CandidateDTO candidateDTO) {
     for (int i = candidateDTO.getInterviews().size() - 1; i >= 0; i--) {
       if (candidateDTO.getInterviews().get(i).getInterviewDate() != null
@@ -166,5 +185,74 @@ public class CompanyServiceImpl implements CompanyService {
   @Override
   public String addNewCompany(String companyData) {
     return restUtil.postMethod(Constant.COMPANY_SAVE_URL, companyData, null);
+  }
+
+  @Override
+  public List<DocumentDTO> getDocumentAttchment(String companyId) {
+    try {
+      JsonObject jsonObject = new JsonObject();
+      jsonObject.addProperty("show_in_candidatesuite", "true");
+      String apiResponse = restUtil.postMethod(
+          Constant.GET_DOCUMENT_ATTCHMENT_LIST_URL.replace("{COMPANYID}", companyId),
+          jsonObject.toString(), null);
+
+      if (apiResponse.contains("{\"message\":")) {
+        throw new APIException(Constant.INVALID_COMPANY_ID);
+      }
+      return new Gson().fromJson(apiResponse, new TypeToken<List<DocumentDTO>>() {
+        /**
+         * 
+         */
+        private static final long serialVersionUID = 1L;
+      }.getType());
+    } catch (Exception e) {
+      throw new APIException(Constant.JSON_PROCESSING_EXCEPTION + e.getMessage());
+    }
+  }
+
+  @Override
+  public ResponseEntity<Object> uploadCompanyAttachment(MultipartFile multipartFile,
+      String companyId, HttpServletRequest request) {
+
+    File file;
+    try {
+      String fileName = multipartFile.getOriginalFilename();
+      if (fileName == null || fileName.trim().isEmpty()) {
+        throw new APIException(Constant.FILE_UPLOAD_ERROR);
+      }
+      String extension = fileName.substring(fileName.lastIndexOf("."));
+      log.info(extension);
+      File parent = new File(System.getProperty("java.io.tmpdir"));
+      file = new File(parent, fileName);
+      FileOutputStream fos = new FileOutputStream(file);
+      fos.write(multipartFile.getBytes());
+      fos.close();
+    } catch (IOException e1) {
+      throw new APIException(Constant.FILE_UPLOAD_ERROR);
+    }
+    String response = "";
+
+    response = restUtil.postMethod(
+        Constant.COMPANY_ATTECHMENT_URL.replace(Constant.COMPANY_ID_BRACES, companyId), null, file);
+
+    log.info(response);
+    JsonObject responseJson = new Gson().fromJson(response, JsonObject.class);
+
+    try {
+      if (responseJson.get("id").getAsString() != null) {
+        Map<String, Object> body = new LinkedHashMap<>();
+        body.put(Constant.TIMESTAMP, new Date());
+        body.put(Constant.STATUS, "200");
+        body.put(Constant.MESSAGE, Constant.FILE_UPLOADED_SUCCESSFULLY);
+        return new ResponseEntity<>(body, HttpStatus.OK);
+      }
+    } catch (Exception e) {
+      throw new APIException(Constant.FILE_UPLOAD_ERROR);
+    }
+    Map<String, Object> body = new LinkedHashMap<>();
+    body.put(Constant.TIMESTAMP, new Date());
+    body.put(Constant.STATUS, "500");
+    body.put(Constant.MESSAGE, Constant.FILE_UPLOAD_ERROR);
+    return new ResponseEntity<>(body, HttpStatus.INTERNAL_SERVER_ERROR);
   }
 }

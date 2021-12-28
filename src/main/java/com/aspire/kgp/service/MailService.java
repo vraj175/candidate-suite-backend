@@ -9,7 +9,6 @@ import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
 
 import com.aspire.kgp.dto.CandidateDTO;
-import com.aspire.kgp.dto.ClientTeamDTO;
 import com.aspire.kgp.dto.UserDTO;
 
 import freemarker.template.TemplateException;
@@ -31,6 +30,9 @@ public interface MailService {
       Map<String, String> staticContentsMap, String candidateUploadEmailTemplate,
       String partnerName, Map<String, String> paramRequest) throws IOException, TemplateException;
 
-  public String getInterviewNotificationEmailContent(String type, CandidateDTO candidateDTO,
-      UserDTO userDTO, ClientTeamDTO clientTeamDTO, String time, String stage, String templateName);
+  String getMyInfoUpdateEmailContent(HttpServletRequest request,
+      Map<String, String> staticContentsMap, String candidateUploadEmailTemplate,
+      String partnerName, Map<String, String> paramRequest,
+      Map<String, Map<String, String>> changesMap) throws TemplateException, IOException;
+
 }

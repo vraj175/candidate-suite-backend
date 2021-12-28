@@ -18,8 +18,6 @@ public class JobHistory extends SuperBase {
   @Column(name = "title")
   private String title;
 
-
-
   public String getCompany() {
     return company;
   }
