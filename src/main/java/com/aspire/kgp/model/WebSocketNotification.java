@@ -79,4 +79,11 @@ public class WebSocketNotification extends SuperBase {
   public void setNotificationUserType(String notificationUserType) {
     this.notificationUserType = notificationUserType;
   }
+
+  @Override
+  public String toString() {
+    return "WebSocketNotification [user=" + user + ", date=" + date + ", notificationType="
+        + notificationType + ", contactId=" + contactId + ", notificationUserType="
+        + notificationUserType + ", isReadable=" + isReadable + "]";
+  }
 }

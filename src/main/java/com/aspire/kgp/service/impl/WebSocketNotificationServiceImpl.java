@@ -82,6 +82,13 @@ public class WebSocketNotificationServiceImpl implements WebSocketNotificationSe
   @Override
   public void removeFromSocketMap(String key) {
     this.socketMap.remove(key);
+    log.info("Successfully Disconnected Socket Id " + key);
+    Map<String, Object> body = new LinkedHashMap<>();
+    body.put(Constant.TIMESTAMP, new Date());
+    body.put(Constant.STATUS, "200");
+    body.put(Constant.MESSAGE, "Successfully Disconnected Socket Id " + key);
+    messagingTemplate.convertAndSendToUser(key, "/response/socket-notification",
+        new ResponseEntity<>(body, HttpStatus.OK));
   }
 
   /*
@@ -177,8 +184,9 @@ public class WebSocketNotificationServiceImpl implements WebSocketNotificationSe
           webSocketNotification.setUser(user);
           repository.save(webSocketNotification);
           log.debug("Successfully add Notification for " + user.getGalaxyId());
-          getSessionIdFromMap(contactId, Constant.CONTACT).stream().forEach(e -> messagingTemplate
-              .convertAndSendToUser(e, "/response/socket-notification", webSocketNotification));
+          getSessionIdFromMap(contactId, Constant.CONTACT).stream()
+              .forEach(e -> messagingTemplate.convertAndSendToUser(e,
+                  "/response/socket-notification", webSocketNotification.toString()));
         } else {
           log.info("Contact is not available for : " + contactId);
           return false;
@@ -190,8 +198,9 @@ public class WebSocketNotificationServiceImpl implements WebSocketNotificationSe
           webSocketNotification.setUser(user);
           repository.save(webSocketNotification);
           log.debug("Successfully add Notification for " + user.getGalaxyId());
-          getSessionIdFromMap(kgpTeamId, Constant.PARTNER).stream().forEach(e -> messagingTemplate
-              .convertAndSendToUser(e, "/response/socket-notification", webSocketNotification));
+          getSessionIdFromMap(kgpTeamId, Constant.PARTNER).stream()
+              .forEach(e -> messagingTemplate.convertAndSendToUser(e,
+                  "/response/socket-notification", webSocketNotification.toString()));
         } else {
           log.info("Kgp Team Member is not available for : " + kgpTeamId);
           return false;

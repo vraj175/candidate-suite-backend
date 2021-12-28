@@ -1,6 +1,5 @@
 package com.aspire.kgp.controller;
 
-import java.security.Principal;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -151,8 +150,8 @@ public class NotificationController {
   }
 
   @MessageMapping("/notification/socket/disconnect")
-  public void disconnectSocket(Principal principal) {
-    webSocketNotificationService.removeFromSocketMap(principal.getName());
+  public void disconnectSocket(WebSocketNotificationDTO webSocketNotificationDTO) {
+    webSocketNotificationService.removeFromSocketMap(webSocketNotificationDTO.getId());
   }
 
 
