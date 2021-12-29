@@ -60,8 +60,8 @@ public class InterviewNotificationServiceImpl implements InterviewNotificationSe
 
     String apiResponse = getInterViewDetails(schedulerType);
     JsonObject jsonObjects = (JsonObject) JsonParser.parseString(apiResponse);
-    JsonArray kgpTeamJsonArray = jsonObjects.getAsJsonArray("kgpinterviews");
-    JsonArray clientJsonArray = jsonObjects.getAsJsonArray("clientinterviews");
+    JsonArray kgpTeamJsonArray = jsonObjects.getAsJsonArray("kgpInterviews");
+    JsonArray clientJsonArray = jsonObjects.getAsJsonArray("clientsInterviews");
 
 
     List<CandidateDTO> kgpInterviewCandidateList =

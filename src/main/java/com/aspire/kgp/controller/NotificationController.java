@@ -20,13 +20,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.aspire.kgp.constant.Constant;
-import com.aspire.kgp.dto.NotificationSchedulerDTO;
 import com.aspire.kgp.dto.NotificationsDTO;
 import com.aspire.kgp.exception.APIException;
 import com.aspire.kgp.model.Notification;
 import com.aspire.kgp.model.User;
 import com.aspire.kgp.service.NotificationService;
-import com.aspire.kgp.service.impl.NotificationSchedulerServiceImpl;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -44,9 +42,6 @@ public class NotificationController {
 
   @Autowired
   NotificationService service;
-
-  @Autowired
-  private NotificationSchedulerServiceImpl notificationSchedulerServiceImpl;
 
   @Operation(summary = "Get list of Notifications")
   @GetMapping(value = "/notification/all")
@@ -67,27 +62,12 @@ public class NotificationController {
     return notificationList;
   }
 
-
-  @PostMapping("/notification")
-  public ResponseEntity<Object> setNotification(
-      @Valid @RequestBody NotificationSchedulerDTO notificationDTO, HttpServletRequest request) {
-    boolean result = notificationSchedulerServiceImpl.setcandidateInterview(notificationDTO);
-    if (result) {
-      Map<String, Object> body = new LinkedHashMap<>();
-      body.put(Constant.TIMESTAMP, new Date());
-      body.put(Constant.STATUS, HttpStatus.OK);
-      body.put(Constant.MESSAGE, "Successfully set Interview notification");
-      return new ResponseEntity<>(body, HttpStatus.OK);
-    }
-    throw new APIException("Error in Set Notification Schedule");
-  }
-
   @PostMapping(value = "/notification/add")
   @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK",
-  content = @Content(mediaType = "application/json", schema = @Schema(type = "Json",
-      example = "{  \"timestamp\": \"2021-09-06T08:53:39.690+00:00\", \"status\": \"OK\", \"message\": \"Notification Added Successfully\" }")))})
-  public ResponseEntity<Object> addNotification(
-      @Valid @RequestBody NotificationsDTO notifications, HttpServletRequest request) {
+      content = @Content(mediaType = "application/json", schema = @Schema(type = "Json",
+          example = "{  \"timestamp\": \"2021-09-06T08:53:39.690+00:00\", \"status\": \"OK\", \"message\": \"Notification Added Successfully\" }")))})
+  public ResponseEntity<Object> addNotification(@Valid @RequestBody NotificationsDTO notifications,
+      HttpServletRequest request) {
     User user = (User) request.getAttribute("user");
     if (user == null) {
       throw new APIException("Invalid User Id");
