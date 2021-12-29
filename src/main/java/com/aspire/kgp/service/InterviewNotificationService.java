@@ -2,10 +2,10 @@ package com.aspire.kgp.service;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import com.aspire.kgp.dto.CandidateDTO;
 import com.aspire.kgp.dto.ClientTeamDTO;
-import com.aspire.kgp.dto.InterviewNotificationRequestDTO;
 import com.aspire.kgp.dto.UserDTO;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -34,6 +34,6 @@ public interface InterviewNotificationService {
 
   List<ClientTeamDTO> addClientTeamJsonArraytoList(JsonObject json, String listfor);
 
-  InterviewNotificationRequestDTO getScheduleDate(Date currentDateAndTime, String type);
+  Map<String, String> getScheduleDate(Date currentDateAndTime, String type);
 
 }

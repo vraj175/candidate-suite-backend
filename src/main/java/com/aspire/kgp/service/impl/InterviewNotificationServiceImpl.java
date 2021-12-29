@@ -6,7 +6,9 @@ import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -17,7 +19,6 @@ import com.aspire.kgp.constant.Constant;
 import com.aspire.kgp.dto.CandidateDTO;
 import com.aspire.kgp.dto.ClientTeamDTO;
 import com.aspire.kgp.dto.ContactDTO;
-import com.aspire.kgp.dto.InterviewNotificationRequestDTO;
 import com.aspire.kgp.dto.UserDTO;
 import com.aspire.kgp.exception.APIException;
 import com.aspire.kgp.service.InterviewNotificationService;
@@ -57,56 +58,7 @@ public class InterviewNotificationServiceImpl implements InterviewNotificationSe
     }
 
 
-    // String apiResponse = getInterViewDetails(time);
-    String apiResponse = "{ clientinterviews: [{\r\n"
-        + "    \"id\": \"26fa66e2-670d-4aac-947c-26fb128fc2e8\",\r\n"
-        + "    \"stage\": \"Client Interview\",\r\n" + "    \"contact\": {\r\n"
-        + "      \"id\": \"85dd22a9-5c7f-4f81-a392-4180851f54ff\",\r\n"
-        + "      \"first_name\": \"Jorge\",\r\n" + "      \"last_name\": \"Muñoz\"\r\n"
-        + "    },\r\n" + "    \"search\": {\r\n"
-        + "      \"id\": \"70fcd549-5971-4d9e-813c-cf53fc9d9aa9\",\r\n"
-        + "      \"job_title\": \"Director Ejecutivo\",\r\n" + "      \"job_number\": 42047,\r\n"
-        + "      \"company\": {\r\n"
-        + "        \"id\": \"9b9a6c20-4954-42e4-8580-61cb925d00db\",\r\n"
-        + "        \"name\": \"Grupo Educativo Transforma\"\r\n" + "      },\r\n"
-        + "      \"client_team\": [\r\n" + "        {\r\n"
-        + "          \"id\": \"5f9341a2-004b-4943-8c08-287483b9ba5e\",\r\n"
-        + "          \"search_id\": \"70fcd549-5971-4d9e-813c-cf53fc9d9aa9\",\r\n"
-        + "          \"is_hiring_manager\": null,\r\n"
-        + "          \"clientsuite_invitation_sent_on\": null,\r\n"
-        + "          \"position\": 3,\r\n"
-        + "          \"created_at\": \"2020-12-17T13:57:25.428Z\",\r\n"
-        + "          \"updated_at\": \"2020-12-17T13:57:25.440Z\",\r\n"
-        + "          \"contact\": {\r\n"
-        + "            \"id\": \"232c9fdf-23e2-4059-af16-edf927cfa0d8\",\r\n"
-        + "            \"first_name\": \"Alejandro\",\r\n"
-        + "            \"last_name\": \"Desmaison Fernandini\",\r\n"
-        + "            \"mobile_phone\": \"+51 997 501 250\",\r\n"
-        + "            \"work_email\": \"adesmaison@franquiciasperu.com\"\r\n" + "          }\r\n"
-        + "        }\r\n" + "      ]\r\n" + "    }\r\n" + "  }],\r\n" + " kgpinterviews: [\r\n"
-        + "  {\r\n" + "    \"id\": \"2f6721c5-02fa-4f41-8675-e7449d22951d\",\r\n"
-        + "    \"stage\": \"Client Interview\",\r\n" + "    \"contact\": {\r\n"
-        + "      \"id\": \"ff58de87-dc7c-4c9e-a31a-4227b44515b2\",\r\n"
-        + "      \"first_name\": \"sa\",\r\n" + "      \"last_name\": \"cghg\"\r\n" + "    },\r\n"
-        + "    \"search\": {\r\n" + "      \"id\": \"b54e8ad3-7f36-45dd-a829-fb550e29f098\",\r\n"
-        + "      \"job_title\": \"mike\",\r\n" + "      \"job_number\": 12,\r\n"
-        + "      \"company\": {\r\n"
-        + "        \"id\": \"b8b57530-f5b9-4c73-af03-508ca2dc48af\",\r\n"
-        + "        \"name\": \"EverestEngineering\"\r\n" + "      },\r\n"
-        + "      \"partners\": [\r\n" + "        {\r\n"
-        + "          \"id\": \"c1bb9fdd-8fc8-407f-9fbd-2672da4465d9\",\r\n"
-        + "          \"search_id\": \"b54e8ad3-7f36-45dd-a829-fb550e29f098\",\r\n"
-        + "          \"origination_credit\": null,\r\n" + "          \"selling_credit\": null,\r\n"
-        + "          \"execution_credit\": null,\r\n" + "          \"position\": 1,\r\n"
-        + "          \"created_at\": \"2021-10-26T05:52:55.296Z\",\r\n"
-        + "          \"updated_at\": \"2021-10-26T05:52:55.342Z\",\r\n"
-        + "          \"user\": {\r\n" + "            \"name\": \"Itachi Uchiha\",\r\n"
-        + "            \"id\": \"4adf43ef-367c-4e84-9748-e756d84ba377\",\r\n"
-        + "            \"first_name\": \"Itachi\",\r\n"
-        + "            \"last_name\": \"Uchiha\",\r\n"
-        + "            \"email\": \"Dummy@gmail.com\"\r\n" + "          }\r\n" + "        }\r\n"
-        + "      ],\r\n" + "      \"recruiters\": []\r\n" + "    }\r\n" + "  }\r\n" + "]\r\n" + "}";
-
+    String apiResponse = getInterViewDetails(schedulerType);
     JsonObject jsonObjects = (JsonObject) JsonParser.parseString(apiResponse);
     JsonArray kgpTeamJsonArray = jsonObjects.getAsJsonArray("kgpinterviews");
     JsonArray clientJsonArray = jsonObjects.getAsJsonArray("clientinterviews");
@@ -219,11 +171,15 @@ public class InterviewNotificationServiceImpl implements InterviewNotificationSe
   public String getInterViewDetails(String schedulerType) {
     LocalDateTime date = java.time.LocalDateTime.now();
     Date currentDateAndTime = Date.from(date.atZone(ZoneId.systemDefault()).toInstant());
-    getScheduleDate(currentDateAndTime, schedulerType);
+    Map<String, String> interviewNotificationReqMap =
+        getScheduleDate(currentDateAndTime, schedulerType);
 
-    String apiResponse = restUtil.newGetMethod(
-        Constant.CANDIDATE_LIST_URL.replace("{searchId}", "a1882a04-8cee-4f6a-9c75-48d03d61728d"));
-    return apiResponse;
+    JsonObject paramJSON = new JsonObject();
+    paramJSON.addProperty(Constant.FROM_DATE, interviewNotificationReqMap.get(Constant.FROM_DATE));
+    paramJSON.addProperty(Constant.TO_DATE, interviewNotificationReqMap.get(Constant.TO_DATE));
+
+    return restUtil.postMethod(Constant.CANDIDATE_SUITE_INTERVIEW, paramJSON.toString(), null);
+
   }
 
   @Override
@@ -288,9 +244,8 @@ public class InterviewNotificationServiceImpl implements InterviewNotificationSe
   }
 
   @Override
-  public InterviewNotificationRequestDTO getScheduleDate(Date currentDateAndTime, String type) {
-    InterviewNotificationRequestDTO interviewNotificationRequestDTO =
-        new InterviewNotificationRequestDTO();
+  public Map<String, String> getScheduleDate(Date currentDateAndTime, String type) {
+    Map<String, String> interviewNotificationReqMap = new HashMap<>();
     SimpleDateFormat formatter = new SimpleDateFormat(Constant.GALAXY_DATE_AND_TIME_FORMATTER);
     Calendar fromDateCalender = Calendar.getInstance();
     Calendar toDateCalender = Calendar.getInstance();
@@ -308,10 +263,11 @@ public class InterviewNotificationServiceImpl implements InterviewNotificationSe
       toDateCalender.add(Calendar.HOUR, -2);
     }
 
-    interviewNotificationRequestDTO
-        .setFromDate(formatter.format(fromDateCalender.getTime().getTime()));
-    interviewNotificationRequestDTO.setToDate(formatter.format(toDateCalender.getTime().getTime()));
-    return interviewNotificationRequestDTO;
+    interviewNotificationReqMap.put(Constant.FROM_DATE,
+        formatter.format(fromDateCalender.getTime().getTime()));
+    interviewNotificationReqMap.put(Constant.TO_DATE,
+        formatter.format(toDateCalender.getTime().getTime()));
+    return interviewNotificationReqMap;
   }
 
 }
