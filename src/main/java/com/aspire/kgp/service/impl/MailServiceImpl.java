@@ -196,7 +196,7 @@ public class MailServiceImpl implements MailService {
       CandidateDTO candidateDTO, UserDTO userDTO, ClientTeamDTO clientTeamDTO, String schedulerType,
       String stage, String templateName) {
 
-    log.info("starting getEmailContent");
+    log.debug("starting getEmailContent");
     StringWriter stringWriter = new StringWriter();
     Map<String, Object> model = new HashMap<>();
     if (schedulerType.equals(Constant.BEFORE_ONE_HOUR))

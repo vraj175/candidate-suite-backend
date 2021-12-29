@@ -119,41 +119,40 @@ public class InterviewNotificationServiceImpl implements InterviewNotificationSe
   public void sendCandidateNotification(String mailSubject, String schedulerType,
       CandidateDTO candidateDTO, UserDTO userDTO, ClientTeamDTO clientTeamDTO, String stage,
       String templateName) {
-    log.info("candidate notification send... candidate details " + candidateDTO);
+    log.info("candidate notification send... Scheduler Type " + schedulerType);
     log.debug("candidate notification details : type" + schedulerType + " Stage " + stage
-        + " kgp team details " + userDTO + " client details " + clientTeamDTO);
+        + " kgp team details " + userDTO + " client details " + clientTeamDTO
+        + " candidate detail: " + candidateDTO);
     String contain =
         mailService.getInterviewNotificationEmailContent(Constant.CANDIDATE_NOTIFICATION,
             candidateDTO, userDTO, clientTeamDTO, schedulerType, stage, templateName);
-    sendMail(
-        candidateDTO.getContact().getEmail().isEmpty() ? candidateDTO.getContact().getWorkEmail()
-            : candidateDTO.getContact().getEmail(),
-        mailSubject, contain);
+    sendMail(candidateDTO.getContact().getEmail() == null ? candidateDTO.getContact().getWorkEmail()
+        : candidateDTO.getContact().getEmail(), mailSubject, contain);
 
   }
 
   @Override
   public void sendKgpPartnerNotification(String mailSubject, String schedulerType,
       CandidateDTO candidateDTO, UserDTO userDTO, String templateName) {
-    log.info("KGP Partner notification send... candidate details " + candidateDTO);
-    log.debug(
-        "KGP Partner notification details : type" + schedulerType + " kgp team details " + userDTO);
+    log.info("KGP Partner notification send... Scheduler Type " + schedulerType);
+    log.debug("KGP Partner notification details : type" + schedulerType + " candidate details "
+        + candidateDTO + " kgp team details " + userDTO);
     String contain = mailService.getInterviewNotificationEmailContent(Constant.KGP_NOTIFICATION,
         candidateDTO, userDTO, null, schedulerType, null, templateName);
-    sendMail(userDTO.getEmail().isEmpty() ? userDTO.getWorkEmail() : userDTO.getEmail(),
-        mailSubject, contain);
+    sendMail(userDTO.getEmail() == null ? userDTO.getWorkEmail() : userDTO.getEmail(), mailSubject,
+        contain);
   }
 
   @Override
   public void sendClientNotification(String mailSubject, String time, CandidateDTO candidateDTO,
       ClientTeamDTO clientTeamDTO, String templateName) {
-    log.info("Client Team notification send... candidate details " + candidateDTO);
-    log.debug(
-        "Client Team notification details : type" + time + " Client Team details " + clientTeamDTO);
+    log.info("Client Team notification send... Scheduler Type " + time);
+    log.debug("Client Team notification details : type" + time + " Client Team details "
+        + clientTeamDTO + " candidate details " + candidateDTO);
     String contain = mailService.getInterviewNotificationEmailContent(Constant.CLIENT_NOTIFICATION,
         candidateDTO, null, clientTeamDTO, time, null, templateName);
     sendMail(
-        clientTeamDTO.getContact().getEmail().isEmpty() ? clientTeamDTO.getContact().getWorkEmail()
+        clientTeamDTO.getContact().getEmail() == null ? clientTeamDTO.getContact().getWorkEmail()
             : clientTeamDTO.getContact().getEmail(),
         mailSubject, contain);
   }
