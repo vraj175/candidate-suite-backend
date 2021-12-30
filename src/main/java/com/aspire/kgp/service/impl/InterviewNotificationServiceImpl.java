@@ -43,7 +43,6 @@ public class InterviewNotificationServiceImpl implements InterviewNotificationSe
 
   @Override
   public void sendNotification(String schedulerType) {
-    log.info("staring email sending...");
     String mailSubject;
     String templateName;
     if (schedulerType.equals(Constant.BEFORE_ONE_HOUR)) {
@@ -176,6 +175,9 @@ public class InterviewNotificationServiceImpl implements InterviewNotificationSe
     JsonObject paramJSON = new JsonObject();
     paramJSON.addProperty(Constant.FROM_DATE, interviewNotificationReqMap.get(Constant.FROM_DATE));
     paramJSON.addProperty(Constant.TO_DATE, interviewNotificationReqMap.get(Constant.TO_DATE));
+    log.debug(
+        "Get InterviewDetails for From date: " + interviewNotificationReqMap.get(Constant.FROM_DATE)
+            + " To date " + interviewNotificationReqMap.get(Constant.TO_DATE));
 
     return restUtil.postMethod(Constant.CANDIDATE_SUITE_INTERVIEW, paramJSON.toString(), null);
 

@@ -196,7 +196,7 @@ public class MailServiceImpl implements MailService {
       CandidateDTO candidateDTO, UserDTO userDTO, ClientTeamDTO clientTeamDTO, String schedulerType,
       String stage, String templateName) {
 
-    log.debug("starting getEmailContent");
+    log.debug("get Interview Notification Email Content...");
     StringWriter stringWriter = new StringWriter();
     Map<String, Object> model = new HashMap<>();
     if (schedulerType.equals(Constant.BEFORE_ONE_HOUR))
@@ -221,8 +221,13 @@ public class MailServiceImpl implements MailService {
       model.put(Constant.POSITION_TITLE_TYPE, "role");
       model.put(Constant.FEEDBACK_NOTIFICATION_CLICK_MSG, "Candidate Suite ");
       model.put(Constant.FEEDBACK_NOTIFICATION_CANDIDATE_NAME, "");
-      model.put(Constant.FEEDBACK_NOTIFICATION_URL, Constant.CANDIDATE_FEEDBACK_URL
-          .replace(Constant.CANDIDATE_ID_BRACES, candidateDTO.getId()));
+      model.put(Constant.FEEDBACK_NOTIFICATION_URL,
+          Constant.CANDIDATE_SUITE_FEEDBACK_PAGE_URL
+              .replace(Constant.CANDIDATE_ID_BRACES, candidateDTO.getId())
+              .replace(Constant.SEARCH_ID_BRACES, candidateDTO.getSearch().getId())
+              .replace(Constant.SEARCH_TITLE_BRACES, candidateDTO.getSearch().getJobTitle())
+              .replace(Constant.CONTACT_ID, candidateDTO.getContact().getId())
+              .replaceAll(Constant.SPACE_STRING, "%20"));
       if (stage.equals(Constant.KGP_TEAM))
         model.put(Constant.CANDIDATE_NAME, userDTO.getName());
       else
@@ -264,7 +269,7 @@ public class MailServiceImpl implements MailService {
     } catch (TemplateException | IOException e) {
       e.printStackTrace();
     }
-    log.info("ending getEmailContent");
+    log.debug("Successfully Get Interview Notification Email Content");
     return stringWriter.getBuffer().toString();
 
   }

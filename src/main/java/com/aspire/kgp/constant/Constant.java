@@ -83,6 +83,8 @@ public class Constant {
   public static final String CANDIDATE_URL = "/candidates/{candidateId}/activity";
   public static final String CANDIDATE_FEEDBACK_URL =
       "/candidate-suite/candidates/{candidateId}/candidate-feedback";
+  public static final String CANDIDATE_SUITE_FEEDBACK_PAGE_URL =
+      "/feedback/{candidateId}/{searchId}/{searchTitle}/{contactId}";
   public static final String CANDIDATE_SUITE_INTERVIEW = "/candidate-suite/interview";
   public static final String CANDIDATE_FEEDBACK_REPLY_URL =
       "/candidate-suite/candidate-feedback/{commentId}/{candidateId}/reply";
@@ -119,6 +121,8 @@ public class Constant {
   public static final String CONTACT_ID = "{contactId}";
   public static final String COMPANY_ID_BRACES = "{companyId}";
   public static final String CANDIDATE_ID_BRACES = "{candidateId}";
+  public static final String SEARCH_ID_BRACES = "{searchId}";
+  public static final String SEARCH_TITLE_BRACES = "{searchTitle}";
   public static final String COMMENT_ID_BRACES = "{commentId}";
 
   // Queries parameter
