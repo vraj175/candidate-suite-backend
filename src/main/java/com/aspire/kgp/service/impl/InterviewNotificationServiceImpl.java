@@ -127,7 +127,7 @@ public class InterviewNotificationServiceImpl implements InterviewNotificationSe
             candidateDTO, userDTO, clientTeamDTO, schedulerType, stage, templateName);
     sendMail(candidateDTO.getContact().getEmail() == null ? candidateDTO.getContact().getWorkEmail()
         : candidateDTO.getContact().getEmail(), mailSubject, contain);
-
+    log.debug("Successfully Send candidate notification");
   }
 
   @Override
@@ -140,6 +140,7 @@ public class InterviewNotificationServiceImpl implements InterviewNotificationSe
         candidateDTO, userDTO, null, schedulerType, null, templateName);
     sendMail(userDTO.getEmail() == null ? userDTO.getWorkEmail() : userDTO.getEmail(), mailSubject,
         contain);
+    log.debug("Successfully Send kgp partner Notification");
   }
 
   @Override
@@ -154,6 +155,7 @@ public class InterviewNotificationServiceImpl implements InterviewNotificationSe
         clientTeamDTO.getContact().getEmail() == null ? clientTeamDTO.getContact().getWorkEmail()
             : clientTeamDTO.getContact().getEmail(),
         mailSubject, contain);
+    log.debug("Successfully Send Client Notification");
   }
 
   @Override
@@ -185,7 +187,13 @@ public class InterviewNotificationServiceImpl implements InterviewNotificationSe
 
   @Override
   public List<CandidateDTO> getCandidateListFromJsonResponse(JsonArray jsonArray, String team) {
-    List<CandidateDTO> lisCandidateDTO = new ArrayList<>();
+    List<CandidateDTO> listCandidateDTO = new ArrayList<>();
+    if (jsonArray == null) {
+      log.error("Error while fetching interview details");
+      return listCandidateDTO;
+    }
+
+
     for (JsonElement jsonElement : jsonArray) {
       JsonObject json = jsonElement.getAsJsonObject();
       CandidateDTO candidateDTO = new Gson().fromJson(json, new TypeToken<CandidateDTO>() {
@@ -204,9 +212,11 @@ public class InterviewNotificationServiceImpl implements InterviewNotificationSe
       } else {
         candidateDTO.getSearch().setClienTeam(addClientTeamJsonArraytoList(json, "client_team"));
       }
-      lisCandidateDTO.add(candidateDTO);
+      listCandidateDTO.add(candidateDTO);
     }
-    return lisCandidateDTO;
+    log.info(
+        "Total Number of notification available for " + team + " : " + listCandidateDTO.size());
+    return listCandidateDTO;
   }
 
   @Override
