@@ -161,6 +161,7 @@ public class InterviewNotificationServiceImpl implements InterviewNotificationSe
   @Override
   public void sendMail(String email, String mailSubject, String contain) {
     try {
+      log.info("Notification Send to : " + email);
       mailService.sendEmail(email, null, mailSubject, contain, null);
     } catch (Exception e) {
       throw new APIException("Error in send Email");
@@ -177,7 +178,7 @@ public class InterviewNotificationServiceImpl implements InterviewNotificationSe
     JsonObject paramJSON = new JsonObject();
     paramJSON.addProperty(Constant.FROM_DATE, interviewNotificationReqMap.get(Constant.FROM_DATE));
     paramJSON.addProperty(Constant.TO_DATE, interviewNotificationReqMap.get(Constant.TO_DATE));
-    log.debug(
+    log.info(
         "Get InterviewDetails for From date: " + interviewNotificationReqMap.get(Constant.FROM_DATE)
             + " To date " + interviewNotificationReqMap.get(Constant.TO_DATE));
 
