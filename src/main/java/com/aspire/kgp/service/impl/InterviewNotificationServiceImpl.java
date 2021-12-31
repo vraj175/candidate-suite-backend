@@ -105,13 +105,13 @@ public class InterviewNotificationServiceImpl implements InterviewNotificationSe
     });
 
 
-    clientInterviewCandidateList.stream().forEach(candidateDTO -> {
-      candidateDTO.getSearch().getClienTeam().forEach(clientTeam -> {
-        sendCandidateNotification(mailSubject, schedulerType, candidateDTO, null, clientTeam,
-            Constant.CLIENT_TEAM, templateName);
-        sendClientNotification(mailSubject, schedulerType, candidateDTO, clientTeam, templateName);
-      });
-    });
+    clientInterviewCandidateList.stream()
+        .forEach(candidateDTO -> candidateDTO.getSearch().getClienTeam().forEach(clientTeam -> {
+          sendCandidateNotification(mailSubject, schedulerType, candidateDTO, null, clientTeam,
+              Constant.CLIENT_TEAM, templateName);
+          sendClientNotification(mailSubject, schedulerType, candidateDTO, clientTeam,
+              templateName);
+        }));
   }
 
   @Override
