@@ -84,7 +84,10 @@ public class Constant {
   public static final String CANDIDATE_URL = "/candidates/{candidateId}/activity";
   public static final String CANDIDATE_FEEDBACK_URL =
       "/candidate-suite/candidates/{candidateId}/candidate-feedback";
+  public static final String CANDIDATE_SUITE_FEEDBACK_PAGE_URL =
+      "/feedback/{candidateId}/{searchId}/{searchTitle}/{contactId}";
   public static final String CONTACT_KGP_TEAM_URL = "/candidate-suite/searches/{contactId}";
+  public static final String CANDIDATE_SUITE_INTERVIEW = "/candidate-suite/interview";
   public static final String CANDIDATE_FEEDBACK_REPLY_URL =
       "/candidate-suite/candidate-feedback/{commentId}/{candidateId}/reply";
   public static final String CANDIDATE_FEEDBACK_STATUS_UPDATE_URL = "/candidate-suite/{commentId}";
@@ -120,6 +123,8 @@ public class Constant {
   public static final String CONTACT_ID = "{contactId}";
   public static final String COMPANY_ID_BRACES = "{companyId}";
   public static final String CANDIDATE_ID_BRACES = "{candidateId}";
+  public static final String SEARCH_ID_BRACES = "{searchId}";
+  public static final String SEARCH_TITLE_BRACES = "{searchTitle}";
   public static final String COMMENT_ID_BRACES = "{commentId}";
 
   // Queries parameter
@@ -156,6 +161,9 @@ public class Constant {
   public static final String CANDIDATE_FEEDBACK_EMAIL_TEMPLATE = "candidate-feedback.ftl";
   public static final String CANDIDATE_UPLOAD_EMAIL_TEMPLATE = "candidate-upload.ftl";
   public static final String CONTACT_GDPR_CONSENT_EMAIL_TEMPLATE = "contact-gdpr-consent.ftl";
+  public static final String INTERVIEW_NOTIFICATION_TEMPLATE = "interviewNotification.ftl";
+  public static final String INTERVIEW_FEEDBACK_NOTIFICATION_TEMPLATE =
+      "interviewFeedbackNotification.ftl";
 
   // Json Fields
   public static final String FIRST_NAME = "firstName";
@@ -271,4 +279,28 @@ public class Constant {
   public static final String BOARD_HISTORY = "boardHistory";
   public static final String EDUCATION = "education";
 
+  // interview notification
+  public static final String SERVER_URL = "serverUrl";
+  public static final String HOME_URL = "homeUrl";
+  public static final String COMPANY_NAME = "companyName";
+  public static final String STATIC_CONTENT_MAP = "staticContentsMap";
+  public static final String CLICK_HERE = "clickHere";
+  public static final String CLICK_HERE_MSG = "clickHereMsg";
+  public static final String CLICK_HERE_SERVER_URL = "clickHereServerUrl";
+  public static final String POSITION_TITLE = "positionTitle";
+  public static final String POSITION_TITLE_TYPE = "positionTitleType";
+  public static final String CANDIDATE_NAME = "candidateName";
+  public static final String BEFORE_ONE_DAY = "BEFORE_ONE_DAY";
+  public static final String BEFORE_ONE_HOUR = "BEFORE_ONE_HOUR";
+  public static final String AFTER_INTERVIEW = "AFTER_INTERVIEW";
+  public static final String CANDIDATE_NOTIFICATION = "candidateNotification";
+  public static final String KGP_NOTIFICATION = "kgpNotification";
+  public static final String CLIENT_NOTIFICATION = "clientNotification";
+  public static final String FEEDBACK_NOTIFICATION_CLICK_MSG = "feedbackClickMsg";
+  public static final String FEEDBACK_NOTIFICATION_COMPANY_NAME = "feedbackCompanyName";
+  public static final String FEEDBACK_NOTIFICATION_CANDIDATE_NAME = "feedbackCandidateName";
+  public static final String FEEDBACK_NOTIFICATION_URL = "feedbackUrl";
+  public static final String KGP_TEAM = "kgpTeam";
+  public static final String FROM_DATE = "fromDate";
+  public static final String TO_DATE = "toDate";
 }
