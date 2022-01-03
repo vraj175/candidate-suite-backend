@@ -23,6 +23,7 @@ import com.aspire.kgp.dto.UserDTO;
 import com.aspire.kgp.exception.APIException;
 import com.aspire.kgp.service.InterviewNotificationService;
 import com.aspire.kgp.service.MailService;
+import com.aspire.kgp.service.WebSocketNotificationService;
 import com.aspire.kgp.util.RestUtil;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
@@ -40,6 +41,9 @@ public class InterviewNotificationServiceImpl implements InterviewNotificationSe
 
   @Autowired
   RestUtil restUtil;
+
+  @Autowired
+  WebSocketNotificationService webSocketNotificationService;
 
   @Override
   public void sendNotification(String schedulerType) {
@@ -127,6 +131,11 @@ public class InterviewNotificationServiceImpl implements InterviewNotificationSe
             candidateDTO, userDTO, clientTeamDTO, schedulerType, stage, templateName);
     sendMail(candidateDTO.getContact().getEmail() == null ? candidateDTO.getContact().getWorkEmail()
         : candidateDTO.getContact().getEmail(), mailSubject, contain);
+    if (!stage.equals(Constant.CLIENT_TEAM)) {
+      webSocketNotificationService.sendWebSocketNotification(userDTO.getId(),
+          candidateDTO.getContact().getId(), schedulerType + " Interview Notification",
+          Constant.CONTACT);
+    }
     log.debug("Successfully Send candidate notification");
   }
 
@@ -140,6 +149,9 @@ public class InterviewNotificationServiceImpl implements InterviewNotificationSe
         candidateDTO, userDTO, null, schedulerType, null, templateName);
     sendMail(userDTO.getEmail() == null ? userDTO.getWorkEmail() : userDTO.getEmail(), mailSubject,
         contain);
+    webSocketNotificationService.sendWebSocketNotification(userDTO.getId(),
+        candidateDTO.getContact().getId(), schedulerType + " Interview Notification",
+        Constant.PARTNER);
     log.debug("Successfully Send kgp partner Notification");
   }
 

@@ -30,7 +30,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
   @Override
   public void configureMessageBroker(MessageBrokerRegistry config) {
-    config.enableSimpleBroker("/response", "/queue");
+    config.enableSimpleBroker("/response");
     config.setApplicationDestinationPrefixes("/api/v1.0");
   }
 

@@ -17,7 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
 import org.springframework.stereotype.Service;
@@ -49,12 +49,8 @@ public class WebSocketNotificationServiceImpl implements WebSocketNotificationSe
 
   private Set<String> kgpPartnerIdList;
 
-  private SimpMessagingTemplate messagingTemplate;
-
   @Autowired
-  public WebSocketNotificationServiceImpl(SimpMessagingTemplate messagingTemplate) {
-    this.messagingTemplate = messagingTemplate;
-  }
+  private SimpMessageSendingOperations messagingTemplate;
 
   @Autowired
   RestUtil restUtil;
@@ -162,7 +158,8 @@ public class WebSocketNotificationServiceImpl implements WebSocketNotificationSe
   }
 
   /*
-   * method call when want to send notification.Send notification if id is currently connected
+   * method call when want to send notification.notification send only if Galaxy ID is currently
+   * connected.
    * 
    */
   @Override
@@ -188,7 +185,7 @@ public class WebSocketNotificationServiceImpl implements WebSocketNotificationSe
               .forEach(e -> messagingTemplate.convertAndSendToUser(e,
                   "/response/socket-notification", webSocketNotification.toString()));
         } else {
-          log.info("Contact is not available for : " + contactId);
+          log.info("Contact is not invaited at for candidate suite : " + contactId);
           return false;
         }
 
