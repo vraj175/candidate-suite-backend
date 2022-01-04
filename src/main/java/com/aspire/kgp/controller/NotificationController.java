@@ -161,6 +161,12 @@ public class NotificationController {
       if (isSuccess)
         successSendNotification.add(galaxyId);
     }
+    boolean isSuccessContact = webSocketNotificationService.sendWebSocketNotification(null,
+        webSocketNotificationDTO.getContactId(), webSocketNotificationDTO.getNotificationType(),
+        Constant.CONTACT);
+    if (isSuccessContact)
+      successSendNotification.add(webSocketNotificationDTO.getContactId());
+
     body.put(Constant.MESSAGE, "Notification Send successfully");
     body.put(Constant.DATA, successSendNotification);
     log.info(
