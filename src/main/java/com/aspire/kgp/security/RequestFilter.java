@@ -62,7 +62,8 @@ public class RequestFilter extends OncePerRequestFilter {
       String password = request.getParameter("password");
       service.saveOrUpdatePartner(username, password);
       log.info("end add or update partner");
-    } else if (currentUrl.indexOf("/api/") < 0) {
+    } else if (currentUrl.indexOf("/api/") < 0
+        || currentUrl.indexOf("/api/webSocket-notification/") > 0) {
       log.info("not need to authorize ");
       if (currentUrl.indexOf("/webSocket-notification/") > 0)
         log.info("Web socket URL...");
