@@ -97,10 +97,10 @@ public class WebSocketNotificationServiceImpl implements WebSocketNotificationSe
     User user = userService.findByGalaxyId(galaxyId);
     log.info("Fetching.. Unread Notification");
     if (user != null && notificationUserType.equals(Constant.PARTNER)) {
-      return repository.findByUserAndNotificationUserTypeAndIsReadableFalse(user,
+      return repository.findByUserAndNotificationUserTypeAndIsReadableFalseOrderByDateDesc(user,
           notificationUserType);
     } else if (user != null && notificationUserType.equals(Constant.CONTACT)) {
-      return repository.findByUserAndNotificationUserTypeAndIsReadableFalse(user,
+      return repository.findByUserAndNotificationUserTypeAndIsReadableFalseOrderByDateDesc(user,
           notificationUserType);
     } else
       throw new APIException("Invalid galaxyId " + galaxyId);
@@ -115,9 +115,11 @@ public class WebSocketNotificationServiceImpl implements WebSocketNotificationSe
     User user = userService.findByGalaxyId(galaxyId);
     log.info("Fetching.. ALL Notification");
     if (user != null && notificationUserType.equals(Constant.PARTNER)) {
-      return repository.findByUserAndNotificationUserType(user, notificationUserType);
+      return repository.findByUserAndNotificationUserTypeOrderByDateDesc(user,
+          notificationUserType);
     } else if (user != null && notificationUserType.equals(Constant.CONTACT)) {
-      return repository.findByUserAndNotificationUserType(user, notificationUserType);
+      return repository.findByUserAndNotificationUserTypeOrderByDateDesc(user,
+          notificationUserType);
     } else
       throw new APIException("Invalid galaxyId " + galaxyId);
   }

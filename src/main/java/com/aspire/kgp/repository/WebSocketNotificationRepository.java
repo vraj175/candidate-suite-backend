@@ -14,10 +14,11 @@ import com.aspire.kgp.model.WebSocketNotification;
 public interface WebSocketNotificationRepository
     extends JpaRepository<WebSocketNotification, Long> {
 
-  List<WebSocketNotification> findByUserAndNotificationUserTypeAndIsReadableFalse(User user,
-      String partner);
+  List<WebSocketNotification> findByUserAndNotificationUserTypeAndIsReadableFalseOrderByDateDesc(
+      User user, String partner);
 
-  List<WebSocketNotification> findByUserAndNotificationUserType(User user, String partner);
+  List<WebSocketNotification> findByUserAndNotificationUserTypeOrderByDateDesc(User user,
+      String partner);
 
   @Modifying
   @Query("update WebSocketNotification webNotif set webNotif.isReadable = true where webNotif.id = :id")
