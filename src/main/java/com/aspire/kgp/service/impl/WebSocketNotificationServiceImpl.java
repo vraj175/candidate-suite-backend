@@ -129,7 +129,7 @@ public class WebSocketNotificationServiceImpl implements WebSocketNotificationSe
    */
   @Override
   @Transactional
-  public void updateReadNotification(String id, String galaxyId, String userType) {
+  public void updateReadNotification(String id, String userType, String galaxyId) {
     try {
       Map<String, Object> body = new LinkedHashMap<>();
       body.put(Constant.TIMESTAMP, new Date());
@@ -154,7 +154,7 @@ public class WebSocketNotificationServiceImpl implements WebSocketNotificationSe
       throw new APIException(
           "Error in update read status for KGP Team notification by " + galaxyId);
     }
-    log.info("KGP team read notification status successfully update for galaxyId: " + galaxyId);
+    log.info("Notification Successfully ready By galaxyId: " + galaxyId);
     log.debug(
         "Update read status for ID:" + id + "Galaxy Id:" + galaxyId + "User Type:" + userType);
   }

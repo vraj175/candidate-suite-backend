@@ -15,6 +15,7 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -121,11 +122,11 @@ public class NotificationController {
     }
   }
 
-  @MessageMapping("/notification/socket/read")
-  public void readTeamNotification(WebSocketNotificationDTO webSocketNotificationDTO) {
+  @MessageMapping("/notification/socket/read/{galaxyId}")
+  public void readTeamNotification(WebSocketNotificationDTO webSocketNotificationDTO,
+      @DestinationVariable String galaxyId) {
     webSocketNotificationService.updateReadNotification(webSocketNotificationDTO.getId(),
-        webSocketNotificationDTO.getContactId(),
-        webSocketNotificationDTO.getNotificationUserType());
+        webSocketNotificationDTO.getNotificationUserType(), galaxyId);
   }
 
   @MessageMapping("/notification/socket/disconnect")
