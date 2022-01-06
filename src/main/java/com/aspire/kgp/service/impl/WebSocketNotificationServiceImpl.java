@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.MessagingException;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
@@ -34,6 +35,8 @@ import com.aspire.kgp.service.UserService;
 import com.aspire.kgp.service.WebSocketNotificationService;
 import com.aspire.kgp.util.CommonUtil;
 import com.aspire.kgp.util.RestUtil;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
@@ -183,9 +186,14 @@ public class WebSocketNotificationServiceImpl implements WebSocketNotificationSe
           webSocketNotification.setUser(user);
           repository.save(webSocketNotification);
           log.debug("Successfully add Notification for " + user.getGalaxyId());
-          getSessionIdFromMap(contactId, Constant.CONTACT).stream()
-              .forEach(e -> messagingTemplate.convertAndSendToUser(e,
-                  "/response/socket-notification", webSocketNotification.toString()));
+          getSessionIdFromMap(contactId, Constant.CONTACT).stream().forEach(e -> {
+            try {
+              messagingTemplate.convertAndSendToUser(e, "/response/socket-notification",
+                  new ObjectMapper().writeValueAsString(webSocketNotification));
+            } catch (MessagingException | JsonProcessingException e1) {
+              log.error(e1.getMessage());
+            }
+          });
         } else {
           log.info("Contact is not invaited at for candidate suite : " + contactId);
           return false;
@@ -197,9 +205,14 @@ public class WebSocketNotificationServiceImpl implements WebSocketNotificationSe
           webSocketNotification.setUser(user);
           repository.save(webSocketNotification);
           log.debug("Successfully add Notification for " + user.getGalaxyId());
-          getSessionIdFromMap(kgpTeamId, Constant.PARTNER).stream()
-              .forEach(e -> messagingTemplate.convertAndSendToUser(e,
-                  "/response/socket-notification", webSocketNotification.toString()));
+          getSessionIdFromMap(kgpTeamId, Constant.PARTNER).stream().forEach(e -> {
+            try {
+              messagingTemplate.convertAndSendToUser(e, "/response/socket-notification",
+                  new ObjectMapper().writeValueAsString(webSocketNotification));
+            } catch (MessagingException | JsonProcessingException e1) {
+              log.error(e1.getMessage());
+            }
+          });
         } else {
           log.info("Kgp Team Member is not available for : " + kgpTeamId);
           return false;
