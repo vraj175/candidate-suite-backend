@@ -36,6 +36,7 @@ import com.aspire.kgp.util.CommonUtil;
 import com.aspire.kgp.util.RestUtil;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -183,9 +184,11 @@ public class WebSocketNotificationServiceImpl implements WebSocketNotificationSe
           webSocketNotification.setUser(user);
           repository.save(webSocketNotification);
           log.debug("Successfully add Notification for " + user.getGalaxyId());
-          getSessionIdFromMap(contactId, Constant.CONTACT).stream()
-              .forEach(e -> messagingTemplate.convertAndSendToUser(e,
-                  "/response/socket-notification", webSocketNotification.toString()));
+          getSessionIdFromMap(contactId, Constant.CONTACT).stream().forEach(
+              e -> messagingTemplate.convertAndSendToUser(e, "/response/socket-notification",
+                  new GsonBuilder()
+                      .registerTypeAdapter(WebSocketNotification.class, new WebSocketAdpter())
+                      .create().toJson(webSocketNotification)));
         } else {
           log.info("Contact is not invaited at for candidate suite : " + contactId);
           return false;
@@ -197,9 +200,11 @@ public class WebSocketNotificationServiceImpl implements WebSocketNotificationSe
           webSocketNotification.setUser(user);
           repository.save(webSocketNotification);
           log.debug("Successfully add Notification for " + user.getGalaxyId());
-          getSessionIdFromMap(kgpTeamId, Constant.PARTNER).stream()
-              .forEach(e -> messagingTemplate.convertAndSendToUser(e,
-                  "/response/socket-notification", webSocketNotification.toString()));
+          getSessionIdFromMap(kgpTeamId, Constant.PARTNER).stream().forEach(
+              e -> messagingTemplate.convertAndSendToUser(e, "/response/socket-notification",
+                  new GsonBuilder()
+                      .registerTypeAdapter(WebSocketNotification.class, new WebSocketAdpter())
+                      .create().toJson(webSocketNotification)));
         } else {
           log.info("Kgp Team Member is not available for : " + kgpTeamId);
           return false;
