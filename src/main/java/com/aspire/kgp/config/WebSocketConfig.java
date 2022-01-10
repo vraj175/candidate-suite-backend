@@ -45,11 +45,11 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
       @Override
       public Message<?> preSend(Message<?> message, MessageChannel channel) {
-        log.info("New Connection...");
         final StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(message);
         StompHeaderAccessor accessor =
             MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
         if (StompCommand.CONNECT.equals(headerAccessor.getCommand()) && accessor != null) {
+          log.info("New Connection...");
           String apiKey = accessor.getFirstNativeHeader(Constant.API_KEY);
           webSocketNotificationService.apiKeyCheck(apiKey);
           String accessToken = accessor.getFirstNativeHeader(Constant.AUTHORIZATION);
