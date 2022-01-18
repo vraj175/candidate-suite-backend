@@ -42,6 +42,7 @@ import com.aspire.kgp.exception.NotFoundException;
 import com.aspire.kgp.service.CandidateService;
 import com.aspire.kgp.service.MailService;
 import com.aspire.kgp.service.UserService;
+import com.aspire.kgp.service.WebSocketNotificationService;
 import com.aspire.kgp.util.CommonUtil;
 import com.aspire.kgp.util.RestUtil;
 import com.aspire.kgp.util.StaticContentsMultiLanguageUtil;
@@ -70,6 +71,9 @@ public class CandidateServiceImpl implements CandidateService {
 
   @Value("${clientsuite.url}")
   private String clientsuiteUrl;
+
+  @Autowired
+  WebSocketNotificationService webSocketNotificationService;
 
   @Override
   public CandidateDTO getCandidateDetails(String candidateId) {
@@ -199,8 +203,8 @@ public class CandidateServiceImpl implements CandidateService {
     Set<String> kgpPartnerEmailList = new HashSet<>();
     CandidateDTO apiResponse = getCandidateDetails(candidateId);
     try {
-      kgpPartnerEmailList =
-          CommonUtil.teamPartnerMemberList(apiResponse.getSearch().getPartners(), kgpPartnerEmailList);
+      kgpPartnerEmailList = CommonUtil.teamPartnerMemberList(apiResponse.getSearch().getPartners(),
+          kgpPartnerEmailList);
       kgpPartnerEmailList =
           CommonUtil.teamMemberList(apiResponse.getSearch().getRecruiters(), kgpPartnerEmailList);;
       paramRequest.put("feedback", comments);
@@ -256,21 +260,37 @@ public class CandidateServiceImpl implements CandidateService {
       log.error("oops ! invalid json");
       throw new JsonSyntaxException("error while get team member");
     }
+    addCandidateFeedbackNotification(kgpPartnerEmailList, request, paramRequest, isReplyFeedback,
+        type);
+    return feedbackId;
+  }
+
+  private void addCandidateFeedbackNotification(Set<String> kgpPartnerEmailList,
+      HttpServletRequest request, HashMap<String, String> paramRequest, boolean isReplyFeedback,
+      String type) {
     try {
+
       for (String kgpTeamMeberDetails : kgpPartnerEmailList) {
         log.info("Partner Email : " + kgpTeamMeberDetails);
         sendClientFeedbackMail(kgpTeamMeberDetails.split("##")[0],
-            kgpTeamMeberDetails.split("##")[1], paramRequest, request, isReplyFeedback);
+            kgpTeamMeberDetails.split("##")[1], paramRequest, request, isReplyFeedback,
+            kgpTeamMeberDetails.split("##")[2]);
+      }
+      if (type.equals(Constant.PARTNER)) {
+        webSocketNotificationService.sendWebSocketNotification(null, paramRequest.get("contactId"),
+            Boolean.TRUE.equals(isReplyFeedback) ? Constant.PARTNER_FEEDBACK_COMMENT
+                : Constant.PARTNER_NEW_COMMENT,
+            Constant.CONTACT);
       }
     } catch (Exception ex) {
       log.info(ex);
       throw new APIException("Error in send feedback email");
     }
-    return feedbackId;
   }
 
   private void sendClientFeedbackMail(String email, String partnerName,
-      HashMap<String, String> paramRequest, HttpServletRequest request, Boolean isReplyFeedback) {
+      HashMap<String, String> paramRequest, HttpServletRequest request, Boolean isReplyFeedback,
+      String kgpTeamId) {
     log.info("sending client feedback email");
     String locate = "en_US";
     try {
@@ -282,6 +302,13 @@ public class CandidateServiceImpl implements CandidateService {
               Constant.CANDIDATE_FEEDBACK_EMAIL_TEMPLATE, partnerName, paramRequest,
               isReplyFeedback),
           null);
+
+      webSocketNotificationService.sendWebSocketNotification(kgpTeamId,
+          paramRequest.get("contactId"),
+          Boolean.TRUE.equals(isReplyFeedback) ? Constant.PARTNER_FEEDBACK_COMMENT
+              : Constant.PARTNER_NEW_COMMENT,
+          Constant.PARTNER);
+
     } catch (Exception e) {
       log.info(e);
       throw new APIException("Error in sending candidate feedback email");

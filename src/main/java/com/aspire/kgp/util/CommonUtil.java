@@ -305,7 +305,7 @@ public class CommonUtil {
     log.info("Creating Team member email and name set");
     for (UserDTO user : users) {
       if (user != null && CommonUtil.checkNotNullString(user.getId())) {
-        partnerEmailList.add(user.getEmail() + "##" + user.getName());
+        partnerEmailList.add(user.getEmail() + "##" + user.getName() + "##" + user.getId());
       }
     }
     return partnerEmailList;
@@ -317,7 +317,7 @@ public class CommonUtil {
     for (UserDTO user : users) {
       if (user != null && CommonUtil.checkNotNullString(user.getId())
           && user.getExecutionCredit() != null) {
-        partnerEmailList.add(user.getEmail() + "##" + user.getName());
+        partnerEmailList.add(user.getEmail() + "##" + user.getName() + "##" + user.getId());
       }
     }
     return partnerEmailList;

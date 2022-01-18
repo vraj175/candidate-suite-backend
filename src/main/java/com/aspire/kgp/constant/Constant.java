@@ -303,4 +303,12 @@ public class Constant {
   public static final String KGP_TEAM = "kgpTeam";
   public static final String FROM_DATE = "fromDate";
   public static final String TO_DATE = "toDate";
+
+  // socket notification type
+  public static final String INTERVIEW_NOTIFICATION = "Interview Notification";
+  public static final String GDPR_CONSENT_UPDATE = "GDPR Consent UPDATE";
+  public static final String MY_INFO_UPDATE = "My Info Update";
+  public static final String CONTACT_VIDEO_UPLOADED = "Contact Video Uploaded";
+  public static final String PARTNER_FEEDBACK_COMMENT = "Partner Feedback Comment";
+  public static final String PARTNER_NEW_COMMENT = "Partner New Comment";
 }

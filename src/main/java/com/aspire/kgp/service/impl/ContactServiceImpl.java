@@ -59,6 +59,7 @@ import com.aspire.kgp.service.CandidateService;
 import com.aspire.kgp.service.ContactService;
 import com.aspire.kgp.service.MailService;
 import com.aspire.kgp.service.UserService;
+import com.aspire.kgp.service.WebSocketNotificationService;
 import com.aspire.kgp.util.CommonUtil;
 import com.aspire.kgp.util.RestUtil;
 import com.aspire.kgp.util.StaticContentsMultiLanguageUtil;
@@ -100,6 +101,9 @@ public class ContactServiceImpl implements ContactService {
 
   @Autowired
   GdprConsentRepository gdprConsentRepository;
+
+  @Autowired
+  WebSocketNotificationService webSocketNotificationService;
 
   @Value("${galaxy.base.api.url}")
   private String baseApiUrl;
@@ -635,7 +639,8 @@ public class ContactServiceImpl implements ContactService {
       for (String kgpTeamMeberDetails : kgpPartnerEmailList) {
         log.info("Partner Email : " + kgpTeamMeberDetails);
         sendClientUploadNotificationMail(kgpTeamMeberDetails.split("##")[0],
-            kgpTeamMeberDetails.split("##")[1], request, paramRequest);
+            kgpTeamMeberDetails.split("##")[1], request, paramRequest,
+            kgpTeamMeberDetails.split("##")[2], contactId);
       }
     } catch (Exception ex) {
       log.info(ex);
@@ -646,7 +651,8 @@ public class ContactServiceImpl implements ContactService {
 
 
   private void sendClientUploadNotificationMail(String email, String partnerName,
-      HttpServletRequest request, HashMap<String, String> paramRequest) {
+      HttpServletRequest request, HashMap<String, String> paramRequest, String kgpTeamId,
+      String contactId) {
     log.info("sending client upload notification email");
     User user = (User) request.getAttribute("user");
     String role = user.getRole().getName();
@@ -739,6 +745,8 @@ public class ContactServiceImpl implements ContactService {
       mailService.sendEmail(email, null, mailSubject, mailService.getUploadEmailContent(request,
           staticContentsMap, Constant.CANDIDATE_UPLOAD_EMAIL_TEMPLATE, partnerName, paramRequest),
           null);
+      webSocketNotificationService.sendWebSocketNotification(kgpTeamId, contactId,
+          "Contact " + paramRequest.get("type") + " Added/Updated", Constant.PARTNER);
     } catch (Exception e) {
       log.info(e);
       throw new APIException("Error in sending candidate upload email");
@@ -848,7 +856,8 @@ public class ContactServiceImpl implements ContactService {
       for (String kgpTeamMeberDetails : kgpPartnerEmailList) {
         log.info("Partner Email : " + kgpTeamMeberDetails);
         sendGDPRConsentNotificationTOKGPTEAM(kgpTeamMeberDetails.split("##")[0],
-            kgpTeamMeberDetails.split("##")[1], request, paramRequest);
+            kgpTeamMeberDetails.split("##")[1], request, paramRequest,
+            kgpTeamMeberDetails.split("##")[2], contactId);
       }
     } catch (Exception ex) {
       log.info(ex);
@@ -858,7 +867,8 @@ public class ContactServiceImpl implements ContactService {
   }
 
   private void sendGDPRConsentNotificationTOKGPTEAM(String email, String partnerName,
-      HttpServletRequest request, HashMap<String, String> paramRequest) {
+      HttpServletRequest request, HashMap<String, String> paramRequest, String kgpTeamId,
+      String contactId) {
     log.info("sending client upload notification email");
     User user = (User) request.getAttribute("user");
     String role = user.getRole().getName();
@@ -895,6 +905,8 @@ public class ContactServiceImpl implements ContactService {
           mailService.getUploadEmailContent(request, staticContentsMap,
               Constant.CONTACT_GDPR_CONSENT_EMAIL_TEMPLATE, partnerName, paramRequest),
           null);
+      webSocketNotificationService.sendWebSocketNotification(kgpTeamId, contactId,
+          Constant.GDPR_CONSENT_UPDATE, Constant.PARTNER);
     } catch (Exception e) {
       log.info(e);
       throw new APIException("Error in sending contact GDPR Consent email notification");
@@ -955,7 +967,8 @@ public class ContactServiceImpl implements ContactService {
       for (String kgpTeamMeberDetails : kgpPartnerEmailList) {
         log.info("Partner Email : " + kgpTeamMeberDetails);
         sentContactMyInfoChangesNotificationMail(kgpTeamMeberDetails.split("##")[0],
-            kgpTeamMeberDetails.split("##")[1], request, paramRequest, changesMap);
+            kgpTeamMeberDetails.split("##")[1], request, paramRequest, changesMap,
+            kgpTeamMeberDetails.split("##")[2], contactId);
       }
     } catch (Exception ex) {
       log.info(ex);
@@ -966,7 +979,7 @@ public class ContactServiceImpl implements ContactService {
 
   private void sentContactMyInfoChangesNotificationMail(String email, String partnerName,
       HttpServletRequest request, HashMap<String, String> paramRequest,
-      Map<String, Map<String, String>> changesMap) {
+      Map<String, Map<String, String>> changesMap, String kgpTeamId, String contactId) {
 
     log.info("sending client upload notification email");
     User user = (User) request.getAttribute("user");
@@ -1008,6 +1021,8 @@ public class ContactServiceImpl implements ContactService {
           mailService.getMyInfoUpdateEmailContent(request, staticContentsMap,
               "contact-MyInfo-Changes.ftl", partnerName, paramRequest, changesMap),
           null);
+      webSocketNotificationService.sendWebSocketNotification(kgpTeamId, contactId,
+          Constant.MY_INFO_UPDATE, Constant.PARTNER);
     } catch (Exception e) {
       log.info(e);
       throw new APIException("Error in sending candidate upload email");

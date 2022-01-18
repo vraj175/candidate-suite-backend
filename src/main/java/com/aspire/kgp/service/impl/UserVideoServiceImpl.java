@@ -30,6 +30,7 @@ import com.aspire.kgp.service.MailService;
 import com.aspire.kgp.service.UserSearchService;
 import com.aspire.kgp.service.UserService;
 import com.aspire.kgp.service.UserVideoService;
+import com.aspire.kgp.service.WebSocketNotificationService;
 import com.aspire.kgp.util.CommonUtil;
 import com.aspire.kgp.util.RestUtil;
 import com.aspire.kgp.util.StaticContentsMultiLanguageUtil;
@@ -59,6 +60,9 @@ public class UserVideoServiceImpl implements UserVideoService {
 
   @Autowired
   UserService userService;
+
+  @Autowired
+  WebSocketNotificationService webSocketNotificationService;
 
   @Value("${galaxy.base.api.url}")
   private String baseApiUrl;
@@ -129,7 +133,8 @@ public class UserVideoServiceImpl implements UserVideoService {
       for (String kgpTeamMeberDetails : kgpPartnerEmailList) {
         log.info("Partner Email : " + kgpTeamMeberDetails);
         sendClientUploadNotificationMail(kgpTeamMeberDetails.split("##")[0],
-            kgpTeamMeberDetails.split("##")[1], request, paramRequest);
+            kgpTeamMeberDetails.split("##")[1], request, paramRequest,
+            kgpTeamMeberDetails.split("##")[2], contactId);
       }
     } catch (Exception ex) {
       log.info(ex);
@@ -140,7 +145,8 @@ public class UserVideoServiceImpl implements UserVideoService {
 
 
   private void sendClientUploadNotificationMail(String email, String partnerName,
-      HttpServletRequest request, HashMap<String, String> paramRequest) {
+      HttpServletRequest request, HashMap<String, String> paramRequest, String kgpTeamId,
+      String contactId) {
     log.info("sending client upload notification email");
     String locate = "en_US";
     UserDTO userDTO = null;
@@ -182,6 +188,8 @@ public class UserVideoServiceImpl implements UserVideoService {
       mailService.sendEmail(email, null, mailSubject, mailService.getUploadEmailContent(request,
           staticContentsMap, Constant.CANDIDATE_UPLOAD_EMAIL_TEMPLATE, partnerName, paramRequest),
           null);
+      webSocketNotificationService.sendWebSocketNotification(kgpTeamId, contactId,
+          Constant.CONTACT_VIDEO_UPLOADED, Constant.PARTNER);
     } catch (Exception e) {
       log.info(e);
       throw new APIException("Error in sending candidate upload email");
