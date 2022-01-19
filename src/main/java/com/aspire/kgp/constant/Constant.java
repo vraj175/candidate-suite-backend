@@ -306,9 +306,11 @@ public class Constant {
 
   // socket notification type
   public static final String INTERVIEW_NOTIFICATION = "Interview Notification";
-  public static final String GDPR_CONSENT_UPDATE = "GDPR Consent UPDATE";
-  public static final String MY_INFO_UPDATE = "My Info Update";
+  public static final String GDPR_CONSENT_UPDATE = "GDPR Consent Updated";
+  public static final String MY_INFO_UPDATE = "My Info Updated";
   public static final String CONTACT_VIDEO_UPLOADED = "Contact Video Uploaded";
   public static final String PARTNER_FEEDBACK_COMMENT = "Partner Feedback Comment";
   public static final String PARTNER_NEW_COMMENT = "Partner New Comment";
+  public static final String CONTACT_FEEDBACK_COMMENT = "Contact Feedback Comment";
+  public static final String CONTACT_NEW_COMMENT = "Contact New Comment";
 }

@@ -274,7 +274,7 @@ public class CandidateServiceImpl implements CandidateService {
         log.info("Partner Email : " + kgpTeamMeberDetails);
         sendClientFeedbackMail(kgpTeamMeberDetails.split("##")[0],
             kgpTeamMeberDetails.split("##")[1], paramRequest, request, isReplyFeedback,
-            kgpTeamMeberDetails.split("##")[2]);
+            kgpTeamMeberDetails.split("##")[2], type);
       }
       if (type.equals(Constant.PARTNER)) {
         webSocketNotificationService.sendWebSocketNotification(null, paramRequest.get("contactId"),
@@ -290,7 +290,7 @@ public class CandidateServiceImpl implements CandidateService {
 
   private void sendClientFeedbackMail(String email, String partnerName,
       HashMap<String, String> paramRequest, HttpServletRequest request, Boolean isReplyFeedback,
-      String kgpTeamId) {
+      String kgpTeamId, String type) {
     log.info("sending client feedback email");
     String locate = "en_US";
     try {
@@ -303,11 +303,18 @@ public class CandidateServiceImpl implements CandidateService {
               isReplyFeedback),
           null);
 
-      webSocketNotificationService.sendWebSocketNotification(kgpTeamId,
-          paramRequest.get("contactId"),
-          Boolean.TRUE.equals(isReplyFeedback) ? Constant.PARTNER_FEEDBACK_COMMENT
-              : Constant.PARTNER_NEW_COMMENT,
-          Constant.PARTNER);
+      if (type.equals(Constant.PARTNER)) {
+        webSocketNotificationService.sendWebSocketNotification(kgpTeamId,
+            paramRequest.get("contactId"),
+            Boolean.TRUE.equals(isReplyFeedback) ? Constant.PARTNER_FEEDBACK_COMMENT
+                : Constant.PARTNER_NEW_COMMENT,
+            Constant.PARTNER);
+      } else
+        webSocketNotificationService.sendWebSocketNotification(kgpTeamId,
+            paramRequest.get("contactId"),
+            Boolean.TRUE.equals(isReplyFeedback) ? Constant.CONTACT_FEEDBACK_COMMENT
+                : Constant.CONTACT_NEW_COMMENT,
+            Constant.PARTNER);
 
     } catch (Exception e) {
       log.info(e);
