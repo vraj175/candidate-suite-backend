@@ -27,6 +27,17 @@ public class WebSocketNotification extends SuperBase {
   @Column(name = "contactId", nullable = false)
   private String contactId;
 
+  public String getContactName() {
+    return contactName;
+  }
+
+  public void setContactName(String contactName) {
+    this.contactName = contactName;
+  }
+
+  @Column(name = "contactName", nullable = false)
+  private String contactName;
+
   @Column(name = "notificationUserType", nullable = false)
   private String notificationUserType;
 

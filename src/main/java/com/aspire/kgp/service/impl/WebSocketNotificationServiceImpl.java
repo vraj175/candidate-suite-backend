@@ -23,6 +23,7 @@ import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
 import org.springframework.stereotype.Service;
 
 import com.aspire.kgp.constant.Constant;
+import com.aspire.kgp.dto.ContactDTO;
 import com.aspire.kgp.dto.UserDTO;
 import com.aspire.kgp.exception.APIException;
 import com.aspire.kgp.exception.MissingAuthTokenException;
@@ -61,6 +62,9 @@ public class WebSocketNotificationServiceImpl implements WebSocketNotificationSe
 
   @Autowired
   WebSocketNotificationRepository repository;
+
+  @Autowired
+  ContactServiceImpl contactServiceImpl;
 
   @Value("${spring.api.secret.key}")
   private String apiSecretKey;
@@ -171,9 +175,12 @@ public class WebSocketNotificationServiceImpl implements WebSocketNotificationSe
       String notificationType, String notificationUserType) {
     log.info("Add web socket notification for " + notificationType + " to " + notificationUserType
         + "kgpTeam Id: " + kgpTeamId + " contact Id: " + contactId);
+    ContactDTO contactDTO = contactServiceImpl.getContactDetails(contactId);
     WebSocketNotification webSocketNotification = new WebSocketNotification();
     webSocketNotification.setNotificationType(notificationType);
     webSocketNotification.setContactId(contactId);
+    webSocketNotification
+        .setContactName(contactDTO.getFirstName() + " " + contactDTO.getLastName());
     webSocketNotification.setDate(new Timestamp(System.currentTimeMillis()));
     webSocketNotification.setNotificationUserType(notificationUserType);
 
