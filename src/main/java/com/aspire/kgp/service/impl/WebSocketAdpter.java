@@ -20,7 +20,7 @@ public class WebSocketAdpter implements JsonSerializer<WebSocketNotification> {
     jsonObject.addProperty("contactName", webSocketNotification.getContactName());
     jsonObject.addProperty("notificationUserType", webSocketNotification.getNotificationUserType());
     jsonObject.addProperty("isReadable", webSocketNotification.isReadable());
-    jsonObject.addProperty("date", webSocketNotification.getDate().toString());
+    jsonObject.addProperty("date", webSocketNotification.getDate().toString().split(" ")[0].trim());
     jsonObject.addProperty("user", webSocketNotification.getUser().toString());
     return jsonObject;
   }
