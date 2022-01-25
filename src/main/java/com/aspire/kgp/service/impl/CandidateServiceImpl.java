@@ -284,10 +284,10 @@ public class CandidateServiceImpl implements CandidateService {
         feedbackUrl = feedbackUrl.replaceAll(Constant.SPACE_STRING, "%20");
         webSocketNotificationService.sendWebSocketNotification(null, paramRequest.get("contactId"),
             Boolean.TRUE.equals(isReplyFeedback)
-                ? Constant.PARTNER_FEEDBACK_REPLY_COMMENT + ":" + paramRequest.get("searchName")
-                    + ":" + feedbackUrl
-                : Constant.PARTNER_FEEDBACK_NEW_COMMENT + ":" + paramRequest.get("searchName") + ":"
-                    + feedbackUrl,
+                ? Constant.PARTNER_FEEDBACK_REPLY_COMMENT + "##" + paramRequest.get("searchName")
+                    + "##" + feedbackUrl
+                : Constant.PARTNER_FEEDBACK_NEW_COMMENT + "##" + paramRequest.get("searchName")
+                    + "##" + feedbackUrl,
             Constant.CONTACT);
       }
     } catch (Exception ex) {
@@ -320,19 +320,19 @@ public class CandidateServiceImpl implements CandidateService {
         webSocketNotificationService.sendWebSocketNotification(kgpTeamId,
             paramRequest.get("contactId"),
             Boolean.TRUE.equals(isReplyFeedback)
-                ? Constant.PARTNER_FEEDBACK_REPLY_COMMENT + ":" + paramRequest.get("searchName")
-                    + ":" + feedbackUrl
-                : Constant.PARTNER_FEEDBACK_NEW_COMMENT + ":" + paramRequest.get("searchName") + ":"
-                    + feedbackUrl,
+                ? Constant.PARTNER_FEEDBACK_REPLY_COMMENT + "##" + paramRequest.get("searchName")
+                    + "##" + feedbackUrl
+                : Constant.PARTNER_FEEDBACK_NEW_COMMENT + "##" + paramRequest.get("searchName")
+                    + "##" + feedbackUrl,
             Constant.PARTNER);
       } else
         webSocketNotificationService.sendWebSocketNotification(kgpTeamId,
             paramRequest.get("contactId"),
             Boolean.TRUE.equals(isReplyFeedback)
-                ? Constant.CONTACT_FEEDBACK_REPLY_COMMENT + ":" + paramRequest.get("searchName")
-                    + ":" + feedbackUrl
-                : Constant.CONTACT_FEEDBACK_NEW_COMMENT + ":" + paramRequest.get("searchName") + ":"
-                    + feedbackUrl,
+                ? Constant.CONTACT_FEEDBACK_REPLY_COMMENT + "##" + paramRequest.get("searchName")
+                    + "##" + feedbackUrl
+                : Constant.CONTACT_FEEDBACK_NEW_COMMENT + "##" + paramRequest.get("searchName")
+                    + "##" + feedbackUrl,
             Constant.PARTNER);
 
     } catch (Exception e) {
