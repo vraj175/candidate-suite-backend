@@ -28,18 +28,18 @@ public class NotificationSchedulerConfig {
   @Scheduled(cron = "${notification.reminder.beforeDay}")
   void excuteReminderJobBeforeOneDay() {
     log.info("Scheduler call for sending reminder mail before Day");
-    // service.sendNotification(Constant.BEFORE_ONE_DAY);
+    service.sendNotification(Constant.BEFORE_ONE_DAY);
   }
 
   @Scheduled(cron = "${notification.reminder.beforeHour}")
   void excuteReminderJobBeforeOneHour() {
     log.info("Scheduler call for sending reminder mail before Hour");
-    // service.sendNotification(Constant.BEFORE_ONE_HOUR);
+    service.sendNotification(Constant.BEFORE_ONE_HOUR);
   }
 
   @Scheduled(cron = "${notification.feedback.afterInterview}")
   void excuteFeedbackJobAfterInterview() {
     log.info("Scheduler call for sending feedback mail after interview");
-    // service.sendNotification(Constant.AFTER_INTERVIEW);
+    service.sendNotification(Constant.AFTER_INTERVIEW);
   }
 }

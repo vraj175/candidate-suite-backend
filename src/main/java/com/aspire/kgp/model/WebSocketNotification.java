@@ -21,7 +21,7 @@ public class WebSocketNotification extends SuperBase {
   @Column(name = "date", nullable = false)
   private Timestamp date;
 
-  @Column(name = "notificationType", nullable = false)
+  @Column(name = "notificationType", nullable = false, length = 10000)
   private String notificationType;
 
   @Column(name = "contactId", nullable = false)

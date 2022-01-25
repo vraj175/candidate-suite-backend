@@ -13,6 +13,7 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.aspire.kgp.constant.Constant;
@@ -44,6 +45,9 @@ public class InterviewNotificationServiceImpl implements InterviewNotificationSe
 
   @Autowired
   WebSocketNotificationService webSocketNotificationService;
+
+  @Value("${candidatesuite.url}")
+  private String candidateSuiteUrl;
 
   @Override
   public void sendNotification(String schedulerType) {
@@ -132,8 +136,19 @@ public class InterviewNotificationServiceImpl implements InterviewNotificationSe
     sendMail(candidateDTO.getContact().getEmail() == null ? candidateDTO.getContact().getWorkEmail()
         : candidateDTO.getContact().getEmail(), mailSubject, contain);
     if (!stage.equals(Constant.CLIENT_TEAM)) {
+      String link = "";
+      if (schedulerType.equals(Constant.AFTER_INTERVIEW)) {
+        link = ":" + candidateSuiteUrl
+            + Constant.CANDIDATE_SUITE_FEEDBACK_PAGE_URL
+                .replace(Constant.CANDIDATE_ID_BRACES, candidateDTO.getId())
+                .replace(Constant.SEARCH_ID_BRACES, candidateDTO.getSearch().getId())
+                .replace(Constant.SEARCH_TITLE_BRACES, candidateDTO.getSearch().getJobTitle())
+                .replace(Constant.CONTACT_ID, candidateDTO.getContact().getId())
+                .replaceAll(Constant.SPACE_STRING, "%20");
+      }
       webSocketNotificationService.sendWebSocketNotification(userDTO.getId(),
-          candidateDTO.getContact().getId(), schedulerType + Constant.INTERVIEW_NOTIFICATION,
+          candidateDTO.getContact().getId(), schedulerType + Constant.INTERVIEW_NOTIFICATION + ":"
+              + candidateDTO.getSearch().getJobTitle() + link,
           Constant.CONTACT);
     }
     log.debug("Successfully Send candidate notification");
@@ -149,8 +164,9 @@ public class InterviewNotificationServiceImpl implements InterviewNotificationSe
         candidateDTO, userDTO, null, schedulerType, null, templateName);
     sendMail(userDTO.getEmail() == null ? userDTO.getWorkEmail() : userDTO.getEmail(), mailSubject,
         contain);
-    webSocketNotificationService.sendWebSocketNotification(userDTO.getId(),
-        candidateDTO.getContact().getId(), schedulerType + Constant.INTERVIEW_NOTIFICATION,
+    webSocketNotificationService.sendWebSocketNotification(
+        userDTO.getId(), candidateDTO.getContact().getId(), schedulerType
+            + Constant.INTERVIEW_NOTIFICATION + ":" + candidateDTO.getSearch().getJobTitle(),
         Constant.PARTNER);
     log.debug("Successfully Send kgp partner Notification");
   }

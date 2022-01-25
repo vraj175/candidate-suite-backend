@@ -277,9 +277,17 @@ public class CandidateServiceImpl implements CandidateService {
             kgpTeamMeberDetails.split("##")[2], type);
       }
       if (type.equals(Constant.PARTNER)) {
+        String feedbackUrl = CommonUtil.getServerUrl(request) + request.getContextPath()
+            + "/my-status/" + paramRequest.get("candidateId") + "/" + paramRequest.get("searchId")
+            + "/" + paramRequest.get("searchName") + "/" + paramRequest.get("contactId") + "/"
+            + "true" + "/" + paramRequest.get("commentId");
+        feedbackUrl = feedbackUrl.replaceAll(Constant.SPACE_STRING, "%20");
         webSocketNotificationService.sendWebSocketNotification(null, paramRequest.get("contactId"),
-            Boolean.TRUE.equals(isReplyFeedback) ? Constant.PARTNER_FEEDBACK_COMMENT
-                : Constant.PARTNER_NEW_COMMENT,
+            Boolean.TRUE.equals(isReplyFeedback)
+                ? Constant.PARTNER_FEEDBACK_REPLY_COMMENT + ":" + paramRequest.get("searchName")
+                    + ":" + feedbackUrl
+                : Constant.PARTNER_FEEDBACK_NEW_COMMENT + ":" + paramRequest.get("searchName") + ":"
+                    + feedbackUrl,
             Constant.CONTACT);
       }
     } catch (Exception ex) {
@@ -303,17 +311,28 @@ public class CandidateServiceImpl implements CandidateService {
               isReplyFeedback),
           null);
 
+      String feedbackUrl = CommonUtil.getServerUrl(request) + request.getContextPath()
+          + "/my-status/" + paramRequest.get("candidateId") + "/" + paramRequest.get("searchId")
+          + "/" + paramRequest.get("searchName") + "/" + paramRequest.get("contactId") + "/"
+          + "true" + "/" + paramRequest.get("commentId");
+      feedbackUrl = feedbackUrl.replaceAll(Constant.SPACE_STRING, "%20");
       if (type.equals(Constant.PARTNER)) {
         webSocketNotificationService.sendWebSocketNotification(kgpTeamId,
             paramRequest.get("contactId"),
-            Boolean.TRUE.equals(isReplyFeedback) ? Constant.PARTNER_FEEDBACK_COMMENT
-                : Constant.PARTNER_NEW_COMMENT,
+            Boolean.TRUE.equals(isReplyFeedback)
+                ? Constant.PARTNER_FEEDBACK_REPLY_COMMENT + ":" + paramRequest.get("searchName")
+                    + ":" + feedbackUrl
+                : Constant.PARTNER_FEEDBACK_NEW_COMMENT + ":" + paramRequest.get("searchName") + ":"
+                    + feedbackUrl,
             Constant.PARTNER);
       } else
         webSocketNotificationService.sendWebSocketNotification(kgpTeamId,
             paramRequest.get("contactId"),
-            Boolean.TRUE.equals(isReplyFeedback) ? Constant.CONTACT_FEEDBACK_COMMENT
-                : Constant.CONTACT_NEW_COMMENT,
+            Boolean.TRUE.equals(isReplyFeedback)
+                ? Constant.CONTACT_FEEDBACK_REPLY_COMMENT + ":" + paramRequest.get("searchName")
+                    + ":" + feedbackUrl
+                : Constant.CONTACT_FEEDBACK_NEW_COMMENT + ":" + paramRequest.get("searchName") + ":"
+                    + feedbackUrl,
             Constant.PARTNER);
 
     } catch (Exception e) {

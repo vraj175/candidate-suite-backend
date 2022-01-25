@@ -309,8 +309,8 @@ public class Constant {
   public static final String GDPR_CONSENT_UPDATE = "GDPR Consent Updated";
   public static final String MY_INFO_UPDATE = "My Info Updated";
   public static final String CONTACT_VIDEO_UPLOADED = "Contact Video Uploaded";
-  public static final String PARTNER_FEEDBACK_COMMENT = "Partner Feedback Comment";
-  public static final String PARTNER_NEW_COMMENT = "Partner New Comment";
-  public static final String CONTACT_FEEDBACK_COMMENT = "Contact Feedback Comment";
-  public static final String CONTACT_NEW_COMMENT = "Contact New Comment";
+  public static final String PARTNER_FEEDBACK_REPLY_COMMENT = "Partner Feedback Reply Comment";
+  public static final String PARTNER_FEEDBACK_NEW_COMMENT = "Partner Feedback New Comment";
+  public static final String CONTACT_FEEDBACK_REPLY_COMMENT = "Contact Feedback Reply Comment";
+  public static final String CONTACT_FEEDBACK_NEW_COMMENT = "Contact Feedback New Comment";
 }

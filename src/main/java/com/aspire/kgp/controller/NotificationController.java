@@ -152,23 +152,28 @@ public class NotificationController {
       log.info("Contact is not invented yet");
       return new ResponseEntity<>(body, HttpStatus.OK);
     }
-    // This code only for this sprint.
-    /*
-     * Set<String> kgpTeamSet = webSocketNotificationService
-     * .getContactKgpTeamDetails(webSocketNotificationDTO.getContactId()); Set<String>
-     * successSendNotification = new HashSet<>(); for (String galaxyId : kgpTeamSet) { boolean
-     * isSuccess = webSocketNotificationService.sendWebSocketNotification(galaxyId,
-     * webSocketNotificationDTO.getContactId(), webSocketNotificationDTO.getNotificationType(),
-     * Constant.PARTNER); if (isSuccess) successSendNotification.add(galaxyId); } boolean
-     * isSuccessContact = webSocketNotificationService.sendWebSocketNotification(null,
-     * webSocketNotificationDTO.getContactId(), webSocketNotificationDTO.getNotificationType(),
-     * Constant.CONTACT); if (isSuccessContact)
-     * successSendNotification.add(webSocketNotificationDTO.getContactId());
-     */
+
+
+    Set<String> kgpTeamSet = webSocketNotificationService
+        .getContactKgpTeamDetails(webSocketNotificationDTO.getContactId());
+    Set<String> successSendNotification = new HashSet<>();
+    for (String galaxyId : kgpTeamSet) {
+      boolean isSuccess = webSocketNotificationService.sendWebSocketNotification(galaxyId,
+          webSocketNotificationDTO.getContactId(), webSocketNotificationDTO.getNotificationType(),
+          Constant.PARTNER);
+      if (isSuccess)
+        successSendNotification.add(galaxyId);
+    }
+    boolean isSuccessContact = webSocketNotificationService.sendWebSocketNotification(null,
+        webSocketNotificationDTO.getContactId(), webSocketNotificationDTO.getNotificationType(),
+        Constant.CONTACT);
+    if (isSuccessContact)
+      successSendNotification.add(webSocketNotificationDTO.getContactId());
+
     body.put(Constant.MESSAGE, "Notification Send successfully");
-    // body.put(Constant.DATA, successSendNotification);
-    // log.info(
-    // "Successfully send external source notification for " + successSendNotification.size());
+    body.put(Constant.DATA, successSendNotification);
+    log.info(
+        "Successfully send external source notification for " + successSendNotification.size());
     return new ResponseEntity<>(body, HttpStatus.OK);
   }
 }
