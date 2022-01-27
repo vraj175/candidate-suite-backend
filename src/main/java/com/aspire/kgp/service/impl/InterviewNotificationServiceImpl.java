@@ -147,8 +147,8 @@ public class InterviewNotificationServiceImpl implements InterviewNotificationSe
                 .replaceAll(Constant.SPACE_STRING, "%20");
       }
       webSocketNotificationService.sendWebSocketNotification(userDTO.getId(),
-          candidateDTO.getContact().getId(), schedulerType + Constant.INTERVIEW_NOTIFICATION + "##"
-              + candidateDTO.getSearch().getJobTitle() + link,
+          candidateDTO.getContact().getId(), schedulerType + " " + Constant.INTERVIEW_NOTIFICATION
+              + "##" + candidateDTO.getSearch().getJobTitle() + link,
           Constant.CONTACT);
     }
     log.debug("Successfully Send candidate notification");
@@ -165,7 +165,7 @@ public class InterviewNotificationServiceImpl implements InterviewNotificationSe
     sendMail(userDTO.getEmail() == null ? userDTO.getWorkEmail() : userDTO.getEmail(), mailSubject,
         contain);
     webSocketNotificationService.sendWebSocketNotification(
-        userDTO.getId(), candidateDTO.getContact().getId(), schedulerType
+        userDTO.getId(), candidateDTO.getContact().getId(), schedulerType + " "
             + Constant.INTERVIEW_NOTIFICATION + "##" + candidateDTO.getSearch().getJobTitle(),
         Constant.PARTNER);
     log.debug("Successfully Send kgp partner Notification");
