@@ -203,8 +203,8 @@ public class InterviewNotificationServiceImpl implements InterviewNotificationSe
         getScheduleDate(currentDateAndTime, schedulerType);
 
     JsonObject paramJSON = new JsonObject();
-    paramJSON.addProperty(Constant.FROM_DATE, "2022-01-28T09:30:44.002Z");
-    paramJSON.addProperty(Constant.TO_DATE, "2022-01-28T09:59:50.002Z");
+    paramJSON.addProperty(Constant.FROM_DATE, interviewNotificationReqMap.get(Constant.FROM_DATE));
+    paramJSON.addProperty(Constant.TO_DATE, interviewNotificationReqMap.get(Constant.TO_DATE));
     log.info(
         "Get InterviewDetails for From date: " + interviewNotificationReqMap.get(Constant.FROM_DATE)
             + " To date " + interviewNotificationReqMap.get(Constant.TO_DATE));
