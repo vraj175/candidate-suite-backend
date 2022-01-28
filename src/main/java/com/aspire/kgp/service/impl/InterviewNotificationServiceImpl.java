@@ -146,10 +146,18 @@ public class InterviewNotificationServiceImpl implements InterviewNotificationSe
               .replace(Constant.CONTACT_ID, candidateDTO.getContact().getId())
               .replaceAll(Constant.SPACE_STRING, "%20");
     }
-    webSocketNotificationService.sendWebSocketNotification(userDTO.getId(),
-        candidateDTO.getContact().getId(), schedulerType + " " + Constant.INTERVIEW_NOTIFICATION
-            + "##" + candidateDTO.getSearch().getJobTitle() + link,
-        Constant.CONTACT);
+    if (!stage.equals(Constant.CLIENT_TEAM)) {
+      webSocketNotificationService.sendWebSocketNotification(userDTO.getId(),
+          candidateDTO.getContact().getId(), schedulerType + " " + Constant.INTERVIEW_NOTIFICATION
+              + "##" + candidateDTO.getSearch().getJobTitle() + link,
+          Constant.CONTACT);
+    } else {
+      webSocketNotificationService.sendWebSocketNotification(clientTeamDTO.getContact().getId(),
+          candidateDTO.getContact().getId(), schedulerType + " " + Constant.INTERVIEW_NOTIFICATION
+              + "##" + candidateDTO.getSearch().getJobTitle() + link,
+          Constant.CONTACT);
+    }
+
     log.debug("Successfully Send candidate notification");
   }
 
