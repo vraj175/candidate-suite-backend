@@ -135,22 +135,21 @@ public class InterviewNotificationServiceImpl implements InterviewNotificationSe
             candidateDTO, userDTO, clientTeamDTO, schedulerType, stage, templateName);
     sendMail(candidateDTO.getContact().getEmail() == null ? candidateDTO.getContact().getWorkEmail()
         : candidateDTO.getContact().getEmail(), mailSubject, contain);
-    if (!stage.equals(Constant.CLIENT_TEAM)) {
-      String link = "";
-      if (schedulerType.equals(Constant.AFTER_INTERVIEW)) {
-        link = "##" + candidateSuiteUrl
-            + Constant.CANDIDATE_SUITE_FEEDBACK_PAGE_URL
-                .replace(Constant.CANDIDATE_ID_BRACES, candidateDTO.getId())
-                .replace(Constant.SEARCH_ID_BRACES, candidateDTO.getSearch().getId())
-                .replace(Constant.SEARCH_TITLE_BRACES, candidateDTO.getSearch().getJobTitle())
-                .replace(Constant.CONTACT_ID, candidateDTO.getContact().getId())
-                .replaceAll(Constant.SPACE_STRING, "%20");
-      }
-      webSocketNotificationService.sendWebSocketNotification(userDTO.getId(),
-          candidateDTO.getContact().getId(), schedulerType + " " + Constant.INTERVIEW_NOTIFICATION
-              + "##" + candidateDTO.getSearch().getJobTitle() + link,
-          Constant.CONTACT);
+
+    String link = "";
+    if (schedulerType.equals(Constant.AFTER_INTERVIEW)) {
+      link = "##" + candidateSuiteUrl
+          + Constant.CANDIDATE_SUITE_FEEDBACK_PAGE_URL
+              .replace(Constant.CANDIDATE_ID_BRACES, candidateDTO.getId())
+              .replace(Constant.SEARCH_ID_BRACES, candidateDTO.getSearch().getId())
+              .replace(Constant.SEARCH_TITLE_BRACES, candidateDTO.getSearch().getJobTitle())
+              .replace(Constant.CONTACT_ID, candidateDTO.getContact().getId())
+              .replaceAll(Constant.SPACE_STRING, "%20");
     }
+    webSocketNotificationService.sendWebSocketNotification(userDTO.getId(),
+        candidateDTO.getContact().getId(), schedulerType + " " + Constant.INTERVIEW_NOTIFICATION
+            + "##" + candidateDTO.getSearch().getJobTitle() + link,
+        Constant.CONTACT);
     log.debug("Successfully Send candidate notification");
   }
 
@@ -204,8 +203,8 @@ public class InterviewNotificationServiceImpl implements InterviewNotificationSe
         getScheduleDate(currentDateAndTime, schedulerType);
 
     JsonObject paramJSON = new JsonObject();
-    paramJSON.addProperty(Constant.FROM_DATE, interviewNotificationReqMap.get(Constant.FROM_DATE));
-    paramJSON.addProperty(Constant.TO_DATE, interviewNotificationReqMap.get(Constant.TO_DATE));
+    paramJSON.addProperty(Constant.FROM_DATE, "2022-01-28T09:30:44.002Z");
+    paramJSON.addProperty(Constant.TO_DATE, "2022-01-28T09:59:50.002Z");
     log.info(
         "Get InterviewDetails for From date: " + interviewNotificationReqMap.get(Constant.FROM_DATE)
             + " To date " + interviewNotificationReqMap.get(Constant.TO_DATE));
