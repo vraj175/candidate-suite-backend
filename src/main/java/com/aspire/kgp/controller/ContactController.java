@@ -4,6 +4,7 @@ package com.aspire.kgp.controller;
 import java.io.UnsupportedEncodingException;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
@@ -128,11 +129,11 @@ public class ContactController {
   @PostMapping("/contact/{contactId}/upload-resumes")
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = Constant.FILE_UPLOADED_SUCCESSFULLY)})
-  public String uploadResume(@PathVariable("contactId") String contactId,
-      @RequestParam("file") MultipartFile file, @RequestParam("documentType") String type) {
+  public String uploadResume(@PathVariable("contactId") String contactId,@PathVariable("candidateId") String candidateId,
+      @RequestParam("file") MultipartFile file, @RequestParam("documentType") String type,  HttpServletRequest request) {
     log.info("upload document for contact API call, Request Param contactId: " + contactId
         + " File: " + file.getName() + " documentType : " + type);
-    return service.uploadCandidateResume(file, contactId, type);
+    return service.uploadCandidateResume(file, contactId, type, request,candidateId);
   }
 
   @Operation(summary = "Upload Profile Image For Contact")

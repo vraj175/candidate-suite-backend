@@ -3,6 +3,7 @@ package com.aspire.kgp.service;
 import java.io.UnsupportedEncodingException;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.web.multipart.MultipartFile;
@@ -25,7 +26,7 @@ public interface ContactService {
 
   String addContactReference(String contactId, String referenceData);
 
-  String uploadCandidateResume(MultipartFile multipartFile, String contactId, String type);
+  String uploadCandidateResume(MultipartFile multipartFile, String contactId, String type, HttpServletRequest request, String candidateId);
 
   String uploadContactImage(MultipartFile multipartFile, String contactId);
 
