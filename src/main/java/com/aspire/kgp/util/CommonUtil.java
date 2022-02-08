@@ -293,13 +293,13 @@ public class CommonUtil {
     }
   }
 
-  public static String removeTime(String date) {
-    if (CommonUtil.checkNotNullString(date) && date.contains("T")) {
-      String[] spliteddate = date.split("T");
-      date = spliteddate[0];
-    }
-    return date;
-  }
+//  public static String removeTime(String date) {
+//    if (CommonUtil.checkNotNullString(date) && date.contains("T")) {
+//      String[] spliteddate = date.split("T");
+//      date = spliteddate[0];
+//    }
+//    return date;
+//  }
 
   public static Set<String> teamMemberList(List<UserDTO> users, Set<String> partnerEmailList) {
     log.info("Creating Team member email and name set");
