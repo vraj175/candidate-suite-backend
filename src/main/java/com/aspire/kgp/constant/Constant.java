@@ -81,7 +81,7 @@ public class Constant {
   public static final String SEARCHES_LIST_BY_IDS = "/searches/search-details-by-ids";
   public static final String CANDIDATE_LIST_URL = "/searches/{searchId}/candidates";
   public static final String POSITION_PROFILE_URL = "/searches/{searchId}/sfpa";
-//  public static final String CANDIDATE_URL = "/candidates/{candidateId}/activity";
+  public static final String CANDIDATE_URL = "/candidates/{candidateId}/activity";
   public static final String REPORT_URL = "/reports/{candidateId}/activity";
   public static final String CANDIDATE_FEEDBACK_URL =
       "/candidate-suite/candidates/{candidateId}/candidate-feedback";
@@ -161,13 +161,10 @@ public class Constant {
   public static final String FORGOT_EMAIL_TEMPLATE = "forgot-password.ftl";
   public static final String CANDIDATE_FEEDBACK_EMAIL_TEMPLATE = "candidate-feedback.ftl";
   public static final String CANDIDATE_UPLOAD_EMAIL_TEMPLATE = "candidate-upload.ftl";
-<<<<<<< HEAD
-=======
   public static final String CONTACT_GDPR_CONSENT_EMAIL_TEMPLATE = "contact-gdpr-consent.ftl";
   public static final String INTERVIEW_NOTIFICATION_TEMPLATE = "interviewNotification.ftl";
   public static final String INTERVIEW_FEEDBACK_NOTIFICATION_TEMPLATE =
       "interviewFeedbackNotification.ftl";
->>>>>>> 40cfc7430bc1b925071db31241a7669f20cb0422
 
   // Json Fields
   public static final String FIRST_NAME = "firstName";
