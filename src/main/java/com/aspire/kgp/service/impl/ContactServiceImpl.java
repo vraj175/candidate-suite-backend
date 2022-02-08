@@ -9,13 +9,6 @@ import java.io.UnsupportedEncodingException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
-<<<<<<< HEAD
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-=======
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -24,7 +17,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
->>>>>>> 40cfc7430bc1b925071db31241a7669f20cb0422
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -52,11 +44,6 @@ import com.aspire.kgp.dto.SearchDTO;
 import com.aspire.kgp.dto.UserDTO;
 import com.aspire.kgp.exception.APIException;
 import com.aspire.kgp.exception.NotFoundException;
-<<<<<<< HEAD
-import com.aspire.kgp.service.CandidateService;
-import com.aspire.kgp.service.ContactService;
-import com.aspire.kgp.service.MailService;
-=======
 import com.aspire.kgp.model.BoardHistory;
 import com.aspire.kgp.model.Contact;
 import com.aspire.kgp.model.GdprConsent;
@@ -73,7 +60,6 @@ import com.aspire.kgp.service.ContactService;
 import com.aspire.kgp.service.MailService;
 import com.aspire.kgp.service.UserService;
 import com.aspire.kgp.service.WebSocketNotificationService;
->>>>>>> 40cfc7430bc1b925071db31241a7669f20cb0422
 import com.aspire.kgp.util.CommonUtil;
 import com.aspire.kgp.util.RestUtil;
 import com.aspire.kgp.util.StaticContentsMultiLanguageUtil;
@@ -94,12 +80,6 @@ public class ContactServiceImpl implements ContactService {
 
   @Autowired
   MailService mailService;
-<<<<<<< HEAD
-  
-  @Autowired
-  CandidateService candidateService;
-
-=======
 
   @Autowired
   CandidateService candidateService;
@@ -135,7 +115,6 @@ public class ContactServiceImpl implements ContactService {
   private Map<String, String> boardHistoryMap;
   private Map<String, String> educationDetailsMap;
 
->>>>>>> 40cfc7430bc1b925071db31241a7669f20cb0422
   @Override
   public ContactDTO getContactDetails(String contactId) {
     String apiResponse =
@@ -326,14 +305,11 @@ public class ContactServiceImpl implements ContactService {
 
   @Override
   public String uploadCandidateResume(MultipartFile multipartFile, String contactId, String type,
-<<<<<<< HEAD
-      HttpServletRequest request, String candidateId) {
-=======
       String candidateId, HttpServletRequest request) {
->>>>>>> 40cfc7430bc1b925071db31241a7669f20cb0422
     JsonObject paramJSON = new JsonObject();
     paramJSON.addProperty("description", "");
     paramJSON.addProperty("show_in_clientsuite", false);
+
     File file;
     try {
       String fileName = multipartFile.getOriginalFilename();
@@ -368,74 +344,13 @@ public class ContactServiceImpl implements ContactService {
 
     try {
       if (responseJson.get("id").getAsString() != null) {
-<<<<<<< HEAD
-        sentUploadNotification(responseJson.get("id").getAsString(), contactId, request, candidateId, file, type);
-=======
         sentUploadNotification(contactId, request, candidateId, type);
->>>>>>> 40cfc7430bc1b925071db31241a7669f20cb0422
         return Constant.FILE_UPLOADED_SUCCESSFULLY;
       }
     } catch (Exception e) {
       throw new APIException(Constant.FILE_UPLOAD_ERROR);
     }
     return Constant.FILE_UPLOAD_ERROR;
-  }
-
-  private void sentUploadNotification(String id, String contactId, HttpServletRequest request, String candidateId, File file, String type) {
-    Set<String> kgpPartnerEmailList = new HashSet<>();
-    HashMap<String, String> paramRequest = new HashMap<>();
-    CandidateDTO apiResponse = candidateService.getCandidateDetails(id);
-    try {
-      kgpPartnerEmailList =
-          teamMemberList(apiResponse.getSearch().getPartners(), kgpPartnerEmailList);
-      kgpPartnerEmailList =
-          teamMemberList(apiResponse.getSearch().getRecruiters(), kgpPartnerEmailList);
-      kgpPartnerEmailList =
-          teamMemberList(apiResponse.getSearch().getResearchers(), kgpPartnerEmailList);
-      kgpPartnerEmailList = teamMemberList(apiResponse.getSearch().getEas(), kgpPartnerEmailList);
-      try {
-        for (String kgpTeamMeberDetails : kgpPartnerEmailList) {
-          log.info("Partner Email : " + kgpTeamMeberDetails);
-          sendClientUploadNotificationMail(kgpTeamMeberDetails.split("##")[0],
-              kgpTeamMeberDetails.split("##")[1], paramRequest, request, candidateId, file, type);
-        }
-      } catch (Exception ex) {
-        log.info(ex);
-        throw new APIException("Error in send upload notification email");
-      }
-    
-  }
-
-
-  private void sendClientUploadNotificationMail(String email, String partnerName,
-      HashMap<String, String> paramRequest, HttpServletRequest request, String candidateId, File file, String type) {
-    log.info("sending client upload notification email");
-    String locate = "en_US";
-    email= "abhishek.jaiswal@aspiresoftserv.com";
-    try {
-      Map<String, String> staticContentsMap =
-          StaticContentsMultiLanguageUtil.getStaticContentsMap(locate, Constant.EMAILS_CONTENT_MAP);
-      String mailSubject = staticContentsMap.get("candidate.suite.upload.email.subject");
-      mailService.sendEmail(email, null, mailSubject + " " + partnerName,
-          mailService.getUploadEmailContent(request, staticContentsMap,
-              Constant.CANDIDATE_UPLOAD_EMAIL_TEMPLATE, partnerName, paramRequest, ),
-          null);
-    } catch (Exception e) {
-      log.info(e);
-      throw new APIException("Error in sending candidate upload email");
-    }
-    log.info("Client upload Mail sent to all partners successfully.");
-  }
-
-
-  private Set<String> teamMemberList(List<UserDTO> users, Set<String> partnerEmailList) {
-    log.info("Creating Team member email and name set");
-    for (UserDTO user : users) {
-      if (user != null && CommonUtil.checkNotNullString(user.getId())) {
-        partnerEmailList.add(user.getEmail() + "##" + user.getName());
-      }
-    }
-    return partnerEmailList;
   }
 
   @Override

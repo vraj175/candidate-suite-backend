@@ -168,20 +168,12 @@ public class ContactController {
   @PostMapping("/contact/{contactId}/{candidateId}/upload-resumes")
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = Constant.FILE_UPLOADED_SUCCESSFULLY)})
-<<<<<<< HEAD
-  public String uploadResume(@PathVariable("contactId") String contactId,@PathVariable("candidateId") String candidateId,
-      @RequestParam("file") MultipartFile file, @RequestParam("documentType") String type,  HttpServletRequest request) {
-    log.info("upload document for contact API call, Request Param contactId: " + contactId
-        + " File: " + file.getName() + " documentType : " + type);
-    return service.uploadCandidateResume(file, contactId, type, request,candidateId);
-=======
   public String uploadResume(@PathVariable("contactId") String contactId,
       @PathVariable("candidateId") String candidateId, @RequestParam("file") MultipartFile file,
       @RequestParam("documentType") String type, HttpServletRequest request) {
     log.info("upload document for contact API call, Request Param contactId: " + contactId
         + " File: " + file.getName() + " documentType : " + type);
     return service.uploadCandidateResume(file, contactId, type, candidateId, request);
->>>>>>> 40cfc7430bc1b925071db31241a7669f20cb0422
   }
 
   @Operation(summary = "Upload Profile Image For Contact")
