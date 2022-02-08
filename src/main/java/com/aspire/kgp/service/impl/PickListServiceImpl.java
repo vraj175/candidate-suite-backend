@@ -4,7 +4,8 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
+import com.aspire.kgp.dto.CompanyDTO;
+import java.util.stream.Collectors;
 import com.aspire.kgp.constant.Constant;
 import com.aspire.kgp.dto.PickListDTO;
 import com.aspire.kgp.exception.APIException;
@@ -24,13 +25,15 @@ public class PickListServiceImpl implements PickListService {
   public List<String> getEducationDegrees() {
     String apiResponse = restUtil.newGetMethod(Constant.EDUCATION_DEGREE_PICKLIST_URL);
     try {
-      return new Gson().fromJson(apiResponse, new TypeToken<List<String>>() {
+      List<CompanyDTO> degreeList =
+          new Gson().fromJson(apiResponse, new TypeToken<List<CompanyDTO>>() {
 
-        /**
-         * 
-         */
-        private static final long serialVersionUID = 1L;
-      }.getType());
+            /**
+             * 
+             */
+            private static final long serialVersionUID = 1L;
+          }.getType());
+      return degreeList.stream().map(CompanyDTO::getName).collect(Collectors.toList());
     } catch (JsonSyntaxException e) {
       throw new APIException(Constant.JSON_PROCESSING_EXCEPTION + e.getMessage());
     }

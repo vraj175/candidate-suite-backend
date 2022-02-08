@@ -32,8 +32,12 @@ public interface ContactService {
   String addContactReference(String contactId, String referenceData)
       throws UnsupportedEncodingException;
 
+<<<<<<< HEAD
+  String uploadCandidateResume(MultipartFile multipartFile, String contactId, String type, HttpServletRequest request, String candidateId);
+=======
   String uploadCandidateResume(MultipartFile multipartFile, String contactId, String type,
       String candidateId, HttpServletRequest request);
+>>>>>>> 40cfc7430bc1b925071db31241a7669f20cb0422
 
   String uploadContactImage(MultipartFile multipartFile, String contactId);
 
