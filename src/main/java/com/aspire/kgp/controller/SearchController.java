@@ -125,7 +125,7 @@ public class SearchController {
     PositionProfileDTO positionProfile = service.getPositionProfileDetails(searchId);
 
     SimpleBeanPropertyFilter companyFilter = SimpleBeanPropertyFilter
-        .filterOutAllExcept("description", "website", "linkedinUrl", "news");
+        .filterOutAllExcept("description", "website", "linkedinUrl", "news", "id");
 
     SimpleBeanPropertyFilter positionProfileFilter = SimpleBeanPropertyFilter.filterOutAllExcept(
         "isDegreeMandatory", "isApprovedByPartner", "isYearsOfExperienceMandatory",

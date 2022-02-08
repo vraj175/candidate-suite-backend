@@ -12,6 +12,7 @@ public class Constant {
   public static final String ERROR = "error";
   public static final String COMPLETED = "Completed";
   public static final String MESSAGE = "message";
+  public static final String DATA = "data";
   public static final String SQL_EXCEPTION = "SQL Exception :";
   public static final String MISSING_API_KEY = "Missing API key.";
   public static final String MISSING_REQUEST_HEADER = "Missing request header.";
@@ -61,6 +62,7 @@ public class Constant {
   public static final String ILLEGAL_ARGUMENT_EXCEPTION = "Illegal Argument Exception";
   public static final String JSON_PROCESSING_EXCEPTION = "JsonProcessingException : ";
   public static final String INVALID_CANDIDATE_ID = "Invalid Candidate Id";
+  public static final String INVALID_COMPANY_ID = "Invalid Company Id";
   public static final String FILE_UPLOAD_ERROR = "Error in upload file";
   public static final String IMAGE_UPLOAD_ERROR = "Error in upload profile image";
   public static final String CONVERT_JSON_ERROR = "Error in coverting json to object";
@@ -82,6 +84,10 @@ public class Constant {
   public static final String CANDIDATE_URL = "/candidates/{candidateId}/activity";
   public static final String CANDIDATE_FEEDBACK_URL =
       "/candidate-suite/candidates/{candidateId}/candidate-feedback";
+  public static final String CANDIDATE_SUITE_FEEDBACK_PAGE_URL =
+      "/feedback/{candidateId}/{searchId}/{searchTitle}/{contactId}";
+  public static final String CONTACT_KGP_TEAM_URL = "/candidate-suite/searches/{contactId}";
+  public static final String CANDIDATE_SUITE_INTERVIEW = "/candidate-suite/interview";
   public static final String CANDIDATE_FEEDBACK_REPLY_URL =
       "/candidate-suite/candidate-feedback/{commentId}/{candidateId}/reply";
   public static final String CANDIDATE_FEEDBACK_STATUS_UPDATE_URL = "/candidate-suite/{commentId}";
@@ -91,6 +97,8 @@ public class Constant {
   public static final String GET_COMPANY_LIST_URL = "/synclink/companies?name={COMPANYNAME}";
   public static final String DOWNLOAD_ATTACHMENT =
       "/clientsuite/candidate/resumes/{attachmentId}/download";
+  public static final String DOWNLOAD_ANY_ATTACHMENT =
+      "/candidate-suite/downloads?type={attachmentType}&id={attachmentId}";
   public static final String SEARCH_INFO_URL = "/searches/{SEARCHID}";
   public static final String EDUCATION_DEGREE_PICKLIST_URL = "/picklists/educations/degrees";
   public static final String CONTACT_REFERENCE_URL = "/contact/{contactId}/references";
@@ -101,16 +109,22 @@ public class Constant {
   public static final String REFERENCE_TYPE_PICKLIST_URL = "/picklists/reference-types";
   public static final String COUNTRIES_PICKLIST_URL = "/picklists/countries";
   public static final String INDUSTRES_PICKLIST_URL = "/synclink/picklists/industries";
+  public static final String GET_DOCUMENT_ATTCHMENT_LIST_URL =
+      "/company/{COMPANYID}/candidatesuiteattachments";
   public static final String CONTACT_SAVE_URL = "/contacts";
   public static final String COMPANY_SAVE_URL = "/companies";
 
   public static final String RESUME_URL = "/contact/{contactId}/resumes";
   public static final String ATTECHMENT_URL = "/contact/{contactId}/attachments";
+  public static final String COMPANY_ATTECHMENT_URL = "/company/{companyId}/attachments";
   public static final String OFFER_LETTER_URL = "/contact/{contactId}/offerLetter";
   public static final String IMAGE_UPLOAD_URL = "/contacts/{contactId}/image";
   public static final String UPDATE_CONTACT_REFERENCE_URL = "/contact/references/{referenceId}";
   public static final String CONTACT_ID = "{contactId}";
+  public static final String COMPANY_ID_BRACES = "{companyId}";
   public static final String CANDIDATE_ID_BRACES = "{candidateId}";
+  public static final String SEARCH_ID_BRACES = "{searchId}";
+  public static final String SEARCH_TITLE_BRACES = "{searchTitle}";
   public static final String COMMENT_ID_BRACES = "{commentId}";
 
   // Queries parameter
@@ -146,6 +160,13 @@ public class Constant {
   public static final String FORGOT_EMAIL_TEMPLATE = "forgot-password.ftl";
   public static final String CANDIDATE_FEEDBACK_EMAIL_TEMPLATE = "candidate-feedback.ftl";
   public static final String CANDIDATE_UPLOAD_EMAIL_TEMPLATE = "candidate-upload.ftl";
+<<<<<<< HEAD
+=======
+  public static final String CONTACT_GDPR_CONSENT_EMAIL_TEMPLATE = "contact-gdpr-consent.ftl";
+  public static final String INTERVIEW_NOTIFICATION_TEMPLATE = "interviewNotification.ftl";
+  public static final String INTERVIEW_FEEDBACK_NOTIFICATION_TEMPLATE =
+      "interviewFeedbackNotification.ftl";
+>>>>>>> 40cfc7430bc1b925071db31241a7669f20cb0422
 
   // Json Fields
   public static final String FIRST_NAME = "firstName";
@@ -176,6 +197,7 @@ public class Constant {
   public static final String WORK_EMAIL = "workEmail";
   public static final String RESUME = "Resume";
   public static final String OFFER_LETTER = "offerLetter";
+  public static final String OFFER_LETTERS = "Offer Letter";
   public static final String COMMENTS = "comments";
   public static final String CREATED_BY = "createdBy";
   public static final String CREATED_AT = "createdAt";
@@ -207,6 +229,10 @@ public class Constant {
   public static final String SCREENED_DATE = "screenedDate";
   public static final String TYPE = "type";
   public static final String CREATED_NAME = "createdName";
+  public static final String EXRCUTION_CREDIT = "executionCredit";
+  public static final String LOCATION = "location";
+  public static final String IS_APPROVED_BY_PARTNER = "isApprovedByPartner";
+  public static final String COMMENT_ID = "commentId";
 
   // google capcha
   public static final String GOOGLE_CAPTCHA_SECRET_KEY = "6LfPQ10aAAAAAHP7HDxskU_c1c8oBVSpf5SZdZ4C";
@@ -224,6 +250,7 @@ public class Constant {
   public static final String CANDIDATE_FEEDBACK_REPLY_FILTER = "candidateFeedbackReplyFilter";
   public static final String USER_FILTER = "userFilter";
   public static final String INTERVIEW_FILTER = "interviewFilter";
+  public static final String CLIENT_TEAM_FILTER = "clientTeamFilter";
 
   // messages
   public static final String DATA_SAVED = "Data saved successfully";
@@ -245,4 +272,48 @@ public class Constant {
 
   public static final String ATHENA_REPORT_URL =
       "/delegate/NewReportServlet?params={%22pageSize%22:%22{pageSize}%22,%22locale%22:%22{locale}%22,%22contactId%22:%22{contactId}%22,%22newReportAction%22:%22AthenaIndidualConsultingReport%22}";
+
+  // MyInfo Update Email status
+  public static final String UPDATE = "Update";
+  public static final String ADD = "Add";
+  public static final String DELETE = "Delete";
+  public static final String CURRENT_INFO = "CurrentInfo";
+  public static final String JOB_HISTORY = "jobHistory";
+  public static final String BOARD_HISTORY = "boardHistory";
+  public static final String EDUCATION = "education";
+
+  // interview notification
+  public static final String SERVER_URL = "serverUrl";
+  public static final String HOME_URL = "homeUrl";
+  public static final String COMPANY_NAME = "companyName";
+  public static final String STATIC_CONTENT_MAP = "staticContentsMap";
+  public static final String CLICK_HERE = "clickHere";
+  public static final String CLICK_HERE_MSG = "clickHereMsg";
+  public static final String CLICK_HERE_SERVER_URL = "clickHereServerUrl";
+  public static final String POSITION_TITLE = "positionTitle";
+  public static final String POSITION_TITLE_TYPE = "positionTitleType";
+  public static final String CANDIDATE_NAME = "candidateName";
+  public static final String BEFORE_ONE_DAY = "BEFORE_ONE_DAY";
+  public static final String BEFORE_ONE_HOUR = "BEFORE_ONE_HOUR";
+  public static final String AFTER_INTERVIEW = "AFTER_INTERVIEW";
+  public static final String CANDIDATE_NOTIFICATION = "candidateNotification";
+  public static final String KGP_NOTIFICATION = "kgpNotification";
+  public static final String CLIENT_NOTIFICATION = "clientNotification";
+  public static final String FEEDBACK_NOTIFICATION_CLICK_MSG = "feedbackClickMsg";
+  public static final String FEEDBACK_NOTIFICATION_COMPANY_NAME = "feedbackCompanyName";
+  public static final String FEEDBACK_NOTIFICATION_CANDIDATE_NAME = "feedbackCandidateName";
+  public static final String FEEDBACK_NOTIFICATION_URL = "feedbackUrl";
+  public static final String KGP_TEAM = "kgpTeam";
+  public static final String FROM_DATE = "fromDate";
+  public static final String TO_DATE = "toDate";
+
+  // socket notification type
+  public static final String INTERVIEW_NOTIFICATION = "Interview Notification";
+  public static final String GDPR_CONSENT_UPDATE = "GDPR Consent Updated";
+  public static final String MY_INFO_UPDATE = "My Info Updated";
+  public static final String CONTACT_VIDEO_UPLOADED = "Contact Video Uploaded";
+  public static final String PARTNER_FEEDBACK_REPLY_COMMENT = "Partner Feedback Reply Comment";
+  public static final String PARTNER_FEEDBACK_NEW_COMMENT = "Partner Feedback New Comment";
+  public static final String CONTACT_FEEDBACK_REPLY_COMMENT = "Contact Feedback Reply Comment";
+  public static final String CONTACT_FEEDBACK_NEW_COMMENT = "Contact Feedback New Comment";
 }

@@ -62,15 +62,15 @@ public class CandidateController {
         SimpleBeanPropertyFilter.filterOutAllExcept(Constant.CONTACT, Constant.SEARCH);
 
     SimpleBeanPropertyFilter companyFilter =
-        SimpleBeanPropertyFilter.filterOutAllExcept("id", "name");
+        SimpleBeanPropertyFilter.filterOutAllExcept(Constant.ID, Constant.NAME);
 
-    SimpleBeanPropertyFilter userAndContactFilter =
-        SimpleBeanPropertyFilter.filterOutAllExcept(Constant.ID, Constant.FIRST_NAME,
-            Constant.LAST_NAME, "title", "location", "executionCredit", "city", "state");
+    SimpleBeanPropertyFilter userAndContactFilter = SimpleBeanPropertyFilter.filterOutAllExcept(
+        Constant.ID, Constant.FIRST_NAME, Constant.LAST_NAME, Constant.TITLE, Constant.LOCATION,
+        Constant.EXRCUTION_CREDIT, Constant.CITY, Constant.STATE);
 
     SimpleBeanPropertyFilter searchFilter = SimpleBeanPropertyFilter.filterOutAllExcept(Constant.ID,
         Constant.JOB_TITLE, Constant.JOB_NUMBER, Constant.COMPANY, Constant.PARTNERS,
-        Constant.RECRUITERS, Constant.RESEARCHERS, Constant.EAS, "isApprovedByPartner");
+        Constant.RECRUITERS, Constant.RESEARCHERS, Constant.EAS, Constant.IS_APPROVED_BY_PARTNER);
 
     FilterProvider filters =
         new SimpleFilterProvider().addFilter(Constant.CANDIDATE_FILTER, candidateFilter)
@@ -103,26 +103,26 @@ public class CandidateController {
 
     SimpleBeanPropertyFilter userFilter = SimpleBeanPropertyFilter.filterOutAllExcept(Constant.ID,
         Constant.FIRST_NAME, Constant.LAST_NAME, Constant.EMAIL, Constant.TITLE, Constant.COUNTRY,
-        Constant.LINKEDIN_URL, Constant.BIO, Constant.MOBILE_PHONE, Constant.WORK_PHONE, "location",
-        "executionCredit", "city", "state");
+        Constant.LINKEDIN_URL, Constant.BIO, Constant.MOBILE_PHONE, Constant.WORK_PHONE,
+        Constant.LOCATION, Constant.EXRCUTION_CREDIT, Constant.CITY, Constant.STATE);
 
     SimpleBeanPropertyFilter clientTeamFilter =
         SimpleBeanPropertyFilter.filterOutAllExcept(Constant.ID, Constant.CONTACT);
 
     SimpleBeanPropertyFilter companyFilter =
-        SimpleBeanPropertyFilter.filterOutAllExcept(Constant.ID, "name");
+        SimpleBeanPropertyFilter.filterOutAllExcept(Constant.ID, Constant.NAME);
 
     SimpleBeanPropertyFilter contactFilter = SimpleBeanPropertyFilter.filterOutAllExcept(
         Constant.ID, Constant.FIRST_NAME, Constant.LAST_NAME, Constant.CURRENT_JOB_TITLE,
         Constant.MOBILE_PHONE, Constant.PUBLISHED_BIO, Constant.COMPANY, Constant.LINKEDIN_URL,
-        Constant.COUNTRY, "state", "city");
+        Constant.COUNTRY, Constant.STATE, Constant.CITY);
 
-    FilterProvider filters =
-        new SimpleFilterProvider().addFilter(Constant.CANDIDATE_FILTER, candidateFilter)
-            .addFilter(Constant.SEARCH_FILTER, searchFilter).addFilter("userFilter", userFilter)
-            .addFilter("clientTeamFilter", clientTeamFilter)
-            .addFilter(Constant.CONTACT_FILTER, contactFilter)
-            .addFilter(Constant.COMPANY_FILTER, companyFilter);
+    FilterProvider filters = new SimpleFilterProvider()
+        .addFilter(Constant.CANDIDATE_FILTER, candidateFilter)
+        .addFilter(Constant.SEARCH_FILTER, searchFilter).addFilter(Constant.USER_FILTER, userFilter)
+        .addFilter(Constant.CLIENT_TEAM_FILTER, clientTeamFilter)
+        .addFilter(Constant.CONTACT_FILTER, contactFilter)
+        .addFilter(Constant.COMPANY_FILTER, companyFilter);
 
     MappingJacksonValue mapping = new MappingJacksonValue(candidateDTO);
     mapping.setFilters(filters);
@@ -157,9 +157,9 @@ public class CandidateController {
             Constant.COMMENTS, Constant.STATUS, Constant.TYPE, Constant.CREATED_NAME,
             Constant.CREATED_BY, Constant.CREATED_AT, Constant.UPDATED_AT, Constant.REPLIES);
     SimpleBeanPropertyFilter candidateFeedbackReplyFilter =
-        SimpleBeanPropertyFilter.filterOutAllExcept(Constant.ID, Constant.CANDIDATE_ID, "commentId",
-            Constant.REPLY, Constant.TYPE, Constant.CREATED_NAME, Constant.CREATED_BY,
-            Constant.CREATED_AT, Constant.UPDATED_AT);
+        SimpleBeanPropertyFilter.filterOutAllExcept(Constant.ID, Constant.CANDIDATE_ID,
+            Constant.COMMENT_ID, Constant.REPLY, Constant.TYPE, Constant.CREATED_NAME,
+            Constant.CREATED_BY, Constant.CREATED_AT, Constant.UPDATED_AT);
 
     FilterProvider filters = new SimpleFilterProvider()
         .addFilter(Constant.CANDIDATE_FEEDBACK_FILTER, candidateFeedbackFilter)
@@ -206,9 +206,9 @@ public class CandidateController {
             Constant.COMMENTS, Constant.STATUS, Constant.TYPE, Constant.CREATED_NAME,
             Constant.CREATED_BY, Constant.CREATED_AT, Constant.UPDATED_AT, Constant.REPLIES);
     SimpleBeanPropertyFilter candidateFeedbackReplyFilter =
-        SimpleBeanPropertyFilter.filterOutAllExcept(Constant.ID, Constant.CANDIDATE_ID, "commentId",
-            Constant.REPLY, Constant.TYPE, Constant.CREATED_NAME, Constant.CREATED_BY,
-            Constant.CREATED_AT, Constant.UPDATED_AT);
+        SimpleBeanPropertyFilter.filterOutAllExcept(Constant.ID, Constant.CANDIDATE_ID,
+            Constant.COMMENT_ID, Constant.REPLY, Constant.TYPE, Constant.CREATED_NAME,
+            Constant.CREATED_BY, Constant.CREATED_AT, Constant.UPDATED_AT);
 
     FilterProvider filters = new SimpleFilterProvider()
         .addFilter(Constant.CANDIDATE_FEEDBACK_FILTER, candidateFeedbackFilter)

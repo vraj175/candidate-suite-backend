@@ -5,6 +5,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -42,10 +44,10 @@ public class VideoController {
   @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK",
       content = @Content(mediaType = "application/json", schema = @Schema(type = "Json",
           example = "{  \"timestamp\": \"2021-09-06T08:53:39.690+00:00\", \"status\": \"OK\", \"message\": \"Video add successfully\" }")))})
-  public ResponseEntity<Object> addVideo(@RequestParam String contactId,
-      @RequestParam String fileToken) {
+  public ResponseEntity<Object> addVideo(@RequestParam String contactId, @RequestParam String candidateId,
+      @RequestParam String fileToken,  HttpServletRequest request) {
 
-    UserVideo userVideo = service.addContactVideo(contactId, fileToken);
+    UserVideo userVideo = service.addContactVideo(contactId, fileToken, candidateId, request);
 
     if (userVideo != null) {
       Map<String, Object> body = new LinkedHashMap<>();

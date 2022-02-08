@@ -1,5 +1,7 @@
 package com.aspire.kgp.util;
 
+import static com.google.common.base.Preconditions.checkArgument;
+
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
@@ -9,8 +11,8 @@ import java.text.ParseException;
 import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-
-import static com.google.common.base.Preconditions.*;
+import java.util.List;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -20,6 +22,7 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 
 import com.aspire.kgp.constant.Constant;
+import com.aspire.kgp.dto.UserDTO;
 
 public class CommonUtil {
   private static final Log log = LogFactory.getLog(CommonUtil.class);
@@ -296,5 +299,27 @@ public class CommonUtil {
       date = spliteddate[0];
     }
     return date;
+  }
+
+  public static Set<String> teamMemberList(List<UserDTO> users, Set<String> partnerEmailList) {
+    log.info("Creating Team member email and name set");
+    for (UserDTO user : users) {
+      if (user != null && CommonUtil.checkNotNullString(user.getId())) {
+        partnerEmailList.add(user.getEmail() + "##" + user.getName() + "##" + user.getId());
+      }
+    }
+    return partnerEmailList;
+  }
+
+  public static Set<String> teamPartnerMemberList(List<UserDTO> users,
+      Set<String> partnerEmailList) {
+    log.info("Creating Team member email and name set");
+    for (UserDTO user : users) {
+      if (user != null && CommonUtil.checkNotNullString(user.getId())
+          && user.getExecutionCredit() != null) {
+        partnerEmailList.add(user.getEmail() + "##" + user.getName() + "##" + user.getId());
+      }
+    }
+    return partnerEmailList;
   }
 }

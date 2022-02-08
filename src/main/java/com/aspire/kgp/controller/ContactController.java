@@ -2,7 +2,10 @@ package com.aspire.kgp.controller;
 
 
 import java.io.UnsupportedEncodingException;
+import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -10,7 +13,10 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.json.MappingJacksonValue;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -23,9 +29,14 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.aspire.kgp.constant.Constant;
 import com.aspire.kgp.dto.ContactDTO;
-import com.aspire.kgp.dto.ContactReferencesDTO;
 import com.aspire.kgp.dto.DocumentDTO;
 import com.aspire.kgp.dto.SearchDTO;
+import com.aspire.kgp.exception.APIException;
+import com.aspire.kgp.model.Contact;
+import com.aspire.kgp.model.GdprConsent;
+import com.aspire.kgp.model.Reference;
+import com.aspire.kgp.repository.BoardHistoryRepository;
+import com.aspire.kgp.repository.JobHistoryRepository;
 import com.aspire.kgp.service.ContactService;
 import com.fasterxml.jackson.databind.ser.FilterProvider;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
@@ -47,31 +58,87 @@ public class ContactController {
   @Autowired
   ContactService service;
 
+  @Autowired
+  BoardHistoryRepository boardHistoryRepository;
+
+  @Autowired
+  JobHistoryRepository jobHistoryRepository;
+
   @Operation(summary = "Get Contact Details")
   @GetMapping("/contact/{contactId}")
   @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK",
       content = @Content(mediaType = "application/json", schema = @Schema(type = "ContactDTO",
-          example = "{\"firstName\": \"string\",\"lastName\": \"string\",\"city\": \"string\",\"state\": \"string\",\"workEmail\": \"string\",\"email\": \"string\",\"linkedinUrl\": \"string\",\"mobilePhone\": \"string\",\"currentJobTitle\": \"string\",\"company\": {\"id\": \"string\",\"name\": \"string\"},\"homePhone\": \"string\",\"baseSalary\": \"string\",\"targetBonusValue\": \"string\",\"equity\": \"string\",\"compensationExpectation\": \"string\",\"compensationNotes\": \"string\",\"jobHistory\": [{\"id\": \"string\",\"title\": \"string\",\"start_year\": \"string\",\"end_year\": \"string\",\"position\": \"string\",\"company\": {\"id\": \"string\",\"name\": \"string\"}}],\"educationDetails\": [{\"id\": \"string\",\"school_name\": \"string\",\"degree_name\": \"string\",\"major\": \"string\",\"degree_year\": \"string\",\"position\": \"string\"}], \"boardDetails\": [{\"id\": \"string\",\"title\": \"string\",\"startYear\": \"string\",\"endYear\": \"string\",\"position\": \"0\",\"company\": {\"id\": \"string\",\"name\": \"string\"},\"committee\": \"string\"}]}")))})
-  public MappingJacksonValue getCandidateDetails(@PathVariable("contactId") String contactId) {
+          example = "{\"id\": 0,\"createdDate\": \"yyyy-mm-dd HH:MM:SS\",\"modifyDate\": \"yyyy-mm-dd HH:MM:SS\",\"contactId\": \"string\",\"firstName\": \"string\",\"lastName\": \"string\",\"city\": \"string\",\"state\": \"string\",\"company\": \"string\",\"currentJobTitle\": \"string\",\"mobilePhone\": \"string\",\"homePhone\": \"string\",\"workEmail\": \"string\",\"email\": \"string\",\"linkedInUrl\": \"string\",\"compensationNotes\": \"string\",\"compensationExpectation\": \"string\",\"equity\": \"string\",\"baseSalary\": \"string\",\"targetBonusValue\": \"string\",\"boardHistory\": [{\"id\": 0,\"createdDate\": \"yyyy-mm-dd HH:MM:SS\",\"modifyDate\": \"yyyy-mm-dd HH:MM:SS\",\"companyName\": \"string\",\"startYear\": \"string\",\"endYear\": \"string\",\"title\": \"string\",\"commitee\": \"string\"}],\"jobHistory\": [{\"id\": 0,\"createdDate\": \"yyyy-mm-dd HH:MM:SS\",\"modifyDate\": \"yyyy-mm-dd HH:MM:SS\",\"companyName\": \"string\",\"startYear\": \"string\",\"endYear\": \"string\",\"title\": \"string\"}],\"educationDetails\": [{\"id\": \"string\",\"schoolName\": \"string\",\"degreeName\": \"string\",\"major\": \"string\",\"degreeYear\": \"string\",\"position\": \"string\",\"verify\": \"string\"}]}")))})
+  public Contact getCandidateDetails(@PathVariable("contactId") String contactId) {
     log.info("Get Contact Details API call, Request Param contactId: " + contactId);
     ContactDTO contactDTO = service.getContactDetails(contactId);
-    SimpleBeanPropertyFilter contactFilter = SimpleBeanPropertyFilter.filterOutAllExcept(
-        Constant.FIRST_NAME, Constant.LAST_NAME, Constant.CITY, Constant.STATE,
-        Constant.CURRENT_JOB_TITLE, Constant.COMPANY, Constant.MOBILE_PHONE, "homePhone",
-        Constant.WORK_EMAIL, Constant.EMAIL, Constant.LINKEDIN_URL, "baseSalary",
-        "targetBonusValue", "equity", "compensationExpectation", "compensationNotes", "jobHistory",
-        "educationDetails", "boardDetails");
-    SimpleBeanPropertyFilter companyFilter =
-        SimpleBeanPropertyFilter.filterOutAllExcept("id", "name");
-    FilterProvider filters =
-        new SimpleFilterProvider().addFilter(Constant.CONTACT_FILTER, contactFilter)
-            .addFilter(Constant.COMPANY_FILTER, companyFilter);
+    if (contactDTO == null) {
+      throw new APIException("Invalid Contact Id");
+    }
 
-    MappingJacksonValue mapping = new MappingJacksonValue(contactDTO);
-    mapping.setFilters(filters);
+    Contact contact = service.findByGalaxyId(contactId);
+
+    if (contact == null)
+      contact = service.saveOrUpdateContact(contactDTO);
+
+    contact = service.setContactDetails(contactDTO, contact);
+
     log.info("Successfully send Contact Details");
-    log.debug("Get Contact Details API Response : " + mapping.getValue());
-    return mapping;
+    log.debug("Get Contact Details API Response : " + contact);
+    return contact;
+  }
+
+  @Operation(summary = "Get contact GDPR consent")
+  @GetMapping("/contact/gdpr-consent/{contactId}")
+  public GdprConsent getGdprConsent(@PathVariable("contactId") String contactId) {
+    log.info("Get getGdpr Consent API call, Request Param contactId: " + contactId);
+    return service.getGdprConsent(contactId);
+  }
+
+  @PutMapping("/contact/gdpr-consent/update/{contactId}/{candidateId}")
+  public ResponseEntity<Object> updateGdprConsent(@PathVariable("contactId") String contactId,
+      @RequestBody String gdprConsentData, HttpServletRequest request,
+      @PathVariable("candidateId") String candidateId) {
+    log.info("Update Gdpr Consent Details API call, Request Param contactId: " + contactId
+        + " Contact Data: " + gdprConsentData);
+    return service.updateGdprConsent(contactId, candidateId, gdprConsentData, request);
+  }
+
+  @PutMapping("/contact/update/{contactId}/{candidateId}")
+  public String updateContactDetails(@PathVariable("contactId") String contactId,
+      @RequestBody String contactData, HttpServletRequest request,
+      @PathVariable("candidateId") String candidateId) throws UnsupportedEncodingException {
+    log.info("Update Contact Details API call, Request Param contactId: " + contactId
+        + " Contact Data: " + contactData);
+    Contact existContactObj = getCandidateDetails(contactId);
+    return service.updateContactDetails(contactId, contactData, request, candidateId,
+        existContactObj);
+  }
+
+  //Currently not call from frontend because every thing is update throw "/contact/update/{contactId}/{candidateId}"
+  @Operation(summary = "Update Contact Education Details")
+  @PutMapping("/contact/education/{contactId}")
+  public String updateContactEducationDetails(@PathVariable("contactId") String contactId,
+      @RequestBody String contactData) {
+    log.info("Update Contact Details API call, Request Param contactId: " + contactId
+        + " Contact Education Data: " + contactData);
+    return service.updateContactEducationDetails(contactId, contactData);
+  }
+
+  //currently not call from front end because this delete functionality coverd in "/contact/update/{contactId}/{candidateId}"
+  @Operation(summary = "delete Contact Job History Details")
+  @DeleteMapping("/contact/jobHistory/{id}")
+  public ResponseEntity<Object> deleteContactJobHistory(@PathVariable("id") String id) {
+    log.info("delete Contact Job History Details API call, Request Param contactId: " + id);
+    return service.deleteJobHistoryById(id);
+  }
+
+//currently not call from front end because this delete functionality coverd in "/contact/update/{contactId}/{candidateId}"
+  @Operation(summary = "delete Contact Board History Details")
+  @DeleteMapping("/contact/boardHistory/{id}")
+  public ResponseEntity<Object> deleteContactBoardHistory(@PathVariable("id") String id) {
+    log.info("delete Contact Board History Details API call, Request Param contactId: " + id);
+    return service.deleteBoardHistoryById(id);
   }
 
   @Operation(summary = "Get contact profile image")
@@ -84,56 +151,37 @@ public class ContactController {
     return service.getContactImage(contactId);
   }
 
-  @Operation(summary = "Update Contact Details")
-  @PutMapping("/contact/{contactId}")
-  public String updateContactDetails(@PathVariable("contactId") String contactId,
-      @RequestBody String contactData) throws UnsupportedEncodingException {
-    log.info("Update Contact Details API call, Request Param contactId: " + contactId
-        + " Contact Data: " + contactData);
-    return service.updateContactDetails(contactId, contactData);
-  }
 
   @Operation(summary = "Get List of contact references")
-  @GetMapping("/contact/{contactId}/references")
+  @GetMapping("/contact/{contactId}/get-references")
   @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK",
       content = @Content(mediaType = "application/json", schema = @Schema(
           type = "List<ContactReferencesDTO>",
-          example = "[{\"id\": \"string\",\"searchId\": \"string\",\"relationship\": \"string\",\"contact\": {\"firstName\": \"string\",\"lastName\": \"string\",\"workEmail\": \"string\",\"email\": \"string\",\"mobilePhone\": \"string\",\"currentJobTitle\": \"string\",\"company\": {\"id\": \"string\",\"name\": \"string\"}}}]")))})
-  public MappingJacksonValue getListOfReferences(@PathVariable("contactId") String contactId) {
+          example = "[{\"id\": 0,\"createdDate\": \"yyyy-mm-dd HH:MM:SS\",\"modifyDate\": \"yyyy-mm-dd HH:MM:SS\",\"contactId\": \"string\",\"refContactName\": \"string\",\"searchName\": \"string\",\"searchId\": \"string\", \"phone\": \"string\",\"email\": \"string\",\"workEmail\": string,\"relationship\": \"string\",\"refType\": \"string\",\"companyName\": \"string\",\"title\": \"string\"}]")))})
+  public List<Reference> getListOfReferences(@PathVariable("contactId") String contactId) {
     log.info("Get List of contact references API call, Request Param contactId: " + contactId);
-    List<ContactReferencesDTO> contactReferenceDTO = service.getListOfReferences(contactId);
-    SimpleBeanPropertyFilter contactReferenceFilter = SimpleBeanPropertyFilter.filterOutAllExcept(
-        "id", "searchId", "relationship", "contact", "source", "type", "refContactId", "search");
-    SimpleBeanPropertyFilter contactFilter = SimpleBeanPropertyFilter.filterOutAllExcept(
-        Constant.FIRST_NAME, Constant.LAST_NAME, Constant.CURRENT_JOB_TITLE, Constant.MOBILE_PHONE,
-        Constant.COMPANY, Constant.EMAIL, Constant.WORK_EMAIL);
-    SimpleBeanPropertyFilter companyFilter =
-        SimpleBeanPropertyFilter.filterOutAllExcept("id", "name");
-    SimpleBeanPropertyFilter searchFilter =
-        SimpleBeanPropertyFilter.filterOutAllExcept("id", "jobTitle");
-    FilterProvider filters =
-        new SimpleFilterProvider().addFilter("contactReferenceFilter", contactReferenceFilter)
-            .addFilter(Constant.CONTACT_FILTER, contactFilter)
-            .addFilter(Constant.COMPANY_FILTER, companyFilter)
-            .addFilter(Constant.SEARCH_FILTER, searchFilter);
-
-    MappingJacksonValue mapping = new MappingJacksonValue(contactReferenceDTO);
-    log.info("Successfully send List of contact references: " + contactReferenceDTO.size());
-    log.debug("Get List of contact references API Response : " + mapping.getValue());
-    mapping.setFilters(filters);
-    return mapping;
+    return service.getListOfReferences(contactId);
   }
 
   @Operation(summary = "upload resume for contact",
       description = "Document Type = Resume / Attechment / offerLetter")
-  @PostMapping("/contact/{contactId}/upload-resumes")
+  @PostMapping("/contact/{contactId}/{candidateId}/upload-resumes")
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = Constant.FILE_UPLOADED_SUCCESSFULLY)})
+<<<<<<< HEAD
   public String uploadResume(@PathVariable("contactId") String contactId,@PathVariable("candidateId") String candidateId,
       @RequestParam("file") MultipartFile file, @RequestParam("documentType") String type,  HttpServletRequest request) {
     log.info("upload document for contact API call, Request Param contactId: " + contactId
         + " File: " + file.getName() + " documentType : " + type);
     return service.uploadCandidateResume(file, contactId, type, request,candidateId);
+=======
+  public String uploadResume(@PathVariable("contactId") String contactId,
+      @PathVariable("candidateId") String candidateId, @RequestParam("file") MultipartFile file,
+      @RequestParam("documentType") String type, HttpServletRequest request) {
+    log.info("upload document for contact API call, Request Param contactId: " + contactId
+        + " File: " + file.getName() + " documentType : " + type);
+    return service.uploadCandidateResume(file, contactId, type, candidateId, request);
+>>>>>>> 40cfc7430bc1b925071db31241a7669f20cb0422
   }
 
   @Operation(summary = "Upload Profile Image For Contact")
@@ -157,7 +205,20 @@ public class ContactController {
     return service.getContactResumes(contactId);
   }
 
-  @Operation(summary = "Download Documents")
+  @Operation(summary = "Get contact Offer Letter")
+  @GetMapping(value = {"/contact/{contactId}/offerLetter"})
+  @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK",
+      content = @Content(mediaType = "application/json", schema = @Schema(type = "Offer Letter",
+          example = "{ \"id\": \"string\",\"fileName\": \"string\",\"createdAt\": \"string\" }")))})
+  public DocumentDTO getOfferLetterDetails(@PathVariable("contactId") String contactId) {
+    log.info("Get contact Offer Letter API call, Request Param contactId: " + contactId);
+    return service.getContactOfferLetter(contactId);
+  }
+
+  /*
+   * This API only for resume download
+   */
+  @Operation(summary = "Download Resume Documents")
   @GetMapping(value = {"contact/resumes/{attachmentId}/download"})
   @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK")})
   public void downloadDocument(@PathVariable("attachmentId") String attachmentId,
@@ -166,6 +227,21 @@ public class ContactController {
         + " documentName: " + documentName);
     service.downloadDocument(documentName, attachmentId, response);
   }
+
+  /*
+   * This is API for any type of document download
+   */
+  @Operation(summary = "Download Any Documents")
+  @GetMapping(value = {"contact/document/{attachmentId}/download"})
+  @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK")})
+  public void downloadAnyDocument(@PathVariable("attachmentId") String attachmentId,
+      @RequestParam String documentName, @RequestParam String documentType,
+      HttpServletResponse response) {
+    log.info("Download Any Documents API call, Request Param attachmentId: " + attachmentId
+        + " documentName: " + documentName + " document Type: " + documentType);
+    service.downloadAnyDocument(documentName, documentType, attachmentId, response);
+  }
+
 
   @Operation(summary = "Get contact searches")
   @GetMapping(value = {"/contact/{contactId}/searches"})
@@ -223,21 +299,42 @@ public class ContactController {
   }
 
   @Operation(summary = "Add Contact Reference")
-  @PostMapping("/contact/{contactId}/references")
-  public String addContactReference(@PathVariable("contactId") String contactId,
-      @RequestBody String referenceData) {
+  @PostMapping("/contact/{contactId}/references/{candidateId}")
+  public ResponseEntity<Object> addContactReference(@PathVariable("contactId") String contactId,
+      @RequestBody String referenceData, HttpServletRequest request,
+      @PathVariable("candidateId") String candidateId) throws UnsupportedEncodingException {
     log.info("Add Contact Reference API call, Request Param contactId: " + contactId
         + " referenceData: " + referenceData);
-    return service.addContactReference(contactId, referenceData);
+    Reference reference =
+        service.saveAndUpdateContactReference(null, referenceData, contactId, request, candidateId);
+    if (reference != null) {
+      Map<String, Object> body = new LinkedHashMap<>();
+      body.put(Constant.TIMESTAMP, new Date());
+      body.put(Constant.STATUS, HttpStatus.OK);
+      body.put(Constant.MESSAGE, "Reference data added successfully");
+      return new ResponseEntity<>(body, HttpStatus.OK);
+    }
+    throw new APIException("Error in save reference data");
   }
 
   @Operation(summary = "Update Contact Reference")
-  @PutMapping("/contact/reference/{referenceId}")
-  public String updateContactReference(@PathVariable("referenceId") String referenceId,
-      @RequestBody String referenceData) throws UnsupportedEncodingException {
+  @PutMapping("/contact/reference/{referenceId}/{candidateId}")
+  public ResponseEntity<Object> updateContactReference(
+      @PathVariable("referenceId") String referenceId, @RequestBody String referenceData,
+      HttpServletRequest request, @PathVariable("candidateId") String candidateId)
+      throws UnsupportedEncodingException {
     log.info("Update Contact Reference API call, Request Param referenceId: " + referenceId
         + " referenceData: " + referenceData);
-    return service.updateContactReference(referenceId, referenceData);
+    Reference reference = service.saveAndUpdateContactReference(referenceId, referenceData, null,
+        request, candidateId);
+    if (reference != null) {
+      Map<String, Object> body = new LinkedHashMap<>();
+      body.put(Constant.TIMESTAMP, new Date());
+      body.put(Constant.STATUS, HttpStatus.OK);
+      body.put(Constant.MESSAGE, "Reference Data updated successfully");
+      return new ResponseEntity<>(body, HttpStatus.OK);
+    }
+    throw new APIException("Error in save reference data");
   }
 
   @Operation(summary = "Add New Contact")
@@ -248,4 +345,5 @@ public class ContactController {
   public String addNewContact(@RequestBody String contactData) {
     return service.addNewContact(contactData);
   }
+
 }

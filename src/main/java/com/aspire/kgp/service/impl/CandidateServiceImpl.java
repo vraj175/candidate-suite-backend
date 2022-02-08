@@ -42,6 +42,7 @@ import com.aspire.kgp.exception.NotFoundException;
 import com.aspire.kgp.service.CandidateService;
 import com.aspire.kgp.service.MailService;
 import com.aspire.kgp.service.UserService;
+import com.aspire.kgp.service.WebSocketNotificationService;
 import com.aspire.kgp.util.CommonUtil;
 import com.aspire.kgp.util.RestUtil;
 import com.aspire.kgp.util.StaticContentsMultiLanguageUtil;
@@ -70,6 +71,9 @@ public class CandidateServiceImpl implements CandidateService {
 
   @Value("${clientsuite.url}")
   private String clientsuiteUrl;
+
+  @Autowired
+  WebSocketNotificationService webSocketNotificationService;
 
   @Override
   public CandidateDTO getCandidateDetails(String candidateId) {
@@ -199,13 +203,10 @@ public class CandidateServiceImpl implements CandidateService {
     Set<String> kgpPartnerEmailList = new HashSet<>();
     CandidateDTO apiResponse = getCandidateDetails(candidateId);
     try {
+      kgpPartnerEmailList = CommonUtil.teamPartnerMemberList(apiResponse.getSearch().getPartners(),
+          kgpPartnerEmailList);
       kgpPartnerEmailList =
-          teamMemberList(apiResponse.getSearch().getPartners(), kgpPartnerEmailList);
-      kgpPartnerEmailList =
-          teamMemberList(apiResponse.getSearch().getRecruiters(), kgpPartnerEmailList);
-      kgpPartnerEmailList =
-          teamMemberList(apiResponse.getSearch().getResearchers(), kgpPartnerEmailList);
-      kgpPartnerEmailList = teamMemberList(apiResponse.getSearch().getEas(), kgpPartnerEmailList);
+          CommonUtil.teamMemberList(apiResponse.getSearch().getRecruiters(), kgpPartnerEmailList);;
       paramRequest.put("feedback", comments);
       paramRequest.put("candidateName",
           apiResponse.getContact().getFirstName() + " " + apiResponse.getContact().getLastName());
@@ -259,21 +260,45 @@ public class CandidateServiceImpl implements CandidateService {
       log.error("oops ! invalid json");
       throw new JsonSyntaxException("error while get team member");
     }
+    addCandidateFeedbackNotification(kgpPartnerEmailList, request, paramRequest, isReplyFeedback,
+        type);
+    return feedbackId;
+  }
+
+  private void addCandidateFeedbackNotification(Set<String> kgpPartnerEmailList,
+      HttpServletRequest request, HashMap<String, String> paramRequest, boolean isReplyFeedback,
+      String type) {
     try {
+
       for (String kgpTeamMeberDetails : kgpPartnerEmailList) {
         log.info("Partner Email : " + kgpTeamMeberDetails);
         sendClientFeedbackMail(kgpTeamMeberDetails.split("##")[0],
-            kgpTeamMeberDetails.split("##")[1], paramRequest, request, isReplyFeedback);
+            kgpTeamMeberDetails.split("##")[1], paramRequest, request, isReplyFeedback,
+            kgpTeamMeberDetails.split("##")[2], type);
+      }
+      if (type.equals(Constant.PARTNER)) {
+        String feedbackUrl = CommonUtil.getServerUrl(request) + request.getContextPath()
+            + "/my-status/" + paramRequest.get("candidateId") + "/" + paramRequest.get("searchId")
+            + "/" + paramRequest.get("searchName") + "/" + paramRequest.get("contactId") + "/"
+            + "true" + "/" + paramRequest.get("commentId");
+        feedbackUrl = feedbackUrl.replaceAll(Constant.SPACE_STRING, "%20");
+        webSocketNotificationService.sendWebSocketNotification(null, paramRequest.get("contactId"),
+            Boolean.TRUE.equals(isReplyFeedback)
+                ? Constant.PARTNER_FEEDBACK_REPLY_COMMENT + "##" + paramRequest.get("searchName")
+                    + "##" + feedbackUrl
+                : Constant.PARTNER_FEEDBACK_NEW_COMMENT + "##" + paramRequest.get("searchName")
+                    + "##" + feedbackUrl,
+            Constant.CONTACT);
       }
     } catch (Exception ex) {
       log.info(ex);
       throw new APIException("Error in send feedback email");
     }
-    return feedbackId;
   }
 
   private void sendClientFeedbackMail(String email, String partnerName,
-      HashMap<String, String> paramRequest, HttpServletRequest request, Boolean isReplyFeedback) {
+      HashMap<String, String> paramRequest, HttpServletRequest request, Boolean isReplyFeedback,
+      String kgpTeamId, String type) {
     log.info("sending client feedback email");
     String locate = "en_US";
     try {
@@ -285,29 +310,37 @@ public class CandidateServiceImpl implements CandidateService {
               Constant.CANDIDATE_FEEDBACK_EMAIL_TEMPLATE, partnerName, paramRequest,
               isReplyFeedback),
           null);
+
+      String feedbackUrl = CommonUtil.getServerUrl(request) + request.getContextPath()
+          + "/my-status/" + paramRequest.get("candidateId") + "/" + paramRequest.get("searchId")
+          + "/" + paramRequest.get("searchName") + "/" + paramRequest.get("contactId") + "/"
+          + "true" + "/" + paramRequest.get("commentId");
+      feedbackUrl = feedbackUrl.replaceAll(Constant.SPACE_STRING, "%20");
+      if (type.equals(Constant.PARTNER)) {
+        webSocketNotificationService.sendWebSocketNotification(kgpTeamId,
+            paramRequest.get("contactId"),
+            Boolean.TRUE.equals(isReplyFeedback)
+                ? Constant.PARTNER_FEEDBACK_REPLY_COMMENT + "##" + paramRequest.get("searchName")
+                    + "##" + feedbackUrl
+                : Constant.PARTNER_FEEDBACK_NEW_COMMENT + "##" + paramRequest.get("searchName")
+                    + "##" + feedbackUrl,
+            Constant.PARTNER);
+      } else
+        webSocketNotificationService.sendWebSocketNotification(kgpTeamId,
+            paramRequest.get("contactId"),
+            Boolean.TRUE.equals(isReplyFeedback)
+                ? Constant.CONTACT_FEEDBACK_REPLY_COMMENT + "##" + paramRequest.get("searchName")
+                    + "##" + feedbackUrl
+                : Constant.CONTACT_FEEDBACK_NEW_COMMENT + "##" + paramRequest.get("searchName")
+                    + "##" + feedbackUrl,
+            Constant.PARTNER);
+
     } catch (Exception e) {
       log.info(e);
       throw new APIException("Error in sending candidate feedback email");
     }
     log.info("Client Feedback Mail sent to all partners successfully.");
   }
-
-  /**
-   * Create team user map from JSON string of record
-   * 
-   * @param partnerEmailList Set<String>
-   * @throws UnsupportedEncodingException
-   */
-  private Set<String> teamMemberList(List<UserDTO> users, Set<String> partnerEmailList) {
-    log.info("Creating Team member email and name set");
-    for (UserDTO user : users) {
-      if (user != null && CommonUtil.checkNotNullString(user.getId())) {
-        partnerEmailList.add(user.getEmail() + "##" + user.getName());
-      }
-    }
-    return partnerEmailList;
-  }
-
 
   private String generateJwtToken(String userName, String password) {
     log.info("generating Token for user...");
