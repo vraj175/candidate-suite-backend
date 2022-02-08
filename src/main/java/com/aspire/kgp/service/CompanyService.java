@@ -14,7 +14,7 @@ import com.aspire.kgp.dto.DocumentDTO;
 public interface CompanyService {
   public List<CompanyDTO> getCompanyList(String stage);
 
-  public CandidateDTO getCompanyInfoDetails(String candidateId);
+  public CandidateDTO getCompanyInfoDetails(String candidateId, String timeZone);
 
   public List<CompanyDTO> getListOfCompany(String companyName);
 

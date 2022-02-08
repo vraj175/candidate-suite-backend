@@ -75,14 +75,14 @@ public class CompanyController {
   }
 
   @Operation(summary = "Get candidate Details")
-  @GetMapping("/companyInfo/{candidateId}")
+  @GetMapping("/companyInfo/{candidateId}/{timeZone}")
   @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK",
       content = @Content(mediaType = "application/json", schema = @Schema(type = "CandidateDTO",
           example = "{\"id\": \"string\",\"contact\": {\"athenaCompletionDate\": \"string\",\"athenaInvitationSentOn\": \"string\"},\"kgpInterviewDate1\": \"string\",\"kgpInterviewDate2\": \"string\",\"kgpInterviewDate3\": \"string\",\"interviews\": [{\"id\": \"string\",\"method\": \"string\",\"comments\": \"string\",\"position\": 0,\"interviewDate\": \"string\",\"client\": {\"id\": \"string\",\"name\": \"string\"}}],\"degreeVerification\": true,\"offerPresented\": true,\"athenaCompleted\": true,\"contactId\": \"string\",\"stage\": \"string\",\"kgpInterviewMethod1\": \"string\",\"kgpInterviewMethod2\": \"string\",\"kgpInterviewMethod3\": \"string\",\"kgpInterviewClient1\": {\"id\": \"string\",\"name\": \"string\",\"firstName\": \"string\",\"lastName\": \"string\"},\"kgpInterviewClient2\": {\"id\": \"string\",\"name\": \"string\",\"firstName\": \"string\",\"lastName\": \"string\"},\"kgpInterviewClient3\": {\"id\": \"string\",\"name\": \"string\",\"firstName\": \"string\",\"lastName\": \"string\"},\"screenedDate\": \"string\",\"isOfferLetterUploaded\": true}")))})
-  public MappingJacksonValue getCompanyInfoDetails(
-      @PathVariable("candidateId") String candidateId) {
+  public MappingJacksonValue getCompanyInfoDetails(@PathVariable("candidateId") String candidateId,
+      @PathVariable("timeZone") String timeZone) {
     log.info("Get candidate Details API call, Request Param CandidateId : " + candidateId);
-    CandidateDTO candidateDTO = service.getCompanyInfoDetails(candidateId);
+    CandidateDTO candidateDTO = service.getCompanyInfoDetails(candidateId, timeZone);
     SimpleBeanPropertyFilter candidateFilter = SimpleBeanPropertyFilter.filterOutAllExcept(
         Constant.ID, Constant.STAGE, Constant.CONTACTID, Constant.KGP_INTERVIEW_DATE_1,
         Constant.KGP_INTERVIEW_DATE_2, Constant.KGP_INTERVIEW_DATE_3, Constant.INTERVIEWS,

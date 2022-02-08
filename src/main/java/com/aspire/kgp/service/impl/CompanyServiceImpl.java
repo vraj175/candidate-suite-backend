@@ -87,9 +87,15 @@ public class CompanyServiceImpl implements CompanyService {
   }
 
   @Override
-  public CandidateDTO getCompanyInfoDetails(String candidateId) {
-    String apiResponse =
-        restUtil.newGetMethod(Constant.CANDIDATE_URL.replace("{candidateId}", candidateId));
+  public CandidateDTO getCompanyInfoDetails(String candidateId, String timeZone) {
+    JsonObject paramJSON = new JsonObject();
+    if (!timeZone.isEmpty() && !candidateId.isEmpty()) {
+      paramJSON.addProperty("timeZone", timeZone.replace("-", "/"));
+      paramJSON.addProperty("id", candidateId);
+    }
+    String apiResponse = restUtil.postMethod(
+        Constant.REPORT_URL.replace(Constant.CANDIDATE_ID_BRACES, candidateId),
+        paramJSON.toString(), null);
     JsonObject json = (JsonObject) JsonParser.parseString(apiResponse);
     JsonObject contact = json.getAsJsonObject("contact");
     JsonObject jsonObjects = json.getAsJsonObject("candidate");

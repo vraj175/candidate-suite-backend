@@ -80,7 +80,8 @@ public class Constant {
   public static final String SEARCHES_LIST_BY_IDS = "/searches/search-details-by-ids";
   public static final String CANDIDATE_LIST_URL = "/searches/{searchId}/candidates";
   public static final String POSITION_PROFILE_URL = "/searches/{searchId}/sfpa";
-  public static final String CANDIDATE_URL = "/candidates/{candidateId}/activity";
+//  public static final String CANDIDATE_URL = "/candidates/{candidateId}/activity";
+  public static final String REPORT_URL = "/reports/{candidateId}/activity";
   public static final String CANDIDATE_FEEDBACK_URL =
       "/candidate-suite/candidates/{candidateId}/candidate-feedback";
   public static final String CANDIDATE_FEEDBACK_REPLY_URL =
