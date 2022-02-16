@@ -29,6 +29,7 @@ import com.aspire.kgp.exception.APIException;
 import com.aspire.kgp.model.UserSearch;
 import com.aspire.kgp.service.CompanyService;
 import com.aspire.kgp.service.UserSearchService;
+import com.aspire.kgp.util.CommonUtil;
 import com.aspire.kgp.util.RestUtil;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
@@ -47,6 +48,9 @@ public class CompanyServiceImpl implements CompanyService {
 
   @Autowired
   UserSearchService searchService;
+  
+  @Autowired
+  CommonUtil commonUtil;
 
   @Override
   public final List<CompanyDTO> getCompanyList(String stage) {
@@ -88,9 +92,11 @@ public class CompanyServiceImpl implements CompanyService {
 
   @Override
   public CandidateDTO getCompanyInfoDetails(String candidateId, String timeZone) {
+    JsonObject timeZoneObj = commonUtil.getCurrentLocalTimeZone(timeZone);
+    timeZoneObj.addProperty("format", "DD MMM YYYY");
     JsonObject paramJSON = new JsonObject();
     if (!timeZone.isEmpty() && !candidateId.isEmpty()) {
-      paramJSON.addProperty("timeZone", timeZone.replace("-", "/"));
+      paramJSON.add("timeZone", timeZoneObj);
       paramJSON.addProperty("id", candidateId);
     }
     String apiResponse = restUtil.postMethod(

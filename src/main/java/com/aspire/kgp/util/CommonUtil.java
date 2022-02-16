@@ -10,6 +10,8 @@ import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -19,13 +21,24 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang.math.NumberUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 
 import com.aspire.kgp.constant.Constant;
+import com.aspire.kgp.dto.TimeZoneDTO;
 import com.aspire.kgp.dto.UserDTO;
+import com.google.common.reflect.TypeToken;
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.google.gson.JsonSyntaxException;
 
 public class CommonUtil {
   private static final Log log = LogFactory.getLog(CommonUtil.class);
+
+  @Autowired
+  RestUtil restUtil;
 
   private CommonUtil() {
     throw new IllegalStateException("Utility class");
@@ -293,13 +306,13 @@ public class CommonUtil {
     }
   }
 
-//  public static String removeTime(String date) {
-//    if (CommonUtil.checkNotNullString(date) && date.contains("T")) {
-//      String[] spliteddate = date.split("T");
-//      date = spliteddate[0];
-//    }
-//    return date;
-//  }
+  // public static String removeTime(String date) {
+  // if (CommonUtil.checkNotNullString(date) && date.contains("T")) {
+  // String[] spliteddate = date.split("T");
+  // date = spliteddate[0];
+  // }
+  // return date;
+  // }
 
   public static Set<String> teamMemberList(List<UserDTO> users, Set<String> partnerEmailList) {
     log.info("Creating Team member email and name set");
@@ -321,5 +334,68 @@ public class CommonUtil {
       }
     }
     return partnerEmailList;
+  }
+
+  public JsonObject getCurrentLocalTimeZone(String currentTimeZone) {
+    String listOfTimeZones = restUtil.newGetMethod(Constant.GET_TIMEZONE);
+    List<TimeZoneDTO> timeZoneList = new ArrayList<>();
+
+    String timeZoneName = currentTimeZone.split("@")[0];
+    String timeZoneType = currentTimeZone.split("@")[1];
+
+    log.info("timeZoneName :: " + timeZoneName);
+    log.info("timeZoneType :: " + timeZoneType);
+
+    TimeZoneDTO timeZoneObj = new TimeZoneDTO();
+    JsonObject timeZonePicklistObj = new JsonObject();
+    timeZonePicklistObj.addProperty("id", "");
+    timeZonePicklistObj.addProperty("name", "");
+    timeZonePicklistObj.addProperty("type", "");
+    timeZonePicklistObj.addProperty("abbreviation", "");
+    if (CommonUtil.checkNullString(listOfTimeZones)) {
+      log.error("Error while fetching contact search.");
+      return timeZonePicklistObj;
+    }
+    JsonArray jsonArray = (JsonArray) JsonParser.parseString(listOfTimeZones);
+    try {
+      timeZoneList = new Gson().fromJson(jsonArray, new TypeToken<List<TimeZoneDTO>>() {
+
+        /**
+         * 
+         */
+        private static final long serialVersionUID = 1L;
+      }.getType());
+    } catch (JsonSyntaxException e) {
+      log.error("Oops! error while fetching active candidate details");
+      timeZoneList = Collections.emptyList();
+    }
+
+    int temp = 0;
+    for (TimeZoneDTO timeZone : timeZoneList) {
+      String time = timeZone.getName().replaceAll("[/[():]/g]", "").split(" ")[0];
+      log.info("time :: " + time + " timeZoneName :: " + timeZoneName);
+      if (time.equals(timeZoneName) && timeZoneType.equals(timeZone.getType())) {
+        log.info("latest time zone is :::: " + timeZone.getName());
+        temp = 1;
+        timeZoneObj = timeZone;
+      }
+    }
+    if (temp == 0) {
+      for (TimeZoneDTO timeZone : timeZoneList) {
+        String time = timeZone.getName().replaceAll("[/[():]/g]", "").split(" ")[0];
+        log.info("time :: " + time + " timeZoneName :: " + timeZoneName);
+        if (time.equals(timeZoneName)) {
+          log.info("latest time zone is :::: " + timeZone.getName());
+          timeZoneObj = timeZone;
+        }
+      }
+    }
+
+    timeZonePicklistObj.addProperty("id", timeZoneObj.getId());
+    timeZonePicklistObj.addProperty("name", timeZoneObj.getName());
+    timeZonePicklistObj.addProperty("type", timeZoneObj.getType());
+    timeZonePicklistObj.addProperty("abbreviation", timeZoneObj.getAbbreviation());
+
+    return timeZonePicklistObj;
   }
 }
