@@ -3,6 +3,7 @@ package com.aspire.kgp.service.impl;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.LinkedHashMap;
@@ -25,6 +26,7 @@ import com.aspire.kgp.dto.CandidateDTO;
 import com.aspire.kgp.dto.CompanyDTO;
 import com.aspire.kgp.dto.ContactDTO;
 import com.aspire.kgp.dto.DocumentDTO;
+import com.aspire.kgp.dto.TimeZoneDTO;
 import com.aspire.kgp.exception.APIException;
 import com.aspire.kgp.model.UserSearch;
 import com.aspire.kgp.service.CompanyService;
@@ -33,6 +35,7 @@ import com.aspire.kgp.util.CommonUtil;
 import com.aspire.kgp.util.RestUtil;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
@@ -48,9 +51,6 @@ public class CompanyServiceImpl implements CompanyService {
 
   @Autowired
   UserSearchService searchService;
-  
-  @Autowired
-  CommonUtil commonUtil;
 
   @Override
   public final List<CompanyDTO> getCompanyList(String stage) {
@@ -92,7 +92,7 @@ public class CompanyServiceImpl implements CompanyService {
 
   @Override
   public CandidateDTO getCompanyInfoDetails(String candidateId, String timeZone) {
-    JsonObject timeZoneObj = commonUtil.getCurrentLocalTimeZone(timeZone);
+    JsonObject timeZoneObj = getCurrentLocalTimeZone(timeZone);
     timeZoneObj.addProperty("format", "DD MMM YYYY");
     JsonObject paramJSON = new JsonObject();
     if (!timeZone.isEmpty() && !candidateId.isEmpty()) {
@@ -266,5 +266,68 @@ public class CompanyServiceImpl implements CompanyService {
     body.put(Constant.STATUS, "500");
     body.put(Constant.MESSAGE, Constant.FILE_UPLOAD_ERROR);
     return new ResponseEntity<>(body, HttpStatus.INTERNAL_SERVER_ERROR);
+  }
+  
+  public JsonObject getCurrentLocalTimeZone(String currentTimeZone) {
+    String listOfTimeZones = restUtil.newGetMethod(Constant.GET_TIMEZONE);
+    List<TimeZoneDTO> timeZoneList = new ArrayList<>();
+
+    String timeZoneName = currentTimeZone.split("@")[0];
+    String timeZoneType = currentTimeZone.split("@")[1];
+
+    log.info("timeZoneName :: " + timeZoneName);
+    log.info("timeZoneType :: " + timeZoneType);
+
+    TimeZoneDTO timeZoneObj = new TimeZoneDTO();
+    JsonObject timeZonePicklistObj = new JsonObject();
+    timeZonePicklistObj.addProperty("id", "");
+    timeZonePicklistObj.addProperty("name", "");
+    timeZonePicklistObj.addProperty("type", "");
+    timeZonePicklistObj.addProperty("abbreviation", "");
+    if (CommonUtil.checkNullString(listOfTimeZones)) {
+      log.error("Error while fetching contact search.");
+      return timeZonePicklistObj;
+    }
+    JsonArray jsonArray = (JsonArray) JsonParser.parseString(listOfTimeZones);
+    try {
+      timeZoneList = new Gson().fromJson(jsonArray, new TypeToken<List<TimeZoneDTO>>() {
+
+        /**
+         * 
+         */
+        private static final long serialVersionUID = 1L;
+      }.getType());
+    } catch (JsonSyntaxException e) {
+      log.error("Oops! error while fetching active candidate details");
+      timeZoneList = Collections.emptyList();
+    }
+
+    int temp = 0;
+    for (TimeZoneDTO timeZone : timeZoneList) {
+      String time = timeZone.getName().replaceAll("[/[():]/g]", "").split(" ")[0];
+      log.info("time :: " + time + " timeZoneName :: " + timeZoneName);
+      if (time.equals(timeZoneName) && timeZoneType.equals(timeZone.getType())) {
+        log.info("latest time zone is :::: " + timeZone.getName());
+        temp = 1;
+        timeZoneObj = timeZone;
+      }
+    }
+    if (temp == 0) {
+      for (TimeZoneDTO timeZone : timeZoneList) {
+        String time = timeZone.getName().replaceAll("[/[():]/g]", "").split(" ")[0];
+        log.info("time :: " + time + " timeZoneName :: " + timeZoneName);
+        if (time.equals(timeZoneName)) {
+          log.info("latest time zone is :::: " + timeZone.getName());
+          timeZoneObj = timeZone;
+        }
+      }
+    }
+
+    timeZonePicklistObj.addProperty("id", timeZoneObj.getId());
+    timeZonePicklistObj.addProperty("name", timeZoneObj.getName());
+    timeZonePicklistObj.addProperty("type", timeZoneObj.getType());
+    timeZonePicklistObj.addProperty("abbreviation", timeZoneObj.getAbbreviation());
+
+    return timeZonePicklistObj;
   }
 }
