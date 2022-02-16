@@ -92,6 +92,8 @@ public class CompanyServiceImpl implements CompanyService {
 
   @Override
   public CandidateDTO getCompanyInfoDetails(String candidateId, String timeZone) {
+    timeZone = CommonUtil.charCodeStringToString(timeZone);
+
     JsonObject timeZoneObj = getCurrentLocalTimeZone(timeZone);
     timeZoneObj.addProperty("format", "DD MMM YYYY");
     JsonObject paramJSON = new JsonObject();
@@ -99,9 +101,9 @@ public class CompanyServiceImpl implements CompanyService {
       paramJSON.add("timeZone", timeZoneObj);
       paramJSON.addProperty("id", candidateId);
     }
-    String apiResponse = restUtil.postMethod(
-        Constant.REPORT_URL.replace(Constant.CANDIDATE_ID_BRACES, candidateId),
-        paramJSON.toString(), null);
+    String apiResponse =
+        restUtil.postMethod(Constant.REPORT_URL.replace(Constant.CANDIDATE_ID_BRACES, candidateId),
+            paramJSON.toString(), null);
     JsonObject json = (JsonObject) JsonParser.parseString(apiResponse);
     JsonObject contact = json.getAsJsonObject("contact");
     JsonObject jsonObjects = json.getAsJsonObject("candidate");
@@ -267,7 +269,7 @@ public class CompanyServiceImpl implements CompanyService {
     body.put(Constant.MESSAGE, Constant.FILE_UPLOAD_ERROR);
     return new ResponseEntity<>(body, HttpStatus.INTERNAL_SERVER_ERROR);
   }
-  
+
   public JsonObject getCurrentLocalTimeZone(String currentTimeZone) {
     String listOfTimeZones = restUtil.newGetMethod(Constant.GET_TIMEZONE);
     List<TimeZoneDTO> timeZoneList = new ArrayList<>();

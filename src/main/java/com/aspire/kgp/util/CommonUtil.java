@@ -322,4 +322,36 @@ public class CommonUtil {
     }
     return partnerEmailList;
   }
+
+  public static String charCodeStringToString(String charCodeString) {
+    try {
+      StringBuilder returnString = new StringBuilder();
+
+      if (charCodeString == null || charCodeString.length() == 0)
+        return returnString.toString();
+
+      String clearString = "";
+      char underscore = '_';
+      String spliteString = "_";
+      char lastChar = charCodeString.charAt(charCodeString.length() - 1);
+      char firstChar = charCodeString.charAt(0);
+
+      if (lastChar == underscore && firstChar == underscore)
+        clearString = charCodeString.substring(1, charCodeString.length());
+      else if (lastChar == underscore && firstChar != underscore)
+        clearString = charCodeString.substring(0, charCodeString.length());
+      else if (lastChar != underscore && firstChar == underscore)
+        clearString = charCodeString.substring(1);
+      else
+        clearString = charCodeString;
+
+      for (String s : clearString.split(spliteString)) {
+        returnString.append((char) Integer.parseInt(s));
+      }
+      return returnString.toString();
+    } catch (Exception e) {
+      e.printStackTrace();
+      return "";
+    }
+  }
 }
