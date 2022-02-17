@@ -101,6 +101,7 @@ public class CompanyServiceImpl implements CompanyService {
       paramJSON.add("timeZone", timeZoneObj);
       paramJSON.addProperty("id", candidateId);
     }
+    paramJSON.addProperty("clientInterviewDescOrder", true);
     String apiResponse =
         restUtil.postMethod(Constant.REPORT_URL.replace(Constant.CANDIDATE_ID_BRACES, candidateId),
             paramJSON.toString(), null);
