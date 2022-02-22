@@ -30,6 +30,9 @@ public interface InterviewNotificationService {
 
   List<CandidateDTO> getCandidateListFromJsonResponse(JsonArray jsonArray, String team);
 
+  List<CandidateDTO> getCandidateListFromClientInterviewJsonResponse(JsonArray jsonArray,
+      String team);
+
   List<UserDTO> addKgpTeamJsonArraytoList(JsonObject json, String listfor);
 
   List<ClientTeamDTO> addClientTeamJsonArraytoList(JsonObject json, String listfor);
