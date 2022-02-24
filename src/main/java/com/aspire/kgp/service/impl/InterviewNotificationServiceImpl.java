@@ -175,7 +175,7 @@ public class InterviewNotificationServiceImpl implements InterviewNotificationSe
           Constant.CONTACT);
     }
 
-    log.debug("Successfully Send candidate notification");
+    log.info("Successfully Send candidate notification");
   }
 
   @Override
@@ -200,7 +200,7 @@ public class InterviewNotificationServiceImpl implements InterviewNotificationSe
           Constant.PARTNER);
     }
 
-    log.debug("Successfully Send kgp partner Notification");
+    log.info("Successfully Send kgp partner Notification");
   }
 
   @Override
@@ -214,7 +214,7 @@ public class InterviewNotificationServiceImpl implements InterviewNotificationSe
     sendMail(CommonUtil.checkNullString(clientTeamDTO.getContact().getEmail())
         ? clientTeamDTO.getContact().getWorkEmail()
         : clientTeamDTO.getContact().getEmail(), mailSubject, contain);
-    log.debug("Successfully Send Client Notification");
+    log.info("Successfully Send Client Notification");
   }
 
   @Override
