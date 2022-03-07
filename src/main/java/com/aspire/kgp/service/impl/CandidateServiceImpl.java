@@ -207,6 +207,8 @@ public class CandidateServiceImpl implements CandidateService {
           kgpPartnerEmailList);
       kgpPartnerEmailList =
           CommonUtil.teamMemberList(apiResponse.getSearch().getRecruiters(), kgpPartnerEmailList);;
+      kgpPartnerEmailList =
+          CommonUtil.teamMemberList(apiResponse.getSearch().getEas(), kgpPartnerEmailList);
       paramRequest.put("feedback", comments);
       paramRequest.put("candidateName",
           apiResponse.getContact().getFirstName() + " " + apiResponse.getContact().getLastName());

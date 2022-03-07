@@ -623,6 +623,8 @@ public class ContactServiceImpl implements ContactService {
           kgpPartnerEmailList);
       kgpPartnerEmailList =
           CommonUtil.teamMemberList(apiResponse.getSearch().getRecruiters(), kgpPartnerEmailList);
+      kgpPartnerEmailList =
+          CommonUtil.teamMemberList(apiResponse.getSearch().getEas(), kgpPartnerEmailList);
       paramRequest.put("candidateName",
           apiResponse.getContact().getFirstName() + " " + apiResponse.getContact().getLastName());
       paramRequest.put("searchId", apiResponse.getSearch().getId());
@@ -840,6 +842,8 @@ public class ContactServiceImpl implements ContactService {
           kgpPartnerEmailList);
       kgpPartnerEmailList =
           CommonUtil.teamMemberList(apiResponse.getSearch().getRecruiters(), kgpPartnerEmailList);
+      kgpPartnerEmailList =
+          CommonUtil.teamMemberList(apiResponse.getSearch().getEas(), kgpPartnerEmailList);
       paramRequest.put("candidateName",
           apiResponse.getContact().getFirstName() + " " + apiResponse.getContact().getLastName());
       paramRequest.put("searchId", apiResponse.getSearch().getId());
@@ -951,6 +955,8 @@ public class ContactServiceImpl implements ContactService {
           kgpPartnerEmailList);
       kgpPartnerEmailList =
           CommonUtil.teamMemberList(apiResponse.getSearch().getRecruiters(), kgpPartnerEmailList);
+      kgpPartnerEmailList =
+          CommonUtil.teamMemberList(apiResponse.getSearch().getEas(), kgpPartnerEmailList);
       paramRequest.put("candidateName",
           apiResponse.getContact().getFirstName() + " " + apiResponse.getContact().getLastName());
       paramRequest.put("searchId", apiResponse.getSearch().getId());
