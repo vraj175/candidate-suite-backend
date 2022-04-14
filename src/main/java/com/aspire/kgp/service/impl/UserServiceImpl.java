@@ -133,10 +133,10 @@ public class UserServiceImpl implements UserService {
       user = new User();
       user.setRole(roleService.findByName(Constant.CANDIDATE));
       user.setEmail(email);
-      user.setPassword(CommonUtil.hash(email));
       user.setGalaxyId(candidateDTO.getContact().getId());
     }
-    
+
+    user.setPassword(CommonUtil.hash(email));
     user.setPasswordReset(Boolean.TRUE);
     user.setModifyDate(new Timestamp(System.currentTimeMillis()));
     user.setLanguage(languageService.findByName(language));
@@ -157,18 +157,18 @@ public class UserServiceImpl implements UserService {
       userDTO.setEmail(email);
 
       log.info("staring email sending...");
-      if(user.isPasswordReset()) {
-	    log.info("mail for add user or mail for invite");
-	    Map<String, String> staticContentsMap = StaticContentsMultiLanguageUtil
-	        .getStaticContentsMap(language, Constant.EMAILS_CONTENT_MAP);
-	    String mailSubject = staticContentsMap.get("candidate.suite.invitation.email.subject");
-	    mailService.sendEmail(email, bcc, mailSubject, mailService.getEmailContent(request, userDTO,
-	        staticContentsMap, Constant.CANDIDATE_INVITE_EMAIL_TEMPLATE, candidateDTO), null);    	  
+      if (user.isPasswordReset()) {
+        log.info("mail for add user or mail for invite");
+        Map<String, String> staticContentsMap = StaticContentsMultiLanguageUtil
+            .getStaticContentsMap(language, Constant.EMAILS_CONTENT_MAP);
+        String mailSubject = staticContentsMap.get("candidate.suite.invitation.email.subject");
+        mailService.sendEmail(email, bcc, mailSubject, mailService.getEmailContent(request, userDTO,
+            staticContentsMap, Constant.CANDIDATE_INVITE_EMAIL_TEMPLATE, candidateDTO), null);
       } else {
-    	  log.info("Invate for search");
+        log.info("Invate for search");
       }
-        // mail for add user or mail for invite
-      
+      // mail for add user or mail for invite
+
       response = true;
     } catch (Exception e) {
       log.info(e);
@@ -271,6 +271,19 @@ public class UserServiceImpl implements UserService {
       }
     }
     return null;
+  }
+
+  @Override
+  public boolean isContactPassReset(String username, String password) {
+    User user = findByEmail(username);
+    if (Constant.CANDIDATE.equalsIgnoreCase(user.getRole().getName())) {
+      if (CommonUtil.verifyHash(password, user.getPassword())) {
+        return false;
+      } else if (user.getEmail().equals(username) && user.isPasswordReset()) {
+        return true;
+      }
+    }
+    return false;
   }
 
   @Override

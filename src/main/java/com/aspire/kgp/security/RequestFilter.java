@@ -55,12 +55,14 @@ public class RequestFilter extends OncePerRequestFilter {
     log.info("filter start");
     boolean apiKeyValidate = true;
     boolean jwtTokenValidate = false;
+    boolean isContactPassReset = false;
     StringBuffer currentUrl = request.getRequestURL();
     if (currentUrl.indexOf("/oauth/token") > 0) {
       log.info("start add or update partner");
       String username = request.getParameter("username");
       String password = request.getParameter("password");
       service.saveOrUpdatePartner(username, password);
+      isContactPassReset = service.isContactPassReset(username, password);
       log.info("end add or update partner");
     } else if (currentUrl.indexOf("/api/") < 0
         || currentUrl.indexOf("/api/webSocket-notification/") > 0) {
@@ -77,6 +79,14 @@ public class RequestFilter extends OncePerRequestFilter {
 
     ObjectMapper objectMapper = new ObjectMapper();
     Map<String, Object> errorDetails = new HashMap<>();
+    if (isContactPassReset) {
+      SecurityContextHolder.clearContext();
+      response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+      response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+      errorDetails.put(Constant.ERROR_DESCRIPTION, Constant.PASSWORD_RESET_MESSAGE);
+      objectMapper.writeValue(response.getWriter(), errorDetails);
+      return;
+    }
     if (apiKeyValidate) {
       String apiKey = request.getHeader(Constant.API_KEY);
       try {

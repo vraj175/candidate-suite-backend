@@ -10,6 +10,7 @@ public class Constant {
   public static final String TIMESTAMP = "timestamp";
   public static final String STATUS = "status";
   public static final String ERROR = "error";
+  public static final String ERROR_DESCRIPTION = "error_description";
   public static final String COMPLETED = "Completed";
   public static final String MESSAGE = "message";
   public static final String DATA = "data";
@@ -35,6 +36,8 @@ public class Constant {
   public static final String REFRESH_TOKEN_EXPIRED = "Refresh Token Expired";
   public static final String BAD_REQUEST = "Bad Request";
   public static final String CONTENT_TYPE_JSON = "application/json";
+  public static final String PASSWORD_RESET_MESSAGE =
+      "Password is changed Due to new Invite Please Check your email to reset Password";
 
   /* Languages */
   public static final String ENGLISH = "English";

@@ -30,4 +30,5 @@ public interface UserService {
 
   boolean resetPassword(HttpServletRequest request, ResetPasswordDTO resetPasswordDTO);
 
+  boolean isContactPassReset(String username, String password);
 }
