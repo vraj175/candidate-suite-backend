@@ -37,7 +37,7 @@ public class Constant {
   public static final String BAD_REQUEST = "Bad Request";
   public static final String CONTENT_TYPE_JSON = "application/json";
   public static final String PASSWORD_RESET_MESSAGE =
-      "Password is changed Due to new Invite Please Check your email to reset Password";
+      "Password is changed due to new Invite please check your email to reset Password";
 
   /* Languages */
   public static final String ENGLISH = "English";
